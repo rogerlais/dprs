@@ -1,4 +1,4 @@
-object Form1: TForm1
+object VMCloneMainForm: TVMCloneMainForm
   Left = 0
   Top = 0
   Caption = 'VMWare Safe Clone Utility'
@@ -11,34 +11,25 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Button1: TButton
-    Left = 280
-    Top = 115
+  object ExecBtn: TButton
+    Left = 160
+    Top = 99
     Width = 75
     Height = 25
-    Caption = 'Button1'
+    Caption = 'E&xecutar'
     TabOrder = 0
   end
-  object LabeledEdit1: TLabeledEdit
-    Left = 40
-    Top = 61
+  object ComputerNameEdit: TLabeledEdit
+    Left = 105
+    Top = 45
     Width = 185
     Height = 21
-    EditLabel.Width = 61
+    EditLabel.Width = 59
     EditLabel.Height = 13
-    EditLabel.Caption = 'LabeledEdit1'
+    EditLabel.Caption = '&Computador'
     TabOrder = 1
-  end
-  object LabeledEdit2: TLabeledEdit
-    Left = 40
-    Top = 117
-    Width = 185
-    Height = 21
-    EditLabel.Width = 61
-    EditLabel.Height = 13
-    EditLabel.Caption = 'LabeledEdit1'
-    TabOrder = 2
   end
 end

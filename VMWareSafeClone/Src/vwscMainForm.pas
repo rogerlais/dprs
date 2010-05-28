@@ -7,10 +7,10 @@ uses
   Dialogs, StdCtrls, ExtCtrls;
 
 type
-  TForm1 = class(TForm)
-    Button1: TButton;
-    LabeledEdit1: TLabeledEdit;
-    LabeledEdit2: TLabeledEdit;
+  TVMCloneMainForm = class(TForm)
+    ExecBtn: TButton;
+    ComputerNameEdit: TLabeledEdit;
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -18,10 +18,16 @@ type
   end;
 
 var
-  Form1: TForm1;
+  VMCloneMainForm: TVMCloneMainForm;
 
 implementation
 
 {$R *.dfm}
+
+procedure TVMCloneMainForm.FormCreate(Sender: TObject);
+begin
+	{TODO -oroger -cdsg : Ajustar caption de acordo com a versão}
+	Self.ComputerNameEdit.Text:=GetComputerName();
+end;
 
 end.
