@@ -1,0 +1,36 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{B10F1368-9294-4E37-B9A4-E26EC3B47AAF}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="vmwsc.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="vmwsc">
+			<MSBuild Projects="vmwsc.dproj"/>
+		</Target>
+		<Target Name="vmwsc:Clean">
+			<MSBuild Targets="Clean" Projects="vmwsc.dproj"/>
+		</Target>
+		<Target Name="vmwsc:Make">
+			<MSBuild Targets="Make" Projects="vmwsc.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="vmwsc"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="vmwsc:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="vmwsc:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>
