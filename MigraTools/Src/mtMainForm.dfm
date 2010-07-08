@@ -28,7 +28,6 @@ object MigraToolsMainForm: TMigraToolsMainForm
     Height = 25
     Align = alTop
     TabOrder = 1
-    ExplicitWidth = 426
   end
   object pnlTopPanel: TPanel
     Left = 0
@@ -37,8 +36,6 @@ object MigraToolsMainForm: TMigraToolsMainForm
     Height = 41
     Align = alBottom
     TabOrder = 2
-    ExplicitTop = 234
-    ExplicitWidth = 426
     object btnClose: TBitBtn
       Left = 197
       Top = 8
@@ -62,7 +59,9 @@ object MigraToolsMainForm: TMigraToolsMainForm
     object tsPasswords: TTabSheet
       Caption = 'S&enhas'
       ExplicitLeft = 0
-      ExplicitTop = 22
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lblAccountFilter: TLabel
         Left = 5
         Top = 5

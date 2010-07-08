@@ -47,6 +47,10 @@
 				<Form>MigraToolsMainForm</Form>
 			</DCCReference>
 			<DCCReference Include="mtUtils.pas"/>
+			<None Include="ModelSupport_MigraTools\default.txaPackage"/>
+			<None Include="ModelSupport_MigraTools\default.txvpck"/>
+			<None Include="ModelSupport_MigraTools\mtUtils\default.txvpck"/>
+			<None Include="ModelSupport_MigraTools\MigraTools\default.txvpck"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -101,6 +105,7 @@
 						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
+				<ModelSupport>True</ModelSupport>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>
