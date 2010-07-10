@@ -59,6 +59,10 @@ object MigraToolsMainForm: TMigraToolsMainForm
     TabOrder = 3
     object tsPasswords: TTabSheet
       Caption = 'S&enhas'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lblAccountFilter: TLabel
         Left = 5
         Top = 5
@@ -88,6 +92,7 @@ object MigraToolsMainForm: TMigraToolsMainForm
         Top = 24
         Width = 113
         Height = 120
+        OnClickCheck = chklstAccountsClickCheck
         ItemHeight = 13
         Items.Strings = (
           'Supervisor'
@@ -113,7 +118,7 @@ object MigraToolsMainForm: TMigraToolsMainForm
         Items.Strings = (
           '1 - Todas'
           '2 - Zonas'
-          '3 - Suporte'
+          '3 - Equipe Suporte'
           '4 - Personalizado'
           '5 - Nenhuma')
       end
@@ -135,9 +140,7 @@ object MigraToolsMainForm: TMigraToolsMainForm
         Height = 22
         Style = csOwnerDrawFixed
         Enabled = False
-        ItemIndex = 0
         TabOrder = 3
-        Text = '1 - Todos'
         Items.Strings = (
           '1 - Todos'
           '2 - Local'
@@ -155,11 +158,48 @@ object MigraToolsMainForm: TMigraToolsMainForm
         ParentDoubleBuffered = False
         TabOrder = 4
       end
+      object edtNewAccount: TLabeledEdit
+        Left = 320
+        Top = 24
+        Width = 105
+        Height = 21
+        CharCase = ecLowerCase
+        EditLabel.Width = 63
+        EditLabel.Height = 13
+        EditLabel.Caption = 'Novo usu'#225'rio'
+        TabOrder = 5
+      end
+      object edtNewPass: TLabeledEdit
+        Left = 320
+        Top = 75
+        Width = 105
+        Height = 21
+        EditLabel.Width = 57
+        EditLabel.Height = 13
+        EditLabel.Caption = 'Nova senha'
+        PasswordChar = '*'
+        TabOrder = 6
+      end
+      object btnAddNewUser: TBitBtn
+        Left = 320
+        Top = 119
+        Width = 105
+        Height = 25
+        Caption = 'Adicionar usu'#225'rio'
+        DoubleBuffered = True
+        ParentDoubleBuffered = False
+        TabOrder = 7
+        OnClick = btnAddNewUserClick
+      end
     end
     object tsPrinters: TTabSheet
       Caption = '&Impressoras'
       Enabled = False
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object btnSetScanner: TBitBtn
         Left = 19
         Top = 24
