@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{383F7074-3B26-43BF-A65D-C64733019E03}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="MigraTools.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\..\Pcks\XPLib\Src\XPLibD14.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="MigraTools">
+			<MSBuild Projects="MigraTools.dproj"/>
+		</Target>
+		<Target Name="MigraTools:Clean">
+			<MSBuild Targets="Clean" Projects="MigraTools.dproj"/>
+		</Target>
+		<Target Name="MigraTools:Make">
+			<MSBuild Targets="Make" Projects="MigraTools.dproj"/>
+		</Target>
+		<Target Name="XPLibD14">
+			<MSBuild Projects="..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
+		</Target>
+		<Target Name="XPLibD14:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
+		</Target>
+		<Target Name="XPLibD14:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="MigraTools;XPLibD14"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="MigraTools:Clean;XPLibD14:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="MigraTools:Make;XPLibD14:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>
