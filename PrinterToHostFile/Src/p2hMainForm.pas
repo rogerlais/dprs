@@ -235,10 +235,9 @@ begin
         if SameText(itemName, '/auto') then begin //rodar no modo automatico
             Self.Visible := False;
             Application.ShowMainForm := False;
-            Self.hostFile.SetPrinters(zone);
-            Self.hostFile.SetSCX4828ScannerPort(zone);
-            Self.Close;
-            Application.Terminate;
+						Self.hostFile.SetPrinters(zone);
+						Self.hostFile.SetSCX4828ScannerPort(zone);
+						Application.Terminate;
         end;
     end;
 end;

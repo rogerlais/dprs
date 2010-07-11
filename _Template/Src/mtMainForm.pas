@@ -9,7 +9,7 @@ interface
 
 uses
     Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-    Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls, CheckLst, StrHnd, mtUtils;
+    Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls, CheckLst, StrHnd, mtUtils, FileInfo, JvComponentBase, JvCreateProcess;
 
 type
     TMigraToolsMainForm = class(TForm)
@@ -32,17 +32,22 @@ type
         edtNewAccount :  TLabeledEdit;
         edtNewPass :     TLabeledEdit;
         btnAddNewUser :  TBitBtn;
+        fileVerMain :    TFileVersionInfo;
+        ProcessControl : TJvCreateProcess;
         procedure FormCreate(Sender : TObject);
         procedure btnSetDefaulPasswordsClick(Sender : TObject);
         procedure chklstAccountsClickCheck(Sender : TObject);
         procedure btnAddNewUserClick(Sender : TObject);
+        procedure ProcessControlTerminate(Sender : TObject; ExitCode : cardinal);
     private
         { Private declarations }
         FUserList : TZEUserList;
+        FAutoMode : boolean;
     public
         { Public declarations }
         constructor Create(AOwner : TComponent); override;
         destructor Destroy; override;
+        procedure SaveGlobalLog();
     end;
 
 var
@@ -53,7 +58,7 @@ implementation
 {$R *.dfm}
 
 uses
-    lmCons, APIHnd;
+    lmCons, APIHnd, FileHnd, ShellAPI;
 
 
 function ImpersonateADMUser() : Integer;
@@ -85,7 +90,7 @@ begin
     if (Self.edtNewAccount.Text <> EmptyStr) then begin
         if Self.edtNewPass.Text <> EmptyStr then begin
             newUser := TZEUser.Create(Self.edtNewAccount.Text, Self.edtNewPass.Text);
-            newUser.Checked := True;
+            newUser.Checked := True;    //Atenção para todos os casos de inserção/alteração
             Self.FUserList.Add(newUser);
             index := Self.chklstAccounts.Items.AddObject(newUser.UserName, newUser);
             Self.chklstAccounts.Checked[index] := newUser.Checked;
@@ -93,7 +98,7 @@ begin
             raise Exception.Create('Senha requerida');
         end;
     end else begin
-        raise Exception.Create('Nome de conta inválido');
+        raise Exception.Create('Nome de usuário inválido');
     end;
 end;
 
@@ -101,12 +106,17 @@ procedure TMigraToolsMainForm.btnSetDefaulPasswordsClick(Sender : TObject);
 var
     log : string;
 begin
-    {$IFDEF DEBUG}
-		TAPIHnd.CheckAPI( ImpersonateADMUser() );
-		{$ENDIF}
-    log := Self.FUserList.SetPasswords();
-    if log <> EmptyStr then begin
-        raise Exception.Create('Ocorreram falhas no ajuste das senhas:'#13 + log);
+    TControl(Sender).Enabled := False;
+    try
+                {$IFDEF DEBUG}
+				TAPIHnd.CheckAPI( ImpersonateADMUser() );
+				{$ENDIF}
+        log := Self.FUserList.SetPasswords();
+        if log <> EmptyStr then begin
+            raise Exception.Create('Ocorreram falhas no ajuste das senhas:'#13 + log);
+        end;
+    finally
+        Self.SaveGlobalLog;
     end;
 end;
 
@@ -119,9 +129,33 @@ begin
 end;
 
 constructor TMigraToolsMainForm.Create(AOwner : TComponent);
+var
+    x :   Integer;
+    log : string;
 begin
     inherited;
+    Self.FAutoMode := False;
     Self.FUserList := TZEUserList.Create;
+
+    try
+        //Testa execução automatica para todas as contas carregadas
+        for x := 0 to ParamCount do begin
+            if SameText(ParamStr(x), '/auto') then begin
+                //oculta janela
+                Self.Visible := False;
+                Application.ShowMainForm := False;
+
+                //Executa operação
+                Self.FAutoMode := True;
+                log := Self.FUserList.SetPasswords();
+                if log <> EmptyStr then begin
+                    raise Exception.Create('Ocorreram falhas no ajuste das senhas:'#13 + log);
+                end;
+            end;
+        end;
+    finally
+        Self.SaveGlobalLog;
+    end;
 end;
 
 destructor TMigraToolsMainForm.Destroy;
@@ -144,7 +178,6 @@ begin
         Self.chklstAccounts.Items.Clear;
         for x := 0 to Self.FUserList.Count - 1 do begin
             Self.chklstAccounts.Items.AddObject(Self.FUserList.Items[x].UserName, Self.FUserList.Items[x]);
-
         end;
         //Marca todos inicialmente
         for x := 0 to Self.chklstAccounts.Items.Count - 1 do begin
@@ -152,6 +185,31 @@ begin
         end;
     finally
         Self.chklstAccounts.Items.EndUpdate;
+    end;
+        {$IFDEF DEBUG}
+		Self.Caption:='Ferramentas de Migração - ***Versão Depuração***' + Self.fileVerMain.FileVersion;
+		{$ELSE}
+    Self.Caption := 'Ferramentas de Migração - ' + Self.fileVerMain.FileVersion;
+        {$ENDIF}
+end;
+
+procedure TMigraToolsMainForm.ProcessControlTerminate(Sender : TObject; ExitCode : cardinal);
+begin
+    if Self.FAutoMode then begin
+        Application.Terminate;
+    end;
+end;
+
+procedure TMigraToolsMainForm.SaveGlobalLog;
+var
+    fName : string;
+begin
+    fName := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'AltSenha.txt']);
+    if (Pos('=', GlobalSaveLog.Text) <> 0) then begin
+        GlobalSaveLog.SaveToFile(fName);
+        Self.ProcessControl.CommandLine := 'c:\Windows\notepad.exe ' + '"' + fName + '"';
+        //ShellExecute( 0, 'open', PWideChar(fName), nil, nil, SW_SHOWNORMAL );
+        Self.ProcessControl.Run;
     end;
 end;
 

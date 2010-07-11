@@ -80,7 +80,7 @@ object MigraToolsMainForm: TMigraToolsMainForm
         FocusControl = cbbLocalDomain
       end
       object lblAccounts: TLabel
-        Left = 184
+        Left = 168
         Top = 5
         Width = 34
         Height = 13
@@ -88,10 +88,10 @@ object MigraToolsMainForm: TMigraToolsMainForm
         FocusControl = chklstAccounts
       end
       object chklstAccounts: TCheckListBox
-        Left = 184
+        Left = 168
         Top = 24
-        Width = 113
-        Height = 120
+        Width = 129
+        Height = 161
         OnClickCheck = chklstAccountsClickCheck
         ItemHeight = 13
         Items.Strings = (
@@ -108,7 +108,7 @@ object MigraToolsMainForm: TMigraToolsMainForm
       object cbbAccountFilter: TComboBox
         Left = 5
         Top = 24
-        Width = 145
+        Width = 143
         Height = 22
         Style = csOwnerDrawFixed
         Enabled = False
@@ -140,7 +140,9 @@ object MigraToolsMainForm: TMigraToolsMainForm
         Height = 22
         Style = csOwnerDrawFixed
         Enabled = False
+        ItemIndex = 0
         TabOrder = 3
+        Text = '1 - Todos'
         Items.Strings = (
           '1 - Todos'
           '2 - Local'
@@ -182,7 +184,7 @@ object MigraToolsMainForm: TMigraToolsMainForm
       end
       object btnAddNewUser: TBitBtn
         Left = 320
-        Top = 119
+        Top = 159
         Width = 105
         Height = 25
         Caption = 'Adicionar usu'#225'rio'
@@ -212,5 +214,14 @@ object MigraToolsMainForm: TMigraToolsMainForm
         TabOrder = 0
       end
     end
+  end
+  object fileVerMain: TFileVersionInfo
+    Left = 24
+    Top = 272
+  end
+  object ProcessControl: TJvCreateProcess
+    OnTerminate = ProcessControlTerminate
+    Left = 104
+    Top = 272
   end
 end
