@@ -197,7 +197,10 @@ begin
 		{$ENDIF}
 
     //duplicar contas de usuários para o caso de haver domínio
-    dName := Self.Domain;
+		dName := Self.Domain;
+		if not(TStrHnd.endsWith(dName, '.GOV.BR' ) ) then begin
+				dName:=dName + '.GOV.BR';
+		end;
     if dName <> EmptyStr then begin
         for x := Self.FUsers.Count - 1 downto 0 do begin
 						dUser := TZEUser.Create(dName + '\' + Self.FUsers.Items[x].UserName, Self.FUsers.Items[x].Password);
