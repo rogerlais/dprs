@@ -7,29 +7,29 @@ unit mtUtils;
 interface
 
 uses
-		SysUtils, Windows, Classes, WinReg32, JclWin32, LmAccess, Generics.Collections;
+    SysUtils, Windows, Classes, WinReg32, JclWin32, LmAccess, Generics.Collections;
 
 type
-	TUserScope = (usInvalid, usZone, usSupport);
+    TUserScope = (usInvalid, usZone, usSupport);
 
-		TZEUser = class
-		private
-				FUserName : string;
-				FPassword : string;
-				FChecked :  boolean;
-				FScope: TUserScope;
-		public
-				constructor Create(const AName, APassword : string); virtual;
-				/// <summary>
-				///  traduz a senha para a forma calculada
-				/// </summary>
-				/// <param name="Zone">Identificador da zona</param>
-				/// <returns>senha calculada deste usuário</returns>
-				function TranslatedPwd(Zone : Integer) : string;
-				property UserName : string read FUserName;
-				property Password : string read FPassword write FPassword;
-				property Checked : boolean read FChecked write FChecked;
-				property Scope : TUserScope read FScope write FScope;
+    TZEUser = class
+    private
+        FUserName : string;
+        FPassword : string;
+        FChecked :  boolean;
+        FScope :    TUserScope;
+    public
+        constructor Create(const AName, APassword : string); virtual;
+        /// <summary>
+        ///  traduz a senha para a forma calculada
+        /// </summary>
+        /// <param name="Zone">Identificador da zona</param>
+        /// <returns>senha calculada deste usuário</returns>
+        function TranslatedPwd(Zone : Integer) : string;
+        property UserName : string read FUserName;
+        property Password : string read FPassword write FPassword;
+        property Checked : boolean read FChecked write FChecked;
+        property Scope : TUserScope read FScope write FScope;
         /// <summary>
         /// Troca a senha da conta deste usuário de zona no computador local
         /// </summary>
@@ -47,20 +47,20 @@ type
         function LookupStationDomain(const CurUser : string) : string;
         function GetDomain : string;
         function GetZoneId : Integer;
-		public
-				constructor Create;
-				destructor Destroy; override;
-				property Domain : string read GetDomain;
-				property Count : Integer read GetCount;
-				property Items[index : Integer] : TZEUser read GetItems;
-				property isDomain : boolean read GetIsDomain;
-				property ZoneId : Integer read GetZoneId;
-				function Add(NewUser : TZEUser) : Integer;
-				function SetPasswords() : string;
-		end;
+    public
+        constructor Create;
+        destructor Destroy; override;
+        property Domain : string read GetDomain;
+        property Count : Integer read GetCount;
+        property Items[index : Integer] : TZEUser read GetItems;
+        property isDomain : boolean read GetIsDomain;
+        property ZoneId : Integer read GetZoneId;
+        function Add(NewUser : TZEUser) : Integer;
+        function SetPasswords() : string;
+    end;
 
 var
-	GlobalSaveLog : TStringList;
+    GlobalSaveLog : TStringList;
 
 implementation
 
@@ -88,40 +88,40 @@ end;
 
 constructor TZEUser.Create(const AName, APassword : string);
 begin
-		Self.FUserName := AName;
-		Self.FPassword := APassword;
-		Self.FScope:=usInvalid;
+    Self.FUserName := AName;
+    Self.FPassword := APassword;
+    Self.FScope    := usInvalid;
 end;
 
 function TZEUser.SetPassword(Zone : Integer) : NET_API_STATUS;
 var
-		userInfo :   TUserInfo1003;
-		PError :     DWORD;
-		PDomain, PUsername : PWideChar;
-		tokenIndex : Integer;
-		ErrorlogString : string;
+    userInfo :   TUserInfo1003;
+    PError :     DWORD;
+    PDomain, PUsername : PWideChar;
+    tokenIndex : Integer;
+    ErrorlogString : string;
 begin
-		tokenIndex := Pos('\', Self.FUserName);
-		if tokenIndex <> 0 then begin //conta de dominio
-				PDomain   := StrNew(PWideChar(Copy(Self.UserName, 1, tokenIndex - 1)));
-				PUsername := StrNew(PWideChar(Copy(Self.FUserName, tokenIndex + 1, Length(Self.UserName))));
-		end else begin
-				PDomain   := nil;
-				PUsername := StrNew(PWideChar(Self.FUserName));
-		end;
-		userInfo.usri1003_password := StrNew(PWideChar(Self.TranslatedPwd(Zone)));
-		try
-				Result := NetUserSetInfo(PDomain, PUserName, 1003, @userInfo, @PError);
-				if (Result <> NERR_Success ) then begin //Registrar a falha de alteração
-					ErrorlogString:=					'       ***IMPORTANTE: ' +
-					Format( 'Operação falhou para %s. %s.'#13#10, [ Self.UserName, SysErrorMessage( Result ) ]);
-				end;
-				if Self.Scope <> usSupport then begin
-					GlobalSaveLog.Values[Self.UserName]:=userInfo.usri1003_password + ErrorlogString;
-				end else begin
-					GlobalSaveLog.Values[Self.UserName]:=ErrorlogString;
-				end;
-		finally
+    tokenIndex := Pos('\', Self.FUserName);
+    if tokenIndex <> 0 then begin //conta de dominio
+        PDomain   := StrNew(PWideChar(Copy(Self.UserName, 1, tokenIndex - 1)));
+        PUsername := StrNew(PWideChar(Copy(Self.FUserName, tokenIndex + 1, Length(Self.UserName))));
+    end else begin
+        PDomain   := nil;
+        PUsername := StrNew(PWideChar(Self.FUserName));
+    end;
+    userInfo.usri1003_password := StrNew(PWideChar(Self.TranslatedPwd(Zone)));
+    try
+        Result := NetUserSetInfo(PDomain, PUserName, 1003, @userInfo, @PError);
+        if (Result <> NERR_Success) then begin //Registrar a falha de alteração
+            ErrorlogString := '       ***IMPORTANTE: ' +
+                Format('Operação falhou para %s. %s.'#13#10, [Self.UserName, SysErrorMessage(Result)]);
+        end;
+        if Self.Scope <> usSupport then begin
+            GlobalSaveLog.Values[Self.UserName] := userInfo.usri1003_password + ErrorlogString;
+        end else begin
+            GlobalSaveLog.Values[Self.UserName] := ErrorlogString;
+        end;
+    finally
         StrDispose(PUsername);
         StrDispose(PDomain);
         StrDispose(userInfo.usri1003_password);
@@ -130,17 +130,17 @@ end;
 
 function TZEUser.TranslatedPwd(Zone : Integer) : string;
 var
-		chain : string;
-		zv : array[1..3] of Char;
+    chain : string;
+    zv :    array[1..3] of char;
 begin
-		chain  := Format('%3.3d', [Zone]);
-		zv[1]:=Chr(Ord('i') + StrToInt(Copy(chain, 1, 1) ));
-		zv[2]:=Chr(Ord('a') + StrToInt(Copy(chain, 2, 1) ));
-		zv[3]:=Chr(Ord('o') + StrToInt(Copy(chain, 3, 1) ));
-		Result := Self.Password;
-		Result := Str_Pas.ReplaceSubString(Result, '<1>', zv[1]);
-		Result := Str_Pas.ReplaceSubString(Result, '<2>', zv[2]);
-		Result := Str_Pas.ReplaceSubString(Result, '<3>', zv[3]);
+    chain  := Format('%3.3d', [Zone]);
+    zv[1]  := Chr(Ord('i') + StrToInt(Copy(chain, 1, 1)));
+    zv[2]  := Chr(Ord('a') + StrToInt(Copy(chain, 2, 1)));
+    zv[3]  := Chr(Ord('o') + StrToInt(Copy(chain, 3, 1)));
+    Result := Self.Password;
+    Result := Str_Pas.ReplaceSubString(Result, '<1>', zv[1]);
+    Result := Str_Pas.ReplaceSubString(Result, '<2>', zv[2]);
+    Result := Str_Pas.ReplaceSubString(Result, '<3>', zv[3]);
 end;
 
 { TZEUserList }
@@ -154,57 +154,57 @@ constructor TZEUserList.Create;
 var
     x :     Integer;
     dName : string;
-		dUser : TZEUser;
+    dUser : TZEUser;
 begin
     inherited;
-		Self.FUsers := TObjectList<TZEUser>.Create();
-		Self.FUsers.OwnsObjects := True;
-		//Adiciona a lista de usuários conhecida
-		{$IFDEF DEBUG}
+    Self.FUsers := TObjectList<TZEUser>.Create();
+    Self.FUsers.OwnsObjects := True;
+    //Adiciona a lista de usuários conhecida
+        {$IFDEF DEBUG}
 		//Self.FUsers.Add( TZEUser.Create('ghost', 'esmeralda' ) );
 		dUser:=TZEUser.Create('000000010191', 'util<1>z<2>d<3>');
 		dUser.Scope:=usSupport;
 		Self.FUsers.Add(dUser);
 		{$ELSE}
-		dUser:=TZEUser.Create('suporte', 'admin<1>str<2>d<3>');
-		dUser.Scope:=usSupport;
-		Self.FUsers.Add(dUser);
+    dUser := TZEUser.Create('suporte', 'admin<1>str<2>d<3>');
+    dUser.Scope := usSupport;
+    Self.FUsers.Add(dUser);
 
-		dUser:=TZEUser.Create('vncacesso', 'admin<1>str<2>d<3>');
-		dUser.Scope:=usSupport;
-		Self.FUsers.Add(dUser);
+    dUser := TZEUser.Create('vncacesso', 'admin<1>str<2>d<3>');
+    dUser.Scope := usSupport;
+    Self.FUsers.Add(dUser);
 
-		dUser:=TZEUser.Create('instalador', 's<1>nst<2>l<3>');
-		dUser.Scope:=usZone;
-		Self.FUsers.Add(dUser);
+    dUser := TZEUser.Create('instalador', 's<1>nst<2>l<3>');
+    dUser.Scope := usZone;
+    Self.FUsers.Add(dUser);
 
-		dUser:=TZEUser.Create('desinstalador', 'des<1>nst<2>l<3>');
-		dUser.Scope:=usZone;
-		Self.FUsers.Add(dUser);
+    dUser := TZEUser.Create('desinstalador', 'des<1>nst<2>l<3>');
+    dUser.Scope := usZone;
+    Self.FUsers.Add(dUser);
 
-		dUser:=TZEUser.Create('supervisor', 'autor<1>z<2>d<3>');
-		dUser.Scope:=usZone;
-		Self.FUsers.Add(dUser);
+    dUser := TZEUser.Create('supervisor', 'autor<1>z<2>d<3>');
+    dUser.Scope := usZone;
+    Self.FUsers.Add(dUser);
 
-		dUser:=TZEUser.Create('oficial', 'ass<1>n<2>d<3>');
-		dUser.Scope:=usZone;
-		Self.FUsers.Add(dUser);
+    dUser := TZEUser.Create('oficial', 'ass<1>n<2>d<3>');
+    dUser.Scope := usZone;
+    Self.FUsers.Add(dUser);
 
-		dUser:=TZEUser.Create('000000010191', 'util<1>z<2>d<3>');
-		dUser.Scope:=usSupport;
-		Self.FUsers.Add(dUser);
+    dUser := TZEUser.Create('000000010191', 'util<1>z<2>d<3>');
+    dUser.Scope := usSupport;
+    Self.FUsers.Add(dUser);
 
-		{$ENDIF}
+        {$ENDIF}
 
     //duplicar contas de usuários para o caso de haver domínio
-		dName := Self.Domain;
-		if not(TStrHnd.endsWith(dName, '.GOV.BR' ) ) then begin
-				dName:=dName + '.GOV.BR';
-		end;
+    dName := Self.Domain;
+    if not (TStrHnd.endsWith(dName, '.GOV.BR')) then begin
+        dName := dName + '.GOV.BR';
+    end;
     if dName <> EmptyStr then begin
         for x := Self.FUsers.Count - 1 downto 0 do begin
-						dUser := TZEUser.Create(dName + '\' + Self.FUsers.Items[x].UserName, Self.FUsers.Items[x].Password);
-						dUser.Scope:=Self.FUsers.Items[x].Scope;
+            dUser := TZEUser.Create(dName + '\' + Self.FUsers.Items[x].UserName, Self.FUsers.Items[x].Password);
+            dUser.Scope := Self.FUsers.Items[x].Scope;
             dUser.Checked := Self.FUsers.Items[x].Checked;
             Self.FUsers.Add(dUser);
         end;
@@ -229,14 +229,14 @@ end;
 
 function TZEUserList.GetDomain : string;
 begin
-	if ( Pos( 'STD', UpperCase( GetComputerName() )) > 0 ) then begin //Maquina STD = não possui dominio
-		Result:=EmptyStr;
-	end else begin
-		if (Self._FDomain = EmptyStr ) then begin
-				Self._FDomain := Self.LookupStationDomain(HOOK_USER_ACCOUNT);
-		end;
-		Result := Self._FDomain;
-	end;
+    if (Pos('STD', UpperCase(GetComputerName())) > 0) then begin //Maquina STD = não possui dominio
+        Result := EmptyStr;
+    end else begin
+        if (Self._FDomain = EmptyStr) then begin
+            Self._FDomain := Self.LookupStationDomain(HOOK_USER_ACCOUNT);
+        end;
+        Result := Self._FDomain;
+    end;
 end;
 
  /// <summary>
@@ -247,11 +247,11 @@ function TZEUserList.GetIsDomain : boolean;
 var
     cName : string;
 begin
-		cName  := UpperCase(GetComputerName());
-		{TODO -oroger -cfuture : Melhorar forma de recuperar dominio sem as gambiarras}
-		//Usa-se conta pertinente exclusivamente ao dominio(não podemos ter outra de mesmo nome na máquina) para pegar o dominio vinculado
-		Result := UpperCase(Self.Domain) <> cName;
-		Result := Result or TStrHnd.Contains('WKS', cName) or TStrHnd.Contains('PDC', cName);
+    cName  := UpperCase(GetComputerName());
+    {TODO -oroger -cfuture : Melhorar forma de recuperar dominio sem as gambiarras}
+    //Usa-se conta pertinente exclusivamente ao dominio(não podemos ter outra de mesmo nome na máquina) para pegar o dominio vinculado
+    Result := UpperCase(Self.Domain) <> cName;
+    Result := Result or TStrHnd.Contains('WKS', cName) or TStrHnd.Contains('PDC', cName);
 end;
 
 function TZEUserList.GetItems(index : Integer) : TZEUser;
@@ -264,7 +264,7 @@ begin
     {$IFDEF DEBUG}
 		Result:=TTREUtils.GetComputerZone('ZPB081WKS145');
 		{$ELSE}
-		Result := TTREUtils.GetComputerZone(GetComputerName());
+    Result := TTREUtils.GetComputerZone(GetComputerName());
     {$ENDIF}
 end;
 
@@ -300,12 +300,12 @@ var
     ret :  NET_API_STATUS;
     x :    Integer;
 begin
-		Result := EmptyStr;
+    Result := EmptyStr;
     for x := 0 to Self.FUsers.Count - 1 do begin
         User := Self.FUsers.Items[x];
         if User.Checked then begin
             try
-								ret := User.SetPassword(Self.ZoneId);
+                ret := User.SetPassword(Self.ZoneId);
                 TAPIHnd.CheckAPI(ret);
             except
                 on E : Exception do begin
@@ -317,18 +317,18 @@ begin
 end;
 
 initialization
-		begin
-				GlobalSaveLog := TStringList.Create;
-				GlobalSaveLog.Add('Resultado da operação realizada em: ' + DateToStr(Now()));
-				GlobalSaveLog.Add('');
-				GlobalSaveLog.Add('***  Senhas  ***');
-				{TODO -oroger -cdsg : Inicializar COM de modo a evitar GPF finais}
-		end;
+    begin
+        GlobalSaveLog := TStringList.Create;
+        GlobalSaveLog.Add('Resultado da operação realizada em: ' + DateToStr(Now()));
+        GlobalSaveLog.Add('');
+        GlobalSaveLog.Add('***  Senhas  ***');
+        {TODO -oroger -cdsg : Inicializar COM de modo a evitar GPF finais}
+    end;
 
 finalization
-		begin
-			GlobalSaveLog.Free;
-				{TODO -oroger -cdsg : finalizar COM de modo a evitar GPF finais}
-		end;
+    begin
+        GlobalSaveLog.Free;
+        {TODO -oroger -cdsg : finalizar COM de modo a evitar GPF finais}
+    end;
 
 end.

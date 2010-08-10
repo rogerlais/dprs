@@ -46,6 +46,7 @@
 			<DCCReference Include="p2hMainForm.pas">
 				<Form>PthfMainForm</Form>
 			</DCCReference>
+			<DCCReference Include="p2hUtils.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

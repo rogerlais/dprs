@@ -2,7 +2,8 @@ program PrinterToHostFile;
 
 uses
   Forms,
-  p2hMainForm in 'p2hMainForm.pas' {PthfMainForm};
+  p2hMainForm in 'p2hMainForm.pas' {PthfMainForm},
+  p2hUtils in 'p2hUtils.pas';
 
 {$R *.res}
 
