@@ -11,10 +11,16 @@ type
     private
         function SetIPLink(const Name, ip : string) : Integer;
     public
+        /// <summary>
+        /// Constroi e carrega arquivo de host
+        /// </summary>
         constructor Create;
-        function GetZoneSubNet(zone : Integer) : Integer;
+        function GetZoneSubNet(ZoneId : Integer) : Integer;
         function GetScannerHost(zone : Integer) : string;
-        function SetPrinters(zone : Integer) : Integer;
+        /// <summary> Ajusta arquivo para conter todas as impressoras da zona corretamente relacionadas </summary>
+        /// <param name="zone">Indentificador da zona </param>
+        function SetPrinters(zone, oct3 : Integer) : Integer;
+        function AdjustHosts(ZoneId : Integer) : Integer;
         procedure SetSCX4828ScannerPort(zoneId : Integer);
     end;
 
@@ -24,33 +30,33 @@ type
         edtZoneId :       TLabeledEdit;
         fileVerMain :     TFileVersionInfo;
         chkSetScannerPort : TCheckBox;
-		 btnOpenHost :     TBitBtn;
-		 JvCreateProcess : TJvCreateProcess;
-		 procedure btnOKClick(Sender : TObject);
-		 procedure btnCancelClick(Sender : TObject);
-		 procedure btnOpenHostClick(Sender : TObject);
-	 private
-		 { Private declarations }
-		 hostFile : THostFile;
-	 public
-		 { Public declarations }
-		 constructor Create(AOwner : TComponent); override;
-		 destructor Destroy; override;
-	 end;
+        btnOpenHost :     TBitBtn;
+        JvCreateProcess : TJvCreateProcess;
+        procedure btnOKClick(Sender : TObject);
+        procedure btnCancelClick(Sender : TObject);
+        procedure btnOpenHostClick(Sender : TObject);
+    private
+        { Private declarations }
+        hostFile : THostFile;
+    public
+        { Public declarations }
+        constructor Create(AOwner : TComponent); override;
+        destructor Destroy; override;
+    end;
 
 var
-	 PthfMainForm : TPthfMainForm;
+    PthfMainForm : TPthfMainForm;
 
 implementation
 
 {$R *.dfm}
 
 uses
-	 StrHnd, Super, TREConsts, TREUtils, WinNetHnd, WinReg32;
+    StrHnd, Super, TREConsts, TREUtils, TREZones, WinNetHnd, WinReg32, p2hUtils;
 
 const
     HOSTS_FILE = 'C:\Windows\System32\Drivers\etc\hosts';
-	 BASE_MAINFORM_CAPTION = 'Ajuste de Endereços fixos Zona eleitoral - ';
+    BASE_MAINFORM_CAPTION = 'Ajuste de Endereços fixos Zona eleitoral - ';
     REG_HKDU_SAMSUNG_ENTRY = 'HKEY_USERS\.DEFAULT\Software\SSScan\Samsung SCX-4x28 Series';
     REG_HKCU_SAMSUNG_ENTRY = 'HKEY_CURRENT_USER\Software\SSScan\Samsung SCX-4x28 Series';
 
@@ -65,18 +71,18 @@ var
     changeCount, zoneId : Integer;
 begin
     try
-		 zoneId := StrToInt(Self.edtZoneId.Text);
-		 if not InRange(zoneId, CMPNAME_LOCAL_MIN_VALUE, CMPNAME_LOCAL_MAX_VALUE) then begin
-			 raise Exception.Create('Valor fora da faixa');
-		 end;
-	 except
-		 raise Exception.CreateFmt('Valor inteiro entre %d e %d requerido', [CMPNAME_LOCAL_MIN_VALUE, CMPNAME_LOCAL_MIN_VALUE]);
-	 end;
-	 try
-		 changeCount := Self.hostFile.SetPrinters(zoneId);
+        zoneId := StrToInt(Self.edtZoneId.Text);
+        if not InRange(zoneId, CMPNAME_LOCAL_MIN_VALUE, CMPNAME_LOCAL_MAX_VALUE) then begin
+            raise Exception.Create('Valor fora da faixa');
+        end;
+    except
+        raise Exception.CreateFmt('Valor inteiro entre %d e %d requerido', [CMPNAME_LOCAL_MIN_VALUE, CMPNAME_LOCAL_MIN_VALUE]);
+    end;
+    try
+        changeCount := Self.hostFile.AdjustHosts(zoneId);
         MessageDlg('Operação concluída com sucesso'#13 +
             'Foram alteradas ' + Format('%d', [changeCount]) + ' linha(s)',
-			 mtInformation, [mbOK], 0);
+            mtInformation, [mbOK], 0);
         if Self.chkSetScannerPort.Checked then begin
             Self.hostFile.SetSCX4828ScannerPort(zoneId);
         end;
@@ -94,9 +100,31 @@ begin
     Self.JvCreateProcess.Run;
 end;
 
- /// <summary>
- /// Constroi e carrega arquivo de host 
- /// </summary> 
+function THostFile.AdjustHosts(ZoneId : Integer) : Integer;
+var
+    central :   TTRECentral;
+    Zone :      TTREZone;
+    subNet, x : Integer;
+begin
+    zone := GlobalZoneMapping.GetZoneById(ZoneId);
+    if not Assigned(zone) then begin
+        Result := Self.SetPrinters(ZoneId, ZoneId);
+    end else begin
+        central := zone.Central;
+        if not Assigned(central) then begin
+            subNet := ZoneId;
+            Result := Self.SetPrinters(ZoneId, subNet);
+        end else begin
+            subNet := central.PrimaryZone.id;
+            Result := 0;
+            for x := 0 to central.Count - 1 do begin
+                zone   := central.Zones[x];
+                Result := Result + Self.SetPrinters(zone.Id, subNet);
+            end;
+        end;
+    end;
+end;
+
 constructor THostFile.Create;
 begin
     inherited;
@@ -108,10 +136,21 @@ begin
     Result := 'Z' + Format('%2.2d', [zone]) + '-S4828';
 end;
 
-function THostFile.GetZoneSubNet(zone : Integer) : Integer;
+function THostFile.GetZoneSubNet(ZoneId : Integer) : Integer;
+var
+    z : TTREZone;
+    central : TTRECentral;
 begin
     {TODO -oroger -cdsg : Traduzir para qual subrede a zona vai trabalhar, exemplo: 66->32 }
     {TODO -oroger -cdsg : Após implementado realizar a tradução ao longo do codigo}
+    Result := ZoneId; //Assume inicialmente o id da zona para 3 octeto
+    z      := GlobalZoneMapping.GetZoneById(ZoneId);
+    if Assigned(z) then begin
+        central := z.Central;
+        if Assigned(central) then begin
+            Result := central.PrimaryZone.Id;
+        end;
+    end;
 end;
 
 function THostFile.SetIPLink(const Name, ip : string) : Integer;
@@ -128,23 +167,19 @@ begin
                 Self.Strings[x] := newLine;
                 Inc(Result);
             end;
-			 Exit;
+            Exit;
         end;
     end;
     Self.Add(newLine); // adiciona a nova linha com 5 espacos de separação 
     Inc(Result);
 end;
 
- /// <summary> 
- /// Ajusta arquivo para conter todas as impressoras da zona corretamente relacionadas 
- /// </summary> 
- /// <param name="zone">Indentificador da zona </param> 
-function THostFile.SetPrinters(zone : Integer) : Integer;
+function THostFile.SetPrinters(zone, oct3 : Integer) : Integer;
 var
     prtName, ipBase, prtIp : string;
 begin
     Result  := 0;
-    ipBase  := '10.183.' + IntToStr(zone);
+    ipBase  := '10.183.' + IntToStr(oct3);
     // Xerox
     prtName := 'Z' + Format('%2.2d', [zone]) + '-X3428';
     prtIp   := ipBase + '.90';
@@ -155,57 +190,57 @@ begin
     prtIp   := ipBase + '.94';
     Result  := Result + Self.SetIPLink(prtName, prtIp);
 
-	 // Samsung  SCX-4828
-	 prtName := 'Z' + Format('%2.2d', [zone]) + '-S4828';
-	 prtIp   := ipBase + '.92';
-	 Result  := Result + Self.SetIPLink(prtName, prtIp);
+    // Samsung  SCX-4828
+    prtName := 'Z' + Format('%2.2d', [zone]) + '-S4828';
+    prtIp   := ipBase + '.92';
+    Result  := Result + Self.SetIPLink(prtName, prtIp);
 
-	 if Result > 0 then begin
-		 Self.SaveToFile(HOSTS_FILE); // atualiza arquivo
-	 end;
+    if Result > 0 then begin
+        Self.SaveToFile(HOSTS_FILE); // atualiza arquivo
+    end;
 end;
 
 procedure THostFile.SetSCX4828ScannerPort(zoneId : Integer);
 
-	 procedure LSRSetReg(RegInstance : TRegistryNT);
-	 begin
-		 RegInstance.WriteString('TwainLocation', 'C:\WINDOWS\Twain_32\Samsung\SCX4x28');
-		 RegInstance.WriteInteger('ConnectionType', 1);
-		 RegInstance.WriteString('TwCntCode', 'BP');
-		 RegInstance.WriteString('Location', 'Z' + Format('%2.2d', [zoneId]));
-		 RegInstance.WriteString('Address', Self.GetScannerHost(zoneId));
-	 end;
+    procedure LSRSetReg(RegInstance : TRegistryNT);
+    begin
+        RegInstance.WriteString('TwainLocation', 'C:\WINDOWS\Twain_32\Samsung\SCX4x28');
+        RegInstance.WriteInteger('ConnectionType', 1);
+        RegInstance.WriteString('TwCntCode', 'BP');
+        RegInstance.WriteString('Location', 'Z' + Format('%2.2d', [zoneId]));
+        RegInstance.WriteString('Address', Self.GetScannerHost(zoneId));
+    end;
 
 var
-	 reg : TRegistryNT;
+    reg : TRegistryNT;
 begin
-	 reg := TRegistryNT.Create;
-	 try
-		 try
-			 reg.OpenFullKey(REG_HKCU_SAMSUNG_ENTRY, True); //Abre hive para current user
-			 LSRSetReg(reg);
-			 reg.OpenFullKey(REG_HKDU_SAMSUNG_ENTRY, True); //Abre hive para default user
-			 LSRSetReg(reg);
-		 finally
-			 reg.Free;
-		 end;
-	 except
-		 on E : Exception do begin
-			 raise Exception.Create('Erro acessando chave de registro'#13 + E.Message);
-		 end;
-	 end;
+    reg := TRegistryNT.Create;
+    try
+        try
+            reg.OpenFullKey(REG_HKCU_SAMSUNG_ENTRY, True); //Abre hive para current user
+            LSRSetReg(reg);
+            reg.OpenFullKey(REG_HKDU_SAMSUNG_ENTRY, True); //Abre hive para default user
+            LSRSetReg(reg);
+        finally
+            reg.Free;
+        end;
+    except
+        on E : Exception do begin
+            raise Exception.Create('Erro acessando chave de registro'#13 + E.Message);
+        end;
+    end;
 end;
 
 constructor TPthfMainForm.Create(AOwner : TComponent);
 var
-	 x, zone :  Integer;
-	 itemName : string;
+    x, zone :  Integer;
+    itemName : string;
 begin
-	 inherited;
+    inherited;
     Self.fileVerMain.FileName := ParamStr(0);
     // identificar e precarregar o valor para a zona 
 {$IFDEF DEBUG}
-	zone := 38;
+	zone := 70;
 	Self.Caption:=BASE_MAINFORM_CAPTION + ' *** Versão depuração*** ' + Self.fileVerMain.FileVersion;
 {$ELSE}
     Self.Caption := BASE_MAINFORM_CAPTION + Self.fileVerMain.FileVersion;
@@ -234,7 +269,7 @@ begin
         if SameText(itemName, '/auto') then begin //rodar no modo automatico
             Self.Visible := False;
             Application.ShowMainForm := False;
-            Self.hostFile.SetPrinters(zone);
+            Self.hostFile.AdjustHosts(zone);
             Self.hostFile.SetSCX4828ScannerPort(zone);
             Application.Terminate;
         end;

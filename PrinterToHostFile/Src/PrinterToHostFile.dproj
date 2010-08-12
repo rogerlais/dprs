@@ -3,7 +3,7 @@
 			<ProjectGuid>{F6348DBE-5006-4017-934A-B1C4E1E8D0C6}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>PrinterToHostFile.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -47,6 +47,12 @@
 				<Form>PthfMainForm</Form>
 			</DCCReference>
 			<DCCReference Include="p2hUtils.pas"/>
+			<DCCReference Include="..\..\..\Pcks\TRE\Src\TREZones.pas"/>
+			<DCCReference Include="..\..\..\Pcks\TRE\Src\TREUtils.pas"/>
+			<None Include="ModelSupport_PrinterToHostFile\default.txaPackage"/>
+			<None Include="ModelSupport_PrinterToHostFile\default.txvpck"/>
+			<None Include="ModelSupport_PrinterToHostFile\p2hMainForm\default.txvpck"/>
+			<None Include="ModelSupport_PrinterToHostFile\PrinterToHostFile\default.txvpck"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -102,6 +108,7 @@
 						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
+				<ModelSupport>True</ModelSupport>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>

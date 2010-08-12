@@ -3,15 +3,19 @@ unit p2hUtils;
 interface
 
 uses
-	TREConsts, TREUtils;
+	TREConsts, TREUtils, TREZones;
 
-type
-	TTREZoneList =class
-
-const
-
-CENTRAL_LIST : 	array[1..6] of ZONE_LIST;
+var
+	GlobalZoneMapping : TTRECentralMapping;
 
 implementation
+
+
+initialization
+begin
+ GlobalZoneMapping:=TTRECentralMapping.Create;
+ GlobalZoneMapping.LoadHardCoded;
+end;
+
 
 end.
