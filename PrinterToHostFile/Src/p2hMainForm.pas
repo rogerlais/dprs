@@ -115,7 +115,7 @@ begin
             subNet := ZoneId;
             Result := Self.SetPrinters(ZoneId, subNet);
         end else begin
-            subNet := central.PrimaryZone.id;
+            subNet := central.PrimaryZone.id; //Subrede igual ao octeto da zona primaria
             Result := 0;
             for x := 0 to central.Count - 1 do begin
                 zone   := central.Zones[x];
@@ -178,6 +178,7 @@ function THostFile.SetPrinters(zone, oct3 : Integer) : Integer;
 var
     prtName, ipBase, prtIp : string;
 begin
+   {TODO -oroger -cdsg : Colocar cada uma das impressoras em vetor e com saltos de 2 calcular o 4o octeto do endereco. tentar alterar o incio da faixa de 70 para 80 de modo a fugir do roteador }
     Result  := 0;
     ipBase  := '10.183.' + IntToStr(oct3);
     // Xerox
