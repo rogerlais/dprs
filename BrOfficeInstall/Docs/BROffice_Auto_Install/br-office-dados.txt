@@ -1,0 +1,8 @@
+locais para pegar caminho
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\swriter.exe
+HKEY_LOCAL_MACHINE\SOFTWARE\OpenOffice.org\UNO\InstallPath\@
+
+
+local para validar a versão
+HKEY_LOCAL_MACHINE\SOFTWARE\OpenOffice.org\BrOffice.org\3.1
+
