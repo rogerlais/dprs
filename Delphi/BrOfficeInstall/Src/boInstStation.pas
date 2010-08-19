@@ -132,7 +132,7 @@ begin
                 BROProfile := TFileHnd.ConcatPath([AppDataDir, 'BrOffice.org']);
             end;
             if (not DirectoryExists(BROProfile)) then begin
-                if (not CopyFile(PAnsiChar(Config.BaseProfileSourcePath), PAnsiChar(BROProfile), False)) then begin
+				 if (not CopyFileA(PAnsiChar(Config.BaseProfileSourcePath), PAnsiChar(BROProfile), False)) then begin
                     raise Exception.CreateFmt('Falha preparando ambiente para execução de determinação de versão.'#13'%s',
                         [SysErrorMessage(GetLastError())]);
                 end;
@@ -466,7 +466,7 @@ begin
     if (DirectoryExists(ProfilePath)) then begin
         try
             BakProfilePath := Self.RenameOldProfile(ProfilePath); //Gera novo nome
-            if (not MoveFile(PAnsiChar(ProfilePath), PAnsiChar(BakProfilePath))) then begin
+            if (not MoveFileA(PAnsiChar(ProfilePath), PAnsiChar(BakProfilePath))) then begin
                 TApiHnd.CheckAPI(GetLastError());
             end;
         except

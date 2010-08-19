@@ -6,8 +6,7 @@ uses
   boInstUtils in 'boInstUtils.pas',
   boInstStation in 'boInstStation.pas',
   boinstConfig in 'boinstConfig.pas',
-  boinstDataModule in 'boinstDataModule.pas' {MainDM: TDataModule},
-  FileHnd in '..\..\..\Pcks.7\XPLib\Src\FileHnd.pas';
+  boinstDataModule in 'boinstDataModule.pas' {MainDM: TDataModule};
 
 {$R *.res}
 
