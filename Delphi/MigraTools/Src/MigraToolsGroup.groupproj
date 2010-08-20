@@ -1,0 +1,50 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{383F7074-3B26-43BF-A65D-C64733019E03}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="MigraTools.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\..\..\Pcks\TRE\Src\TRELib.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="MigraTools">
+			<MSBuild Projects="MigraTools.dproj"/>
+		</Target>
+		<Target Name="MigraTools:Clean">
+			<MSBuild Targets="Clean" Projects="MigraTools.dproj"/>
+		</Target>
+		<Target Name="MigraTools:Make">
+			<MSBuild Targets="Make" Projects="MigraTools.dproj"/>
+		</Target>
+		<Target Name="TRELib">
+			<MSBuild Projects="..\..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
+		</Target>
+		<Target Name="TRELib:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
+		</Target>
+		<Target Name="TRELib:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="MigraTools;TRELib"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="MigraTools:Clean;TRELib:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="MigraTools:Make;TRELib:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>
+
+	
