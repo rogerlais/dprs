@@ -23,22 +23,22 @@ type
         function GetInstallSourcePath : string;
         procedure SetCurrentProfileDate(const Value : TDateTime);
         function GetMinVersion : string;
-	 procedure SetInstallSourcePath(const Value: string);
-    procedure SetBaseProfileSourcePath(const Value: string);
-    procedure SetBaseProfileDate(const Value: TDateTime);
-    procedure SetInstallDestination(const Value: string);
-    procedure SetMinDiskSpace(const Value: int64);
-    procedure SetInstallPackageName(const Value: string);
-    procedure SetMinVersion(const Value: string);
-	 public
+        procedure SetInstallSourcePath(const Value : string);
+        procedure SetBaseProfileSourcePath(const Value : string);
+        procedure SetBaseProfileDate(const Value : TDateTime);
+        procedure SetInstallDestination(const Value : string);
+        procedure SetMinDiskSpace(const Value : int64);
+        procedure SetInstallPackageName(const Value : string);
+        procedure SetMinVersion(const Value : string);
+    public
         property BaseProfileDate : TDateTime read GetBaseProfileDate write SetBaseProfileDate;
         property CurrentProfileDate : TDateTime read GetCurrentProfileDate write SetCurrentProfileDate;
-		 property InstallTempDir : string read GetInstallTempDir;
-		 property BaseProfileSourcePath : string read GetBaseProfileSourcePath write SetBaseProfileSourcePath;
-		 property MinDiskSpace : int64 read GetMinDiskSpace write SetMinDiskSpace;
-		 property InstallDestination : string read GetInstallDestination write SetInstallDestination;
-		 property InstallPackageName : string read GetInstallPackageName write SetInstallPackageName;
-		 property InstallSourcePath : string read GetInstallSourcePath write SetInstallSourcePath;
+        property InstallTempDir : string read GetInstallTempDir;
+        property BaseProfileSourcePath : string read GetBaseProfileSourcePath write SetBaseProfileSourcePath;
+        property MinDiskSpace : int64 read GetMinDiskSpace write SetMinDiskSpace;
+        property InstallDestination : string read GetInstallDestination write SetInstallDestination;
+        property InstallPackageName : string read GetInstallPackageName write SetInstallPackageName;
+        property InstallSourcePath : string read GetInstallSourcePath write SetInstallSourcePath;
         property MinVersion : string read GetMinVersion write SetMinVersion;
     end;
 
@@ -145,7 +145,7 @@ end;
 
 function TBOInstConfig.GetInstallSourcePath : string;
 begin
-	 Result := Self.ReadStringDefault(EN_INSTALL_SOURCE_PATH, '.\BrOfficeInstFiles');
+    Result := Self.ReadStringDefault(EN_INSTALL_SOURCE_PATH, '.\BrOfficeInstFiles');
 end;
 
 function TBOInstConfig.GetInstallTempDir : string;
@@ -163,7 +163,8 @@ begin
     Result := TFileHnd.ConcatPath([Result, 'BrOffice', 'install']);
     //***NOTA: Para API que retorna o nome curto funcionar eh necessario criar pasta antes
     if (not ForceDirectories(Result)) then begin
-        raise Exception.CreateFmt('Erro criando repositório para a instalação: "%s"'#13'%s', [Result, SysErrorMessage(GetLastError())]);
+        raise Exception.CreateFmt('Erro criando repositório para a instalação: "%s"'#13'%s',
+            [Result, SysErrorMessage(GetLastError())]);
     end;
     Result := FileShortName(Result);
 end;
@@ -201,14 +202,14 @@ begin
     end;
 end;
 
-procedure TBOInstConfig.SetBaseProfileDate(const Value: TDateTime);
+procedure TBOInstConfig.SetBaseProfileDate(const Value : TDateTime);
 begin
-	Self.WriteDateTime(EN_PROFILE_DATE, Value);
+    Self.WriteDateTime(EN_PROFILE_DATE, Value);
 end;
 
-procedure TBOInstConfig.SetBaseProfileSourcePath(const Value: string);
+procedure TBOInstConfig.SetBaseProfileSourcePath(const Value : string);
 begin
-	Self.WriteString(EN_BASE_PROFILE, Value);
+    Self.WriteString(EN_BASE_PROFILE, Value);
 end;
 
 procedure TBOInstConfig.SetCurrentProfileDate(const Value : TDateTime);
@@ -231,29 +232,29 @@ begin
     end;
 end;
 
-procedure TBOInstConfig.SetInstallDestination(const Value: string);
+procedure TBOInstConfig.SetInstallDestination(const Value : string);
 begin
-	Self.WriteString(EN_INSTALL_DIR, Value);
+    Self.WriteString(EN_INSTALL_DIR, Value);
 end;
 
-procedure TBOInstConfig.SetInstallPackageName(const Value: string);
+procedure TBOInstConfig.SetInstallPackageName(const Value : string);
 begin
-	Self.WriteString(EN_INSTALL_PACKAGE_NAME, Value );
+    Self.WriteString(EN_INSTALL_PACKAGE_NAME, Value);
 end;
 
-procedure TBOInstConfig.SetInstallSourcePath(const Value: string);
+procedure TBOInstConfig.SetInstallSourcePath(const Value : string);
 begin
-	Self.WriteString(EN_INSTALL_SOURCE_PATH, Value );
+    Self.WriteString(EN_INSTALL_SOURCE_PATH, Value);
 end;
 
-procedure TBOInstConfig.SetMinDiskSpace(const Value: int64);
+procedure TBOInstConfig.SetMinDiskSpace(const Value : int64);
 begin
-	Self.WriteInteger(EN_MIN_DISK_SPACE, Value);
+    Self.WriteInteger(EN_MIN_DISK_SPACE, Value);
 end;
 
-procedure TBOInstConfig.SetMinVersion(const Value: string);
+procedure TBOInstConfig.SetMinVersion(const Value : string);
 begin
-	Self.WriteString(EN_THRESHOLD_VERSION, Value);
+    Self.WriteString(EN_THRESHOLD_VERSION, Value);
 end;
 
 function TBOInstConfig.GetMinVersion : string;
@@ -266,7 +267,7 @@ Revision: 22/4/2010 - roger
 ----------------------------------------------------------------------------------------------------------------------------------
 }
 begin
-	 Result := Self.ReadStringDefault(EN_THRESHOLD_VERSION, DV_MIN_VERSION);
+    Result := Self.ReadStringDefault(EN_THRESHOLD_VERSION, DV_MIN_VERSION);
 end;
 
 initialization

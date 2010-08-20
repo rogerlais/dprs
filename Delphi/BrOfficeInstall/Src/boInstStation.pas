@@ -132,7 +132,7 @@ begin
                 BROProfile := TFileHnd.ConcatPath([AppDataDir, 'BrOffice.org']);
             end;
             if (not DirectoryExists(BROProfile)) then begin
-				 if (not CopyFileA(PAnsiChar(Config.BaseProfileSourcePath), PAnsiChar(BROProfile), False)) then begin
+                if (not CopyFileA(PAnsiChar(Config.BaseProfileSourcePath), PAnsiChar(BROProfile), False)) then begin
                     raise Exception.CreateFmt('Falha preparando ambiente para execução de determinação de versão.'#13'%s',
                         [SysErrorMessage(GetLastError())]);
                 end;
@@ -200,7 +200,7 @@ Revision: 23/2/2010 - roger
 ----------------------------------------------------------------------------------------------------------------------------------
 }
 begin
-    Result := (Config.CurrentProfileDate >= Config.BaseProfileDate );
+    Result := (Config.CurrentProfileDate >= Config.BaseProfileDate);
 end;
 
 function TBROfficeStation.GetServerInstallDir : string;
@@ -335,8 +335,8 @@ begin
         [MainDM.InstallProcess.ConsoleOutput.Text, MainDM.InstallExitCode, SysErrorMessage(MainDM.InstallExitCode)]),
         mtInformation, [mbOK], 0);
     {$ENDIF}
-    if ( MainDM.InstallExitCode <> 0 ) then begin
-       raise Exception.CreateFmt('Falha durante instalação:'#13'%s', [ SysErrorMessage( MainDM.InstallExitCode ) ]);
+    if (MainDM.InstallExitCode <> 0) then begin
+        raise Exception.CreateFmt('Falha durante instalação:'#13'%s', [SysErrorMessage(MainDM.InstallExitCode)]);
     end;
 end;
 
@@ -385,13 +385,13 @@ begin
         SwitchToThread();
     end;
 
-    if ( MainDM.UninstallExitCode <> 0 ) then begin
-       raise Exception.CreateFmt('Necessária a intervenção do usuário.'#13'%s', [ SysErrorMessage( MainDM.UninstallExitCode ) ] );
+    if (MainDM.UninstallExitCode <> 0) then begin
+        raise Exception.CreateFmt('Necessária a intervenção do usuário.'#13'%s', [SysErrorMessage(MainDM.UninstallExitCode)]);
     end else begin
-       MessageDlg(Format('Texto=%s'#13'Retorno=%d'#13'Msg=%s'#13'Preparando-se para instalar nova versão...',
-           [MainDM.UninstallProcess.ConsoleOutput.Text, MainDM.UninstallExitCode, SysErrorMessage(MainDM.UninstallExitCode)]),
-           mtInformation, [mbOK], 0);
-    end;  
+        MessageDlg(Format('Texto=%s'#13'Retorno=%d'#13'Msg=%s'#13'Preparando-se para instalar nova versão...',
+            [MainDM.UninstallProcess.ConsoleOutput.Text, MainDM.UninstallExitCode, SysErrorMessage(MainDM.UninstallExitCode)]),
+            mtInformation, [mbOK], 0);
+    end;
 end;
 
 procedure TBROfficeStation.SetReferenceVersion(const Value : string);
@@ -445,7 +445,7 @@ begin
             list.Free;
         end;
         //Atualiza a data do perfil registrado no computador
-        Config.CurrentProfileDate:=Config.BaseProfileDate;
+        Config.CurrentProfileDate := Config.BaseProfileDate;
     end;
 end;
 

@@ -11,12 +11,9 @@ interface
 uses
     Windows, SysUtils, WinReg32, Classes, Variants, ComObj, Activex, FileHnd, StrHnd, Math, boInstConfig;
 
-const
-   INSTALL_SOURCE_PATH = 'BrOfficeInstFiles';
-
 
 function GetUninstallBrOfficeString(): string;
-   
+
 function GetInstalledApps(list : TStrings) : Integer;
 
 function CompareVersionStrings(const Ver1, Ver2 : string) : Integer;
@@ -128,17 +125,21 @@ function GetInstalledApps(list : TStrings) : Integer;
 Rotina retorna lista com aplicativos instalados no computador para todos os usuários, para montar a lista completa deve-se
 usar o mesmo caminho para HKEY_CURRENT_USER e para todos os usários isoladamente
 DICA: Varrer método mais genérico de realizar esta carga
+
+
+Revision - 20100819 - roger
+Rotina deslocada para a biblioteca em WinSysLib.WinProcess
+
 }
 const
-    UNINST_ROOT = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall';
+	 UNINST_ROOT = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall';
 var
-    I :     Integer;
-    reg :   TRegistryNT;
-    keyList : TStringList;
-    entry : string;
+	 I :     Integer;
+	 reg :   TRegistryNT;
+	 keyList : TStringList;
+	 entry : string;
 begin
-    { TODO -oroger -clib : levar para biblioteca }
-    try
+	 try
         reg := TRegistryNT.Create;
         try
             reg.OpenFullKey(UNINST_ROOT, False);
@@ -189,8 +190,7 @@ begin
             try
                 reg.GetKeyNames(keyList);
                 for I := 0 to keyList.Count - 1 do begin
-                    if (reg.ReadFullString(TFileHnd.ConcatPath([UNINST_ROOT, keyList.Strings[I], 'DisplayName']), entry))
-                    then begin
+                    if (reg.ReadFullString(TFileHnd.ConcatPath([UNINST_ROOT, keyList.Strings[I], 'DisplayName']), entry)) then begin
                         if ( TStrHnd.startsWith( Uppercase(entry), Uppercase('BrOffice.org') ) ) then begin
                            reg.ReadFullString( TFileHnd.ConcatPath([UNINST_ROOT, keyList.Strings[I], 'UninstallString']), Result );
                            Exit;
@@ -201,11 +201,11 @@ begin
                 keyList.Free;
             end;
         finally
-            reg.Free;
-        end;
-    except
-        raise Exception.Create('Erro lendo cadeia de desinstalação da versão anterior' );
-    end;
+			 reg.Free;
+		 end;
+	 except
+		 raise Exception.Create('Erro lendo cadeia de desinstalação da versão anterior' );
+	 end;
 end;
 
 
@@ -213,26 +213,26 @@ end;
 
 constructor TStringDisjunctor.Create(const AText : string; ADelimiter : char);
 begin
-    inherited Create;
-    Self.FItems := TStringList.Create;
-    Self.FItems.Delimiter := ADelimiter;
-    Self.FItems.DelimitedText := AText;
+	 inherited Create;
+	 Self.FItems := TStringList.Create;
+	 Self.FItems.Delimiter := ADelimiter;
+	 Self.FItems.DelimitedText := AText;
 end;
 
 destructor TStringDisjunctor.Destroy;
 begin
-    Self.FItems.Free;
-    inherited;
+	 Self.FItems.Free;
+	 inherited;
 end;
 
 function TStringDisjunctor.GetCount : Integer;
 begin
-    Result := Self.FItems.Count;
+	 Result := Self.FItems.Count;
 end;
 
 function TStringDisjunctor.GetItems : TStrings;
 begin
-    Result := Self.FItems;
+	 Result := Self.FItems;
 end;
 
 end.
