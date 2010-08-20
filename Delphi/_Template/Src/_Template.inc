@@ -1,4 +1,4 @@
-{$IFDEF DEBUG}
+{$IFDEF _Template}
 	{$DEFINE DEBUG_UNIT }
 {$ENDIF}
 
