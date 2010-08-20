@@ -1,0 +1,17 @@
+1 - Ser lançado na inicialização do computador da forma mais leve possível
+
+2 - Poder carregar plugins de ferramentas de suporte
+
+3 - Plugins desejados
+	3.1 - Gerenciamento de senha:
+		3.1.1 - Informada a unidade(Zona eleitoral) as senhas semi-públicas são calculadas, podendo-se:
+			a) Gerar arquivo com as mesmas
+			b) Exibir na tela dentro da GUI
+			c) Gerar script VBS para alterar as mesmas, de forma local ou no domínio
+		
+	3.2 - Mapa de conectividade:
+		3.2.1 - Selecione-se o ponto de origem e o ponto de destino, de modo que:
+			a) Serão capturados/registrados os hosts vizinhos de cada ponto, realçando aqueles inatingíveis
+			b) Haverá renovação periódica via icmp destes hosts de acordo com a classificação de cada um deles
+			c) Havendo saltos intermediários os mesmos serão informados para possível identificação
+			
