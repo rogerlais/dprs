@@ -6,7 +6,7 @@ uses
   mtUtils in 'mtUtils.pas',
   mtConfig in 'mtConfig.pas',
   TREConfig in '..\..\..\..\Pcks\TRE\Src\TREConfig.pas',
-  AppLog in '..\..\..\..\Pcks\XPLib\Src\AppLog.pas';
+  APIHnd in '..\..\..\..\Pcks\XPLib\Src\APIHnd.pas';
 
 {$R *.res}
 

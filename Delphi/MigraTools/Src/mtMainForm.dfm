@@ -194,10 +194,6 @@ object MigraToolsMainForm: TMigraToolsMainForm
       Caption = '&Impressoras'
       Enabled = False
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object btnSetScanner: TBitBtn
         Left = 19
         Top = 24

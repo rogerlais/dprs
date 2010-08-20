@@ -9,7 +9,8 @@ interface
 
 uses
     Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-    Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls, CheckLst, StrHnd, mtUtils, FileInfo, JvComponentBase, JvCreateProcess;
+	 Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls, CheckLst, StrHnd, mtUtils, FileInfo,
+	 JvComponentBase, JvCreateProcess;
 
 type
     TMigraToolsMainForm = class(TForm)
@@ -86,9 +87,11 @@ var
     newUser : TZEUser;
     index :   Integer;
 begin
-    {TODO -oroger -cfuture : filtro deve impedir duplicidade de conta}
-    if (Self.edtNewAccount.Text <> EmptyStr) then begin
-        if Self.edtNewPass.Text <> EmptyStr then begin
+	 if (Self.edtNewAccount.Text <> EmptyStr) then begin
+		 if Self.edtNewPass.Text <> EmptyStr then begin
+			if Self.FUserList.Find( Self.edtNewAccount.Text ) <> nil then begin
+				raise Exception.CreateFmt('Conta "%s" já existe', [ Self.edtNewAccount.Text ] );
+			end;
             newUser := TZEUser.Create(Self.edtNewAccount.Text, Self.edtNewPass.Text);
             newUser.Checked := True;    //Atenção para todos os casos de inserção/alteração
             Self.FUserList.Add(newUser);
@@ -155,7 +158,7 @@ begin
         end;
     finally
         Self.SaveGlobalLog;
-    end;
+	 end;
 end;
 
 destructor TMigraToolsMainForm.Destroy;

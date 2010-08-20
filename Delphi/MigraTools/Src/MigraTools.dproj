@@ -49,7 +49,7 @@
 			<DCCReference Include="mtUtils.pas"/>
 			<DCCReference Include="mtConfig.pas"/>
 			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREConfig.pas"/>
-			<DCCReference Include="..\..\..\..\Pcks\XPLib\Src\AppLog.pas"/>
+			<DCCReference Include="..\..\..\..\Pcks\XPLib\Src\APIHnd.pas"/>
 			<None Include="ModelSupport_MigraTools\default.txaPackage"/>
 			<None Include="ModelSupport_MigraTools\default.txvpck"/>
 			<None Include="ModelSupport_MigraTools\mtUtils\default.txvpck"/>
