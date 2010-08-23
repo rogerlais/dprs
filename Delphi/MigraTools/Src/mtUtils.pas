@@ -56,8 +56,8 @@ type
         property isDomain : boolean read GetIsDomain;
         property ZoneId : Integer read GetZoneId;
         function Add(NewUser : TZEUser) : Integer;
-		 function SetPasswords() : string;
-		 function Find( const Username : string ) : TZEUser;
+        function SetPasswords() : string;
+        function Find(const Username : string) : TZEUser;
     end;
 
 var
@@ -161,7 +161,7 @@ begin
     Self.FUsers := TObjectList<TZEUser>.Create();
     Self.FUsers.OwnsObjects := True;
     //Adiciona a lista de usuários conhecida
-	 {$IFDEF DEBUG}
+     {$IFDEF DEBUG}
 	 //Self.FUsers.Add( TZEUser.Create('ghost', 'esmeralda' ) );
 	 dUser:=TZEUser.Create('000000010191', 'util<1>z<2>d<3>');
 	 dUser.Scope:=usSupport;
@@ -195,7 +195,7 @@ begin
     dUser.Scope := usSupport;
     Self.FUsers.Add(dUser);
 
-	 {$ENDIF}
+     {$ENDIF}
 
     //duplicar contas de usuários para o caso de haver domínio
     dName := Self.Domain;
@@ -223,17 +223,17 @@ begin
     inherited;
 end;
 
-function TZEUserList.Find(const Username: string): TZEUser;
+function TZEUserList.Find(const Username : string) : TZEUser;
 var
-	x : Integer;
+    x : Integer;
 begin
-	Result := nil;
-	for x := 0 to Self.FUsers.Count - 1 do begin
-		if SameText( Self.FUsers.Items[x].FUserName, Username )  then begin
-			Result := Self.FUsers.Items[x];
-			Exit;
-		end;
-   end;
+    Result := nil;
+    for x := 0 to Self.FUsers.Count - 1 do begin
+        if SameText(Self.FUsers.Items[x].FUserName, Username) then begin
+            Result := Self.FUsers.Items[x];
+            Exit;
+        end;
+    end;
 end;
 
 function TZEUserList.GetCount : Integer;
@@ -336,11 +336,11 @@ initialization
         GlobalSaveLog.Add('Resultado da operação realizada em: ' + DateToStr(Now()));
         GlobalSaveLog.Add('');
         GlobalSaveLog.Add('***  Senhas  ***');
-	 end;
+    end;
 
 finalization
-	 begin
-		 GlobalSaveLog.Free;
-	 end;
+    begin
+        GlobalSaveLog.Free;
+    end;
 
 end.
