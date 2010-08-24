@@ -9,6 +9,9 @@
 			<Projects Include="..\..\..\..\Pcks\TRE\Src\TRELib.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj">
+				<Dependencies/>
+			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +38,23 @@
 		<Target Name="TRELib:Make">
 			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
 		</Target>
+		<Target Name="XPLibD14">
+			<MSBuild Projects="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
+		</Target>
+		<Target Name="XPLibD14:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
+		</Target>
+		<Target Name="XPLibD14:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="MigraTools;TRELib"/>
+			<CallTarget Targets="MigraTools;TRELib;XPLibD14"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="MigraTools:Clean;TRELib:Clean"/>
+			<CallTarget Targets="MigraTools:Clean;TRELib:Clean;XPLibD14:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="MigraTools:Make;TRELib:Make"/>
+			<CallTarget Targets="MigraTools:Make;TRELib:Make;XPLibD14:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

@@ -33,6 +33,7 @@ begin
         path := ExtractFilePath(ParamStr(0));
         path := TFileHnd.ConcatPath([path, TRE_DV_CONFIG_FILENAME]);
         GlobalConfig := TTREBaseConfig.Create(path);
+        GlobalConfig.
     except
         on E : Exception do begin
 			 AppFatalError(E.Message, 1, not AutoMode);
