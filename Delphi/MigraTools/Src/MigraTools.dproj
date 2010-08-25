@@ -48,8 +48,13 @@
 			</DCCReference>
 			<DCCReference Include="mtUtils.pas"/>
 			<DCCReference Include="mtConfig.pas"/>
-			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREConfig.pas"/>
 			<DCCReference Include="..\..\..\..\Pcks\XPLib\Src\APIHnd.pas"/>
+			<DCCReference Include="mtDataModule.pas">
+				<Form>MainDataModule</Form>
+				<DesignClass>TDataModule</DesignClass>
+			</DCCReference>
+			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREConfig.pas"/>
+			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREZones.pas"/>
 			<None Include="ModelSupport_MigraTools\default.txaPackage"/>
 			<None Include="ModelSupport_MigraTools\default.txvpck"/>
 			<None Include="ModelSupport_MigraTools\mtUtils\default.txvpck"/>
