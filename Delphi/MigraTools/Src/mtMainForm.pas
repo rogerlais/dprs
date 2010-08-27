@@ -8,9 +8,9 @@ unit mtMainForm;
 interface
 
 uses
-    Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+	 Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
 	 Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls, CheckLst, StrHnd, mtUtils, FileInfo,
-	 JvComponentBase, JvCreateProcess;
+	 JvComponentBase, JvCreateProcess, XMLDoc, XMLIntf;
 
 type
     TMigraToolsMainForm = class(TForm)
@@ -21,7 +21,7 @@ type
         pgc1 :           TPageControl;
         tsPasswords :    TTabSheet;
         tsPrinters :     TTabSheet;
-        chklstAccounts : TCheckListBox;
+		 chklstAccounts : TCheckListBox;
         cbbAccountFilter : TComboBox;
         lblAccountFilter : TLabel;
         btnSetDefaulPasswords : TBitBtn;
@@ -35,31 +35,33 @@ type
         btnAddNewUser :  TBitBtn;
         fileVerMain :    TFileVersionInfo;
         ProcessControl : TJvCreateProcess;
+    btnTestXML: TBitBtn;
         procedure FormCreate(Sender : TObject);
         procedure btnSetDefaulPasswordsClick(Sender : TObject);
         procedure chklstAccountsClickCheck(Sender : TObject);
         procedure btnAddNewUserClick(Sender : TObject);
         procedure ProcessControlTerminate(Sender : TObject; ExitCode : cardinal);
+	 procedure btnTestXMLClick(Sender: TObject);
     private
-        { Private declarations }
-        FUserList : TZEUserList;
-        FAutoMode : boolean;
-    public
-        { Public declarations }
-        constructor Create(AOwner : TComponent); override;
-        destructor Destroy; override;
-        procedure SaveGlobalLog();
-    end;
+		 { Private declarations }
+		 FUserList : TZEUserList;
+		 FAutoMode : boolean;
+	 public
+		 { Public declarations }
+		 constructor Create(AOwner : TComponent); override;
+		 destructor Destroy; override;
+		 procedure SaveGlobalLog();
+	 end;
 
 var
-    MigraToolsMainForm : TMigraToolsMainForm;
+	 MigraToolsMainForm : TMigraToolsMainForm;
 
 implementation
 
 {$R *.dfm}
 
 uses
-    lmCons, APIHnd, FileHnd, ShellAPI;
+    lmCons, APIHnd, FileHnd, ShellAPI, mtConfig;
 
 
 function ImpersonateADMUser() : Integer;
@@ -123,6 +125,19 @@ begin
     end;
 end;
 
+procedure TMigraToolsMainForm.btnTestXMLClick(Sender: TObject);
+var
+	Root : IXMLNode;
+	Doc : TXMLDocument;
+begin
+	Doc:=TXMLDocument.Create(self);
+	doc.LoadFromFile('.\TestConfigOut.xml');
+	Doc.Options:=Doc.Options + [ doAutoSave, doNodeAutoIndent ];
+	Root:=Doc.DocumentElement;
+	GlobalConfig.CentralMapping.LoadHardCoded;
+	GlobalConfig.SaveTo(Root);
+end;
+
 procedure TMigraToolsMainForm.chklstAccountsClickCheck(Sender : TObject);
 var
     cb : TCheckListBox;
@@ -144,12 +159,12 @@ begin
         //Testa execução automatica para todas as contas carregadas
         for x := 0 to ParamCount do begin
             if SameText(ParamStr(x), '/auto') then begin
-                //oculta janela
+				 //oculta janela
                 Self.Visible := False;
                 Application.ShowMainForm := False;
 
                 //Executa operação
-                Self.FAutoMode := True;
+				 Self.FAutoMode := True;
                 log := Self.FUserList.SetPasswords();
                 if log <> EmptyStr then begin
                     raise Exception.Create('Ocorreram falhas no ajuste das senhas:'#13 + log);

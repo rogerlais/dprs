@@ -55,6 +55,7 @@
 			</DCCReference>
 			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREConfig.pas"/>
 			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREZones.pas"/>
+			<DCCReference Include="..\..\..\..\Pcks\OPLib\Src\OPXMLSerializable.pas"/>
 			<None Include="ModelSupport_MigraTools\default.txaPackage"/>
 			<None Include="ModelSupport_MigraTools\default.txvpck"/>
 			<None Include="ModelSupport_MigraTools\mtUtils\default.txvpck"/>

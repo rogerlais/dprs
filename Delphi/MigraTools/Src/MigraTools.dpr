@@ -8,7 +8,8 @@ uses
   APIHnd in '..\..\..\..\Pcks\XPLib\Src\APIHnd.pas',
   mtDataModule in 'mtDataModule.pas' {MainDataModule: TDataModule},
   TREConfig in '..\..\..\..\Pcks\TRE\Src\TREConfig.pas',
-  TREZones in '..\..\..\..\Pcks\TRE\Src\TREZones.pas';
+  TREZones in '..\..\..\..\Pcks\TRE\Src\TREZones.pas',
+  OPXMLSerializable in '..\..\..\..\Pcks\OPLib\Src\OPXMLSerializable.pas';
 
 {$R *.res}
 

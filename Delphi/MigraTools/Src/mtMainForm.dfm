@@ -59,6 +59,8 @@ object MigraToolsMainForm: TMigraToolsMainForm
     TabOrder = 3
     object tsPasswords: TTabSheet
       Caption = 'S&enhas'
+      ExplicitLeft = 8
+      ExplicitTop = 22
       object lblAccountFilter: TLabel
         Left = 5
         Top = 5
@@ -189,15 +191,22 @@ object MigraToolsMainForm: TMigraToolsMainForm
         TabOrder = 7
         OnClick = btnAddNewUserClick
       end
+      object btnTestXML: TBitBtn
+        Left = 320
+        Top = 119
+        Width = 105
+        Height = 25
+        Caption = 'Test Persist'
+        DoubleBuffered = True
+        ParentDoubleBuffered = False
+        TabOrder = 8
+        OnClick = btnTestXMLClick
+      end
     end
     object tsPrinters: TTabSheet
       Caption = '&Impressoras'
       Enabled = False
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object btnSetScanner: TBitBtn
         Left = 19
         Top = 24
