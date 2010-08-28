@@ -1,0 +1,36 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{A00D277B-A1C2-4193-BBC2-A3D480AA8E95}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="PCTPrep.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="PCTPrep">
+			<MSBuild Projects="PCTPrep.dproj"/>
+		</Target>
+		<Target Name="PCTPrep:Clean">
+			<MSBuild Targets="Clean" Projects="PCTPrep.dproj"/>
+		</Target>
+		<Target Name="PCTPrep:Make">
+			<MSBuild Targets="Make" Projects="PCTPrep.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="PCTPrep"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="PCTPrep:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="PCTPrep:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>
