@@ -54,8 +54,11 @@
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
 			<DCCReference Include="pctprepMainForm.pas">
-				<Form>Form1</Form>
+				<Form>MainForm</Form>
 			</DCCReference>
+			<DCCReference Include="pctprepUtils.pas"/>
+			<None Include="ModelSupport_PCTPrep\default.txaPackage"/>
+			<None Include="ModelSupport_PCTPrep\default.txvpck"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -110,6 +113,7 @@
 						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
 				</Delphi.Personality>
+				<ModelSupport>True</ModelSupport>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>

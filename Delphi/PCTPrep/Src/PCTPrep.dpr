@@ -2,13 +2,14 @@ program PCTPrep;
 
 uses
   Forms,
-  pctprepMainForm in 'pctprepMainForm.pas' {Form1};
+  pctprepMainForm in 'pctprepMainForm.pas' {MainForm},
+  pctprepUtils in 'pctprepUtils.pas';
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.

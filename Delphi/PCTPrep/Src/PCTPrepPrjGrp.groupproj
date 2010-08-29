@@ -6,6 +6,9 @@
 			<Projects Include="PCTPrep.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj">
+				<Dependencies/>
+			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -23,14 +26,23 @@
 		<Target Name="PCTPrep:Make">
 			<MSBuild Targets="Make" Projects="PCTPrep.dproj"/>
 		</Target>
+		<Target Name="XPLibD14">
+			<MSBuild Projects="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
+		</Target>
+		<Target Name="XPLibD14:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
+		</Target>
+		<Target Name="XPLibD14:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="PCTPrep"/>
+			<CallTarget Targets="PCTPrep;XPLibD14"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="PCTPrep:Clean"/>
+			<CallTarget Targets="PCTPrep:Clean;XPLibD14:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="PCTPrep:Make"/>
+			<CallTarget Targets="PCTPrep:Make;XPLibD14:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

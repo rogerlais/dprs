@@ -1,0 +1,2875 @@
+unit uWSName;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls,Registry, ShellApi, wsocket, extctrls, filectrl, DNSQuery, NB30,
+  WinSvc;
+
+const
+      WinNTHostNameRegKey            : string  = '\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\';
+      Win9xHostNameRegKey            : string  = '\SYSTEM\CurrentControlSet\Services\VxD\MSTCP\';
+      WinNTComputerDescriptionKey    : string  = '\SYSTEM\CurrentControlSet\Services\lanmanserver\parameters';
+      Win9xComputerDescriptionKey    : string  = 'System\CurrentControlSet\Services\VxD\VNETSUP\';
+      MyRegistryBaseKey                        =  HKey_Local_Machine;
+      MyVersionNumber                : string  = '2.73a';
+      MyVersionDate                  : string  = '9 March 2005';
+      CRLF                                     = ^M^J;
+      MAX_LOG_FILE_SIZE                        = 512;                //Size in K
+      UnRegProgramName               : string  = 'unreg32.exe';
+      UnRegSwitch                    : string  = '/UNREG';
+      PostGhostSwitch                : string  = '/PG:';
+      NameSyncSwitch                 : string  = '/NS';
+      RebootSwitch                   : string  = '/REBOOT';
+      NoRebootSwitch                 : string  = '/NOREBOOT';
+      NEW_COMPUTERNAME_SWITCH        : string  = '/N:';
+      UseMyNameSwitch                : string  = '/UMN';
+      ResolveByDNSSwitch             : string  = '/DNS:';
+      UseMACAddressSwitch            : string  = '/MAC';
+      UseMACAddressSwitchII          : string  = '/!MAC2';
+      UseIPAddressSwitch             : string  = '/IP';
+      TestOnlySwitch                 : string  = '/TEST';
+      MACPrefixSwitch                : string  = '/PRE:';
+      SetDiskLabelSwitch             : string  = '/SDL';
+      SetMyComputerNameSwitch        : string  = '/MCN';
+      SetMyComputerDescriptionSwitch : string  = '/SCD';
+      SetLogOnToSwitch               : string  = '/LOT';
+      ChangeHostNameOnlySwitch       : string  = '/CHO';
+      AlwaysDoRenameSwitch           : string  = '/ADR';
+      RenameComputerInDomainSwitch   : string  = '/RCID';
+      DomainUserIDSwitch             : string  = '/USER:';
+      DomainPasswordSwitch           : string  = '/PASS:';
+      ReadFromDataFileSwitch         : string  = '/RDF:';
+      DataFileKeySwitch              : string  = '/DFK:';
+      WebPage                        : string  = 'http://mystuff.clarke.co.nz';
+      HelpFileName                   : string  = 'WSName.html';
+      LogFileName                    : string  = 'WSName.Log';
+      AmounttoGrowForm                         = 180;
+      DefaultFormHeightSmall                   = 93;
+      BorderAllowance                          = 5;
+      FormTopMarginSize                        = 27;
+      FormMoreLabelSmall             : string  = '&More >>';
+      FormMoreLabelBig               : string  = '&Less <<';
+      WSManagerDLL                   : string  = 'WMSCHAPI.dll';
+      MaxPrefixLength                          = 3;
+      DNS_TIMEOUT_INTERVAL                     = 5000; //5 Seconds
+      MAX_LENGTH_COMPUTER_NAME                 = 15;
+      OS_WIN95                       : string  = 'WIN95';
+      OS_WIN98                       : string  = 'WIN98';
+      OS_WINME                       : string  = 'WINME';
+      OS_WINNT                       : string  = 'WINNT';
+      OS_WIN2K                       : string  = 'WIN2K';
+      OS_WINXP                       : string  = 'WINXP';
+      OS_WIN2K3                      : string  = 'WIN2K3';
+      SILENT_IP_ADDRESS              : string  = '%IP';
+      SILENT_USER_NAME               : string  = '%USERID';
+      SILENT_OS_TYPE                 : string  = '%OSVER';
+      SILENT_MAC_ADDRESS             : string  = '%MAC';
+      SILENT_MAC_ADDRESS_II          : string  = '%MAC2';
+      SILENT_RANDOM_NAME             : string  = '%RANDOM';
+      SILENT_REVERSE_DNS             : string  = '%DNS';
+
+      MAX_HOSTNAME_LEN               = 128; { from IPTYPES.H }
+      MAX_DOMAIN_NAME_LEN            = 128;
+      MAX_SCOPE_ID_LEN               = 256;
+      MAX_ADAPTER_NAME_LENGTH        = 256;
+      MAX_ADAPTER_DESCRIPTION_LENGTH = 128;
+      MAX_ADAPTER_ADDRESS_LENGTH     = 8;
+
+      // For ExtractFromGetAdapterInformation
+      ADAP_ADAPTER_NUMBER      =  0;
+      ADAP_COMBOINDEX          =  1;
+      ADAP_ADAPTER_NAME        =  2;
+      ADAP_DESCRIPTION         =  3;
+      ADAP_ADAPTER_ADDRESS     =  4;
+      ADAP_INDEX               =  5;
+      ADAP_TYPE                =  6;
+      ADAP_DHCP                =  7;
+      ADAP_CURRENT_IP          =  8;
+      ADAP_IP_ADDRESSES        =  9;
+      ADAP_GATEWAYS            = 10;
+      ADAP_DHCP_SERVERS        = 11;
+      ADAP_HAS_WINS            = 12;
+      ADAP_PRIMARY_WINS        = 13;
+      ADAP_SECONDARY_WINS      = 14;
+      ADAP_LEASE_OBTAINED      = 15;
+      ADAP_LEASE_EXPIRES       = 16;
+
+      // For DWSplit
+      qoPROCESS    = $0001;
+      qoNOBEGINEND = $0002;
+      qoNOCRLF     = $0004;
+
+      // For MagicChango
+      TRIM_LEFT           = 0;
+      TRIM_RIGHT          = 1;
+
+
+Type
+      TIPAddressString = Array[0..4*4-1] of Char;
+      PIPAddrString = ^TIPAddrString;
+      TIPAddrString = Record
+      Next      : PIPAddrString;
+      IPAddress : TIPAddressString;
+      IPMask    : TIPAddressString;
+      Context   : Integer;
+      End;
+
+      PFixedInfo = ^TFixedInfo;
+      TFixedInfo = Record { FIXED_INFO }
+      HostName         : Array[0..MAX_HOSTNAME_LEN+3] of Char;
+      DomainName       : Array[0..MAX_DOMAIN_NAME_LEN+3] of Char;
+      CurrentDNSServer : PIPAddrString;
+      DNSServerList    : TIPAddrString;
+      NodeType         : Integer;
+      ScopeId          : Array[0..MAX_SCOPE_ID_LEN+3] of Char;
+      EnableRouting    : Integer;
+      EnableProxy      : Integer;
+      EnableDNS        : Integer;
+      End;
+
+      PIPAdapterInfo = ^TIPAdapterInfo;
+      TIPAdapterInfo = Record { IP_ADAPTER_INFO }
+      Next                : PIPAdapterInfo;
+      ComboIndex          : Integer;
+      AdapterName         : Array[0..MAX_ADAPTER_NAME_LENGTH+3] of Char;
+      Description         : Array[0..MAX_ADAPTER_DESCRIPTION_LENGTH+3] of Char;
+      AddressLength       : Integer;
+      Address             : Array[1..MAX_ADAPTER_ADDRESS_LENGTH] of Byte;
+      Index               : Integer;
+      _Type               : Integer;
+      DHCPEnabled         : Integer;
+      CurrentIPAddress    : PIPAddrString;
+      IPAddressList       : TIPAddrString;
+      GatewayList         : TIPAddrString;
+      DHCPServer          : TIPAddrString;
+      HaveWINS            : Bool;
+      PrimaryWINSServer   : TIPAddrString;
+      SecondaryWINSServer : TIPAddrString;
+      LeaseObtained       : Integer;
+      LeaseExpires        : Integer;
+      End;
+
+      var
+      ComputerName,PathtoUnRegProgram, OSVer, OSVerDetailed, UserName,
+      NovellClientVersion, TempDirectory, LogFilePathandName, HostName,
+      DNSServer, AsEnteredComputerName, sComputerDescription,
+      strDomainUserID, strDomainPassword, strDataFileName, strDataFileKey             : String;
+      TaskUnReg,TaskHelpStuff, TaskPostGhost, TaskResolvebyReverseDNS,
+      TaskUseMACAddressforName, TaskNameSync, TaskNoReboot, TaskReboot,
+      TaskSilent, LocalAdminRights, ShowGUI,  TaskPrefixMACAddress,
+      TaskTestOnly, TaskSetDiskLabel, TaskUseIPAddressforName, TaskAlwaysDoRename,
+      TaskUseMyName, TaskSetMyComputerName, TaskLogOnTo, TaskChangeHostNameOnly,
+      TaskSetMyComputerDescription, TaskRenameComputerInDomain, TaskReadFromDataFile,
+      UseAlternateMACAddressRoutine, blnNetWareClientInstalled                        : Boolean;
+      FormHeightSmall                                                                 : Integer;
+
+
+function GetFileSizeEx( const filename: String ): int64;
+function SetPrivilege(privilegeName: string; enable: boolean): boolean;
+function WinExit(flags: integer): boolean;
+function fSetComputerName(sNewName:String):Boolean;
+function RunProcess(const AppPath, AppParams: string; Visibility: Word; MustWait: Boolean): DWord;
+function CheckValidityofCompterName(ComputerNametoCheck:string):boolean;
+function ReadAsStringFromRegistry(rootkey:HKEY;basekey,keyvalue:string):string;
+function ReadNovellClientDetails:string;
+function IsDLLOnSystem(DLLName:string):Boolean;
+function CheckInTrim(targetstring : string;maxsize : integer):string;
+function RenameComputer(newname:string; UnRegisterFromNDS, RebootOnCompletion : Boolean):Boolean;
+function GetMACAddress(AdapterNumber:integer):String;
+function IsValidIPAddress(address:string):Boolean;
+function GetIPAddress(intIPAddressIndex : integer):string;
+function GetMACAddressPrefix:string;
+function GetServicePackVersion:string;
+function InStrRev( Start:Integer; Const BigStr,SmallStr:String):Integer;
+function OSVer_To_Friendly_Name(strOSVer : string) : string;
+procedure SetLogOnTo(NewName : string);
+procedure SetHostName(HostName : string);
+procedure SetNVHostName(HostName : string);
+procedure MainCodeBlock;
+procedure ShowHelpFile;
+procedure ExtractRes(ResType,ResName,ResNewName : String);
+procedure AppendtoLogFile(s : string);
+procedure ExitRoutine(exitcode:byte);
+Function GetAdapterInformation:TStringList;
+Function GetAdapterInformationII:TStringList;
+Procedure DW_Split(aValue : string; aDelimiter : Char; var Result : TStrings; Flag : Integer = $0001);
+function ExtractFromGetAdapterInformation(tlAdaperInfo : TStringList; intAdapterIndex, intDataIndex : Integer) : string;
+function GetMACAddressLegacy(AdapterNumber : Integer):string;
+function ReverseDNSLookup(strIPAddress, strDNSServer:string; intPTRTimeOut : integer; out strResult : string):Boolean;
+function GetDNSUsingGetNetworkParams:String;
+function GetDNSUsingScreenScraping:String;
+function GetDNSServer:string;
+function OSVersionToTLA:string;
+function ReplacementStringSizeSpecified(strMarker, strInput : string; out intStringSize : integer; out strOutput : string) : boolean;
+function MagicChango(strInput,sID,strReplacementString : string; iTruncateSide: integer):string;
+function PadIPAddress(strIPAddress : string) : string;
+function MyStrtoInt(x : string; blnStrict : boolean) : integer;
+function PosX(Substr: string; S: string): Integer;
+function GenerateRandomName(iLength : integer) : string;
+
+implementation
+
+Type TInstance = Class( TObject )
+    intPTRResult : integer;
+    Timer1 : TTimer;
+    DNSQuery1 : TDNSQuery;
+    procedure PTRQueryOnTimeOut(Sender: Tobject);
+    procedure DnsQuery1RequestDone(Sender: TObject; Error: Word);
+End;
+
+
+
+Function GetFileSizeEx( const filename: String ): int64;
+ Var
+   SRec: TSearchrec;
+   converter: packed record
+     case Boolean of
+       false: ( n: int64 );
+       true : ( low, high: DWORD );
+     end;  
+ Begin
+   If FindFirst( filename, faAnyfile, SRec ) = 0 Then Begin
+     converter.low := SRec.FindData.nFileSizeLow;
+     converter.high:= SRec.FindData.nFileSizeHigh;
+     Result:= converter.n;
+     FindClose( SRec );
+   End
+   Else
+     Result := -1;
+ End;
+
+   function SetPrivilege(privilegeName: string; enable: boolean): boolean;
+       var
+           tpPrev, tp  : TTokenPrivileges;
+                token  : THandle;
+              dwRetLen : DWord;
+       begin
+           result := False;
+           OpenProcessToken(GetCurrentProcess, TOKEN_ADJUST_PRIVILEGES or TOKEN_QUERY, token);
+           tp.PrivilegeCount := 1;
+           if LookupPrivilegeValue(nil, pchar(privilegeName), tp.Privileges[0].LUID) then begin
+               if enable then
+                   tp.Privileges[0].Attributes := SE_PRIVILEGE_ENABLED
+               else
+                   tp.Privileges[0].Attributes := 0;
+               dwRetLen := 0;
+               result := AdjustTokenPrivileges(token, False, tp, SizeOf(tpPrev), tpPrev, dwRetLen);
+           end;
+           CloseHandle(token);
+       end;
+
+
+function WinExit(flags: integer): boolean;
+{   Call WinExit(flags)
+
+   Where flags must be one of the following:
+
+   EWX_LOGOFF     - Shuts down processes and logs user off
+   EWX_REBOOT     - Shuts down the restarts the system
+   EWX_SHUTDOWN   - Shuts down system
+
+   The following attributes may be combined (OR'd) with above flags
+
+   EWX_POWEROFF  - shuts down system and turns off the power.
+   EWX_FORCE     - forces processes to terminate.
+
+   Example:
+           WinReboot1.WinExit(EWX_REBOOT or EWX_FORCE);      }
+
+  begin
+    Result := True;
+    SetPrivilege('SeShutdownPrivilege', true);
+    if not ExitWindowsEx(flags, 0) then
+      Result := False;
+    SetPrivilege('SeShutdownPrivilege', False);
+  end;
+
+  
+  {function WinExit (iFlags: integer) : Boolean; 
+begin
+ result := true;
+ if SetPrivilege ('SeShutdownPrivilege', true) then
+ begin
+   if (not ExitWindowsEx (iFlags, 0)) then
+   begin
+     // handle errors...
+     result := False 
+   end;
+   SetPrivilege ('SeShutdownPrivilege', False)
+ end
+ else
+ begin
+   // handle errors... 
+   result := False
+ end
+end;
+}
+
+
+{*****************************[ RUNPROCESS ] ***********************************
+*
+* Type: Function
+* Use: To launch an application and optionally wait until the launched
+* Application is terminated before running the rest of the code.
+*
+* PARAMETERS:
+*
+* AppPath: The full path and Application Name to run ie. c:\winnt\notepad.exe
+*
+* AppParams: Commandline params to send to the app.
+*
+* Visibility:
+* Can have any of the following values:
+*   Value	Meaning
+*   SW_HIDE	Hides the window and activates another window.
+*   SW_MAXIMIZE	Maximizes the specified window.
+*   SW_MINIMIZE	Minimizes the specified window and activates the next top-level
+*     window in the Z order.
+*   SW_RESTORE	Activates and displays the window. If the window is minimized or
+*     maximized, Windows restores it to its original size and position. An
+*     application should specify this flag when restoring a minimized window.
+*   SW_SHOW	Activates the window and displays it in its current size and position.
+*   SW_SHOWDEFAULT	Sets the show state based on the SW_ flag specified in the
+*     STARTUPINFO structure passed to the CreateProcess function by the program
+*     that started the application.
+*   SW_SHOWMAXIMIZED	Activates the window and displays it as a maximized window.
+*   SW_SHOWMINIMIZED	Activates the window and displays it as a minimized window.
+*   SW_SHOWMINNOACTIVE	Displays the window as a minimized window. The active
+*     window remains active.
+*   SW_SHOWNA	Displays the window in its current state. The active window remains
+*     active.
+*   SW_SHOWNOACTIVATE	Displays a window in its most recent size and position.
+*     The active window remains active.
+*   SW_SHOWNORMAL	Activates and displays a window. If the window is minimized or
+*     maximized, Windows restores it to its original size and position. An
+*     application should specify this flag when displaying the window for the
+*     first time.
+*
+* MustWait: true if the code must be paused until the termination of the launched
+*   Application. false if the code must run directly after launching the app.
+*
+********************************************************************************}
+
+function RunProcess(const AppPath, AppParams: string; Visibility: Word; MustWait: Boolean): DWord;
+  var
+    SI: TStartupInfo;
+    PI: TProcessInformation;
+    Proc: THandle;
+  begin
+    FillChar(SI, SizeOf(SI), 0);
+    SI.cb := SizeOf(SI);
+    SI.wShowWindow := Visibility;
+    //if not CreateProcess(PChar(AppPath), PChar(AppParams), nil, nil, false, Normal_Priority_Class, nil, nil, SI, PI) then
+    //  raise Exception.CreateFmt('Failed to excecute program. Error Code %d', [GetLastError]);
+    // DJC - Above two lines remmed out following line added so no error is posted
+    CreateProcess(PChar(AppPath), PChar(AppParams), nil, nil, false, Normal_Priority_Class, nil, nil, SI, PI);
+    Proc := PI.hProcess;
+    CloseHandle(PI.hThread);
+    if MustWait then
+      if WaitForSingleObject(Proc, Infinite) <> Wait_Failed then
+        GetExitCodeProcess(Proc, Result);
+    CloseHandle(Proc);
+  end;
+
+function FindPathtoFile(Target : string):string;
+  const
+    MAX_SIZE          = 500;
+  var
+    PathandFileName   : array[0..MAX_SIZE] of Char;
+    FileNamePart      : pchar;
+    retcode           : integer;
+  begin
+    retcode:=SearchPath(nil,pchar(Target),nil,MAX_SIZE,@PathandFileName,FileNamePart);
+    if retcode <> 0 then
+      result:=PathandFileName
+    else
+      result:='';
+  end;
+
+
+Function InStrRev( Start:Integer; Const BigStr,SmallStr:String):Integer;
+  Var
+  L9, L8, P: Integer;
+  BigL, SmallL: Integer;
+  C : Char;
+  Begin
+  Result := 0; // Set Default
+
+  // Take String Lengths
+  BigL := Length( BigStr );
+  SmallL := Length( SmallStr );
+
+  // 0 Starts from end of String
+  If Start <= 0 Then
+     Start := BigL;
+
+  If Start > BigL Then
+     Start := BigL;
+
+  // '' Target always returns 0
+  If BigL = 0 Then
+     Exit;
+
+  // '' Convention returns Start
+  If SmallL = 0 Then
+     Begin
+       Result := Start;
+       Exit;
+     End;
+
+  // Take First Char of Search String
+  C := SmallStr[1];
+
+  // Run back if BigStr not long enough
+  If (Start + SmallL - 1) > BigL Then
+     Start := BigL - SmallL + 1;
+
+  // Hunt Backwards for a match
+  For L9 := Start DownTo 1 Do
+      If BigStr[L9] = C Then  // If first Char Found
+         Begin
+           P := L9 + SmallL - 1;
+           For L8 := SmallL DownTo 2 Do // Scan Backwards
+               Begin
+                 If BigStr[P] <> SmallStr[L8] Then
+                    Break;
+                 P := P - 1;
+               End;
+           // Success - we know first Char matches
+           If P = L9 Then
+              Begin
+                Result := L9;
+                Break;
+              End;
+         End;
+
+End;{InStrRev}
+
+function IsDLLOnSystem(DLLName:string):Boolean;
+  var ret  : integer;
+      good : boolean;
+      //tmpstr: integer;
+  begin
+    ret:=LoadLibrary(pchar(DLLNAME));
+    //tmpstr:=GetlastError();
+    Good:=ret>0;
+    if good then FreeLibrary(ret);
+    result:=Good;
+  end;
+
+function IsAdmin: boolean;
+var
+  hSC: SC_HANDLE;
+begin
+  hSC := OpenSCManager(nil, nil, GENERIC_READ or GENERIC_WRITE or GENERIC_EXECUTE);
+  Result := hSC <> 0;
+  if Result then
+    CloseServiceHandle(hSC);
+end;
+
+function IsAdminX: Boolean;
+  // Returns TRUE if the user is an Administrator
+  const
+    SECURITY_NT_AUTHORITY: TSIDIdentifierAuthority = (Value: (0, 0, 0, 0, 0, 5));
+    SECURITY_BUILTIN_DOMAIN_RID = $00000020;
+    DOMAIN_ALIAS_RID_ADMINS    = $00000220;
+
+  var
+    hAccessToken: THandle;
+    ptgGroups: PTokenGroups;
+    dwInfoBufferSize: DWORD;
+    psidAdministrators: PSID;
+    x: Integer;
+    bSuccess: Boolean;
+
+  begin
+    Result := False;
+    bSuccess := OpenThreadToken(GetCurrentThread, TOKEN_QUERY, True,     hAccessToken);
+    if not bSuccess then begin
+      if GetLastError = ERROR_NO_TOKEN then
+      bSuccess := OpenProcessToken(GetCurrentProcess, TOKEN_QUERY,       hAccessToken);
+    end;
+    if bSuccess then begin
+      GetMem(ptgGroups, 1024);
+      bSuccess := GetTokenInformation(hAccessToken, TokenGroups,ptgGroups, 1024, dwInfoBufferSize);
+      CloseHandle(hAccessToken);
+      if bSuccess then begin
+        AllocateAndInitializeSid(SECURITY_NT_AUTHORITY, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,0, 0, 0, 0, 0, 0, psidAdministrators);
+        for x := 0 to ptgGroups.GroupCount - 1 do
+          if EqualSid(psidAdministrators, ptgGroups.Groups[x].Sid) then begin
+            Result := True;
+            Break;
+          end;
+        FreeSid(psidAdministrators);
+      end;
+      FreeMem(ptgGroups);
+    end;
+  end;
+
+function GetOSVersion(blnDetailed : boolean):String;
+  var
+    VersionInfo: TOSVersionInfo;
+  begin
+    result:='Unknown';
+    VersionInfo.dwOSVersionInfoSize := Sizeof(TOSVersionInfo);
+    GetVersionEx(VersionInfo);
+    case VersionInfo.dwPlatformID of
+      VER_PLATFORM_WIN32S:        result:='WIN32';
+      VER_PLATFORM_WIN32_WINDOWS: begin
+          result:='WIN9X';
+          if blnDetailed then begin
+              if (VersionInfo.dwMinorVersion = 0) then
+                  Result:= OS_WIN95
+              else if (VersionInfo.dwMinorVersion = 10) then
+                  Result:= OS_WIN98
+              else if (VersionInfo.dwMinorVersion = 90) then
+                  Result:= OS_WINME
+              else
+                  Result:= OS_WIN95;
+          end;
+      end;
+      VER_PLATFORM_WIN32_NT: begin
+          result:=OS_WINNT;
+          if blnDetailed then begin
+              if (VersionInfo.dwMajorVersion = 5)  and (VersionInfo.dwMinorVersion = 2) then
+                  result:=OS_WIN2K3
+              else if (VersionInfo.dwMajorVersion = 5)  and (VersionInfo.dwMinorVersion = 1) then
+                  result:=OS_WINXP
+              else if (VersionInfo.dwMajorVersion = 5) and (VersionInfo.dwMinorVersion = 0) then
+                  result:=OS_WIN2K
+              else
+                  result:=OS_WINNT
+          end;
+      end;
+    end;
+  end;
+
+function GetServicePackVersion:string;
+var osvi : TOSVersionInfo;
+begin
+    osvi.dwOSVersionInfoSize := SizeOf(Osvi);
+    if GetVersionEX(osvi) then
+        Result:= osvi.szCSDVersion
+    else Result:= '';
+end;
+
+function GetWorkstationName : String;
+  var CompName :  pChar;
+      BuffSize : Dword;
+  begin
+    Buffsize:=20;
+    CompName := StrAlloc(Buffsize);
+    GetComputerName(CompName, BuffSize);
+    Result:=StrPas(CompName);
+  end;
+
+function fSetComputerName(sNewName : String):Boolean;
+  var
+    ComputerName: array[0..MAX_COMPUTERNAME_LENGTH+1] of char;  // holds the name
+  begin
+    {copy the specified name to the ComputerName buffer}
+    StrPCopy(ComputerName, sNewName);
+    if TaskTestOnly then
+      result:=true
+    else
+      result:=SetComputerName(ComputerName);
+  end;
+
+Function fSetComputerNameEx(strNewName:string):Boolean;
+    //http://msdn.microsoft.com/library/default.asp?url=/library/en-us/sysinfo/sysinfo_84s8.asp
+    type
+       Type_SetComputerNameEx = function (nType : integer; newname : string) : LongInt stdcall;
+    var
+       _SetComputerNameEx             : Type_SetComputerNameEx;
+       lngResultCode, lngModuleHandle :  LongInt;
+   begin
+       fSetComputerNameEx:=FALSE;
+       lngModuleHandle:=LoadLibrary(pchar('kernel32.dll'));
+       @_SetComputerNameEx:=GetProcAddress(lngModuleHandle,pchar('SetComputerNameExA'));
+       lngResultCode:=_SetComputerNameEx(5,strNewName);
+       FreeLibrary(lngModuleHandle);
+       if lngResultCode <> 0 then
+           fSetComputerNameEx:=True
+   end;
+
+Function RenameComputerInDomain(strTargetComputer,strNewComputerName,strUserID,strPassword : string): Boolean;
+   type
+       Type_NetRenameMachineInDomain = function (lpserver, machinename, lpaccount, passwrd : PWideChar; foptions : LongInt) : LongInt stdcall;
+    var
+        pwcNewComputerName, pwcUserID, pwcPassword,
+        pwcTargetComputer                           : PWideChar;
+        lngResultCode                               : LongInt;
+        intResultCode                               : Integer;
+        _NetRenameMachineInDomain                   : Type_NetRenameMachineInDomain;
+   begin
+       RenameComputerInDomain:=False;
+       pwcNewComputerName:=Nil;
+       pwcUserID:=Nil;
+       pwcPassword:=Nil;
+       pwcTargetComputer:=Nil;
+       Try
+           intResultCode:=LoadLibrary(pchar('netapi32.dll'));
+           @_NetRenameMachineInDomain:=GetProcAddress(intResultCode,pchar('NetRenameMachineInDomain'));
+           GetMem(pwcNewComputerName,2*Length(strNewComputerName)+2);
+           GetMem(pwcUserID,2*Length(strUserID)+2);
+           GetMem(pwcPassword,2*Length(strPassword)+2);
+           GetMem(pwcTargetComputer,2*Length(strTargetComputer)+2);
+           StringToWideChar(strNewComputerName,pwcNewComputerName,Length(strNewComputerName)+2);
+           StringToWideChar(strUserID,pwcUserID,Length(strUserID)+2);
+           StringToWideChar(strPassword,pwcPassword,Length(strPassword)+2);
+           StringToWideChar(strTargetComputer,pwcTargetComputer,Length(strTargetComputer)+2);
+           lngResultCode:= _NetRenameMachineInDomain(pwcTargetComputer,pwcNewComputerName,pwcUserID,pwcPassword,2);
+           FreeLibrary(intResultCode);
+       Finally
+           FreeMem(pwcNewComputerName);
+           FreeMem(pwcUserID);
+           FreeMem(pwcPassword);
+           FreeMem(pwcTargetComputer);
+       end;
+       if lngResultCode = 0 then
+           RenameComputerInDomain:=TRUE
+       else begin
+           AppendToLogFile('Call to Rename Computer in Domain returned error : ' + inttostr(lngResultCode));
+           AppendToLogFile('Refer to http://msdn.microsoft.com/library/default.asp?url=/library/en-us/netmgmt/netmgmt/network_management_error_codes.asp');
+       end;
+   end;
+
+
+  function GetHostName:String;
+  var
+    Reg : TRegistry;
+  begin
+    Reg:=TRegistry.Create;
+    Reg.RootKey:=HKey_Local_Machine;
+    if GetOSVersion(False) = OS_WINNT then
+        Reg.OpenKey(WinNTHostNameRegKey,True)
+    else
+        Reg.OpenKey(Win9xHostNameRegKey,True);
+    result:=Reg.ReadString('Hostname');
+    Reg.Free;
+  end;
+
+procedure SetHostName(HostName:string);
+  var
+    Reg: TRegistry;
+  begin
+    if not TaskTestOnly then begin
+      Reg:=TRegistry.Create;
+      Reg.RootKey:=HKey_Local_Machine;
+      if GetOSVersion(False) = OS_WINNT then
+          Reg.OpenKey(WinNTHostNameRegKey,True)
+      else
+          Reg.OpenKey(Win9xHostNameRegKey,True);
+      Reg.WriteString('Hostname',HostName);
+      Reg.Free;
+    end;
+  end;
+
+
+procedure SetNVHostName(HostName:string);
+  var
+    Reg: TRegistry;
+  begin
+    if not TaskTestOnly then begin
+      AppendToLogFile('SetNVHostName             : Setting "NV HostName" value for Novell Client');
+      Reg:=TRegistry.Create;
+      Reg.RootKey:=HKey_Local_Machine;
+      if GetOSVersion(False) = OS_WINNT then
+          Reg.OpenKey(WinNTHostNameRegKey,True)
+      else
+          Reg.OpenKey(Win9xHostNameRegKey,True);
+      Reg.WriteString('NV Hostname',HostName);
+      Reg.Free;
+    end;
+  end;
+
+procedure SetLogOnTo(NewName:string);
+  var
+    Reg: TRegistry;
+  begin
+    AppendToLogFile('Set Log On To             : Setting default target for local logon to ' + NewName);
+
+    if not TaskTestOnly then begin
+      if GetOSVersion(False) = OS_WINNT then begin
+        Reg:=TRegistry.Create;
+        Reg.RootKey:=HKEY_LOCAL_MACHINE;
+        Reg.OpenKey('SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon',True);
+        Reg.WriteString('DefaultDomainName',NewName);
+        Reg.Free;
+      end
+      else
+         AppendToLogFile('Set Log On To             : This feature requires Windows NT or Windows 2000');
+    end;
+  end;
+
+Function GetExplorerVersion:String;
+    var  Reg           : TRegistry;
+         strExpVersion : string;
+    begin
+        strExpVersion:= '0';
+        Reg:=TRegistry.Create;
+        Reg.RootKey:=HKEY_LOCAL_MACHINE;
+        Reg.OpenKey('\Software\Microsoft\Internet Explorer',True);
+        strExpVersion:= Reg.ReadString('Version');
+        Reg.Free;
+        GetExplorerVersion:= strExpVersion;
+    end;
+
+Function GetMajorExplorerVersionInt:Integer;
+    var  strExpVersion : string;
+    begin
+        strExpVersion:='';
+        strExpVersion:=GetExplorerVersion;
+        if length(strExpVersion) < 1 then
+            strExpVersion:='0';
+        if Not (strExpVersion[1] in ['0'..'9']) then
+            strExpVersion:='0';
+        GetMajorExplorerVersionInt:= StrToInt(strExpVersion[1]);
+    end;
+
+function GetWindowsSystemDirectory: String;
+var
+  arrTemp: array [0..MAX_PATH+1] of Char;
+begin
+  Result := '';
+  if (GetSystemDirectory(arrTemp,SizeOf(arrTemp)) > 0) then begin
+    if (Copy(arrTemp,Length(arrTemp),1) <> '\') then StrCat(arrTemp,'\');
+    Result := arrTemp;
+  end;
+end;
+
+procedure SetMyComputerName(NewName:string);
+    var
+        Reg                : TRegistry;
+        IE6orBetter        : Boolean;
+        strLocalizedString : string;
+        intI               : integer;
+    begin
+        //http://www.jsifaq.com/SUBE/tip2000/rh2001.htm
+        AppendToLogFile('Set My Computer Name      : Renaming "My Computer" on the desktop to ' + NewName);
+        if not TaskTestOnly then begin
+            Reg:=TRegistry.Create;
+            if OSver = 'WIN9X' then begin
+                AppendToLogFile('Set My Computer Name      : Updating HKLM\Software\Classes\CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}');
+                Reg.RootKey:=HKEY_LOCAL_MACHINE;
+                Reg.OpenKey('Software\Classes\CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}',True);
+                Reg.WriteString('',NewName);
+                AppendToLogFile('Set My Computer Name      : Updating HKCR\CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}');
+                Reg.RootKey:=HKEY_CLASSES_ROOT;
+                Reg.OpenKey('CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}',True);
+                Reg.WriteString('',NewName);
+            end         //End of WIN9X section
+            else begin  //Must be WinNT or better
+                AppendToLogFile('Set My Computer Name      : Updating HKCR\CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}');
+                AppendToLogFile('Set My Computer Name      : Refer http://www.jsifaq.com/SUBE/tip2000/rh2001.htm');
+                Reg.RootKey:=HKEY_CLASSES_ROOT;
+                Reg.OpenKey('\CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}',True);
+                Reg.WriteExpandString('','%ComputerName%');
+                if (OSVerDetailed <> OS_WINNT) then begin
+                    //Additional work required for W2K and above
+                    IE6orBetter:=False;
+                    if GetMajorExplorerVersionInt > 5 then
+                        IE6orBetter:=True;
+                    if (OSVerDetailed = 'WIN2K') and NOT IE6orBetter then begin
+                        strLocalizedString:=Reg.ReadString('LocalizedString');
+                        AppendToLogFile('Set My Computer Name      : LocalizedString is ' + strLocalizedString);
+                        intI:=InStrRev(0,strLocalizedString,',');
+                        if intI <> 0 then begin
+                            strLocalizedString:=Copy(strLocalizedString,1,intI) + '%ComputerName%';
+                            AppendToLogFile('Set My Computer Name      : Setting LocalizedString to ' + strLocalizedString);
+                            Reg.WriteExpandString('LocalizedString',strLocalizedString)
+                        end
+                        else
+                            AppendToLogFile('Set My Computer Name      : Error! - LocalizedString contained an unexpected string');
+                     end
+                     else
+                         Reg.WriteExpandString('LocalizedString','%ComputerName%');
+                end;
+            end;        //End of WinNT, 2K, XP
+            Reg.Free;
+        end; //End TestOnly
+    end;
+
+procedure SetMyComputerDescription(NewName:string);
+  var
+    Reg: TRegistry;
+  begin
+    AppendToLogFile('Set Computer Description  : Setting computer description to "' + NewName + '" [' + inttostr(Length(NewName)) + ']');
+    if Length(NewName) > 256 then begin
+        AppendToLogFile('Set Computer Description  : Truncating description to 256 characters');
+        NewName:=Copy(NewName,1,256);
+        AppendToLogFile('Set Computer Description  : Now Setting computer description to "' + NewName + '"');
+    end;
+    if not TaskTestOnly then begin
+      if OSver = 'WIN9X' then begin
+        Reg:=TRegistry.Create;
+        Reg.RootKey:=HKEY_LOCAL_MACHINE;
+        Reg.OpenKey(Win9xComputerDescriptionKey,True);
+        Reg.WriteString('Comment',NewName);
+        Reg.Free;
+      end
+      else begin
+        Reg:=TRegistry.Create;
+        Reg.RootKey:=HKEY_LOCAL_MACHINE;
+        Reg.OpenKey(WinNTComputerDescriptionKey,True);
+        Reg.WriteString('srvcomment',NewName);
+        Reg.Free;
+      end;
+    end;
+  end;
+
+function GetCurrentUserName:string;
+  var
+    UserName : String;
+    NameSize : DWORD;
+  begin
+    result:='';
+    NameSize := 255;
+    SetLength(UserName, 254);
+    if GetUserName(pChar(UserName), NameSize) then begin
+      SetLength(UserName, NameSize);
+      result:=Trim(UserName);
+   end;
+  end;
+
+function GenerateRandomName(iLength : integer) : string;
+Const
+ Codes64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+
+var
+  i, x: integer; 
+  s1, s2: string; 
+begin 
+  s1 := Codes64; 
+  s2 := ''; 
+  Randomize;
+  for i := 0 to iLength - 1 do begin
+    x  := Random(Length(s1));
+    x  := Length(s1) - x;
+    s2 := s2 + s1[x];
+    s1 := Copy(s1, 1,x - 1) + Copy(s1, x + 1,Length(s1)); 
+  end; 
+  Result := s2;
+end;
+
+function GetTempDirectory:string;
+  var TempDirectory : pChar;
+      BuffSize      : Dword;
+      s             : string;
+  begin
+    Buffsize:=255;
+    TempDirectory := StrAlloc(Buffsize);
+    GetTempPath(BuffSize,TempDirectory);
+    s:=StrPas(TempDirectory);
+    if s[length(s)] <> '\' then
+      s:=s+'\';
+    Result:=s;
+  end;
+
+procedure AppendtoLogFile(s : string);
+  var f: textfile;
+  begin
+    assignfile(f,LogFilePathandName);
+    if fileexists(LogFilePathandName) then
+      append(f)
+    else
+    rewrite(f);
+    writeln(f,DateTimetoStr(Now) + ' : ' + s);
+    flush(f);
+    closefile(f);
+  end;
+
+function ReadAsStringFromRegistry(rootkey:HKEY;basekey,keyvalue:string):string;
+  var
+    reg           : TRegistry;
+    keytype       : TRegDataType;
+
+  begin
+    Reg:=TRegistry.Create;
+    Reg.RootKey:=rootkey;
+    Reg.OpenKey(basekey,True);
+    result:='';
+    if Reg.ValueExists(keyvalue) then begin           // Check key exists first to avoid errors
+      keytype:=Reg.GetDataType(keyvalue);
+      if keytype = rdInteger then
+        result:=inttostr(Reg.ReadInteger(keyvalue))
+      else if keytype = rdString then
+        result:=Reg.Readstring(keyvalue);
+    end;
+    Reg.Free
+  end;
+
+procedure CheckCommandLine;
+  var intI    : integer;
+      strTEMP : string;
+  begin
+    TaskUnReg:=False;
+    TaskHelpStuff:=False;
+    TaskPostGhost:=False;
+    TaskNameSync:=False;
+    TaskReboot:=False;
+    TaskNoReboot:=False;
+    TaskResolvebyReverseDNS:=False;
+    TaskUseMACAddressforName:=False;
+    UseAlternateMACAddressRoutine:=False;
+    TaskPrefixMACAddress:=False;
+    TaskTestOnly:=False;
+    TaskSetDiskLabel:=False;
+    TaskUseIPAddressforName:=False;
+    TaskSetMyComputerName:=False;
+    TaskUseMyName:=False;
+    TaskLogOnTo:=False;
+    TaskChangeHostNameOnly:=False;
+    TaskAlwaysDoRename:=False;
+    TaskSetMyComputerDescription:=False;
+    TaskRenameComputerInDomain:=False;
+    TaskReadFromDataFile:=False;
+    AsEnteredComputerName:='';
+    sComputerDescription:='';
+    if Pos(UpperCase(UnRegSwitch),UpperCase(strPas(cmdline))) <> 0 then
+      TaskUnReg:=True;
+    if (Pos(UpperCase('/H'),UpperCase(strPas(cmdline))) <> 0) or (Pos(UpperCase('/?'),UpperCase(strPas(cmdline))) <> 0) then
+      TaskHelpStuff:=True;
+    if (Pos(UpperCase(PostGhostSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskPostGhost:=True;
+    if (Pos(UpperCase(NameSyncSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskNameSync:=True;
+    if (Pos(UpperCase(RebootSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskReboot:=True;
+    if (Pos(UpperCase(NoRebootSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskNoReboot:=True;
+    if (Pos(UpperCase(NEW_COMPUTERNAME_SWITCH),UpperCase(strPas(cmdline))) <> 0) then
+      TaskSilent:=True;
+    if (Pos(UpperCase(ResolveByDNSSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskResolvebyReverseDNS:=True;
+    if (Pos(UpperCase(UseMACAddressSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskUseMACAddressforName:=True;
+    if (Pos(UpperCase(UseMACAddressSwitchII),UpperCase(strPas(cmdline))) <> 0) then begin
+      TaskUseMACAddressforName:=True;
+      UseAlternateMACAddressRoutine:=True;
+    end;
+    if (Pos(UpperCase(MACPrefixSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskPrefixMACAddress:=True;
+    if (Pos(UpperCase(TestOnlySwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskTestOnly:=True;
+    if (Pos(UpperCase(SetDiskLabelSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskSetDiskLabel:=True;
+    if (Pos(UpperCase(UseIPAddressSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskUseIPAddressforName:=True;
+    if (Pos(UpperCase(SetMyComputerNameSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskSetMyComputerName:=True;
+    if (Pos(UpperCase(UseMyNameSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskUseMyName:=True;
+    if (Pos(UpperCase(SetLogOnToSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskLogOnTo:=True;
+    if (Pos(UpperCase(ChangeHostNameOnlySwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskChangeHostNameOnly:=True;
+    if (Pos(UpperCase(AlwaysDoRenameSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskAlwaysDoRename:=True;
+    if (Pos(UpperCase(SetMyComputerDescriptionSwitch),UpperCase(strPas(cmdline))) <> 0) then begin
+      TaskSetMyComputerDescription:=True;
+      if (Pos(UpperCase(SetMyComputerDescriptionSwitch)+':',UpperCase(strPas(cmdline))) <> 0) then begin
+         strTEMP:=strPas(cmdline);
+         intI:= Pos(SetMyComputerDescriptionSwitch+':',UpperCase(strTEMP));
+         strTEMP:=copy(strTEMP,intI+Length(SetMyComputerDescriptionSwitch+':'),length(strTEMP)-intI-Length(SetMyComputerDescriptionSwitch+':')+1);
+         if length(strTEMP) > 0 then begin    // Catch switch with no value
+            if strTEMP[1] = '"' then begin   // Handle filenames with spaces in path
+               strTEMP:=Copy(strTEMP,2,Length(strTEMP)-1);
+               intI:= Pos('"',strTEMP);     //Find position of closing quote
+               if intI <> 0 then
+                  strTEMP:=copy(strTEMP,1,intI-1)
+               else begin
+               //Add error handling for no closing quote here
+               end;
+            end
+            else begin                       // No quotes to worry about
+                intI:= Pos(' ',strTEMP);
+                if intI <> 0 then
+                   strTEMP:=copy(strTEMP,1,intI-1);
+            end;
+            sComputerDescription:=strTEMP;
+         end;
+      end;
+    end;
+    if (Pos(UpperCase(RenameComputerInDomainSwitch),UpperCase(strPas(cmdline))) <> 0) then
+      TaskRenameComputerInDomain:=True;
+    if (Pos(UpperCase(DomainUserIDSwitch),UpperCase(strPas(cmdline))) <> 0) then begin
+      strTEMP:=strPas(cmdline);
+      intI:= Pos(DomainUserIDSwitch,UpperCase(strTEMP));
+      strTEMP:=copy(strTEMP,intI+Length(DomainUserIDSwitch),length(strTEMP)-intI-Length(DomainUserIDSwitch)+1);
+      intI:= Pos(' ',strTEMP);
+      if intI <> 0 then
+        strTEMP:=copy(strTEMP,1,intI-1);
+      strDomainUserID:=strTEMP;
+    end;
+    if (Pos(UpperCase(DomainPasswordSwitch),UpperCase(strPas(cmdline))) <> 0) then begin
+      strTEMP:=strPas(cmdline);
+      intI:= Pos(DomainPasswordSwitch,UpperCase(strTEMP));
+      strTEMP:=copy(strTEMP,intI+Length(DomainPasswordSwitch),length(strTEMP)-intI-Length(DomainPasswordSwitch)+1);
+      intI:= Pos(' ',strTEMP);
+      if intI <> 0 then
+        strTEMP:=copy(strTEMP,1,intI-1);
+      strDomainPassword:=strTEMP;
+    end;
+    if (Pos(UpperCase(ReadFromDataFileSwitch),UpperCase(strPas(cmdline))) <> 0) then begin
+      TaskReadFromDataFile:=TRUE;
+      strTEMP:=strPas(cmdline);
+      intI:= Pos(ReadFromDataFileSwitch,UpperCase(strTEMP));
+      strTEMP:=copy(strTEMP,intI+Length(ReadFromDataFileSwitch),length(strTEMP)-intI-Length(ReadFromDataFileSwitch)+1);
+      if length(strTEMP) > 0 then begin    // Catch switch with no value
+         if strTEMP[1] = '"' then begin   // Handle filenames with spaces in path
+            strTEMP:=Copy(strTEMP,2,Length(strTEMP)-1);
+            intI:= Pos('"',strTEMP);     //Find position of closing quote
+            if intI <> 0 then
+               strTEMP:=copy(strTEMP,1,intI-1)
+            else begin
+              //Add error handling for no closing quote here
+            end;
+         end
+         else begin                       // No quotes to worry about
+              intI:= Pos(' ',strTEMP);
+              if intI <> 0 then
+                 strTEMP:=copy(strTEMP,1,intI-1);
+         end;
+         strDataFileName:=strTEMP;
+      end;
+    end;
+    if (Pos(UpperCase(DataFileKeySwitch),UpperCase(strPas(cmdline))) <> 0) then begin
+      strTEMP:=strPas(cmdline);
+      intI:= Pos(DataFileKeySwitch,UpperCase(strTEMP));
+      strTEMP:=copy(strTEMP,intI+Length(DataFileKeySwitch),length(strTEMP)-intI-Length(DataFileKeySwitch)+1);
+      if length(strTEMP) > 0 then begin    // Catch switch with no value
+         if strTEMP[1] = '"' then begin    // strings with spaces in path
+            strTEMP:=Copy(strTEMP,2,Length(strTEMP)-1);
+            intI:= Pos('"',strTEMP);     // Find position of closing quote
+            if intI <> 0 then
+               strTEMP:=copy(strTEMP,1,intI-1)
+            else begin
+              //Add error handling for no closing quote here
+            end;
+         end
+         else begin                       // No quotes to worry about
+              intI:= Pos(' ',strTEMP);
+              if intI <> 0 then
+                 strTEMP:=copy(strTEMP,1,intI-1);
+              end;
+              strDataFileKey:=strTEMP;
+         end;
+      end;
+  end;
+
+  function NumberofSubStringsInString(strTMP:string; strSUBTMP:char):integer;
+  var i, count : integer;
+  begin
+      count:=0;
+      if length(strTMP) = 0 then begin
+          result:=0;
+          exit;
+      end;
+      i:=Pos(strSUBTMP, strTMP);
+      While i <> 0 do begin
+           count:=count + 1;
+           delete(strTMP,1,i);
+           i:=Pos(strSUBTMP, strTMP);
+      end;
+      result:=count;
+   end;
+
+  function IsValidIPAddress(address:string):Boolean;
+   var IPOctet : array[1..4] of string;
+          i, j : integer;
+   begin
+      if NumberofSubStringsInString(address,'.') = 3 then begin
+           i:=pos('.',address);
+           IPOctet[1]:=copy(address,1,i-1);
+           delete(address,1,i);
+           i:=pos('.',address);
+           IPOctet[2]:=copy(address,1,i-1);
+           delete(address,1,i);
+           i:=pos('.',address);
+           IPOctet[3]:=copy(address,1,i-1);
+           delete(address,1,i);
+           IPOctet[4]:=address;
+           if (length(IPOctet[1]) = 0) or (length(IPOctet[2]) = 0) or (length(IPOctet[3]) = 0) or (length(IPOctet[4]) = 0) or
+              (length(IPOctet[1]) > 3) or (length(IPOctet[2]) > 3) or (length(IPOctet[3]) > 3) or (length(IPOctet[4]) > 3) then begin
+               result:=false;
+               exit;
+           end;
+           for i:=1 to 4 do begin
+              for j:=1 to length(IPOctet[i]) do begin
+                 if not (IPOctet[i,j] in ['0'..'9']) then begin
+                     result:=false;
+                     exit;
+                 end;
+              end;
+           end;
+           for i:=1 to 4 do begin
+               j:=StrToInt(IPOctet[i]);
+               if j > 254 then begin
+                   result:=false;
+                   exit;
+               end;
+           end;
+           result:=true;
+      end
+      else
+           result:=false;
+           exit;
+     end;
+
+  Function GetValueFromFile(strDataFileName : string; strKeyString : string) : string;
+    var
+       tfDataFile                             : TextFile;
+       strBuffer, strKey, strValue, strResult : string;
+       intIndex                               : integer;
+       blnExit                                : boolean;
+
+    begin
+       strValue:='';
+       strKey:='';
+       strBuffer:='';
+       strResult:='';
+       blnExit:=False;
+       strDataFileName:=Trim(strDataFileName);
+       strKeyString:=Trim(strKeyString);
+       if not FileExists(strDataFileName) then
+           Exit;
+       try
+           AssignFile(tfDataFile, strDataFileName);
+           Reset(tfDataFile);
+           while (not EOF(tfDataFile)) and (not blnExit) do begin
+               ReadLn(tfDataFile, strBuffer);
+               intIndex:=Pos('=',strBuffer);
+               if intIndex <> 0 then begin
+                   strKey:=Trim(Copy(strBuffer,1,intIndex-1));
+                   strValue:=Trim(Copy(strBuffer,intIndex+1,length(strBuffer)-intIndex+1));
+                   if UpperCase(strKey) = UpperCase(strKeyString) then begin
+                       strResult:=strValue;
+                       blnExit:=True;
+                   end;
+               end;
+           end;
+       finally
+           CloseFile(tfDataFile);
+       end;
+       GetValueFromFile:=strResult;
+  end;
+
+
+  procedure ExitRoutine(exitcode:byte);
+    begin
+      Case exitcode of
+        14 : Halt(exitcode);  // Search Key not found in Data File
+        13 : Halt(exitcode);  // Filename specified in /RDF not found
+        12 : Halt(exitcode);  // Search key for /RDF mode not passed
+        11 : Halt(exitcode);  // RenameinDomain on unsupported OS
+        10 : Halt(exitcode);  // Request to Reboot Failed
+         9 : Halt(exitcode);  // No local Admin Rights
+         8 : Halt(exitcode);  // New name validity check failed
+         7 : Halt(exitcode);  // Computer is already named "newname"
+         6 : Halt(exitcode);  // Rename failed - cause unknown
+         5 : Halt(exitcode);  // Can't read MAC Address
+         4 : Halt(exitcode);  // Could not determine local IP address
+         3 : Halt(exitcode);  // Reverse Lookup Failed
+
+      else
+        Application.Terminate;
+      end;
+
+
+    end;
+
+  procedure NameSync;
+    begin
+      if UpperCase(HostName) <> UpperCase(ComputerName) then begin
+        AppendToLogFile('Name Sync                 : Computer and Host Names Do Not Match - setting hostname to ' + ComputerName);
+        SetHostName(ComputerName);
+        if blnNetWareClientInstalled then
+           SetNVHostName(ComputerName);
+        if TaskReboot then begin
+            if Not WinExit(EWX_REBOOT or EWX_FORCE) then begin
+               AppendToLogFile('ERROR - Reboot request failed, WSName terminating');
+               ExitRoutine(10)
+            end;
+        end;
+      end
+      else
+        AppendToLogFile('Name Sync                 : Computer and Host Names Match - no action required');
+   end;
+
+  function PostGhostNameMatch:Boolean;
+  // Returns TRUE if names match
+    var tmpstr : string;
+         i     : integer;
+    begin
+      AppendToLogFile('Operation                 : Post Ghost Mode');
+      result:=false;
+      tmpstr:=UpperCase(strPas(cmdline));
+      i:= Pos('/PG:',tmpstr);
+      tmpstr:=copy(tmpstr,i+4,length(tmpstr)-i-3);
+      i:= Pos(' ',tmpstr);
+      if i <> 0 then
+        tmpstr:=copy(tmpstr,1,i-1);
+      if UpperCase(ComputerName) = tmpstr then begin
+         AppendToLogFile('Post Ghost                : Names Match - I''ve got work to do!');
+         result:=true;
+      end
+      else
+        AppendToLogFile('Post Ghost                : No Name Match - no action required');
+  end;
+
+  procedure ExtractRes(ResType,ResName,ResNewName : String);
+    var
+      Res:TResourceStream;
+    begin
+      Res:=TResourceStream.Create( hInstance,ResName,pChar(ResType));
+      Res.SaveToFile(ResNewName);
+      Res.Free;
+    end;
+
+  function CheckValidityofCompterName(ComputerNametoCheck:string):boolean;
+    const
+      validchars = ['a'..'z','A'..'Z','0'..'9','!','@','#','$','%','^','&','(',')','-','_','''','{','}','~']; //removed '.'
+    var
+                    i : integer;
+        blnAllNumeric : Boolean;
+
+    begin
+      AppendToLogFile('Name Validity Check       : Proposed name is "' + ComputerNametoCheck + '"');
+      result:=True;
+      if (GetOSVersion(false) = OS_WINNT) and (GetOSVersion(true) <> OS_WINNT) then begin
+         // Only want to check for numeric names on Windows 2000 or above
+         blnAllNumeric:= True;
+         for i:=1 to length(ComputerNametoCheck) do begin
+             if not (ComputerNametoCheck[i] in ['0'..'9']) then begin
+                blnAllNumeric:=False;
+                Break;
+             end;
+         end;
+         if blnAllNumeric then begin
+             AppendToLogFile('Name Validity Check       : FAILED - All numeric name not permitted under ' + GetOSVersion(true));
+             result:=False;
+             Exit;
+         end;
+      end;
+      if length(ComputerNametoCheck) > MAX_LENGTH_COMPUTER_NAME then begin
+          AppendToLogFile('Name Validity Check       : FAILED - Name too long');
+          result:=False;
+          Exit;
+      end;
+      if ComputerNametoCheck[1]= '-' then begin
+          AppendToLogFile('Name Validity Check       : FAILED - Name starts with "-"');
+          result:=False;
+          Exit;
+      end;
+      for i:=1 to length(ComputerNametoCheck) do begin
+        if not (ComputerNametoCheck[i] in ValidChars) then begin
+          AppendToLogFile('Name Validity Check       : FAILED - Contains one of more invalid characters (' + ComputerNametoCheck[i] + ')');
+          result:=False;
+          Break;
+        end;
+      end;
+    end;
+
+function CheckInTrim(targetstring : string;maxsize : integer):string;
+  // Trims strings to a maximum length, over size strings are cut down to
+  // "maxsize" - 3 and have '...' appended to them
+  begin
+    trim(targetstring);
+    if length(targetstring) > maxsize then
+      targetstring:=copy(targetstring,1,maxsize-3) + '...';
+    result:=targetstring;
+  end;
+
+function IncludeTrailingBackslash(S: string):string;
+  begin
+    if not (s[length(s)] = '\') then
+      result:=S+'\'
+    else
+      result:=S;
+  end;
+
+function SetDiskLabel(targetdrive, newname:string) : Boolean;
+  begin
+    if not TaskTestOnly then
+      result:=SetVolumeLabel(pchar(IncludeTrailingBackslash(targetdrive)),pchar(newname))
+    else
+      result:=true;
+  end;
+
+function RenameComputer(newname:string; UnRegisterFromNDS, RebootOnCompletion : Boolean):Boolean;
+  var tmpstr, OSVer : string;
+      res           : boolean;
+
+  begin
+    OSVer:=GetOSVersion(True);
+    AppendToLogFile('Operation                 : Rename Computer to ' + newname);
+    if not (CheckValidityofCompterName(newname)) then begin
+      AppendToLogFile('New name validity check   : Failed - Rename request aborted!');
+      ExitRoutine(8);
+    end
+    else
+      AppendToLogFile('New name validity check   : Passed');
+      if (UpperCase(ComputerName) = UpperCase(newname)) then begin
+          if not TaskAlwaysDoRename then begin
+              AppendToLogFile('Computer is already named ' + newname + '. - Rename request aborted!');
+              ExitRoutine(7);
+          end
+          else
+              AppendToLogFile('Computer is already named ' + newname + ' but processing continuing due to /ACN switch');
+      end;
+
+    if not TaskChangeHostNameOnly then begin
+      if ((OSVer=OS_WIN2K) or (OSVer=OS_WINXP)) and (TaskRenameComputerInDomain = FALSE) then begin
+          AppendToLogFile('Rename Method             : SetComputerNameEx');
+          result:=fSetComputerNameEx(newname)     //SetComputerNameEx - W2K and XP only
+      end
+      else if ((OSVer=OS_WIN2K) or (OSVer=OS_WINXP)) and (TaskRenameComputerInDomain = TRUE) then begin
+          AppendToLogFile('Rename Method             : NetRenameMachineInDomain');
+          AppendToLogFile('User ID                   : ' + strDomainUserID);
+          result:=RenameComputerInDomain('',newname,strDomainUserID,strDomainPassword)  //NetRenameMachineInDomain - W2K and XP only
+      end
+      else begin
+          AppendToLogFile('Rename Method             : SetComputerName');
+          result:=fSetComputerName(newname)       //Standard old rename for Win9x and WinNT4
+      end;
+    end
+    else begin
+      result:=TRUE;
+      AppendToLogFile('Change HostName Only option selected (/CHO) NetBIOS name not changed ');
+    end;
+
+    if result then begin
+      if not TaskChangeHostNameOnly then
+        AppendToLogFile('Rename Successful - reboot required to take effect');
+      //Set Host name happens here - only required for Win9x and NT 4
+      if (OSVer <> 'WIN2K') and (OSVer <> 'WINXP') then
+          SetHostName(newname);
+      // Added in ver 2.66e - Set NV hostname
+      if blnNetWareClientInstalled then
+          SetNVHostName(newname);
+      if TaskSetDiskLabel then begin
+        tmpstr:=newname;
+        if length(tmpstr) > 11 then begin
+          tmpstr:=copy(newname,1,11)
+        end;
+        res:=SetDiskLabel('c:\',tmpstr);
+        if res then
+          AppendToLogFile('C: Drive Name set to      : '+ tmpstr)
+        else
+          AppendToLogFile('Failed to set Drv Name to : '+ tmpstr)
+      end;
+
+      if TaskSetMyComputerDescription then begin
+          if sComputerDescription = '' then
+             SetMyComputerDescription(AsEnteredComputerName)
+          else
+             SetMyComputerDescription(sComputerDescription);
+       end;
+
+      if TaskSetMyComputerName then
+          SetMyComputerName(AsEnteredComputerName);
+
+      if TaskLogOnTo then
+         SetLogOnTo(newname);
+
+      if UnRegisterFromNDS then begin
+        if UnRegProgramName <> '' then begin
+          AppendToLogFile('called ' + UnRegProgramName);
+          if not TaskTestOnly then
+            RunProcess(UnRegProgramName,'', SW_SHOWNORMAL, True);
+        end
+          else
+            AppendToLogFile('The request to UnRegister was made could not be actioned as WSName could not find ' + UnRegProgramName + ' in the path');
+      end;
+      if RebootOnCompletion then begin
+        AppendToLogFile('Rebooting');
+        if Not WinExit(EWX_REBOOT or EWX_FORCE) then begin
+            AppendToLogFile('ERROR - Reboot request failed, WSName terminating');
+            ExitRoutine(10)
+        end;
+      end;
+    end
+    else begin
+      AppendToLogFile('Rename Failed');
+      ExitRoutine(6);
+    end;
+  end;
+
+function PosX(Substr: string; S: string): Integer;
+    //Case Insensitive Pos
+begin
+    Result:=Pos(UpperCase(Substr),UpperCase(S));
+end;
+
+procedure SilentMode;
+  var tmpstr, strIPAddress, strDNSServer, sStr : string;
+      i, iI, iJ, iP                            : integer;
+      blnBreak                                 : boolean;
+  begin
+    AppendToLogFile('Silent Mode               : Starting (' + NEW_COMPUTERNAME_SWITCH + '<name>)');
+    AsEnteredComputerName:=strPas(cmdline);
+    tmpstr:=AsEnteredComputerName;
+    i:= PosX(NEW_COMPUTERNAME_SWITCH,tmpstr);
+    tmpstr:=copy(tmpstr,i+Length(NEW_COMPUTERNAME_SWITCH),length(tmpstr)-i-2);
+    AsEnteredComputerName:=copy(AsEnteredComputerName,i+3,length(AsEnteredComputerName)-i-2);
+    i:= PosX(' ',tmpstr);
+    if i <> 0 then begin
+      tmpstr:=copy(tmpstr,1,i-1);
+      AsEnteredComputerName:=copy(AsEnteredComputerName,1,i-1);
+    end;
+
+    // ------------ Start Complex Parameter Support - Added 11 June 2003
+
+    if PosX(SILENT_IP_ADDRESS,tmpstr) <> 0 then begin
+        AppendToLogFile('Silent Mode               : Evaluating ' + SILENT_IP_ADDRESS);
+        sStr:=GetIPAddress(0);
+        if sStr = '' then begin
+            AppendToLogFile('Could not determine local IP address. - Rename request aborted!');
+            ExitRoutine(4);
+        end;
+        sStr:=PadIPAddress(sStr);
+        AppendToLogFile('Silent Mode               : IP Address  : "' + sStr + '"');
+        sStr:=StringReplace(sStr,'.','-',[rfReplaceAll, rfIgnoreCase]);
+        AppendToLogFile('Silent Mode               : Fix for DNS : "' + sStr + '"');
+        tmpstr:=MagicChango(tmpstr,SILENT_IP_ADDRESS,sStr,TRIM_RIGHT);
+        AppendToLogFile('Silent Mode               : Updated input parameter is ' + NEW_COMPUTERNAME_SWITCH + tmpstr);
+    end;
+   if PosX(SILENT_MAC_ADDRESS_II,tmpstr) <> 0 then begin
+        AppendToLogFile('Silent Mode               : Evaluating ' + SILENT_MAC_ADDRESS_II);
+        UseAlternateMACAddressRoutine:=True;
+        sStr:=GetMACAddress(0);
+        if UpperCase(sStr) = UpperCase('ERROR') then begin
+            AppendToLogFile('Can''t read MAC Address - Rename request aborted!');
+            ExitRoutine(5);
+        end;
+        AppendToLogFile('Silent Mode               : MAC Address  : "' + sStr + '"');
+        tmpstr:=MagicChango(tmpstr,SILENT_MAC_ADDRESS_II,sStr,TRIM_RIGHT);
+        AppendToLogFile('Silent Mode               : Updated input parameter is ' + NEW_COMPUTERNAME_SWITCH + tmpstr);
+    end;
+    if PosX(SILENT_MAC_ADDRESS,tmpstr) <> 0 then begin
+        AppendToLogFile('Silent Mode               : Evaluating ' + SILENT_MAC_ADDRESS);
+        sStr:=GetMACAddress(0);
+        if UpperCase(sStr) = UpperCase('ERROR') then begin
+            AppendToLogFile('Can''t read MAC Address - Rename request aborted!');
+            ExitRoutine(5);
+        end;
+        AppendToLogFile('Silent Mode               : MAC Address  : "' + sStr + '"');
+        tmpstr:=MagicChango(tmpstr,SILENT_MAC_ADDRESS,sStr,TRIM_RIGHT);
+        AppendToLogFile('Silent Mode               : Updated input parameter is ' + NEW_COMPUTERNAME_SWITCH + tmpstr);
+    end;
+    if PosX(SILENT_USER_NAME,tmpstr) <> 0 then begin
+        AppendToLogFile('Silent Mode               : Evaluating ' + SILENT_USER_NAME);
+        AppendToLogFile('Silent Mode               : Username is "' + UserName + '"');
+        tmpstr:=MagicChango(tmpstr,SILENT_USER_NAME,UserName,TRIM_LEFT);
+        AppendToLogFile('Silent Mode               : Updated input parameter is ' + NEW_COMPUTERNAME_SWITCH + tmpstr);
+    end;
+    if PosX(SILENT_RANDOM_NAME,tmpstr) <> 0 then begin
+        AppendToLogFile('Silent Mode               : Evaluating ' + SILENT_RANDOM_NAME);
+        sStr:=GenerateRandomName(15);
+        AppendToLogFile('Silent Mode               : Gernerated Name is "' + sStr + '"');
+        tmpstr:=MagicChango(tmpstr,SILENT_RANDOM_NAME,sStr,TRIM_LEFT);
+        AppendToLogFile('Silent Mode               : Updated input parameter is ' + NEW_COMPUTERNAME_SWITCH + tmpstr);
+    end;
+    if PosX(SILENT_OS_TYPE,tmpstr) <> 0 then begin
+        AppendToLogFile('Silent Mode               : Evaluating ' + SILENT_OS_TYPE);
+        sStr:=OSVersionToTLA;
+        AppendToLogFile('Silent Mode               : OS Shortname is "' + sStr + '"');
+        tmpstr:=MagicChango(tmpstr,SILENT_OS_TYPE,sStr,TRIM_LEFT);
+        AppendToLogFile('Silent Mode               : Updated input parameter is ' + NEW_COMPUTERNAME_SWITCH + tmpstr);
+    end;
+    if PosX(SILENT_REVERSE_DNS,tmpstr) <> 0 then begin
+        AppendToLogFile('Silent Mode               : Evaluating ' + SILENT_REVERSE_DNS);
+        if Copy(tmpstr,PosX(SILENT_REVERSE_DNS,tmpstr) + length(SILENT_REVERSE_DNS),1) = ':' then begin
+           AppendToLogFile('Silent Mode               : Extracting DNS Server Address');
+           iI:=Pos('%DNS',tmpstr) + length('%DNS') + 1;
+           iJ:=iI;
+           iP:=iI;
+           blnBreak:=False;
+           Repeat
+               if tmpstr[iJ] = '.' then
+                   iP:=iJ;
+               if (iJ > iP+3) or (not (tmpstr[iJ] in ['0'..'9','.'])) then
+                   blnBreak:=True;
+               iJ:=iJ+1;
+           Until (iJ > (iI + 15)) or (iJ > Length(tmpstr)) or blnBreak;
+           strDNSServer:=Copy(tmpstr,iI,iJ-iI);
+           AppendToLogFile('Silent Mode               : Extracted DNS Server address is ' + strDNSServer);
+           Delete(tmpstr,iI-1,iJ-iI+1);
+           AppendToLogFile('Silent Mode               : Updated input parameter is ' + tmpstr);
+        end
+        else
+           strDNSServer:=GetDNSServer;
+        if not IsValidIPAddress(strDNSServer) then begin
+            AppendToLogFile('Invalid Address for DNS Server (' + strDNSServer + ') - Rename request aborted!');
+            ExitRoutine(3);
+        end;
+        if LocalIPList.count < 1 then begin
+           AppendToLogFile('Could not determine local IP address. - Rename request aborted!');
+           ExitRoutine(4);
+        end;
+        strIPaddress:=LocalIPList.Strings[0];
+        if strIPaddress = '127.0.0.1' then  // Avoid returning localhost
+             strIPaddress:='';
+        if strIPaddress = '' then begin
+             AppendToLogFile('Could not determine local IP address. - Rename request aborted!');
+             ExitRoutine(4);
+        end;
+        AppendToLogFile('IP Address                : ' + strIPaddress);
+        AppendToLogFile('DNS Server IP Address     : ' + strDNSServer);
+        if ReverseDNSLookup(strIPAddress, strDNSServer,DNS_TIMEOUT_INTERVAL,sStr) then begin
+             AppendToLogFile('Reverse Lookup Returned   : ' + sStr);
+             i:=PosX('.',sStr);
+             if i <> 0 then
+                 sStr:=Trim(Copy(sStr,1,i - 1));
+             AppendToLogFile('Reverse Lookup Shortname  : ' + sStr);
+         end
+        else begin
+             AppendToLogFile(sStr + ' - Script Terminating');
+             ExitRoutine(3);
+        end;
+        tmpstr:=MagicChango(tmpstr,SILENT_REVERSE_DNS,sStr,TRIM_LEFT);
+        AppendToLogFile('Silent Mode               : Updated input parameter is ' + NEW_COMPUTERNAME_SWITCH + tmpstr);
+    end;
+
+    AsEnteredComputerName:=tmpstr;
+   // ------------ End Complex Parameter Support - Added 11 June 2003
+
+
+    //Temp Compatibility Hack
+    if TaskResolvebyReverseDNS then begin
+       tmpstr:=UpperCase(strPas(cmdline));
+       i:= PosX('/DNS:',tmpstr);
+       tmpstr:=copy(tmpstr,i+5,length(tmpstr)-i-4);
+       i:= PosX(' ',tmpstr);
+       if i <> 0 then
+            tmpstr:=copy(tmpstr,1,i-1);
+       tmpstr:=SILENT_REVERSE_DNS + ':' + tmpstr;
+    end;
+    // End Temp Compatibility Hack
+
+
+    if tmpstr = SILENT_IP_ADDRESS then begin
+        AppendToLogFile('Silent Mode               : Using IP address for name ' + NEW_COMPUTERNAME_SWITCH + SILENT_IP_ADDRESS);
+        tmpstr:=GetIPAddress(0);
+        if tmpstr = '' then begin
+            AppendToLogFile('Could not determine local IP address. - Rename request aborted!');
+            ExitRoutine(4);
+        end
+        else begin
+            AppendToLogFile('Silent Mode               : IP Address  : "' + tmpstr + '"');
+            tmpstr:=StringReplace(tmpstr,'.','-',[rfReplaceAll, rfIgnoreCase]);
+            AppendToLogFile('Silent Mode               : Fix for DNS : "' + tmpstr + '"');
+            AsEnteredComputerName:=tmpstr;
+        end;
+    end
+    else if tmpstr = SILENT_USER_NAME then begin
+       AppendToLogFile('Silent Mode               : Using User ID for Name  /N:' + SILENT_USER_NAME);
+       tmpstr:=UserName;
+       AsEnteredComputerName:=tmpstr;
+       AppendToLogFile('Silent Mode               : User Name is "' + tmpstr + '"');
+    end
+    else if (tmpstr = SILENT_MAC_ADDRESS) or (tmpstr = SILENT_MAC_ADDRESS_II) then begin
+        if tmpstr = SILENT_MAC_ADDRESS_II then begin
+            UseAlternateMACAddressRoutine:=True;
+            AppendToLogFile('Silent Mode               : Using MAC address for name /N:' + SILENT_MAC_ADDRESS_II);
+        end
+        else
+            AppendToLogFile('Silent Mode               : Using MAC address for name /N:' + SILENT_MAC_ADDRESS);
+        tmpstr:=GetMACAddress(0);
+        if UpperCase(tmpstr) = UpperCase('ERROR') then begin
+            AppendToLogFile('Can''t read MAC Address - Rename request aborted!');
+            ExitRoutine(5);
+        end;
+        if GetMACAddressPrefix <> '' then begin
+           AppendToLogFile('Silent Mode               : Prefix = ' + GetMACAddressPrefix);
+           tmpstr:=GetMACAddressPrefix + tmpstr;
+        end;
+        AsEnteredComputerName:=tmpstr;
+    end
+    else if Copy(tmpstr,1,length(SILENT_REVERSE_DNS)) = SILENT_REVERSE_DNS then begin
+        AppendToLogFile('Silent Mode               : Resolve by Reverse DNS Look Up');
+        i:=PosX(SILENT_REVERSE_DNS,tmpstr);
+        tmpstr:=copy(tmpstr,i+length(SILENT_REVERSE_DNS),length(tmpstr)-i-length(SILENT_REVERSE_DNS)+1);
+        i:=PosX(' ',tmpstr);
+        if i <> 0 then
+            tmpstr:=copy(tmpstr,1,i-1);
+        if length(tmpstr) = 0 then begin
+            strDNSServer:=GetDNSServer;
+        end
+        else if tmpstr[1] = ':' then
+            strDNSServer:=copy(tmpstr,2,length(tmpstr)-1);
+        if Not IsValidIPAddress(strDNSServer) then begin
+            AppendToLogFile('Invalid Address for DNS Server (' + strDNSServer + ') - Rename request aborted!');
+            ExitRoutine(3);
+        end;
+        if LocalIPList.count < 1 then begin
+           AppendToLogFile('Could not determine local IP address. - Rename request aborted!');
+           ExitRoutine(4);
+        end;
+        strIPaddress:=LocalIPList.Strings[0];
+        if strIPaddress = '127.0.0.1' then  // Avoid returning localhost
+             strIPaddress:='';
+        if strIPaddress = '' then begin
+             AppendToLogFile('Could not determine local IP address. - Rename request aborted!');
+             ExitRoutine(4);
+        end
+        else begin
+             AppendToLogFile('IP Address                : ' + strIPaddress);
+             AppendToLogFile('DNS Server IP Address     : ' + strDNSServer);
+        end;
+        if ReverseDNSLookup(strIPAddress, strDNSServer,DNS_TIMEOUT_INTERVAL,tmpstr) then begin
+             AppendToLogFile('Reverse Lookup Returned   : ' + tmpstr);
+             i:=PosX('.',tmpstr);
+             if i <> 0 then
+                 tmpstr:=Trim(Copy(tmpstr,1,i - 1));
+             AppendToLogFile('Reverse Lookup Shortname  : ' + tmpstr);
+        end
+        else begin
+             AppendToLogFile(tmpstr + ' - Script Terminating');
+             ExitRoutine(3);
+        end;
+        AsEnteredComputerName:=tmpstr;
+    end;
+    if not TaskTestOnly then
+      RenameComputer(tmpstr,TaskUnReg,TaskReboot);
+  end;
+
+function GetMACAddressPrefix:string;
+var intI : integer;
+    strCommandLine, strPrefix : string;
+
+begin
+    strCommandLine:=strPas(cmdline);
+    intI:=Pos(UpperCase(MACPrefixSwitch),UpperCase(strCommandLine));
+    if intI <> 0 then begin
+        strPrefix:=copy(strCommandLine,intI + length(MACPrefixSwitch),length(strCommandLine) - length(MACPrefixSwitch));
+        intI:= Pos(' ',strPrefix);
+        if intI <> 0 then
+            strPrefix:=copy(strPrefix,1,intI-1);
+        if (length(strPrefix) > MaxPrefixLength) then
+            strPrefix:=copy(strPrefix,1,MaxPrefixLength);
+    end;
+    result:=strPrefix;
+end;
+
+procedure UseMACAddressforName;
+  var  MACAddress, tmpstr : string;
+       I                  : integer;
+  begin
+    AppendToLogFile('GETMACAddress             : MAC Naming Mode Processing (/MAC)');
+
+    if TaskPrefixMACAddress then begin
+      tmpstr:=UpperCase(strPas(cmdline));
+      I:= Pos(MACPrefixSwitch,tmpstr);
+      tmpstr:=copy(tmpstr,i+ length(MACPrefixSwitch),length(tmpstr) - length(MACPrefixSwitch));
+      i:= Pos(' ',tmpstr);
+      if i <> 0 then
+        tmpstr:=copy(tmpstr,1,i-1);
+      if (length(tmpstr) > MaxPrefixLength) then
+        tmpstr:=copy(tmpstr,1,MaxPrefixLength);
+      AppendToLogFile('MAC Address Prefix        : ' + tmpstr);
+    end;
+
+    MACAddress:=GetMACAddress(0);
+    if UpperCase(MACAddress) = UpperCase('ERROR') then begin
+      AppendToLogFile('Can''t read MAC Address - Rename request aborted!');
+      ExitRoutine(5);
+    end;
+
+    if TaskPrefixMACAddress then begin
+      MACAddress:=tmpstr + MACAddress;
+      AppendToLogFile('MAC Address               : ' + MACAddress);
+    end;
+
+    if not TaskTestOnly then
+      RenameComputer(MACAddress,TaskUnReg,TaskReboot);
+  end;
+
+Procedure ReadNameFromDataFile;
+    var strNameFromFile  : string;
+    begin
+        strNameFromFile:='';
+        AppendToLogFile('Starting Data File Mode Processing (/RDF)');
+        AppendToLogFile('Data File Name            : ' + strDataFileName);
+        AppendToLogFile('Search Key                : ' + strDataFileKey);
+        if strDataFileKey = '' then begin
+            AppendToLogFile('No search key passed (/DFK) - Rename request aborted!');
+            ExitRoutine(12);
+        end;
+        if not FileExists(strDataFileName) then begin
+            AppendToLogFile('Can''t find data file "' + strDataFileName + '" - Rename request aborted!');
+            ExitRoutine(13);
+        end;
+        if (UpperCase(strDataFileKey) = '!MAC') or (UpperCase(strDataFileKey) = SILENT_MAC_ADDRESS) then begin
+            AppendToLogFile('Data File Mode            : Evaluating ' + SILENT_MAC_ADDRESS);
+            strDataFileKey:=GetMACAddress(0);
+            AppendToLogFile('GetMACAddress Returned    : ' + strDataFileKey);
+        end;
+        AppendToLogFile('Data File Mode            : Reading Data File');
+        strNameFromFile:=GetValueFromFile(strDataFileName,strDataFileKey);
+        if strNameFromFile = '' then begin
+            AppendToLogFile('Search Key not found in Data File - Rename request aborted!');
+            ExitRoutine(14);
+        end
+        else
+            AppendToLogFile('New Name From Data File   : ' + strNameFromFile);
+        RenameComputer(strNameFromFile,TaskUnReg,TaskReboot);
+    end;
+
+function ReadNovellClientDetails:string;
+  const
+    NTBaseKey : string = '\SOFTWARE\Novell\NetWareWorkstation\CurrentVersion';
+    W9BaseKey : string = '\Network\Novell\System Config\Install\Client Version';
+
+  var
+    NetWareClientVersion, Basekey, gsClientTitle, gsClientBuild, gsClientMajorVersion, gsClientMinorVersion, gsClientACUVersionMajor, gsClientACUVersionMinor, gsClientServicePack : string;
+
+  begin
+    Result:='';
+    NetWareClientVersion:='';
+
+    if OSVer = 'WIN9X' then
+      Basekey:=W9BaseKey
+    else
+      Basekey:=NTBaseKey;
+
+    gsClientTitle:=ReadAsStringFromRegistry(HKEY_LOCAL_MACHINE,Basekey,'Title');
+    gsClientBuild:=ReadAsStringFromRegistry(HKEY_LOCAL_MACHINE,BaseKey,'BuildNumber');
+
+    if OSVer = 'WIN9X' then begin
+      gsClientMajorVersion:=ReadAsStringFromRegistry(HKEY_LOCAL_MACHINE,BaseKey,'Major Version');
+      gsClientMinorVersion:=ReadAsStringFromRegistry(HKEY_LOCAL_MACHINE,BaseKey,'Minor Version');
+    end
+    else begin
+      gsClientMajorVersion:=ReadAsStringFromRegistry(HKEY_LOCAL_MACHINE,BaseKey,'MajorVersion');
+      gsClientMinorVersion:=ReadAsStringFromRegistry(HKEY_LOCAL_MACHINE,BaseKey,'MinorVersion');
+    end;
+
+    gsClientACUVersionMajor:= ReadAsStringFromRegistry(HKEY_LOCAL_MACHINE,BaseKey,'Revision');
+    gsClientACUVersionMinor:= ReadAsStringFromRegistry(HKEY_LOCAL_MACHINE,BaseKey,'Level');
+    gsClientServicePack:= ReadAsStringFromRegistry(HKEY_LOCAL_MACHINE,BaseKey,'Service Pack');
+
+    if gsClientACUVersionMajor = '' then
+      gsClientACUVersionMajor:='0';
+
+    if gsClientACUVersionMinor = '' then
+      gsClientACUVersionMinor:='0';
+
+    NetWareClientVersion:=gsClientMajorVersion + '.' + gsClientMinorVersion + '.' + gsClientACUVersionMajor + '.' + gsClientACUVersionMinor;
+
+    if gsClientBuild <> '' then
+      NetWareClientVersion:=NetWareClientVersion + '.' + gsClientBuild;
+
+     Result:=NetWareClientVersion + ' ' + gsClientServicePack;
+  end;
+
+
+procedure ShowHelpFile;
+  var HelpFilePathandName : string;
+  begin
+    HelpFilePathandName:=TempDirectory + HelpFileName;
+    ExtractRes('HTM','HelpFile',HelpFilePathandName);
+    ShellExecute(Application.handle,PChar('Open'),PChar(ExtractFileName(HelpFilePathandName)),nil,PChar(ExtractFileDir(HelpFilePathandName)),SW_SHOWNORMAL);
+  end;
+
+
+function GetMACAddress(AdapterNumber : Integer):string;
+    var slAdapter                              : TStringList;
+        strMACAddress, strAdapterDescription   : String;
+        intAdaptertoReadFrom                   : integer;
+        bFoundOne                              : Boolean;
+
+    begin
+        AppendToLogFile('GETMACAddress             : Checking OS support');
+        strMACAddress:='';
+        intAdaptertoReadFrom:=0;
+        if UseAlternateMACAddressRoutine then begin
+            AppendToLogFile('GETMACAddress             : Using alternative MAC Address routine');
+            slAdapter:=GetAdapterInformationII;
+            Repeat
+                strAdapterDescription:=Trim(ExtractFromGetAdapterInformation(slAdapter,intAdaptertoReadFrom,ADAP_DESCRIPTION));
+                if (Pos('Wireless',strAdapterDescription) <> 0) then begin
+                    AppendToLogFile('GETMACAddress             : Adapter ' + InttoStr(intAdaptertoReadFrom) + ' appears to be a Wireless, I''ll try the next one (this one is "' + strAdapterDescription + '")');
+                end;
+                if (Pos('PPP',strAdapterDescription) <> 0) then begin
+                    AppendToLogFile('GETMACAddress             : Adapter ' + InttoStr(intAdaptertoReadFrom) + ' appears to be the dial up adapter, I''ll try the next one (this one is "' + strAdapterDescription + '")');
+                end;
+                intAdaptertoReadFrom:=intAdaptertoReadFrom+1;
+            Until ((Pos('Wireless',strAdapterDescription) = 0) and (Pos('Wireless',strAdapterDescription) = 0)) or (intAdaptertoReadFrom > slAdapter.Count);
+            if intAdaptertoReadFrom > slAdapter.Count then begin
+                AppendToLogFile('ERROR                     : Could not determine correct network adapter');
+                ExitRoutine(5)
+            end;
+            AppendToLogFile('GETMACAddress             : Reading MAC Address from "' + strAdapterDescription + '"  (Adapter ' + IntToStr(intAdaptertoReadFrom - 1) + ')');
+            strMACAddress:=ExtractFromGetAdapterInformation(slAdapter,intAdaptertoReadFrom - 1,ADAP_ADAPTER_ADDRESS);
+            slAdapter.Free;
+        end
+        else If (IsDLLOnSystem('iphlpapi.dll')) and (GetOSVersion(true) <> OS_WIN95) and (GetOSVersion(true) <> OS_WINNT) then begin
+            AppendToLogFile('GETMACAddress             : IPHLPAPI.DLL found using GetAdaptersInfo API');
+            slAdapter:=GetAdapterInformation;
+            bFoundOne:=False;
+            Repeat
+                strAdapterDescription:=Trim(ExtractFromGetAdapterInformation(slAdapter,intAdaptertoReadFrom,ADAP_DESCRIPTION));
+                  if (Pos('Wireless',strAdapterDescription) <> 0) then begin
+                    if (intAdaptertoReadFrom + 1) <> slAdapter.Count then
+                       AppendToLogFile('GETMACAddress             : Adapter ' + InttoStr(intAdaptertoReadFrom) + ' appears to be a Wireless, I''ll try the next one (this one is "' + strAdapterDescription + '")')
+                    else begin
+                       AppendToLogFile('GETMACAddress             : Using Wireless adapter (no more adapters found)');
+                       bFoundOne:=True;
+                    end;
+                end;
+                if (Pos('PPP',strAdapterDescription) <> 0) then begin
+                    AppendToLogFile('GETMACAddress             : Adapter ' + InttoStr(intAdaptertoReadFrom) + ' appears to be the dial up adapter, I''ll try the next one (this one is "' + strAdapterDescription + '")');
+                end;
+                intAdaptertoReadFrom:=intAdaptertoReadFrom+1;
+            Until ((Pos('Wireless',strAdapterDescription) = 0) and (Pos('Wireless',strAdapterDescription) = 0)) or (intAdaptertoReadFrom > slAdapter.Count) or bFoundOne;
+            if intAdaptertoReadFrom > slAdapter.Count then begin
+                AppendToLogFile('ERROR                     : Could not determine correct network adapter');
+                ExitRoutine(5)
+            end;
+            AppendToLogFile('GETMACAddress             : Reading MAC Address from "' + strAdapterDescription + '"  (Adapter ' + IntToStr(intAdaptertoReadFrom - 1) + ')');
+            strMACAddress:=ExtractFromGetAdapterInformation(slAdapter,intAdaptertoReadFrom - 1,ADAP_ADAPTER_ADDRESS);
+            slAdapter.Free;
+        end
+        else begin
+            AppendToLogFile('GETMACAddress             : IPHLPAPI.DLL NOT found (Win95/NT4), using old NetBIOS method');
+            strMACAddress:=GetMACAddressLegacy(AdapterNumber);
+            if UpperCase(strMACAddress) = UpperCase('Error') then begin
+                AppendToLogFile('GETMACAddress             : NetBIOS method returned Error');
+                AppendToLogFile('GETMACAddress             : Using alternative MAC Address routine');
+                slAdapter:=GetAdapterInformationII;
+                Repeat
+                    strAdapterDescription:=Trim(ExtractFromGetAdapterInformation(slAdapter,intAdaptertoReadFrom,ADAP_DESCRIPTION));
+                    if (Pos('Wireless',strAdapterDescription) <> 0) then begin
+                       AppendToLogFile('GETMACAddress             : Adapter ' + InttoStr(intAdaptertoReadFrom) + ' appears to be a Wireless, I''ll try the next one (this one is "' + strAdapterDescription + '")');
+                    end;
+                    if (Pos('PPP',strAdapterDescription) <> 0) then begin
+                        AppendToLogFile('GETMACAddress             : Adapter ' + InttoStr(intAdaptertoReadFrom) + ' appears to be the dial up adapter, I''ll try the next one (this one is "' + strAdapterDescription + '")');
+                    end;
+                    intAdaptertoReadFrom:=intAdaptertoReadFrom+1;
+                Until ((Pos('Wireless',strAdapterDescription) = 0) and (Pos('Wireless',strAdapterDescription) = 0)) or (intAdaptertoReadFrom > slAdapter.Count);
+                if intAdaptertoReadFrom > slAdapter.Count then begin
+                   AppendToLogFile('ERROR                     : Could not determine correct network adapter');
+                   ExitRoutine(5)
+                end;
+                AppendToLogFile('GETMACAddress             : Reading MAC Address from "' + strAdapterDescription + '"  (Adapter ' + IntToStr(intAdaptertoReadFrom - 1) + ')');
+                strMACAddress:=ExtractFromGetAdapterInformation(slAdapter,intAdaptertoReadFrom - 1,ADAP_ADAPTER_ADDRESS);
+                slAdapter.Free;
+            end;
+        end;
+        AppendToLogFile('GETMACAddress             : Returned ' + strMACAddress);
+        Result:=strMACAddress;
+    end;
+
+procedure UseMyNameforComputerName;
+  begin
+    if not TaskTestOnly then begin
+      AsEnteredComputerName:=UserName;
+      RenameComputer(UserName,TaskUnReg,TaskReboot);
+    end;
+  end;
+
+procedure UseIPAddressforName;
+  var tmpstr : string;
+
+  begin
+    tmpstr:=LocalIPList.Strings[0];
+
+    if tmpstr = '127.0.0.1' then  // Avoid returning localhost
+      tmpstr:='';
+
+    if tmpstr = '' then begin
+      AppendToLogFile('Could not determine local IP address. - Rename request aborted!');
+      ExitRoutine(4);
+    end
+    else
+      AppendToLogFile('IP Address                : ' + tmpstr);
+    tmpstr:=StringReplace(tmpstr,'.','-',[rfReplaceAll, rfIgnoreCase]);
+
+    //function StringReplace(const S, OldStr, NewStr: string; Flags: TReplaceFlags): string;
+
+    AppendToLogFile('Sanitised IP Address      : ' + tmpstr);
+
+    if not TaskTestOnly then
+      RenameComputer(tmpstr,TaskUnReg,TaskReboot);
+
+  end;
+
+function GetIPAddress(intIPAddressIndex : integer):string;
+    var strTEMP : string;
+begin
+    strTEMP:=LocalIPList.Strings[intIPAddressIndex];
+    if strTEMP = '127.0.0.1' then  // Avoid returning localhost
+        strTEMP:='';
+    result:=strTEMP;
+end;
+
+procedure WritetoLogFile;
+  var                           f : textfile;
+                             intI : integer;
+                       bLogRolled : Boolean;
+      strTEMP, strLeft, strPassWd : string;
+  begin
+    bLogRolled:=False;
+    if fileexists(LogFilePathandName) then begin    // Start check on log file to ensure it doesn't get too big
+       if GetFilesizeEx(LogFilePathandName) > (MAX_LOG_FILE_SIZE * 1024) then begin  //Convert Meg to Bytes
+          DeleteFile(LogFilePathandName);
+          bLogRolled:=True;
+       end;
+    end;
+    assignfile(f,LogFilePathandName);
+    if fileexists(LogFilePathandName) then
+      append(f)
+    else
+        rewrite(f);
+    writeln(f,'');
+    writeln(f,'');
+    writeln(f,DateTimetoStr(Now) + ' : Version                   : ' + MyVersionNumber);
+    writeln(f,DateTimetoStr(Now) + ' : Release Date              : ' + MyVersionDate);
+    strTEMP:=OSVer_To_Friendly_Name(GetOSVersion(True));
+    if GetOSVersion(False) = OS_WINNT then begin
+        if GetServicePackVersion <> '' then
+           strTEMP:=strTEMP + ' (' + GetServicePackVersion + ')';
+    end;
+    writeln(f,DateTimetoStr(Now) + ' : Operating System          : ' + strTEMP);
+    writeln(f,DateTimetoStr(Now) + ' : Temporary Directory       : ' + TempDirectory);
+    if not Directoryexists(TempDirectory) then
+    writeln(f,DateTimetoStr(Now) + ' :                           : NOTE: This directory does not exist Log File set to C:\');
+    writeln(f,DateTimetoStr(Now) + ' : Log File                  : ' + LogFilePathandName);
+    if bLogRolled then
+       writeln(f,DateTimetoStr(Now) + '                               Logfile has been rolled as it exceeded ' + InttoStr(MAX_LOG_FILE_SIZE) + ' KByte(s)');
+    writeln(f,DateTimetoStr(Now) + ' : User Name                 : ' + UserName);
+    writeln(f,DateTimetoStr(Now) + ' : Computer Name (NetBIOS)   : ' + ComputerName);
+    writeln(f,DateTimetoStr(Now) + ' : Host Name (IP)            : ' + HostName);
+
+    if LocalAdminRights then
+      writeln(f,DateTimetoStr(Now) + ' : Operator Rights           : Administrator')
+    else
+     writeln(f,DateTimetoStr(Now) + ' : Operator Rights           : User');
+
+    if NovellClientVersion[1] <> '.' then begin
+      writeln(f,DateTimetoStr(Now) + ' : Novell Client Version     : ', NovellClientVersion);
+      if UnRegProgramName <> '' then
+          writeln(f,DateTimetoStr(Now) + ' : Path to ZENworks UnReg    : ', UnRegProgramName)
+      else
+          writeln(f,DateTimetoStr(Now) + ' : Path to ZENworks UnReg    : Not Found');
+    end;
+
+    //  Added logic to avoid domain password appearing in the log file
+    strTEMP:=strPas(cmdline);
+    intI:=Pos(UpperCase(DomainPasswordSwitch),UpperCase(strPas(cmdline)));
+    if intI = 0 then
+        writeln(f,DateTimetoStr(Now) + ' : Command Line              : ', strTEMP)
+    else begin
+        strLeft:=Copy(strTEMP,1,intI+Length(DomainPasswordSwitch)-1);
+        strTemp:=Copy(strTEMP,intI+Length(DomainPasswordSwitch),length(strTEMP)-intI-Length(DomainPasswordSwitch)+1);
+        strPassWd:=strTEMP;
+        intI:= Pos(' ',strTemp);
+        if intI <> 0 then begin
+            strPassWd:=copy(strTemp,1,intI-1);
+            strTEMP:=copy(strTEMP,intI,length(strTEMP)-intI+1);
+        end
+        else
+            strTEMP:='';
+        strTEMP:=strLeft + '##########' + strTEMP;
+        writeln(f,DateTimetoStr(Now) + ' : Command Line              : ', strTemp)
+    end;
+    flush(f);
+    closefile(f);
+  end;
+
+
+
+procedure MainCodeBlock;
+  begin
+    ShowGUI:=True;
+    LocalAdminRights:=False;
+    OSVer:=GetOSVersion(False);
+    OSVerDetailed:=GetOSVersion(True);
+    TempDirectory:=GetTempDirectory;
+    strDomainUserID:='';
+    strDomainPassword:='';
+    AsEnteredComputerName:='';
+    blnNetWareClientInstalled:=False;
+    if DirectoryExists(TempDirectory) then
+         LogFilePathandName:=TempDirectory + LogFileName
+    else
+         LogFilePathandName:='C:\' + LogFileName;
+
+    if (IsAdmin) or (OSVer='WIN9X') then
+      LocalAdminRights:=True;
+
+    UserName:=GetCurrentUserName;
+    ComputerName:=UpperCase(GetWorkstationName);
+    HostName:=GetHostName;
+
+    NovellClientVersion:=ReadNovellClientDetails;
+    if NovellClientVersion[1] <> '.' then
+       blnNetWareClientInstalled:=True;
+    UnRegProgramName:=FindPathtoFile(UnRegProgramName);
+
+    WritetoLogFile;
+
+    CheckCommandLine;          //  Any thing special to do?
+
+    if TaskHelpStuff then begin
+       AppendToLogFile('Operation               : Show Help File');
+       ShowGUI:=False;
+       ShowHelpFile;            //  Show the help file in the default browser
+       Exit;
+    end;
+
+    if TaskRenameComputerInDomain then begin
+       AppendToLogFile('Option                    : Rename Computer in Domain');
+       if (OSVerDetailed <> 'WIN2K') AND (OSVerDetailed <> 'WINXP') then begin
+            AppendToLogFile('Rename in Domain        : Operation not supported on this OS');
+            ExitRoutine(11);
+       end;
+    end;
+
+    if TaskNameSync then begin
+      AppendToLogFile('Operation                 : Name Sync Mode');
+      ShowGUI:=False;
+      if LocalAdminRights then //  Can't change the names without administrator rights
+        NameSync               //  Set host name the same as the netBIOS name
+      else begin
+        AppendToLogFile('Name Sync               : Can''t Proceed - No Administrator Rights');
+        ExitRoutine(9);
+      end;
+      Exit;
+    end;
+
+    if TaskSilent then begin
+      AppendToLogFile('Operation                 : Silent (scripted) Mode');
+      ShowGUI:=False;
+      if LocalAdminRights then //  Can't change the names without administrator rights
+        SilentMode             //  Set the host and netBIOS name as specified on the command line
+      else begin
+        AppendToLogFile('Silent Mode               :  Can''t Proceed - No Administrator Rights');
+        ExitRoutine(9);
+      end;
+      Exit;
+    end;
+
+    if TaskResolvebyReverseDNS then begin
+      AppendToLogFile('Operation                 : Resolve by Reverse DNS Look Up (/DNS)');
+      ShowGUI:=False;
+      if LocalAdminRights then              //  Can't change the names without administrator rights
+          SilentMode
+      else begin
+          AppendToLogFile('Reverse DNS Look Up        : Can''t Proceed - No Administrator Rights');
+          ExitRoutine(9);
+      end;
+      Exit;
+    end;
+
+    if TaskUseMACAddressforName then begin
+      AppendToLogFile('Operation                 : Use MAC Address for Computer Name');
+      ShowGUI:=False;
+      if LocalAdminRights then //  Can't change the names without administrator rights
+        UseMACAddressforName   //  Set Computer Name to MAC Address
+      else begin
+        AppendToLogFile('Use MAC Address for Name  : Can''t Proceed - No Administrator Rights');
+        ExitRoutine(9);
+      end;
+      Exit;
+    end;
+
+    if TaskUseIPAddressforName then begin
+      AppendToLogFile('Operation                 : Use IP Address for Computer Name');
+      ShowGUI:=False;
+      if LocalAdminRights then //  Can't change the names without administrator rights
+        UseIPAddressforName   //  Set Computer Name to MAC Address
+      else begin
+        AppendToLogFile('Use IP Address for Name   : Can''t Proceed - No Administrator Rights');
+        ExitRoutine(9);
+      end;
+      Exit;
+    end;
+
+    if TaskUseMyName then begin
+      AppendToLogFile('Operation                 : Use Current Users Name as Computer Name');
+      ShowGUI:=False;
+      if LocalAdminRights then       //  Can't change the names without administrator rights
+        UseMyNameforComputerName    //  Set Computer Name to Username
+      else begin
+        AppendToLogFile('Use User Name for Name    : Can''t Proceed - No Administrator Rights');
+        ExitRoutine(9);
+      end;
+      Exit;
+    end;
+
+    if TaskPostGhost and not (PostGhostNameMatch) then
+        ShowGUI:=False;
+
+
+    if TaskReadFromDataFile then begin
+      AppendToLogFile('Operation                 : Read Name From File');
+      ShowGUI:=False;
+      if LocalAdminRights then       //  Can't change the names without administrator rights
+        ReadNameFromDataFile         //  Get new name from datafile
+      else begin
+        AppendToLogFile('Read Name From File       : Can''t Proceed - No Administrator Rights');
+        ExitRoutine(9);
+      end;
+      Exit;
+    end;
+
+  end;
+
+
+  function OSVer_To_Friendly_Name(strOSVer : string) : string;
+  begin
+      if strOSVer = OS_WIN95 then
+         Result:='Microsoft Windows 95'
+      else if strOSVer = OS_WIN98 then
+         Result:='Microsoft Windows 98'
+      else if strOSVer = OS_WINME then
+         Result:='Microsoft Windows ME'
+      else if strOSVer = OS_WINNT then
+         Result:='Microsoft Windows NT 4.0'
+      else if strOSVer = OS_WIN2K then
+         Result:='Microsoft Windows 2000'
+      else if strOSVer = OS_WINXP then
+         Result:='Microsoft Windows XP'
+      else if strOSVer = OS_WIN2K3 then
+         Result:='Microsoft Windows 2003'
+      else
+         Result:=strOSVer;
+  end;
+
+  function OSVersionToTLA:string;
+  Var strOSVer : string;
+  begin
+      strOSVer:=GetOSVersion(True);
+      if strOSVer = OS_WIN95 then
+         Result:='W95'
+      else if strOSVer = OS_WIN98 then
+         Result:='W98'
+      else if strOSVer = OS_WINME then
+         Result:='WME'
+      else if strOSVer = OS_WINNT then
+         Result:='WNT'
+      else if strOSVer = OS_WIN2K then
+         Result:='W2K'
+      else if strOSVer = OS_WINXP then
+         Result:='WXP'
+      else if strOSVer = OS_WIN2K3 then
+         Result:='WK3'
+      else
+         Result:='UKN';
+  end;
+
+function Replace(Instring, SearchStr, NewStr : string) : string;
+var
+  place     : integer;
+   s1       : string;
+
+begin
+    s1 := Instring;
+    Repeat
+      Place := pos(SearchStr, s1);
+      if place > 0 then begin
+        Delete(s1, Place, Length(SearchStr));
+        Insert(NewStr, s1, Place);
+      end;
+    until place = 0;
+    result := s1;
+end;
+
+
+Procedure RunBatchFileandWait(ExecuteFile,ParamString,StartInString : string);
+var
+  SEInfo: TShellExecuteInfo;
+  ExitCode: DWORD;
+begin
+  FillChar(SEInfo, SizeOf(SEInfo), 0);
+  SEInfo.cbSize := SizeOf(TShellExecuteInfo);
+  with SEInfo do begin
+    fMask := SEE_MASK_NOCLOSEPROCESS;
+    Wnd := Application.Handle;
+    lpFile := PChar(ExecuteFile);
+{
+ParamString can contain the
+application parameters.
+}
+lpParameters := PChar(ParamString);
+{
+StartInString specifies the
+name of the working directory.
+If ommited, the current directory is used.
+}
+    lpDirectory := PChar(StartInString);
+    nShow := SW_HIDE;
+  end;
+  if ShellExecuteEx(@SEInfo) then begin
+    repeat
+      Application.ProcessMessages;
+      GetExitCodeProcess(SEInfo.hProcess, ExitCode);
+    until (ExitCode <> STILL_ACTIVE) or
+	   Application.Terminated;
+  end
+end;
+
+Function GetDNSServer:string;
+var strDNSServers : String;
+    sl : TStringList;
+begin
+    sl:=TStringList.Create;
+    AppendToLogFile('Get DNS Server Address    : Checking OS support');
+    If (IsDLLOnSystem('iphlpapi.dll')) and (GetOSVersion(true) <> 'WIN95') and (GetOSVersion(true) <> 'WINNT') then begin
+        AppendToLogFile('Get DNS Server Address    : IPHLPAPI.DLL found using GetNetworkParams API');
+        strDNSServers:=GetDNSUsingGetNetworkParams;
+    end
+    else begin
+        AppendToLogFile('Get DNS Server Address    : IPHLPAPI.DLL NOT found (or Win95/NT4) using alternative DNS address routine');
+        strDNSServers:=GetDNSUsingScreenScraping;
+    end;
+    DW_SPlit(strDNSServers,';',TStrings(sl),qoNOBEGINEND or qoNOCRLF or qoPROCESS);
+    AppendToLogFile('Get DNS Server Address    : Returned ' + strDNSServers);
+    AppendToLogFile('Get DNS Server Address    : Primary is ' + sl[0]);
+    result:=sl[0];
+end;
+
+function CreateTempFileName(aPrefix: string): string;
+var
+  Buf: array[0..MAX_PATH] of char;
+  Temp: array[0..MAX_PATH] of char;
+begin
+  GetTempPath(MAX_PATH, Buf);
+  GetTempFilename(Buf, PChar(aPrefix), 0, Temp);
+  Result := String(Temp);
+end;
+
+Function GetDNSUsingScreenScraping:string;
+var OSVersion, strTempDirectory, strTempFile, strPathtoIPConfig, strCmdLine,
+    strPathtoComSpec, strLineofText : string;
+    blnGotOne                       : Boolean;
+    intPos                          : integer;
+    f :  textfile;
+begin
+    result:='';
+    blnGotOne:=False;
+    OSVersion:=GetOSVersion(false);
+    strTempDirectory:=GetTempDirectory;
+    strTempFile:= CreateTempFileName('IPC');
+
+   if FileExists(strTempFile) then
+      DeleteFile(strTempFile);
+
+   if OSVersion = 'WIN9X' then begin
+      strPathtoIPConfig:=FindPathToFile('WINIPCFG.EXE');
+      strCmdLine:= '/ALL /BATCH ' + strTempFile;
+      strPathtoComSpec:=FindPathToFile('command.com');
+      RunBatchFileandWait(strPathtoIPConfig,strCmdLine,strTempDirectory);
+   end
+   else begin
+     strPathtoIPConfig:=FindPathToFile('IPCONFIG.EXE');
+     strCmdLine:= strPathtoIPConfig + ' /ALL > ' + strTempFile;
+     strPathtoComSpec:=FindPathToFile('cmd.exe');
+     RunBatchFileandWait(strPathtoComSpec,'/c ' + strCmdLine,strTempDirectory);
+   end;
+   assignfile(f,strTempFile);
+   reset(f);
+   repeat
+       ReadLn(f,strLineofText);
+       strLineofText:=Trim(strLineofText);
+       intPos:=Pos(':',strLineofText);
+       if (Pos(UpperCase('DNS Servers'),UpperCase(strLineofText)) <> 0) and (intPos <> 0) then begin
+          blnGotOne:=True;
+          result:= result + Trim(Copy(strLineofText,intPos+1,length(strLineofText)-intPos+1)) + ';'
+       end
+       else if (intPos = 0) and (blnGotOne = True) then begin
+          if IsValidIPAddress(strLineofText) = True then
+              result:=result + strLineofText + ';';
+       end
+       else
+           blnGotOne:=False;
+   until EOF(f);
+   close(f);
+   if FileExists(strTempFile) then
+       DeleteFile(strTempFile);
+end;
+
+
+Function GetDNSUsingGetNetworkParams:string;
+   type
+         Type_GetNetworkParams = function (FI : PFixedInfo; Var BufLen : Integer) : Integer; StdCall;
+   Var
+       FI                : PFixedInfo;
+       Size              : Integer;
+       Res               : Integer;
+       //I                 : Integer;
+       intResultCode     : integer;
+       DNS               : PIPAddrString;
+       _GetNetworkParams :  Type_GetNetworkParams;
+
+Begin
+    Result:='';
+    //Result:= TStringList.Create;
+    Size := 1024;
+    GetMem(FI,Size);
+    intResultCode:=LoadLibrary(pchar('iphlpapi.dll'));
+    @_GetNetworkParams:=GetProcAddress(intResultCode,pchar('GetNetworkParams'));
+    Res := _GetNetworkParams(FI,Size);
+    FreeLibrary(intResultCode);
+    If (Res <> ERROR_SUCCESS) Then Begin
+        SetLastError(Res);
+        RaiseLastWin32Error;
+    End;
+    //Result.Add('Host name: '+FI^.HostName);
+    //Result.Add('Domain name: '+FI^.DomainName);
+    //If (FI^.CurrentDNSServer <> nil) Then
+      //Result.Add('Current DNS Server: '+FI^.CurrentDNSServer^.IPAddress)
+    //Else Result.Add('Current DNS Server: (none)');
+    //I := 1;
+    DNS := @FI^.DNSServerList;
+    Repeat
+      //Result.Add('DNS '+IntToStr(I)+': '+DNS^.IPAddress);
+      Result:= Result + DNS^.IPAddress + ';';
+      //Inc(I);
+      DNS := DNS^.Next;
+    Until (DNS = nil);
+
+    //Result.Add('Scope ID: '+FI^.ScopeId);
+    //Result.Add('Routing: '+IntToStr(FI^.EnableRouting));
+    //Result.Add('Proxy: '+IntToStr(FI^.EnableProxy));
+    //Result.Add('DNS: '+IntToStr(FI^.EnableDNS));
+    FreeMem(FI);
+End;
+
+Function GetAdapterInformation:TStringList;
+   type
+       Type_GetAdaptersInfo = function (AI : PIPAdapterInfo; Var BufLen : Integer) : Integer StdCall;
+
+Var
+  AI,Work            : PIPAdapterInfo;
+  Size               : Integer;
+  Res                : Integer;
+  I                  : Integer;
+  intResultCode      : Integer;
+  _GetAdaptersInfo   : Type_GetAdaptersInfo;
+
+  Function MACToStr(ByteArr : PByte; Len : Integer) : String;
+  Begin
+    Result := '';
+    While (Len > 0) do Begin
+      Result := Result+IntToHex(ByteArr^,2); //+'-';
+      ByteArr := Pointer(Integer(ByteArr)+SizeOf(Byte));
+      Dec(Len);
+    End;
+    //SetLength(Result,Length(Result)-1); { remove last dash }
+  End;
+
+  Function GetAddrString(Addr : PIPAddrString) : String;
+  Begin
+    Result := '';
+    While (Addr <> nil) do Begin
+      Result := Result+'A: '+Addr^.IPAddress+' M: '+Addr^.IPMask+#13;
+      Addr := Addr^.Next;
+    End;
+  End;
+
+  Function TimeTToDateTimeStr(TimeT : Integer) : String;
+  Const UnixDateDelta = 25569; { days between 12/31/1899 and 1/1/1970 }
+  Var
+    DT  : TDateTime;
+    TZ  : TTimeZoneInformation;
+    Res : DWord;
+
+  Begin
+    If (TimeT = 0) Then Result := ''
+    Else Begin
+      { Unix TIME_T is secs since 1/1/1970 }
+      DT := UnixDateDelta+(TimeT / (24*60*60)); { in UTC }
+      { calculate bias }
+      Res := GetTimeZoneInformation(TZ);
+      If (Res = TIME_ZONE_ID_INVALID) Then RaiseLastWin32Error;
+      If (Res = TIME_ZONE_ID_STANDARD) Then Begin
+        DT := DT-((TZ.Bias+TZ.StandardBias) / (24*60));
+        Result := DateTimeToStr(DT)+' '+WideCharToString(TZ.StandardName);
+      End
+      Else Begin { daylight saving time }
+        DT := DT-((TZ.Bias+TZ.DaylightBias) / (24*60));
+        Result := DateTimeToStr(DT)+' '+WideCharToString(TZ.DaylightName);
+      End;
+    End;
+  End;
+
+begin
+  Result:= TStringList.Create;
+  Size := 5120;
+  GetMem(AI,Size);
+
+  intResultCode:=LoadLibrary(pchar('iphlpapi.dll'));
+  @_GetAdaptersInfo:=GetProcAddress(intResultCode,pchar('GetAdaptersInfo'));
+  Res := _GetAdaptersInfo(AI,Size);
+  FreeLibrary(intResultCode);
+
+   If (Res <> ERROR_SUCCESS) Then Begin
+    SetLastError(Res);
+    RaiseLastWin32Error;
+  End;
+  Work := AI;
+  I := 1;
+  Repeat
+      //Adapter Number;ComboIndex;Adapter name;Description;Adapter address; Index; Type; DHCP;
+      //Current IP; IP addresses; Gateways; DHCP servers; Has WINS; Primary WINS; Secondary WINS;
+      //Lease obtained; Lease expires
+      Result.Add(IntToStr(I) + ';' + IntToStr(Work^.ComboIndex) + ';' + Work^.AdapterName + ';' +
+               Work^.Description + ';' + MACToStr(@Work^.Address,Work^.AddressLength) + ';'   +
+               IntToStr(Work^.Index) + ';' + IntToStr(Work^._Type) + ';' + IntToStr(Work^.DHCPEnabled) +
+               ';' + GetAddrString(Work^.CurrentIPAddress) + ';' + GetAddrString(@Work^.IPAddressList) +
+               ';' + GetAddrString(@Work^.GatewayList) + ';' + GetAddrString(@Work^.DHCPServer) +
+               ';' + IntToStr(Integer(Work^.HaveWINS)) + ';' + GetAddrString(@Work^.PrimaryWINSServer) +
+               ';' + GetAddrString(@Work^.SecondaryWINSServer) + ';' + TimeTToDateTimeStr(Work^.LeaseObtained) +
+               ';' + TimeTToDateTimeStr(Work^.LeaseExpires));
+
+      Inc(I);
+      Work := Work^.Next;
+  Until (Work = nil);
+  FreeMem(AI);
+end;
+
+// Split a given string into TStrings with given delimiter character
+// Author:       xpcoder
+// Version:      1.10
+// Date:         5.Mar.2002
+// Parameter:
+//   aValue => aDelimiter separated string
+//   aDelimiter => a character to split the string apart
+//   Result => a provided TStrings to store split string,
+//             remember to typecast to TStrings(x) if x
+//             derivative type of TStrings (e.g. TStringList)
+//             Will be created if one is not assigned
+//   Flag =>
+//        qoPROCESS.....Process quoted string
+//        qoNOBEGINEND..Remove heading and trailing quote
+//        qoNOCRLF......Remove carriage return and line feed characters
+// Limitation:   No unicode support
+//               one and only one character delimiter
+// Usage:
+//   DW_Split( txtInput.Text, ',', TStrings(sl), qoNOBEGINEND or qoNOCRLF or qoPROCESS );
+
+procedure DW_Split(aValue : string; aDelimiter : Char; var Result : TStrings; Flag : Integer = $0001);
+var
+  i       : integer;
+  S, sIn  : string;
+  q       : boolean;
+  canadd  : boolean;
+  l       : Integer;
+  c, qc   : char;
+  beqc    : char;
+begin
+  sIn  := trim(aValue);
+  l    := Length(sIn);
+  if ( l < 1 ) then exit;
+  if (Not Assigned(Result)) then Result := TStringList.Create;
+  Result.Clear;
+  S    := '';
+  q    := false;
+  qc   := #00;
+  beqc := #00;
+  i    := 1;
+  if ( (pos(sIn[1],#34#39) <> 0) ) then beqc := sIn[1];
+
+  while (i <= l) do begin
+    canadd := true;
+    c      := sIn[i];
+    if ( (c <> aDelimiter) or (q) ) then
+      begin
+        if ( (Flag and qoPROCESS) = qoPROCESS ) then
+          if ( (pos(c,#34#39) <> 0) and (not q)) then
+            qc := c;
+
+        if ( (Flag and qoNOBEGINEND) = qoNOBEGINEND ) then
+          if ( (c = beqc) and ((i=1) or (i=l)) ) then
+            canadd := false;
+
+        if ( (Flag and qoNOCRLF) = qoNOCRLF ) then
+          if ( (c = #13) or (c = #10) ) then
+            canadd := false;
+
+        if ( canadd ) then
+          S := S + c;
+
+        if ( c = qc ) then
+          begin
+            if ( i < l ) then
+              if ( sIn[i+1] = qc ) then
+                begin
+                  Inc(i,2);
+                  continue;
+                end;
+            q := not q;
+          end;
+      end
+    else
+      begin
+        Result.Add(S);
+        S := '';
+      end;
+    Inc(i);
+  end;
+  if S <> '' then Result.Add(S);
+end;
+
+Function ExtractFromGetAdapterInformation(tlAdaperInfo : TStringList; intAdapterIndex, intDataIndex : Integer) : string;
+    var intI : Integer;
+        slSL : TStringList;
+    begin
+        Result:='';
+        for intI:=0 to tlAdaperInfo.Count -1 do begin
+            //showmessage(tlAdaperInfo[intI]);
+            if intI = intAdapterIndex then begin
+                slSL:=TStringList.Create;
+                DW_Split(tlAdaperInfo[intAdapterIndex],';',TStrings(slSL),qoNOCRLF);
+                Result:=slSL[intDataIndex];
+                slSL.Free;
+                Exit;
+            end;
+        end;
+    end;
+
+
+function GetMACAddressLegacy(AdapterNumber : Integer):string;
+type
+ TNBLanaResources = (lrAlloc, lrFree);
+ PMACAddress = ^TMACAddress;
+ TMACAddress = array[0..5] of Byte;
+
+var
+  LanaNum: Byte;
+  MACAddress: PMACAddress;
+  retCode: Byte;
+  ResetNCB, StatNCB : PNCB;
+  AdapterStatus: PAdapterStatus;
+
+begin
+  LanaNum := 0;
+  retcode:=0;
+
+  // ------------------ Reset Procedure ------------------
+  New(ResetNCB);
+  ZeroMemory(ResetNCB, SizeOf(TNCB));
+  try
+    with ResetNCB^ do begin
+      ncb_lana_num := Char(LanaNum);        // Set Lana_Num
+      ncb_lsn := Char(lrAlloc);             // Allocation of new resources
+      ncb_callname[0] := Char(0);           // Query of max sessions
+      ncb_callname[1] := #0;                // Query of max NCBs (default)
+      ncb_callname[2] := Char(0);           // Query of max names
+      ncb_callname[3] := #0;                // Query of use NAME_NUMBER_1
+      ncb_command  := Char(NCBRESET);
+      NetBios(ResetNCB);
+      if Byte(ncb_cmd_cplt) <> NRC_GOODRET then begin
+        Beep;
+        ////////////////////AppendToLogFile('MAC Address             : Reset Error! RetCode = $' + IntToHex(RetCode, 2));
+      end;
+    end;
+  finally
+    Dispose(ResetNCB);
+  end;
+  // ----------------------------------------------
+
+  New(MACAddress);
+  try
+    New(StatNCB);
+    ZeroMemory(StatNCB, SizeOf(TNCB));
+    StatNCB.ncb_length := SizeOf(TAdapterStatus) +  255 * SizeOf(TNameBuffer);
+    GetMem(AdapterStatus, StatNCB.ncb_length);
+    try
+      with StatNCB^ do begin
+        ZeroMemory(MACAddress, SizeOf(TMACAddress));
+        ncb_buffer := PChar(AdapterStatus);
+        ncb_callname := '*              ' + #0;
+        ncb_lana_num := Char(LanaNum);
+        ncb_command  := Char(NCBASTAT);
+        NetBios(StatNCB);
+        retcode := Byte(ncb_cmd_cplt);
+        if retcode = NRC_GOODRET then
+          MoveMemory(MACAddress, AdapterStatus, SizeOf(TMACAddress));
+      end;
+    finally
+      FreeMem(AdapterStatus);
+      Dispose(StatNCB);
+    end;
+
+    if RetCode = NRC_GOODRET then begin
+      result:= Format('%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x',
+      [MACAddress[0], MACAddress[1], MACAddress[2], MACAddress[3], MACAddress[4], MACAddress[5]]);
+    end
+    else begin
+      Beep;
+      result:='Error';
+      //////////////////AppendToLogFile('MAC Address             : Error Reading Address! RetCode = $' + IntToHex(RetCode, 2));
+    end;
+  finally
+    Dispose(MACAddress);
+  end;
+end;
+
+// ---------------------------------------------------------------------------
+
+Function GetAdapterInformationII:TStringList;
+var OSVersion, strCmdLine, strTempFile, strPathtoIPConfig, strTempDirectory, strLineofText, strPathtoComSpec,
+    strMACAddress, strDescription, strDCHPEnabled, strIPAddress, strSubNetMask, strDefaultGateway, strDHCPServer, strTEMP,
+    strDHCPLeaseObtained, strDHCPLeaseExpires, strPrimaryWINSServer, strSecondaryWINSServer, strPrimaryDNSServer,
+    strSecondaryDNSServer  : string;
+    f :  textfile;
+    intPos : integer;
+begin
+   Result:= TStringList.Create;
+   OSVersion:=GetOSVersion(false);
+   strTempDirectory:=GetTempDirectory;
+   strTempFile:= CreateTempFileName('IPC');
+
+   if FileExists(strTempFile) then
+      DeleteFile(strTempFile);
+
+   if OSVersion = 'WIN9X' then begin
+      strPathtoIPConfig:=FindPathToFile('WINIPCFG.EXE');
+      strCmdLine:= '/ALL /BATCH ' + strTempFile;
+      strPathtoComSpec:=FindPathToFile('command.com');
+      RunBatchFileandWait(strPathtoIPConfig,strCmdLine,strTempDirectory);
+   end
+   else begin
+     strPathtoIPConfig:=FindPathToFile('IPCONFIG.EXE');
+     strCmdLine:= strPathtoIPConfig + ' /ALL > ' + strTempFile;
+     strPathtoComSpec:=FindPathToFile('cmd.exe');
+     RunBatchFileandWait(strPathtoComSpec,'/c ' + strCmdLine,strTempDirectory);
+   end;
+   //if Not FileExists(strTempFile) then
+      //Post Error Here
+   assignfile(f,strTempFile);
+   reset(f);
+   strDescription:='';
+   strMACAddress:='';
+   strDCHPEnabled:='';
+   strIPAddress:='';
+   strSubNetMask:='';
+   strDefaultGateway:='';
+   strDHCPServer:='';
+   strDHCPLeaseObtained:='';
+   strDHCPLeaseExpires:='';
+   strPrimaryWINSServer:='';
+   strSecondaryWINSServer:='';
+   strPrimaryDNSServer:='';
+   strSecondaryDNSServer:='';
+   repeat
+       ReadLn(f,strLineofText);
+       strLineofText:=Trim(strLineofText);
+       intPos:=Pos(':',strLineofText);
+       if intPos <> 0 then
+           strTEMP:=Trim(Copy(strLineofText,intPos+1,length(strLineofText)-intPos+1));
+       if (Pos(UpperCase('Description'),UpperCase(strLineofText)) <> 0) then begin
+          if strDescription <> '' then begin
+             Result.Add('Adapter Number;ComboIndex;AdapterName;' + strDescription + ';' + strMACAddress + ';Index;Type;' + strDCHPEnabled + ';CurrentIPAddress;' + strIPAddress + ';' + strSubNetMask + ';' + strDefaultGateway + ';' + strDHCPServer + ';HaveWINS' + ';' + strPrimaryWINSServer + ';' + strSecondaryWINSServer + ';' + strDHCPLeaseObtained + ';' + strDHCPLeaseExpires + ';' + strPrimaryDNSServer + ';' + strSecondaryDNSServer);
+             strMACAddress:='';
+             strDescription:='';
+             strDCHPEnabled:='';
+             strIPAddress:='';
+             strSubNetMask:='';
+             strDefaultGateway:='';
+             strDHCPServer:='';
+             strDHCPLeaseObtained:='';
+             strDHCPLeaseExpires:='';
+             strPrimaryWINSServer:='';
+             strSecondaryWINSServer:='';
+             strPrimaryDNSServer:='';
+             strSecondaryDNSServer:='';
+          end;
+          strDescription:=strTEMP;
+       end
+       else if (Pos(UpperCase('Physical Address'),UpperCase(strLineofText)) <> 0) then
+           strMACAddress:=Replace(strTEMP,'-','')
+       else if (Pos(UpperCase('Dhcp Enabled'),UpperCase(strLineofText)) <> 0) then
+           strDCHPEnabled:=strTEMP
+       else if (Pos(UpperCase('IP Address'),UpperCase(strLineofText)) <> 0) then
+           strIPAddress:=strTEMP
+       else if (Pos(UpperCase('Subnet Mask'),UpperCase(strLineofText)) <> 0) then
+           strSubNetMask:=strTEMP
+       else if (Pos(UpperCase('Default Gateway'),UpperCase(strLineofText)) <> 0) then
+           strDefaultGateway:=strTEMP
+       else if (Pos(UpperCase('DHCP Server'),UpperCase(strLineofText)) <> 0) then
+           strDHCPServer:=strTEMP
+       else if (Pos(UpperCase('Lease Obtained'),UpperCase(strLineofText)) <> 0) then
+           strDHCPLeaseObtained:=strTEMP
+       else if (Pos(UpperCase('Lease Expires'),UpperCase(strLineofText)) <> 0) then
+           strDHCPLeaseExpires:=strTEMP
+       else if (Pos(UpperCase('Primary WINS Server'),UpperCase(strLineofText)) <> 0) then
+           strPrimaryWINSServer:=strTEMP
+       else if (Pos(UpperCase('Secondary WINS Server'),UpperCase(strLineofText)) <> 0) then
+           strSecondaryWINSServer:=strTEMP
+       else if (Pos(UpperCase('DNS Servers'),UpperCase(strLineofText)) <> 0) then
+           strPrimaryDNSServer:=strTEMP
+   until EOF(f);
+   if strDescription <> '' then begin
+      Result.Add('Adapter Number;ComboIndex;AdapterName;' + strDescription + ';' + strMACAddress + ';Index;Type;' + strDCHPEnabled + ';CurrentIPAddress;' + strIPAddress + ';' + strSubNetMask + ';' + strDefaultGateway + ';' + strDHCPServer + ';HaveWINS' + ';' + strPrimaryWINSServer + ';' + strSecondaryWINSServer + ';' + strDHCPLeaseObtained + ';' + strDHCPLeaseExpires + ';' + strPrimaryDNSServer + ';' + strSecondaryDNSServer);
+   end;
+   closefile(f);
+   if FileExists(strTempFile) then
+      DeleteFile(strTempFile);
+end;
+
+// ---------------------------------------------------------------------------
+
+function ReverseDNSLookup(strIPAddress, strDNSServer:string; intPTRTimeOut : integer; out strResult : string):Boolean;
+var frmPTRQuery : TForm;
+    Inst        : TInstance;
+begin
+    Inst := TInstance.Create;
+    Inst.intPTRResult:=-99;
+    frmPTRQuery:=TForm.Create(Application); // Create frmPTRQuery
+    Inst.Timer1:=TTimer.Create(frmPTRQuery);
+    Inst.DNSQuery1:=TDNSQuery.Create(frmPTRQuery);
+    Inst.Timer1.Enabled:=False;
+    Inst.Timer1.Interval:=intPTRTimeOut;
+    Inst.Timer1.OnTimer:=Inst.PTRQueryOnTimeOut;
+    Inst.DnsQuery1.OnRequestDone:=Inst.DnsQuery1RequestDone;
+    Inst.DnsQuery1.Addr:=strDNSServer; //DNS Server
+    try
+        Inst.DnsQuery1.PTRLookup(strIPAddress);
+    except
+        Inst.intPTRResult:=-1;
+    end;
+    Inst.Timer1.Enabled:=True;
+    repeat
+          Application.ProcessMessages;
+    until Inst.intPTRResult <> -99;
+    Inst.Timer1.Enabled:=False;
+    Case Inst.intPTRResult of
+       -1 :  begin
+                 result:=False;
+                 strResult:='Reverse Lookup Failed. (IP Transport Failure)';
+             end;
+        0 :  begin
+                 result:=True;
+                 strResult:=Inst.DnsQuery1.Hostname[0];
+             end;
+        1 :  begin
+                 result:=False;
+                 strResult:='Reverse Lookup Failed. (DNS TimeOut)';
+             end;
+        else begin
+                 result:=False;
+                 strResult:='Reverse Lookup Failed. (error = ' + inttostr(Inst.intPTRResult) + ')';
+             end;
+
+    end; //Case
+    Inst.DNSQuery1.Free;
+    Inst.Timer1.Free;
+    Inst.Free;
+    frmPTRQuery.Free;
+end;
+
+// ---------------------------------------------------------------------------
+
+procedure TInstance.PTRQueryOnTimeOut(Sender: Tobject);
+begin
+   intPTRResult:=1; //Time Out
+end;
+
+// ---------------------------------------------------------------------------
+
+procedure TInstance.DnsQuery1RequestDone(Sender: TObject; Error: Word);
+begin
+   Timer1.Enabled:= false;
+   intPTRResult:=Error;
+end;
+
+/// ---------------------------------------------------------------------------
+
+Function MagicChango(strInput,sID,strReplacementString : string; iTruncateSide: integer):string;
+Var intI : integer;
+    strInputModified : string;
+begin
+    if ReplacementStringSizeSpecified(sID,strInput,intI,strInputModified) then begin
+        if iTruncateSide = TRIM_LEFT then
+            strReplacementString:=Copy(strReplacementString,1,intI)   // Copy from Left
+        else
+            strReplacementString:=Copy(strReplacementString,length(strReplacementString) - intI + 1,intI + 1);  // Copy from Right
+        strInput:=strInputModified;
+    end;
+    Result:=StringReplace(strInput,sID,strReplacementString,[rfReplaceAll,rfIgnoreCase]);
+end;
+
+// ---------------------------------------------------------------------------
+
+function ReplacementStringSizeSpecified(strMarker, strInput : string; out intStringSize : integer; out strOutput : string) : boolean;
+var intI, intJ : integer;
+    strScratch : string;
+begin
+    ReplacementStringSizeSpecified:=False;
+    intI:=pos(strMarker,strInput) + Length(strMarker);
+    if intI + 1 < length(strInput) then begin
+        if strInput[IntI] = '[' then begin
+            strScratch:=Copy(strInput,intI,Length(strInput) - intI + 1);
+            intJ:=pos(']',strScratch);
+            if intJ <> 0 then begin
+                strScratch:=Copy(strScratch,2,intJ - 2);
+                Delete(strInput,intI,intJ);
+                intStringSize:=MyStrtoInt(strScratch,True);
+                strOutput:=strInput;
+                ReplacementStringSizeSpecified:=True;
+            end;
+        end;
+    end;
+end;
+
+// ---------------------------------------------------------------------------
+
+function PadIPAddress(strIPAddress : string) : string;
+var IPOctet     : array[1..4] of string;
+    strPad      : string;
+    intI, intJ  : integer;
+begin
+    //Add test for valid IP address here!
+    intI:=pos('.',strIPAddress);
+    IPOctet[1]:=copy(strIPAddress,1,intI-1);
+    delete(strIPAddress,1,intI);
+    intI:=pos('.',strIPAddress);
+    IPOctet[2]:=copy(strIPAddress,1,intI-1);
+    delete(strIPAddress,1,intI);
+    intI:=pos('.',strIPAddress);
+    IPOctet[3]:=copy(strIPAddress,1,intI-1);
+    delete(strIPAddress,1,intI);
+    IPOctet[4]:=strIPAddress;
+    for intI:=1 to 4 do begin
+        strPad:='';
+        for intJ:=Length(IPOctet[intI]) + 1 to 3 do
+            strPad:=strPad + '0';
+        IPOctet[intI]:=strPad + IPOctet[intI];
+    end;
+    result:=IPOctet[1] + '.' + IPOctet[2] + '.' + IPOctet[3] + '.' + IPOctet[4];
+end;
+
+// ---------------------------------------------------------------------------
+
+function MyStrtoInt(x : string; blnStrict : boolean) : integer;
+var i       : integer;
+    badchar : boolean;
+begin
+  badchar:=false;
+  for i:=1 to length(x) do begin
+    if not (x[i] in ['0'..'9']) then begin
+       badchar:=true;
+       Break;
+    end;
+  end;
+  if badchar and Not blnStrict then
+    x:=copy(x,1,i-1)
+  else if badchar and blnStrict then
+    x:='0'
+  else if length(x) = 0 then
+    x:='0';
+  result:=strtoint(x);
+end;
+
+// ---------------------------------------------------------------------------
+
+end.
