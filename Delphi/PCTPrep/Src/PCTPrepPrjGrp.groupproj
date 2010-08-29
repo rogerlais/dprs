@@ -3,10 +3,13 @@
 			<ProjectGuid>{A00D277B-A1C2-4193-BBC2-A3D480AA8E95}</ProjectGuid>
 		</PropertyGroup>
 		<ItemGroup>
-			<Projects Include="PCTPrep.dproj">
+			<Projects Include="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj">
+			<Projects Include="..\..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="PCTPrep.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -17,15 +20,6 @@
 				<Default.Personality/>
 			</BorlandProject>
 		</ProjectExtensions>
-		<Target Name="PCTPrep">
-			<MSBuild Projects="PCTPrep.dproj"/>
-		</Target>
-		<Target Name="PCTPrep:Clean">
-			<MSBuild Targets="Clean" Projects="PCTPrep.dproj"/>
-		</Target>
-		<Target Name="PCTPrep:Make">
-			<MSBuild Targets="Make" Projects="PCTPrep.dproj"/>
-		</Target>
 		<Target Name="XPLibD14">
 			<MSBuild Projects="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
 		</Target>
@@ -35,14 +29,32 @@
 		<Target Name="XPLibD14:Make">
 			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
 		</Target>
+		<Target Name="WinNetLibD14">
+			<MSBuild Projects="..\..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj"/>
+		</Target>
+		<Target Name="WinNetLibD14:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj"/>
+		</Target>
+		<Target Name="WinNetLibD14:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj"/>
+		</Target>
+		<Target Name="PCTPrep">
+			<MSBuild Projects="PCTPrep.dproj"/>
+		</Target>
+		<Target Name="PCTPrep:Clean">
+			<MSBuild Targets="Clean" Projects="PCTPrep.dproj"/>
+		</Target>
+		<Target Name="PCTPrep:Make">
+			<MSBuild Targets="Make" Projects="PCTPrep.dproj"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="PCTPrep;XPLibD14"/>
+			<CallTarget Targets="XPLibD14;WinNetLibD14;PCTPrep"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="PCTPrep:Clean;XPLibD14:Clean"/>
+			<CallTarget Targets="XPLibD14:Clean;WinNetLibD14:Clean;PCTPrep:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="PCTPrep:Make;XPLibD14:Make"/>
+			<CallTarget Targets="XPLibD14:Make;WinNetLibD14:Make;PCTPrep:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

@@ -19,6 +19,12 @@
 			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug_Remote' or '$(Cfg_3)'!=''">
+			<Cfg_3>true</Cfg_3>
+			<CfgParent>Cfg_2</CfgParent>
+			<Cfg_2>true</Cfg_2>
+			<Base>true</Base>
+		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<DCC_DependencyCheckOutputName>PCTPrep.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
@@ -49,6 +55,18 @@
 			<DCC_DcuOutput>..\Debug</DCC_DcuOutput>
 			<DCC_DependencyCheckOutputName>..\Debug\PCTPrep.exe</DCC_DependencyCheckOutputName>
 		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_3)'!=''">
+			<DCC_Define>APIHnd;$(DCC_Define)</DCC_Define>
+			<DCC_ExeOutput>\\teste-tre\swap</DCC_ExeOutput>
+			<DCC_Optimize>false</DCC_Optimize>
+			<DCC_BplOutput>\\teste-tre\swap</DCC_BplOutput>
+			<DCC_RemoteDebug>true</DCC_RemoteDebug>
+			<DCC_DcuOutput>\\teste-tre\swap</DCC_DcuOutput>
+			<DCC_DcpOutput>\\teste-tre\swap</DCC_DcpOutput>
+			<DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+			<DCC_DependencyCheckOutputName>\\teste-tre\swap\PCTPrep.exe</DCC_DependencyCheckOutputName>
+			<DCC_MapFile>3</DCC_MapFile>
+		</PropertyGroup>
 		<ItemGroup>
 			<DelphiCompile Include="PCTPrep.dpr">
 				<MainSource>MainSource</MainSource>
@@ -57,10 +75,15 @@
 				<Form>MainForm</Form>
 			</DCCReference>
 			<DCCReference Include="pctprepUtils.pas"/>
+			<DCCReference Include="..\..\..\..\Pcks\XPLib\Src\APIHnd.pas"/>
 			<None Include="ModelSupport_PCTPrep\default.txaPackage"/>
 			<None Include="ModelSupport_PCTPrep\default.txvpck"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug_Remote">
+				<Key>Cfg_3</Key>
+				<CfgParent>Cfg_2</CfgParent>
 			</BuildConfiguration>
 			<BuildConfiguration Include="Debug">
 				<Key>Cfg_2</Key>

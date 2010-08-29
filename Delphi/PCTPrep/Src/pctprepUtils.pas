@@ -8,21 +8,174 @@ uses
     WinSvc;
 
 const
-    OS_WIN95: string         = 'WIN95';
-    OS_WIN98: string         = 'WIN98';
-    OS_WINME: string         = 'WINME';
-    OS_WINNT: string         = 'WINNT';
-    OS_WIN2K: string         = 'WIN2K';
-    OS_WINXP: string         = 'WINXP';
-    OS_WIN2K3: string        = 'WIN2K3';
+    OS_WIN95: string  = 'WIN95';
+    OS_WIN98: string  = 'WIN98';
+    OS_WINME: string  = 'WINME';
+    OS_WINNT: string  = 'WINNT';
+    OS_WIN2K: string  = 'WIN2K';
+    OS_WINXP: string  = 'WINXP';
+    OS_WIN2K3: string = 'WIN2K3';
 
 
-function RenameComputer(newname : string; UnRegisterFromNDS, RebootOnCompletion : boolean) : integer;
+function RenameComputer(newname, CompDescription : string) : Integer;
+function GetComputerDomain() : string;
+function SetIpConfig(const NewIpAddr : string; const NewGateWay : string = ''; const NewSubnet : string = '') : Integer;
 
 implementation
 
 uses
-   APIHnd, WinNetHnd;
+	 APIHnd, WinNetHnd, WinReg32, LmCons, LmErr, LmWksta, LmJoin, Variants, OleAuto, ActiveX, UrlMon;
+
+function SetIpConfig(const NewIpAddr : string; const NewGateWay : string = ''; const NewSubnet : string = '') : Integer;
+var
+    Retvar :   Integer;
+	 objBind : IDispatch;
+	 objAllAdapters, objNetAdapter, oIpAddress, oGateWay, oWMIService, oSubnetMask : olevariant;
+    i, iValue : longword;
+    oEnum :    IEnumvariant;
+    oCtx :     IBindCtx;
+    oMk :      IMoniker;
+    sFileObj : WideString;
+begin
+    Retvar   := 0;
+    sFileObj := 'winmgmts:\\.\root\cimv2';
+
+	 // Criação dos parametros OLE de entrada
+	 oIpAddress    := VarArrayCreate([1, 1], varOleStr);
+	 oIpAddress[1] := NewIpAddr;
+	 oGateWay      := VarArrayCreate([1, 1], varOleStr);
+	 oGateWay[1]   := NewGateway;
+	 oSubnetMask   := VarArrayCreate([1, 1], varOleStr);
+	 if NewSubnet = '' then    begin
+		 oSubnetMask[1] := '255.255.255.0';
+	 end else begin
+		 oSubnetMask[1] := NewSubnet;
+	 end;
+
+	 // Connect to WMI - Emulate API GetObject()
+	 OleCheck(CreateBindCtx(0, oCtx));
+	 OleCheck(MkParseDisplayNameEx(oCtx, PWideChar(sFileObj), i, oMk));
+	 OleCheck(oMk.BindToObject(oCtx, nil, IUnknown, objBind));
+	 oWMIService := objBind;
+
+	 //Monta consulta para todos os adaptadores ativos(cabo de rede conectado)
+	 objAllAdapters := oWMIService.ExecQuery('Select * from ' +
+		 'Win32_NetworkAdapterConfiguration ' +
+		 'where IPEnabled=TRUE');
+	 oEnum := IUnknown(objAllAdapters._NewEnum) as IEnumVariant;
+
+	 while oEnum.Next(1, objNetAdapter, iValue) = 0 do begin //Varre todos os adaptadores
+		 try
+			 if (NewIpAddr = EmptyStr ) or SameText(NewIpAddr, 'DHCP') then    begin
+				 Retvar := objNetAdapter.EnableDHCP; //desnecessário ajustar o gateway neste caso
+			 end else begin
+				// ajustar IP de forma estática
+				 Retvar := objNetAdapter.EnableStatic(oIpAddress, oSubnetMask);
+				 if (Retvar = 0) and (NewGateway <> '') then    begin // troca de gateway
+					 Retvar := objNetAdapter.SetGateways(oGateway);
+				 end;
+				 {TODO -oroger -clib : Local para colocar quaisquer limpezas de caches e regitro de dns externo, etc}
+			 end;
+		 except
+			 Retvar := -1;
+		 end;
+
+		 objNetAdapter := Unassigned; //liberar as instancias
+	 end;
+
+	 //liberar as instancias
+	 oGateWay := Unassigned;
+    oSubnetMask := Unassigned;
+    oIpAddress := Unassigned;
+    objAllAdapters := Unassigned;
+    oWMIService := Unassigned;
+    Result := Retvar;
+end;
+
+function RenameComputerInWorkGroup(CompName : ansistring) : NET_API_STATUS;
+type
+    ProtSetComputerNameEx = function(nType : TComputerNameFormat; NewName : PAnsiChar) : boolean stdcall;
+var
+    FuncSetComputerNameEx : ProtSetComputerNameEx;
+    MHandle : longint;
+begin
+    MHandle := LoadLibrary('kernel32.dll');
+    try
+        @FuncSetComputerNameEx := GetProcAddress(MHandle, 'SetComputerNameExA');
+        if not FuncSetComputerNameEx(ComputerNamePhysicalDnsHostname, PAnsiChar(CompName)) then begin
+            Result := GetLastError();
+        end else begin
+            Result := NERR_Success;
+        end;
+    finally
+        FreeLibrary(MHandle);
+    end;
+end;
+
+function RenameComputerInDomain(strTargetComputer, CompName, strUserID, strPassword : string) : NET_API_STATUS;
+var
+    pwcNewComputerName, pwcUserID, pwcPassword,
+    pwcTargetComputer : PWideChar;
+begin
+    pwcNewComputerName := nil;
+    pwcUserID   := nil;
+    pwcPassword := nil;
+    pwcTargetComputer := nil;
+    try
+        GetMem(pwcNewComputerName, 2 * Length(CompName) + 2);
+        GetMem(pwcUserID, 2 * Length(strUserID) + 2);
+        GetMem(pwcPassword, 2 * Length(strPassword) + 2);
+        GetMem(pwcTargetComputer, 2 * Length(strTargetComputer) + 2);
+        StringToWideChar(CompName, pwcNewComputerName, Length(CompName) + 2);
+        StringToWideChar(strUserID, pwcUserID, Length(strUserID) + 2);
+        StringToWideChar(strPassword, pwcPassword, Length(strPassword) + 2);
+        StringToWideChar(strTargetComputer, pwcTargetComputer, Length(strTargetComputer) + 2);
+        Result := NetRenameMachineInDomain(pwcTargetComputer, pwcNewComputerName, pwcUserID, pwcPassword, 2);
+    finally
+        FreeMem(pwcNewComputerName);
+        FreeMem(pwcUserID);
+        FreeMem(pwcPassword);
+        FreeMem(pwcTargetComputer);
+    end;
+end;
+
+function GetComputerDomain() : string;
+var
+    PBuf : PWkstaInfo100;
+    Res :  longint;
+begin
+    {TODO -oroger -clib : Portar para library}
+    Result := EmptyStr;
+    Res    := NetRenameMachineInDomain(nil, nil, nil, nil, 0);
+    if Res <> NERR_SetupNotJoined then begin //Computador não pertence a nenhum dominio
+        Res := NetWkstaGetInfo(nil, 100, @PBuf);
+        if Res = NERR_Success then begin
+            Result := string(PBuf^.wki100_langroup);
+        end;
+    end;
+end;
+
+procedure SetComputerDescription(ACompDescription : string);
+const
+    WinNTComputerDescriptionKey: string =
+        'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\lanmanserver\parameters\srvcomment';
+var
+    Reg : TRegistryNT;
+begin
+    Reg := TRegistryNT.Create;
+    try
+        if ACompDescription <> EmptyStr then begin
+            if Length(ACompDescription) > 256 then begin //trunca descrição ao limite máximo
+                ACompDescription := Copy(ACompDescription, 1, 256);
+            end;
+            Reg.WriteFullString(WinNTComputerDescriptionKey, ACompDescription, True);
+        end else begin
+            Reg.DeleteFullValue(WinNTComputerDescriptionKey);
+        end;
+    finally
+        Reg.Free;
+    end;
+end;
 
 function GetOSVersionStr(blnDetailed : boolean) : string;
 var
@@ -70,6 +223,23 @@ begin
     end;
 end;
 
+procedure SetLocalLogOnTo(NewName : string);
+const
+    DEFAULT_LOCAL_LOGON_NAME = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\DefaultDomainName';
+var
+    Reg : TRegistryNT;
+begin
+    if GetOSVersionStr(False) = OS_WINNT then begin
+        Reg := TRegistryNT.Create;
+        try
+            Reg.WriteFullString(DEFAULT_LOCAL_LOGON_NAME, NewName, True);
+        finally
+            Reg.Free;
+        end;
+    end else begin
+        raise Exception.Create('Ajuste de logon local não suportado para esta plataforma');
+    end;
+end;
 
 procedure CheckValidityofCompterName(const ComputerNametoCheck : string);
 const
@@ -83,7 +253,7 @@ begin
         // Only want to check for numeric names on Windows 2000 or above
         blnAllNumeric := True;
         for i := 1 to length(ComputerNametoCheck) do begin
-            if not (ComputerNametoCheck[i] in ['0'..'9']) then begin
+            if not CharInSet(ComputerNametoCheck[i], ['0'..'9']) then begin
                 blnAllNumeric := False;
                 Break;
             end;
@@ -99,19 +269,16 @@ begin
         raise Exception.CreateFmt('Nome do computador inicia com caracter inválido: "%s"', [ComputerNametoCheck]);
     end;
     for i := 1 to length(ComputerNametoCheck) do begin
-        if not (ComputerNametoCheck[i] in VALIDCHARS) then begin
+        if not CharInSet(ComputerNametoCheck[i], VALIDCHARS) then begin
             raise Exception.CreateFmt('Nome do computador possui um ou mais caracteres inválidos: "%s" [%s]',
                 [ComputerNametoCheck, ComputerNametoCheck[i]]);
         end;
     end;
 end;
 
-
-
-function RenameComputer(newname : string; UnRegisterFromNDS, RebootOnCompletion : boolean) : integer;
+function RenameComputer(newname, CompDescription : string) : Integer;
 var
-    tmpstr, OSVer, LocalComputerName : string;
-    res : boolean;
+    OSVer, DomainName, LocalComputerName : string;
 begin
     OSVer := GetOSVersionStr(True);
     try
@@ -121,94 +288,51 @@ begin
             {TODO -oroger -cdsg : Ação de registro de erro}
         end;
     end;
-    LocalComputerName:=WinNetHnd.GetComputerName();
+    LocalComputerName := WinNetHnd.GetComputerName();
     if SameText(LocalComputerName, newName) then begin
         Result := ERROR_XP_ALREADY_DONE;
         Exit;
     end;
-
-    if not TaskChangeHostNameOnly then begin
-        if ((OSVer = OS_WIN2K) or (OSVer = OS_WINXP)) and (TaskRenameComputerInDomain = False) then begin
-            AppendToLogFile('Rename Method             : SetComputerNameEx');
-            Result := fSetComputerNameEx(newname);     //SetComputerNameEx - W2K and XP only
-        end else
-        if ((OSVer = OS_WIN2K) or (OSVer = OS_WINXP)) and (TaskRenameComputerInDomain = True) then begin
-            AppendToLogFile('Rename Method             : NetRenameMachineInDomain');
-            AppendToLogFile('User ID                   : ' + strDomainUserID);
-            Result := RenameComputerInDomain('', newname, strDomainUserID, strDomainPassword);
-            //NetRenameMachineInDomain - W2K and XP only
-        end else begin
-            AppendToLogFile('Rename Method             : SetComputerName');
-            Result := fSetComputerName(newname);       //Standard old rename for Win9x and WinNT4
+    DomainName := GetComputerDomain();
+    if DomainName = EmptyStr then begin
+		 Result := RenameComputerInWorkGroup(newname);     //SetComputerNameEx - W2K and XP only
+        if Result = NERR_Success then begin
+            //Logon local dirigido para o mesmo nome do computador sempre
+            SetLocalLogOnTo(newname);
         end;
+
     end else begin
-        Result := True;
-        AppendToLogFile('Change HostName Only option selected (/CHO) NetBIOS name not changed ');
+        Result := RenameComputerInDomain('', newname, 'LOGIN_ADM', 'PWD_ADM');
+        //NetRenameMachineInDomain - W2K and XP only
     end;
 
-    if Result then begin
-        if not TaskChangeHostNameOnly then begin
-            AppendToLogFile('Rename Successful - reboot required to take effect');
-        end;
-        //Set Host name happens here - only required for Win9x and NT 4
-        if (OSVer <> 'WIN2K') and (OSVer <> 'WINXP') then begin
-            SetHostName(newname);
-        end;
-        // Added in ver 2.66e - Set NV hostname
-        if blnNetWareClientInstalled then begin
-            SetNVHostName(newname);
-        end;
-        if TaskSetDiskLabel then begin
-            tmpstr := newname;
-            if length(tmpstr) > 11 then begin
-                tmpstr := copy(newname, 1, 11);
-            end;
-            res := SetDiskLabel('c:\', tmpstr);
-            if res then begin
-                AppendToLogFile('C: Drive Name set to      : ' + tmpstr);
-            end else begin
-                AppendToLogFile('Failed to set Drv Name to : ' + tmpstr);
-            end;
+    if Result = NERR_Success then begin
+
+        if CompDescription <> EmptyStr then begin
+            SetComputerDescription(CompDescription);
         end;
 
-        if TaskSetMyComputerDescription then begin
-            if sComputerDescription = '' then begin
-                SetMyComputerDescription(AsEnteredComputerName);
-            end else begin
-                SetMyComputerDescription(sComputerDescription);
-            end;
-        end;
-
-        if TaskSetMyComputerName then begin
-            SetMyComputerName(AsEnteredComputerName);
-        end;
-
-        if TaskLogOnTo then begin
-            SetLogOnTo(newname);
-        end;
-
-        if UnRegisterFromNDS then begin
-            if UnRegProgramName <> '' then begin
-                AppendToLogFile('called ' + UnRegProgramName);
-                if not TaskTestOnly then begin
-                    RunProcess(UnRegProgramName, '', SW_SHOWNORMAL, True);
-                end;
-            end else begin
-                AppendToLogFile('The request to UnRegister was made could not be actioned as WSName could not find ' +
-                    UnRegProgramName + ' in the path');
-            end;
-        end;
-        if RebootOnCompletion then begin
-            AppendToLogFile('Rebooting');
-            if not WinExit(EWX_REBOOT or EWX_FORCE) then begin
-                AppendToLogFile('ERROR - Reboot request failed, WSName terminating');
-                ExitRoutine(10);
-            end;
-        end;
-    end else begin
-        AppendToLogFile('Rename Failed');
-        ExitRoutine(6);
+        //Local para rotinas de ajustes do registro de DNS
+         (*
+         if UnRegisterFromNDS then begin
+             if UnRegProgramName <> '' then begin
+                 AppendToLogFile('called ' + UnRegProgramName);
+                 if not TaskTestOnly then begin
+                     RunProcess(UnRegProgramName, '', SW_SHOWNORMAL, True);
+                 end;
+             end else begin
+                 AppendToLogFile('The request to UnRegister was made could not be actioned as WSName could not find ' +
+                     UnRegProgramName + ' in the path');
+             end;
+         end;
+         if RebootOnCompletion then begin
+             if not WinExit(EWX_REBOOT or EWX_FORCE) then begin
+                 APIHnd.TAPIHnd.CheckAPI( GetLastError() );
+             end;
+         end;
+         *)
     end;
+
 end;
 
 end.

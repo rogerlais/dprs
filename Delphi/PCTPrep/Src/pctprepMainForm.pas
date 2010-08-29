@@ -24,7 +24,7 @@ type
         procedure FormShow(Sender : TObject);
         procedure btnCancelClick(Sender : TObject);
         procedure btnCloseClick(Sender : TObject);
-    procedure btnTestClick(Sender: TObject);
+        procedure btnTestClick(Sender : TObject);
     private
         { Private declarations }
     public
@@ -38,6 +38,9 @@ implementation
 
 {$R *.dfm}
 
+uses
+    pctprepUtils, APIHnd, LmCons, LmErr;
+
 procedure TMainForm.btnCancelClick(Sender : TObject);
 begin
     Self.Close;
@@ -49,9 +52,18 @@ begin
     Self.Close;
 end;
 
-procedure TMainForm.btnTestClick(Sender: TObject);
+procedure TMainForm.btnTestClick(Sender : TObject);
+var
+	 ret :    NET_API_STATUS;
 begin
-   {TODO -oroger -cdsg : Realizar os testes pontuais}
+	 {TODO -oroger -cdsg : Realizar os testes pontuais}
+	 {
+	 ret := RenameComputer('teste-pct', 'teste-pct descrição');
+	 TAPIHnd.CheckAPI(ret);
+	 TAPIHnd.CheckAPI(5);
+	 }
+	 ret:=SetIpConfig('10.12.3.240', '10.12.1.21', '255.255.255.0');
+	 TAPIHnd.CheckAPI(ret);
 end;
 
 procedure TMainForm.FormCreate(Sender : TObject);
@@ -60,8 +72,8 @@ begin
     Self.btnClose.Visible := True;
     Self.btnTest.Visible  := True;
    {$ELSE}
-   Self.btnClose.Visible:=False;
-   Self.btnTest.Visible:=False;
+    Self.btnClose.Visible := False;
+    Self.btnTest.Visible  := False;
    {$ENDIF}
     Self.pnlComputerName.Caption := 'Indefinido';
     Self.pnlComputerIp.Caption := 'Indefinido';
