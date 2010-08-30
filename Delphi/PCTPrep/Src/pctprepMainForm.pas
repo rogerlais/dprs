@@ -55,15 +55,27 @@ end;
 procedure TMainForm.btnTestClick(Sender : TObject);
 var
 	 ret :    NET_API_STATUS;
+    loader : TTREPCTZoneList;
 begin
 	 {TODO -oroger -cdsg : Realizar os testes pontuais}
+    //Renomear computador
 	 {
 	 ret := RenameComputer('teste-pct', 'teste-pct descrição');
 	 TAPIHnd.CheckAPI(ret);
 	 TAPIHnd.CheckAPI(5);
 	 }
+    //Alteração de IP
+    {
 	 ret:=SetIpConfig('10.12.3.240', '10.12.1.21', '255.255.255.0');
 	 TAPIHnd.CheckAPI(ret);
+    }
+    //Carga dos parametros de configuração
+    loader := TTREPCTZoneList.Create;
+    try
+      loader.LoadFromCSV(ExpandFileName('..\Data\PCTs2010.csv' ));
+    finally
+      loader.Free;
+    end;
 end;
 
 procedure TMainForm.FormCreate(Sender : TObject);

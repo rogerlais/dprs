@@ -49,7 +49,7 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
 			<DCC_ExeOutput>..\Debug</DCC_ExeOutput>
-			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+			<DCC_Define>DEBUG;StrHnd;$(DCC_Define)</DCC_Define>
 			<DCC_BplOutput>..\Debug</DCC_BplOutput>
 			<DCC_DcpOutput>..\Debug</DCC_DcpOutput>
 			<DCC_DcuOutput>..\Debug</DCC_DcuOutput>
@@ -76,6 +76,7 @@
 			</DCCReference>
 			<DCCReference Include="pctprepUtils.pas"/>
 			<DCCReference Include="..\..\..\..\Pcks\XPLib\Src\APIHnd.pas"/>
+			<DCCReference Include="..\..\..\..\Pcks\XPLib\Src\StrHnd.pas"/>
 			<None Include="ModelSupport_PCTPrep\default.txaPackage"/>
 			<None Include="ModelSupport_PCTPrep\default.txvpck"/>
 			<BuildConfiguration Include="Base">

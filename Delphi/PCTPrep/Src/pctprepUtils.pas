@@ -5,26 +5,59 @@ interface
 uses
     Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
     StdCtrls, Registry, ShellApi, ExtCtrls, FileCtrl, NB30,
-    WinSvc;
+    WinSvc, Contnrs;
 
 const
-    OS_WIN95: string  = 'WIN95';
-    OS_WIN98: string  = 'WIN98';
-    OS_WINME: string  = 'WINME';
-    OS_WINNT: string  = 'WINNT';
-    OS_WIN2K: string  = 'WIN2K';
-    OS_WINXP: string  = 'WINXP';
-    OS_WIN2K3: string = 'WIN2K3';
+    OS_WIN95: AnsiString  = 'WIN95';
+    OS_WIN98: AnsiString  = 'WIN98';
+    OS_WINME: AnsiString  = 'WINME';
+    OS_WINNT: AnsiString  = 'WINNT';
+    OS_WIN2K: AnsiString  = 'WIN2K';
+    OS_WINXP: AnsiString  = 'WINXP';
+    OS_WIN2K3: AnsiString = 'WIN2K3';
+
+type
+   TTREPct = class;
+    TTREPctZone = class(TObject)
+    private
+       FPCTs : TObjectList;
+       FId : integer;
+      public
+      constructor Create( AZoneId : integer );
+      destructor Destroy; override;
+      property Id : integer read FId;
+      function Add( PCT : TTREPct ) : integer;
+    end;
 
 
-function RenameComputer(newname, CompDescription : string) : Integer;
-function GetComputerDomain() : string;
+    TTREPct = class
+    private
+       FParent : TTREPctZone;
+       FPCTId : integer;
+       FName : string;
+       FIp : string;
+       FSubNet : string;
+       FId : integer;
+    public
+      constructor Create(Parent : TTREPctZone; PCTId : integer; const Name, Ip, SubNet: string ); virtual;
+      property Id : integer read FId;
+    end;
+
+    TTREPCTZoneList = class(TStringList)
+    private
+       function AddPct( const sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN : AnsiString) : integer;
+      public
+      procedure LoadFromCSV( const Filename : string );
+    end;
+
+function RenameComputer(newname, CompDescription : AnsiString) : Integer;
+function GetComputerDomain() : AnsiString;
 function SetIpConfig(const NewIpAddr : string; const NewGateWay : string = ''; const NewSubnet : string = '') : Integer;
 
 implementation
 
 uses
-	 APIHnd, WinNetHnd, WinReg32, LmCons, LmErr, LmWksta, LmJoin, Variants, OleAuto, ActiveX, UrlMon;
+	 APIHnd, StrHnd, WinNetHnd, WinReg32, LmCons, LmErr, LmWksta, LmJoin, Variants, OleAuto, ActiveX, UrlMon;
 
 function SetIpConfig(const NewIpAddr : string; const NewGateWay : string = ''; const NewSubnet : string = '') : Integer;
 var
@@ -139,13 +172,13 @@ begin
     end;
 end;
 
-function GetComputerDomain() : string;
+function GetComputerDomain() : AnsiString;
 var
     PBuf : PWkstaInfo100;
     Res :  longint;
 begin
     {TODO -oroger -clib : Portar para library}
-    Result := EmptyStr;
+    Result := EmptyAnsiStr;
     Res    := NetRenameMachineInDomain(nil, nil, nil, nil, 0);
     if Res <> NERR_SetupNotJoined then begin //Computador não pertence a nenhum dominio
         Res := NetWkstaGetInfo(nil, 100, @PBuf);
@@ -177,7 +210,7 @@ begin
     end;
 end;
 
-function GetOSVersionStr(blnDetailed : boolean) : string;
+function GetOSVersionStr(blnDetailed : boolean) : AnsiString;
 var
     VersionInfo : TOSVersionInfo;
 begin
@@ -223,7 +256,7 @@ begin
     end;
 end;
 
-procedure SetLocalLogOnTo(NewName : string);
+procedure SetLocalLogOnTo(NewName : AnsiString);
 const
     DEFAULT_LOCAL_LOGON_NAME = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\DefaultDomainName';
 var
@@ -241,7 +274,7 @@ begin
     end;
 end;
 
-procedure CheckValidityofCompterName(const ComputerNametoCheck : string);
+procedure CheckValidityofCompterName(const ComputerNametoCheck : AnsiString );
 const
     VALIDCHARS = ['a'..'z', 'A'..'Z', '0'..'9', '!', '@', '#', '$', '%', '^', '&', '(', ')', '-', '_', '''', '{', '}', '~'];
     //removed '.'
@@ -276,9 +309,9 @@ begin
     end;
 end;
 
-function RenameComputer(newname, CompDescription : string) : Integer;
+function RenameComputer(newname, CompDescription : AnsiString ) : Integer;
 var
-    OSVer, DomainName, LocalComputerName : string;
+    OSVer, DomainName, LocalComputerName : AnsiString;
 begin
     OSVer := GetOSVersionStr(True);
     try
@@ -294,7 +327,7 @@ begin
         Exit;
     end;
     DomainName := GetComputerDomain();
-    if DomainName = EmptyStr then begin
+    if DomainName = EmptyAnsiStr then begin
 		 Result := RenameComputerInWorkGroup(newname);     //SetComputerNameEx - W2K and XP only
         if Result = NERR_Success then begin
             //Logon local dirigido para o mesmo nome do computador sempre
@@ -333,6 +366,78 @@ begin
          *)
     end;
 
+end;
+
+function TTREPctZone.Add(PCT: TTREPct): integer;
+var
+x : integer;
+begin
+   for x  := 0 to Self.FPCTs.Count - 1 do begin
+       if PCT.Id = TTREPct(Self.FPCTs.Items[x] ).Id then begin
+           raise Exception.CreateFmt('Redundância para par (zona, pct) = (%d, %d )', [Self.Id, PCT.Id]);
+       end;
+   end;
+   result:=Self.FPCTs.Add( PCT );
+end;
+
+constructor TTREPctZone.Create(AZoneId: integer);
+begin
+   Self.FId:=AZoneId;
+   Self.FPCTs:=TObjectList.Create;
+   Self.FPCTs.OwnsObjects:=True;
+end;
+
+destructor TTREPctZone.Destroy;
+begin
+   Self.FPCTs.Free;
+  inherited;
+end;
+
+constructor TTREPct.Create(Parent: TTREPctZone; PCTId: integer; const Name, Ip, SubNet: string);
+begin
+   Self.FPCTId:=PCTId;
+   Self.FName:=Name;
+   Self.FIp:=Ip;
+   Self.FSubNet:=SubNet;
+   Self.FParent.Add( Self );
+end;
+
+function TTREPCTZoneList.AddPct(const sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN: AnsiString ): integer;
+begin
+  {TODO -oroger -cdsg : inserir lista dupla de zonas e pcts por zonas}
+end;
+
+procedure TTREPCTZoneList.LoadFromCSV(const Filename: string);
+const
+   DELIMS : TSysCharSet = [';', #13, #10 ];
+var
+   parser : TBufferedStringStream;
+   fs : TFileStream;
+   sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN : AnsiString;
+begin
+   fs := TFileStream.Create(Filename, fmOpenRead );
+   try
+       parser := TBufferedStringStream.Create(fs);
+       try
+           parser.SetWordDelimiters( @DELIMS );
+           parser.Reset;
+           parser.ReadLine; //ignora 1a linha
+           while not parser.EoS do begin
+               sZone:=parser.ReadStringWord;
+               sCity:=parser.ReadStringWord;
+               sPctId:=parser.ReadStringWord;
+               sPctName:=parser.ReadStringWord;
+               sPctIP:=parser.ReadStringWord;
+               sPctWAN:=parser.ReadStringWord;
+               parser.ReadLine; //descarta demais informações da linha
+               Self.AddPct( sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN );
+           end;
+       finally
+         parser.Free;
+       end;
+   finally
+     fs.Free;
+   end;
 end;
 
 end.
