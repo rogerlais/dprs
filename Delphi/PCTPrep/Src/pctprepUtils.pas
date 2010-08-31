@@ -8,62 +8,67 @@ uses
     WinSvc, Contnrs;
 
 const
-    OS_WIN95: AnsiString  = 'WIN95';
-    OS_WIN98: AnsiString  = 'WIN98';
-    OS_WINME: AnsiString  = 'WINME';
-    OS_WINNT: AnsiString  = 'WINNT';
-    OS_WIN2K: AnsiString  = 'WIN2K';
-    OS_WINXP: AnsiString  = 'WINXP';
-    OS_WIN2K3: AnsiString = 'WIN2K3';
+    OS_WIN95: ansistring  = 'WIN95';
+    OS_WIN98: ansistring  = 'WIN98';
+    OS_WINME: ansistring  = 'WINME';
+    OS_WINNT: ansistring  = 'WINNT';
+	 OS_WIN2K: ansistring  = 'WIN2K';
+	 OS_WINXP: ansistring  = 'WINXP';
+	 OS_WIN2K3: ansistring = 'WIN2K3';
 
 type
-   TTREPct = class;
-    TTREPctZone = class(TObject)
-    private
-       FPCTs : TObjectList;
-       FId : integer;
-      public
-      constructor Create( AZoneId : integer );
-      destructor Destroy; override;
-      property Id : integer read FId;
-      function Add( PCT : TTREPct ) : integer;
+	 TTREPct = class;
+
+	 TTREPctZone = class(TStringList)
+	 private
+		 FId : Integer;
+	 public
+        constructor Create(AZoneId : Integer);
+		 destructor Destroy; override;
+		 property Id : Integer read FId;
+		 function Add(PCT : TTREPct) : Integer;
+	 end;
+
+
+	 TTREPct = class
+	 private
+		 FName :   string;
+		 FIp :     string;
+		 FSubNet : string;
+		 FDescription : string;
+		 FId :     Integer;
+	 public
+		 constructor Create(APCTId : Integer; const AName, AIp, ASubNet, ADescription : string); virtual;
+		 procedure Prepare;
+		 property Id : Integer read FId;
+		 property Computername : string read FName;
+		 property Subnet : string read FSubNet;
+		 property Ip : string read FIp;
+	 end;
+
+	 TTREPctZoneList = class(TStringList)
+	 private
+		 function AddPct(const sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN, sDescription : AnsiString) : Integer;
+	 public
+		 constructor Create;
+        destructor Destroy; override;
+        procedure LoadFromCSV(const Filename : string);
     end;
 
-
-    TTREPct = class
-    private
-       FParent : TTREPctZone;
-       FPCTId : integer;
-       FName : string;
-       FIp : string;
-       FSubNet : string;
-       FId : integer;
-    public
-      constructor Create(Parent : TTREPctZone; PCTId : integer; const Name, Ip, SubNet: string ); virtual;
-      property Id : integer read FId;
-    end;
-
-    TTREPCTZoneList = class(TStringList)
-    private
-       function AddPct( const sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN : AnsiString) : integer;
-      public
-      procedure LoadFromCSV( const Filename : string );
-    end;
-
-function RenameComputer(newname, CompDescription : AnsiString) : Integer;
-function GetComputerDomain() : AnsiString;
+function RenameComputer(newname, CompDescription : ansistring) : Integer;
+function GetComputerDomain() : ansistring;
 function SetIpConfig(const NewIpAddr : string; const NewGateWay : string = ''; const NewSubnet : string = '') : Integer;
 
 implementation
 
 uses
-	 APIHnd, StrHnd, WinNetHnd, WinReg32, LmCons, LmErr, LmWksta, LmJoin, Variants, OleAuto, ActiveX, UrlMon;
+    APIHnd, StrHnd, WinNetHnd, WinReg32, LmCons, LmErr, LmWksta, LmJoin, Variants, OleAuto, ActiveX, UrlMon;
 
 function SetIpConfig(const NewIpAddr : string; const NewGateWay : string = ''; const NewSubnet : string = '') : Integer;
 var
     Retvar :   Integer;
-	 objBind : IDispatch;
-	 objAllAdapters, objNetAdapter, oIpAddress, oGateWay, oWMIService, oSubnetMask : olevariant;
+    objBind :  IDispatch;
+    objAllAdapters, objNetAdapter, oIpAddress, oGateWay, oWMIService, oSubnetMask : olevariant;
     i, iValue : longword;
     oEnum :    IEnumvariant;
     oCtx :     IBindCtx;
@@ -73,56 +78,56 @@ begin
     Retvar   := 0;
     sFileObj := 'winmgmts:\\.\root\cimv2';
 
-	 // Criação dos parametros OLE de entrada
-	 oIpAddress    := VarArrayCreate([1, 1], varOleStr);
-	 oIpAddress[1] := NewIpAddr;
-	 oGateWay      := VarArrayCreate([1, 1], varOleStr);
-	 oGateWay[1]   := NewGateway;
-	 oSubnetMask   := VarArrayCreate([1, 1], varOleStr);
-	 if NewSubnet = '' then    begin
-		 oSubnetMask[1] := '255.255.255.0';
-	 end else begin
-		 oSubnetMask[1] := NewSubnet;
-	 end;
+    // Criação dos parametros OLE de entrada
+    oIpAddress    := VarArrayCreate([1, 1], varOleStr);
+    oIpAddress[1] := NewIpAddr;
+    oGateWay      := VarArrayCreate([1, 1], varOleStr);
+    oGateWay[1]   := NewGateway;
+    oSubnetMask   := VarArrayCreate([1, 1], varOleStr);
+    if NewSubnet = '' then begin
+        oSubnetMask[1] := '255.255.255.0';
+    end else begin
+        oSubnetMask[1] := NewSubnet;
+    end;
 
-	 // Connect to WMI - Emulate API GetObject()
-	 OleCheck(CreateBindCtx(0, oCtx));
-	 OleCheck(MkParseDisplayNameEx(oCtx, PWideChar(sFileObj), i, oMk));
-	 OleCheck(oMk.BindToObject(oCtx, nil, IUnknown, objBind));
-	 oWMIService := objBind;
+    // Connect to WMI - Emulate API GetObject()
+    OleCheck(CreateBindCtx(0, oCtx));
+    OleCheck(MkParseDisplayNameEx(oCtx, PWideChar(sFileObj), i, oMk));
+    OleCheck(oMk.BindToObject(oCtx, nil, IUnknown, objBind));
+    oWMIService := objBind;
 
-	 //Monta consulta para todos os adaptadores ativos(cabo de rede conectado)
-	 objAllAdapters := oWMIService.ExecQuery('Select * from ' +
-		 'Win32_NetworkAdapterConfiguration ' +
-		 'where IPEnabled=TRUE');
-	 oEnum := IUnknown(objAllAdapters._NewEnum) as IEnumVariant;
+    //Monta consulta para todos os adaptadores ativos(cabo de rede conectado)
+    objAllAdapters := oWMIService.ExecQuery('Select * from ' +
+        'Win32_NetworkAdapterConfiguration ' +
+        'where IPEnabled=TRUE');
+    oEnum := IUnknown(objAllAdapters._NewEnum) as IEnumVariant;
 
-	 while oEnum.Next(1, objNetAdapter, iValue) = 0 do begin //Varre todos os adaptadores
-		 try
-			 if (NewIpAddr = EmptyStr ) or SameText(NewIpAddr, 'DHCP') then    begin
-				 Retvar := objNetAdapter.EnableDHCP; //desnecessário ajustar o gateway neste caso
-			 end else begin
-				// ajustar IP de forma estática
-				 Retvar := objNetAdapter.EnableStatic(oIpAddress, oSubnetMask);
-				 if (Retvar = 0) and (NewGateway <> '') then    begin // troca de gateway
-					 Retvar := objNetAdapter.SetGateways(oGateway);
-				 end;
-				 {TODO -oroger -clib : Local para colocar quaisquer limpezas de caches e regitro de dns externo, etc}
-			 end;
-		 except
-			 Retvar := -1;
-		 end;
+    while oEnum.Next(1, objNetAdapter, iValue) = 0 do begin //Varre todos os adaptadores
+        try
+            if (NewIpAddr = EmptyStr) or SameText(NewIpAddr, 'DHCP') then begin
+                Retvar := objNetAdapter.EnableDHCP; //desnecessário ajustar o gateway neste caso
+            end else begin
+                // ajustar IP de forma estática
+                Retvar := objNetAdapter.EnableStatic(oIpAddress, oSubnetMask);
+                if (Retvar = 0) and (NewGateway <> '') then begin // troca de gateway
+                    Retvar := objNetAdapter.SetGateways(oGateway);
+                end;
+                {TODO -oroger -clib : Local para colocar quaisquer limpezas de caches e regitro de dns externo, etc}
+            end;
+        except
+            Retvar := -1;
+        end;
 
-		 objNetAdapter := Unassigned; //liberar as instancias
-	 end;
+        objNetAdapter := Unassigned; //liberar as instancias
+    end;
 
-	 //liberar as instancias
-	 oGateWay := Unassigned;
+    //liberar as instancias
+    oGateWay    := Unassigned;
     oSubnetMask := Unassigned;
-    oIpAddress := Unassigned;
+    oIpAddress  := Unassigned;
     objAllAdapters := Unassigned;
     oWMIService := Unassigned;
-    Result := Retvar;
+    Result      := Retvar;
 end;
 
 function RenameComputerInWorkGroup(CompName : ansistring) : NET_API_STATUS;
@@ -172,7 +177,7 @@ begin
     end;
 end;
 
-function GetComputerDomain() : AnsiString;
+function GetComputerDomain() : ansistring;
 var
     PBuf : PWkstaInfo100;
     Res :  longint;
@@ -210,7 +215,7 @@ begin
     end;
 end;
 
-function GetOSVersionStr(blnDetailed : boolean) : AnsiString;
+function GetOSVersionStr(blnDetailed : boolean) : ansistring;
 var
     VersionInfo : TOSVersionInfo;
 begin
@@ -256,7 +261,7 @@ begin
     end;
 end;
 
-procedure SetLocalLogOnTo(NewName : AnsiString);
+procedure SetLocalLogOnTo(NewName : ansistring);
 const
     DEFAULT_LOCAL_LOGON_NAME = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\DefaultDomainName';
 var
@@ -274,7 +279,7 @@ begin
     end;
 end;
 
-procedure CheckValidityofCompterName(const ComputerNametoCheck : AnsiString );
+procedure CheckValidityofCompterName(const ComputerNametoCheck : ansistring);
 const
     VALIDCHARS = ['a'..'z', 'A'..'Z', '0'..'9', '!', '@', '#', '$', '%', '^', '&', '(', ')', '-', '_', '''', '{', '}', '~'];
     //removed '.'
@@ -309,9 +314,9 @@ begin
     end;
 end;
 
-function RenameComputer(newname, CompDescription : AnsiString ) : Integer;
+function RenameComputer(newname, CompDescription : ansistring) : Integer;
 var
-    OSVer, DomainName, LocalComputerName : AnsiString;
+    OSVer, DomainName, LocalComputerName : ansistring;
 begin
     OSVer := GetOSVersionStr(True);
     try
@@ -328,7 +333,7 @@ begin
     end;
     DomainName := GetComputerDomain();
     if DomainName = EmptyAnsiStr then begin
-		 Result := RenameComputerInWorkGroup(newname);     //SetComputerNameEx - W2K and XP only
+        Result := RenameComputerInWorkGroup(newname);     //SetComputerNameEx - W2K and XP only
         if Result = NERR_Success then begin
             //Logon local dirigido para o mesmo nome do computador sempre
             SetLocalLogOnTo(newname);
@@ -368,76 +373,147 @@ begin
 
 end;
 
-function TTREPctZone.Add(PCT: TTREPct): integer;
+function TTREPctZone.Add(PCT : TTREPct) : Integer;
 var
-x : integer;
+    idx :    Integer;
+    pctKey : string;
 begin
-   for x  := 0 to Self.FPCTs.Count - 1 do begin
-       if PCT.Id = TTREPct(Self.FPCTs.Items[x] ).Id then begin
-           raise Exception.CreateFmt('Redundância para par (zona, pct) = (%d, %d )', [Self.Id, PCT.Id]);
-       end;
-   end;
-   result:=Self.FPCTs.Add( PCT );
+    pctKey := Format('%2.2d', [PCT.Id]);
+    idx    := Self.IndexOf(pctKey);
+    if idx >= 0 then begin
+        raise Exception.CreateFmt('Redundância para par (zona, pct) = (%d, %d )', [Self.Id, PCT.Id]);
+    end else begin
+        Result := Self.AddObject(pctKey, PCT);
+    end;
 end;
 
-constructor TTREPctZone.Create(AZoneId: integer);
+constructor TTREPctZone.Create(AZoneId : Integer);
 begin
-   Self.FId:=AZoneId;
-   Self.FPCTs:=TObjectList.Create;
-   Self.FPCTs.OwnsObjects:=True;
+	 inherited Create;
+    Self.Sorted := True;
+    Self.FId    := AZoneId;
 end;
 
 destructor TTREPctZone.Destroy;
-begin
-   Self.FPCTs.Free;
-  inherited;
-end;
-
-constructor TTREPct.Create(Parent: TTREPctZone; PCTId: integer; const Name, Ip, SubNet: string);
-begin
-   Self.FPCTId:=PCTId;
-   Self.FName:=Name;
-   Self.FIp:=Ip;
-   Self.FSubNet:=SubNet;
-   Self.FParent.Add( Self );
-end;
-
-function TTREPCTZoneList.AddPct(const sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN: AnsiString ): integer;
-begin
-  {TODO -oroger -cdsg : inserir lista dupla de zonas e pcts por zonas}
-end;
-
-procedure TTREPCTZoneList.LoadFromCSV(const Filename: string);
-const
-   DELIMS : TSysCharSet = [';', #13, #10 ];
 var
-   parser : TBufferedStringStream;
-   fs : TFileStream;
-   sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN : AnsiString;
+    x : Integer;
 begin
-   fs := TFileStream.Create(Filename, fmOpenRead );
-   try
-       parser := TBufferedStringStream.Create(fs);
-       try
-           parser.SetWordDelimiters( @DELIMS );
-           parser.Reset;
-           parser.ReadLine; //ignora 1a linha
-           while not parser.EoS do begin
-               sZone:=parser.ReadStringWord;
-               sCity:=parser.ReadStringWord;
-               sPctId:=parser.ReadStringWord;
-               sPctName:=parser.ReadStringWord;
-               sPctIP:=parser.ReadStringWord;
-               sPctWAN:=parser.ReadStringWord;
-               parser.ReadLine; //descarta demais informações da linha
-               Self.AddPct( sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN );
-           end;
-       finally
-         parser.Free;
-       end;
-   finally
-     fs.Free;
-   end;
+    for x := 0 to Self.Count - 1 do begin
+        Self.Objects[x].Free;
+    end;
+    inherited;
+end;
+
+constructor TTREPct.Create(APCTId : Integer; const AName, AIp, ASubNet, ADescription : string);
+begin
+	 Self.FId  := APCTId;
+	 Self.FName   := AName;
+	 Self.FIp     := AIp;
+	 Self.FSubNet := ASubNet;
+	 Self.FDescription := ADescription;
+end;
+
+function TTREPCTZoneList.AddPct(const sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN, sDescription : AnsiString) : Integer;
+var
+    zone : TTREPctZone;
+    zoneId, PctId, idx : Integer;
+    zoneKey, pctKey : string;
+    pct :  TTREPct;
+begin
+    {TODO -oroger -cdsg : inserir lista dupla de zonas e pcts por zonas}
+    zoneid  := StrToInt(sZone);
+    zoneKey := Format('%2.2d', [zoneId]);
+    idx     := Self.IndexOf(zoneKey);
+    if idx >= 0 then begin
+        zone := TTREPctZone(Self.Objects[idx]);
+    end else begin
+        zone := TTREPctZone.Create(zoneId);
+        Self.AddObject(zoneKey, zone);
+    end;
+
+    //Zona carregada localizar o pct
+    PctId  := StrToInt(sPctId);
+    pctKey := Format('%2.2d', [pctId]);
+    idx    := zone.IndexOf(pctKey);
+    if idx >= 0 then begin
+        raise Exception.CreateFmt('Duplicidade de informações para o par(%s, %s)', [zoneKey, pctKey]);
+	 end else begin
+		 pct := TTREPct.Create(PctId, sPctName, sPctIP, '255.255.255.0', sDescription );
+    end;
+	 zone.Add(pct);
+end;
+
+constructor TTREPctZoneList.Create;
+begin
+    inherited;
+	 Self.Sorted := True;
+end;
+
+destructor TTREPctZoneList.Destroy;
+var
+    x : Integer;
+begin
+    for x := 0 to Self.Count - 1 do begin
+        Self.Objects[x].Free;
+    end;
+    inherited;
+end;
+
+procedure TTREPCTZoneList.LoadFromCSV(const Filename : string);
+const
+    DELIMS: TSysCharSet = [';', #13, #10];
+var
+    parser : TBufferedStringStream;
+    fs :     TFileStream;
+	 sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN : ansistring;
+	 lineIdx : integer;
+begin
+	 fs := TFileStream.Create(Filename, fmOpenRead + fmShareDenyWrite );
+	 try
+		 parser := TBufferedStringStream.Create(fs);
+		 try
+			 parser.SetWordDelimiters(@DELIMS);
+			 parser.Reset;
+			 parser.ReadLine; //ignora 1a linha
+			 lineIdx:=2;
+			 try
+			 while not parser.EoS do begin
+				 sZone    := parser.ReadStringWord;
+				 sCity    := parser.ReadStringWord;
+				 sPctId   := parser.ReadStringWord;
+				 sPctName := parser.ReadStringWord;
+				 sPctIP   := parser.ReadStringWord;
+				 sPctWAN  := parser.ReadStringWord;
+				 parser.ReadStringWord;
+				 //parser.ReadLine; //descarta demais informações da linha
+				 Self.AddPct(sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN, sCity);
+				 Inc( lineIdx );
+			 end;
+			 except
+				on E : Exception do begin
+					raise Exception.CreateFmt('Erro lendo arquivo na linha %d'#13'%s', [ lineIdx, E.Message ] );
+				end;
+            end;
+        finally
+            parser.Free;
+        end;
+    finally
+        fs.Free;
+    end;
+end;
+
+procedure TTREPct.Prepare;
+var
+ ret : Integer;
+begin
+	ret:=SetIpConfig( Self.Ip, '', Self.Subnet );
+	if ( ret <> ERROR_SUCCESS) then begin
+		raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [ TAPIHnd.CheckAPI( ret )] );
+	end;
+	ret:=RenameComputer( Self.Computername, Self.FDescription  );
+	if ( ret <> ERROR_SUCCESS) then begin
+		raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [ TAPIHnd.CheckAPI( ret )] );
+	end;
 end;
 
 end.

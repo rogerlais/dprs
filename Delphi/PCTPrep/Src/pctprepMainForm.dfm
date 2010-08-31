@@ -18,16 +18,16 @@ object MainForm: TMainForm
   object lblZone: TLabel
     Left = 32
     Top = 7
-    Width = 34
+    Width = 29
     Height = 13
-    Caption = 'lblZone'
+    Caption = '&Zonas'
   end
   object lblPctNumber: TLabel
     Left = 224
     Top = 7
-    Width = 62
+    Width = 88
     Height = 13
-    Caption = 'lblPctNumber'
+    Caption = '&PCT(Identificador)'
   end
   object lstZone: TListBox
     Left = 32
@@ -36,6 +36,7 @@ object MainForm: TMainForm
     Height = 97
     ItemHeight = 13
     TabOrder = 0
+    OnClick = lstZoneClick
   end
   object pnlComputerName: TPanel
     Left = 32
@@ -46,9 +47,9 @@ object MainForm: TMainForm
     Color = 14825524
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clYellow
-    Font.Height = -11
+    Font.Height = -27
     Font.Name = 'Tahoma'
-    Font.Style = []
+    Font.Style = [fsBold]
     ParentBackground = False
     ParentFont = False
     TabOrder = 1
@@ -63,9 +64,9 @@ object MainForm: TMainForm
     Color = 14825524
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clYellow
-    Font.Height = -11
+    Font.Height = -27
     Font.Name = 'Tahoma'
-    Font.Style = []
+    Font.Style = [fsBold]
     ParentBackground = False
     ParentFont = False
     TabOrder = 2
@@ -87,6 +88,7 @@ object MainForm: TMainForm
       Kind = bkOK
       ParentDoubleBuffered = False
       TabOrder = 0
+      OnClick = btnOkClick
     end
     object btnInserir: TBitBtn
       Left = 19
@@ -96,6 +98,7 @@ object MainForm: TMainForm
       Caption = '&Inserir'
       Default = True
       DoubleBuffered = True
+      Enabled = False
       Glyph.Data = {
         76010000424D7601000000000000760000002800000020000000100000000100
         04000000000000010000130B0000130B00001000000000000000000000000000
@@ -169,5 +172,10 @@ object MainForm: TMainForm
     Height = 97
     ItemHeight = 13
     TabOrder = 4
+    OnClick = lstPctNumberClick
+  end
+  object fvVersion: TFileVersionInfo
+    Left = 176
+    Top = 24
   end
 end

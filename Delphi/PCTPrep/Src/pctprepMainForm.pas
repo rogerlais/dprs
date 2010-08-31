@@ -4,7 +4,7 @@ interface
 
 uses
     Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-    Dialogs, StdCtrls, Buttons, ExtCtrls, AppLog;
+    Dialogs, StdCtrls, Buttons, ExtCtrls, pctprepUtils, AppLog, FileInfo;
 
 type
     TMainForm = class(TForm)
@@ -20,15 +20,21 @@ type
         btnInserir :      TBitBtn;
         btnClose :        TBitBtn;
         btnTest :         TBitBtn;
+        fvVersion :       TFileVersionInfo;
         procedure FormCreate(Sender : TObject);
         procedure FormShow(Sender : TObject);
-        procedure btnCancelClick(Sender : TObject);
-        procedure btnCloseClick(Sender : TObject);
-        procedure btnTestClick(Sender : TObject);
+		 procedure btnCancelClick(Sender : TObject);
+		 procedure btnCloseClick(Sender : TObject);
+		 procedure btnTestClick(Sender : TObject);
+        procedure lstZoneClick(Sender : TObject);
+        procedure lstPctNumberClick(Sender : TObject);
+    procedure btnOkClick(Sender: TObject);
     private
         { Private declarations }
+        loader : TTREPCTZoneList;
     public
         { Public declarations }
+        destructor Destroy; override;
     end;
 
 var
@@ -39,7 +45,7 @@ implementation
 {$R *.dfm}
 
 uses
-    pctprepUtils, APIHnd, LmCons, LmErr;
+    APIHnd, LmCons, LmErr;
 
 procedure TMainForm.btnCancelClick(Sender : TObject);
 begin
@@ -52,49 +58,108 @@ begin
     Self.Close;
 end;
 
+procedure TMainForm.btnOkClick(Sender: TObject);
+var
+	ActivePct : TTREPct;
+begin
+	if Self.lstPctNumber.ItemIndex >= 0 then begin
+		ActivePct := TTREPct(Self.lstPctNumber.Items.Objects[ Self.lstPctNumber.ItemIndex ]);
+		ActivePct.Prepare;
+	end;
+end;
+
 procedure TMainForm.btnTestClick(Sender : TObject);
 var
-	 ret :    NET_API_STATUS;
-    loader : TTREPCTZoneList;
+    ret : NET_API_STATUS;
 begin
-	 {TODO -oroger -cdsg : Realizar os testes pontuais}
+    {TODO -oroger -cdsg : Realizar os testes pontuais}
     //Renomear computador
-	 {
-	 ret := RenameComputer('teste-pct', 'teste-pct descrição');
-	 TAPIHnd.CheckAPI(ret);
-	 TAPIHnd.CheckAPI(5);
-	 }
+     {
+     ret := RenameComputer('teste-pct', 'teste-pct descrição');
+     TAPIHnd.CheckAPI(ret);
+     TAPIHnd.CheckAPI(5);
+     }
     //Alteração de IP
     {
-	 ret:=SetIpConfig('10.12.3.240', '10.12.1.21', '255.255.255.0');
-	 TAPIHnd.CheckAPI(ret);
-    }
-    //Carga dos parametros de configuração
-    loader := TTREPCTZoneList.Create;
-    try
-      loader.LoadFromCSV(ExpandFileName('..\Data\PCTs2010.csv' ));
-    finally
-      loader.Free;
-    end;
+     ret:=SetIpConfig('10.12.3.240', '10.12.1.21', '255.255.255.0');
+     TAPIHnd.CheckAPI(ret);
+	 }
+	 //Carga dos parametros de configuração
+end;
+
+destructor TMainForm.Destroy;
+begin
+    Self.loader.Free;
+    inherited;
 end;
 
 procedure TMainForm.FormCreate(Sender : TObject);
 begin
-   {$IFDEF DEBUG}
-    Self.btnClose.Visible := True;
-    Self.btnTest.Visible  := True;
-   {$ELSE}
+    {$IFDEF DEBUG}
+	 Self.btnClose.Visible := True;
+	 Self.btnTest.Visible  := True;
+	 Self.Caption:='Preparação de PCT - *** Depuração *** - '  + Self.fvVersion.FileVersion;
+	{$ELSE}
     Self.btnClose.Visible := False;
-    Self.btnTest.Visible  := False;
-   {$ENDIF}
-    Self.pnlComputerName.Caption := 'Indefinido';
-    Self.pnlComputerIp.Caption := 'Indefinido';
+    Self.btnTest.Visible := False;
+    Self.Caption := 'Preparação de PCT - ' + Self.fvVersion.FileVersion;
+    Self.btnClose.Visible := False;
+    Self.btnTest.Visible := False;
+    {$ENDIF}
+    Self.pnlComputerName.Caption := '';
+    Self.pnlComputerIp.Caption := '';
+    Self.btnOk.Enabled := False;
 end;
 
 procedure TMainForm.FormShow(Sender : TObject);
+var
+	fname : string;
 begin
-    Self.pnlComputerName.Visible := True;
-    Self.pnlComputerIp.Visible   := True;
+	 Self.pnlComputerName.Visible := True;
+	 Self.pnlComputerIp.Visible   := True;
+
+	 //carga da lista de pcts
+	 {$IFDEF DEBUG}
+	 fname:='..\Data\PCTs2010.csv';
+	 {$ELSE}
+	 fname:='.\PCTs2010.csv';
+	 {$ENDIF}
+	 loader := TTREPCTZoneList.Create;
+	 loader.LoadFromCSV(ExpandFileName(fname));
+	 Self.lstZone.Items.Assign(loader);
+end;
+
+procedure TMainForm.lstPctNumberClick(Sender : TObject);
+var
+    pct : TTREPct;
+begin
+    if Self.lstPctNumber.ItemIndex >= 0 then begin
+        pct := TTREPct(Self.lstPctNumber.Items.Objects[Self.lstPctNumber.ItemIndex]);
+    end else begin
+        pct := nil;
+    end;
+    Self.btnOk.Enabled := Assigned(pct);
+    if Assigned(pct) then begin
+        Self.pnlComputerName.Caption := pct.Computername;
+        Self.pnlComputerIp.Caption   := pct.Ip;
+    end else begin
+        Self.pnlComputerName.Caption := '';
+        Self.pnlComputerIp.Caption   := '';
+    end;
+end;
+
+procedure TMainForm.lstZoneClick(Sender : TObject);
+var
+    pctList : TTREPctZone;
+    idx :     Integer;
+    ZoneKey : string;
+begin
+    if Self.lstZone.ItemIndex >= 0 then begin
+        pctList := TTREPctZone(Self.lstZone.Items.Objects[Self.lstZone.ItemIndex]);
+        Self.lstPctNumber.Items.Assign(pctList);
+    end else begin
+        Self.lstPctNumber.Clear;
+    end;
 end;
 
 end.
