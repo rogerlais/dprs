@@ -1,6 +1,7 @@
 object MainForm: TMainForm
-  Left = 0
-  Top = 0
+  Left = 30
+  Top = 20
+  BorderIcons = []
   Caption = 'MainForm'
   ClientHeight = 225
   ClientWidth = 469
@@ -11,6 +12,7 @@ object MainForm: TMainForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesigned
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
@@ -81,7 +83,7 @@ object MainForm: TMainForm
     TabOrder = 3
     object btnOk: TBitBtn
       Left = 19
-      Top = 21
+      Top = 25
       Width = 75
       Height = 25
       DoubleBuffered = True

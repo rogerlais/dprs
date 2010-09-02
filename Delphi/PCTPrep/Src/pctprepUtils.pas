@@ -5,52 +5,52 @@ interface
 uses
     Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
     StdCtrls, Registry, ShellApi, ExtCtrls, FileCtrl, NB30,
-    WinSvc, Contnrs;
+    WinSvc, Contnrs, AppLog;
 
 const
     OS_WIN95: ansistring  = 'WIN95';
     OS_WIN98: ansistring  = 'WIN98';
     OS_WINME: ansistring  = 'WINME';
     OS_WINNT: ansistring  = 'WINNT';
-	 OS_WIN2K: ansistring  = 'WIN2K';
-	 OS_WINXP: ansistring  = 'WINXP';
-	 OS_WIN2K3: ansistring = 'WIN2K3';
+    OS_WIN2K: ansistring  = 'WIN2K';
+    OS_WINXP: ansistring  = 'WINXP';
+    OS_WIN2K3: ansistring = 'WIN2K3';
 
 type
-	 TTREPct = class;
+    TTREPct = class;
 
-	 TTREPctZone = class(TStringList)
-	 private
-		 FId : Integer;
-	 public
+    TTREPctZone = class(TStringList)
+    private
+        FId : Integer;
+    public
         constructor Create(AZoneId : Integer);
-		 destructor Destroy; override;
-		 property Id : Integer read FId;
-		 function Add(PCT : TTREPct) : Integer;
-	 end;
+        destructor Destroy; override;
+        property Id : Integer read FId;
+        function Add(PCT : TTREPct) : Integer;
+    end;
 
 
-	 TTREPct = class
-	 private
-		 FName :   string;
-		 FIp :     string;
-		 FSubNet : string;
-		 FDescription : string;
-		 FId :     Integer;
-	 public
-		 constructor Create(APCTId : Integer; const AName, AIp, ASubNet, ADescription : string); virtual;
-		 procedure Prepare;
-		 property Id : Integer read FId;
-		 property Computername : string read FName;
-		 property Subnet : string read FSubNet;
-		 property Ip : string read FIp;
-	 end;
+    TTREPct = class
+    private
+        FName :        string;
+        FIp :          string;
+        FSubNet :      string;
+        FDescription : string;
+        FId :          Integer;
+    public
+        constructor Create(APCTId : Integer; const AName, AIp, ASubNet, ADescription : string); virtual;
+        procedure Prepare;
+        property Id : Integer read FId;
+        property Computername : string read FName;
+        property Subnet : string read FSubNet;
+        property Ip : string read FIp;
+    end;
 
-	 TTREPctZoneList = class(TStringList)
-	 private
-		 function AddPct(const sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN, sDescription : AnsiString) : Integer;
-	 public
-		 constructor Create;
+    TTREPctZoneList = class(TStringList)
+    private
+        function AddPct(const sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN, sDescription : ansistring) : Integer;
+    public
+        constructor Create;
         destructor Destroy; override;
         procedure LoadFromCSV(const Filename : string);
     end;
@@ -389,7 +389,7 @@ end;
 
 constructor TTREPctZone.Create(AZoneId : Integer);
 begin
-	 inherited Create;
+    inherited Create;
     Self.Sorted := True;
     Self.FId    := AZoneId;
 end;
@@ -406,14 +406,14 @@ end;
 
 constructor TTREPct.Create(APCTId : Integer; const AName, AIp, ASubNet, ADescription : string);
 begin
-	 Self.FId  := APCTId;
-	 Self.FName   := AName;
-	 Self.FIp     := AIp;
-	 Self.FSubNet := ASubNet;
-	 Self.FDescription := ADescription;
+    Self.FId     := APCTId;
+    Self.FName   := AName;
+    Self.FIp     := AIp;
+    Self.FSubNet := ASubNet;
+    Self.FDescription := ADescription;
 end;
 
-function TTREPCTZoneList.AddPct(const sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN, sDescription : AnsiString) : Integer;
+function TTREPCTZoneList.AddPct(const sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN, sDescription : ansistring) : Integer;
 var
     zone : TTREPctZone;
     zoneId, PctId, idx : Integer;
@@ -437,16 +437,16 @@ begin
     idx    := zone.IndexOf(pctKey);
     if idx >= 0 then begin
         raise Exception.CreateFmt('Duplicidade de informações para o par(%s, %s)', [zoneKey, pctKey]);
-	 end else begin
-		 pct := TTREPct.Create(PctId, sPctName, sPctIP, '255.255.255.0', sDescription );
+    end else begin
+        pct := TTREPct.Create(PctId, sPctName, sPctIP, '255.255.255.0', sDescription);
     end;
-	 zone.Add(pct);
+    zone.Add(pct);
 end;
 
 constructor TTREPctZoneList.Create;
 begin
     inherited;
-	 Self.Sorted := True;
+    Self.Sorted := True;
 end;
 
 destructor TTREPctZoneList.Destroy;
@@ -463,36 +463,36 @@ procedure TTREPCTZoneList.LoadFromCSV(const Filename : string);
 const
     DELIMS: TSysCharSet = [';', #13, #10];
 var
-    parser : TBufferedStringStream;
-    fs :     TFileStream;
-	 sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN : ansistring;
-	 lineIdx : integer;
+    parser :  TBufferedStringStream;
+    fs :      TFileStream;
+    sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN : ansistring;
+    lineIdx : Integer;
 begin
-	 fs := TFileStream.Create(Filename, fmOpenRead + fmShareDenyWrite );
-	 try
-		 parser := TBufferedStringStream.Create(fs);
-		 try
-			 parser.SetWordDelimiters(@DELIMS);
-			 parser.Reset;
-			 parser.ReadLine; //ignora 1a linha
-			 lineIdx:=2;
-			 try
-			 while not parser.EoS do begin
-				 sZone    := parser.ReadStringWord;
-				 sCity    := parser.ReadStringWord;
-				 sPctId   := parser.ReadStringWord;
-				 sPctName := parser.ReadStringWord;
-				 sPctIP   := parser.ReadStringWord;
-				 sPctWAN  := parser.ReadStringWord;
-				 parser.ReadStringWord;
-				 //parser.ReadLine; //descarta demais informações da linha
-				 Self.AddPct(sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN, sCity);
-				 Inc( lineIdx );
-			 end;
-			 except
-				on E : Exception do begin
-					raise Exception.CreateFmt('Erro lendo arquivo na linha %d'#13'%s', [ lineIdx, E.Message ] );
-				end;
+    fs := TFileStream.Create(Filename, fmOpenRead + fmShareDenyWrite);
+    try
+        parser := TBufferedStringStream.Create(fs);
+        try
+            parser.SetWordDelimiters(@DELIMS);
+            parser.Reset;
+            parser.ReadLine; //ignora 1a linha
+            lineIdx := 2;
+            try
+                while not parser.EoS do begin
+                    sZone    := parser.ReadStringWord;
+                    sCity    := parser.ReadStringWord;
+                    sPctId   := parser.ReadStringWord;
+                    sPctName := parser.ReadStringWord;
+                    sPctIP   := parser.ReadStringWord;
+                    sPctWAN  := parser.ReadStringWord;
+                    parser.ReadStringWord;
+                    //parser.ReadLine; //descarta demais informações da linha
+                    Self.AddPct(sZone, sCity, sPctId, sPctName, sPctIP, sPctWAN, sCity);
+                    Inc(lineIdx);
+                end;
+            except
+                on E : Exception do begin
+                    raise Exception.CreateFmt('Erro lendo arquivo na linha %d'#13'%s', [lineIdx, E.Message]);
+                end;
             end;
         finally
             parser.Free;
@@ -503,17 +503,34 @@ begin
 end;
 
 procedure TTREPct.Prepare;
+const
+    SIS_DELIVERY = 'HKEY_LOCAL_MACHINE\SOFTWARE\Modulo\SISDELIVERY\PDC';
 var
- ret : Integer;
+    ret : Integer;
+    reg : TRegistryNT;
 begin
-	ret:=SetIpConfig( Self.Ip, '', Self.Subnet );
-	if ( ret <> ERROR_SUCCESS) then begin
-		raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [ TAPIHnd.CheckAPI( ret )] );
-	end;
-	ret:=RenameComputer( Self.Computername, Self.FDescription  );
-	if ( ret <> ERROR_SUCCESS) then begin
-		raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [ TAPIHnd.CheckAPI( ret )] );
-	end;
+    try
+        ret := SetIpConfig(Self.Ip, '', Self.Subnet);
+        if (ret <> ERROR_SUCCESS) then begin
+            raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [TAPIHnd.CheckAPI(ret)]);
+        end;
+        ret := RenameComputer(Self.Computername, Self.FDescription);
+        if (ret <> ERROR_SUCCESS) then begin
+            raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [TAPIHnd.CheckAPI(ret)]);
+        end else begin
+            //Alterar o nome da maquina primaria para este computador
+            reg := TRegistryNT.Create;
+            try
+                reg.WriteFullString(SIS_DELIVERY, Self.Computername, True);
+            finally
+                reg.Free;
+            end;
+        end;
+    except
+        on E : Exception do begin
+            Applog.AppFatalError(E.Message, 1, True);
+        end;
+    end;
 end;
 
 end.

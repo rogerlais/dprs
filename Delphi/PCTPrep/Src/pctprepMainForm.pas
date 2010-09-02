@@ -4,7 +4,7 @@ interface
 
 uses
     Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-    Dialogs, StdCtrls, Buttons, ExtCtrls, pctprepUtils, AppLog, FileInfo;
+    Dialogs, StdCtrls, Buttons, ExtCtrls, pctprepUtils, AppLog, FileInfo, FileHnd;
 
 type
     TMainForm = class(TForm)
@@ -23,12 +23,12 @@ type
         fvVersion :       TFileVersionInfo;
         procedure FormCreate(Sender : TObject);
         procedure FormShow(Sender : TObject);
-		 procedure btnCancelClick(Sender : TObject);
-		 procedure btnCloseClick(Sender : TObject);
-		 procedure btnTestClick(Sender : TObject);
+        procedure btnCancelClick(Sender : TObject);
+        procedure btnCloseClick(Sender : TObject);
+        procedure btnTestClick(Sender : TObject);
         procedure lstZoneClick(Sender : TObject);
         procedure lstPctNumberClick(Sender : TObject);
-    procedure btnOkClick(Sender: TObject);
+        procedure btnOkClick(Sender : TObject);
     private
         { Private declarations }
         loader : TTREPCTZoneList;
@@ -58,14 +58,16 @@ begin
     Self.Close;
 end;
 
-procedure TMainForm.btnOkClick(Sender: TObject);
+procedure TMainForm.btnOkClick(Sender : TObject);
 var
-	ActivePct : TTREPct;
+    ActivePct : TTREPct;
 begin
-	if Self.lstPctNumber.ItemIndex >= 0 then begin
-		ActivePct := TTREPct(Self.lstPctNumber.Items.Objects[ Self.lstPctNumber.ItemIndex ]);
-		ActivePct.Prepare;
-	end;
+	 if Self.lstPctNumber.ItemIndex >= 0 then begin
+		 ActivePct := TTREPct(Self.lstPctNumber.Items.Objects[Self.lstPctNumber.ItemIndex]);
+		 ActivePct.Prepare;
+		 MessageDlg( 'Operação concluída com sucesso', mtInformation, [ mbOK ] , 0 );
+		 Self.Close;
+	 end;
 end;
 
 procedure TMainForm.btnTestClick(Sender : TObject);
@@ -83,8 +85,8 @@ begin
     {
      ret:=SetIpConfig('10.12.3.240', '10.12.1.21', '255.255.255.0');
      TAPIHnd.CheckAPI(ret);
-	 }
-	 //Carga dos parametros de configuração
+     }
+    //Carga dos parametros de configuração
 end;
 
 destructor TMainForm.Destroy;
@@ -113,20 +115,20 @@ end;
 
 procedure TMainForm.FormShow(Sender : TObject);
 var
-	fname : string;
+    fname : string;
 begin
-	 Self.pnlComputerName.Visible := True;
-	 Self.pnlComputerIp.Visible   := True;
+    Self.pnlComputerName.Visible := True;
+    Self.pnlComputerIp.Visible   := True;
 
-	 //carga da lista de pcts
-	 {$IFDEF DEBUG}
+    //carga da lista de pcts
+     {$IFDEF DEBUG}
 	 fname:='..\Data\PCTs2010.csv';
 	 {$ELSE}
-	 fname:='.\PCTs2010.csv';
-	 {$ENDIF}
-	 loader := TTREPCTZoneList.Create;
-	 loader.LoadFromCSV(ExpandFileName(fname));
-	 Self.lstZone.Items.Assign(loader);
+    fname  := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'PCTs2010.csv']);
+     {$ENDIF}
+    loader := TTREPCTZoneList.Create;
+    loader.LoadFromCSV(ExpandFileName(fname));
+    Self.lstZone.Items.Assign(loader);
 end;
 
 procedure TMainForm.lstPctNumberClick(Sender : TObject);
@@ -151,8 +153,6 @@ end;
 procedure TMainForm.lstZoneClick(Sender : TObject);
 var
     pctList : TTREPctZone;
-    idx :     Integer;
-    ZoneKey : string;
 begin
     if Self.lstZone.ItemIndex >= 0 then begin
         pctList := TTREPctZone(Self.lstZone.Items.Objects[Self.lstZone.ItemIndex]);
