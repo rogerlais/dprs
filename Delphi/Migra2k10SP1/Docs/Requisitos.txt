@@ -1,0 +1,15 @@
+1 - Ajustar o caminho do executável do EloV6
+	1.1 - Informação do registro(modulo0) onde se lança o aplicativo
+	
+	
+2 - Alterar a informação do BGInfo refletindo a atualização
+	2.1 - Sobrepor arquivo com o modelo de exibição
+	
+	
+3 - Ajustar LMHosts novamente
+	3.1 - Recalcular, apenas para as centrais, usando o agrupamento das centrais
+
+4 - Reajustar todas as senhas locais
+	4.1 - para os computadores pertencentes a centrais refazer as senhas locais para refletir o número da central
+
+5 - 
