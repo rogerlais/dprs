@@ -62,12 +62,18 @@ procedure TMainForm.btnOkClick(Sender : TObject);
 var
     ActivePct : TTREPct;
 begin
-	 if Self.lstPctNumber.ItemIndex >= 0 then begin
-		 ActivePct := TTREPct(Self.lstPctNumber.Items.Objects[Self.lstPctNumber.ItemIndex]);
-		 ActivePct.Prepare;
-		 MessageDlg( 'Operação concluída com sucesso', mtInformation, [ mbOK ] , 0 );
-		 Self.Close;
-	 end;
+    if Self.lstPctNumber.ItemIndex >= 0 then begin
+        //Desabilita controles de alteração de estado
+        TControl(Sender).Enabled := False;
+        lstZone.Enabled := False;
+        lstPctNumber.Enabled := False;
+        //Identifica e altera de acordo com o PCT selecionado
+        ActivePct := TTREPct(Self.lstPctNumber.Items.Objects[Self.lstPctNumber.ItemIndex]);
+        ActivePct.Prepare;
+        //Informa do sucesso
+        MessageDlg('Operação concluída com sucesso!', mtInformation, [mbOK], 0);
+        Self.Close;
+    end;
 end;
 
 procedure TMainForm.btnTestClick(Sender : TObject);
@@ -98,10 +104,10 @@ end;
 procedure TMainForm.FormCreate(Sender : TObject);
 begin
     {$IFDEF DEBUG}
-	 Self.btnClose.Visible := True;
-	 Self.btnTest.Visible  := True;
-	 Self.Caption:='Preparação de PCT - *** Depuração *** - '  + Self.fvVersion.FileVersion;
-	{$ELSE}
+    Self.btnClose.Visible := True;
+    Self.btnTest.Visible := True;
+    Self.Caption := 'Preparação de PCT - *** Depuração *** - ' + Self.fvVersion.FileVersion;
+    {$ELSE}
     Self.btnClose.Visible := False;
     Self.btnTest.Visible := False;
     Self.Caption := 'Preparação de PCT - ' + Self.fvVersion.FileVersion;
@@ -122,8 +128,8 @@ begin
 
     //carga da lista de pcts
      {$IFDEF DEBUG}
-	 fname:='..\Data\PCTs2010.csv';
-	 {$ELSE}
+    fname  := '..\Data\PCTs2010.csv';
+     {$ELSE}
     fname  := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'PCTs2010.csv']);
      {$ENDIF}
     loader := TTREPCTZoneList.Create;
