@@ -125,14 +125,14 @@
 					</VersionInfo>
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">TRE-PB - SESOP</VersionInfoKeys>
-						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">1.0.2010.10</VersionInfoKeys>
+						<VersionInfoKeys Name="FileDescription">Preparação de PCTs</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.0.2010.14</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
-						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="LegalTrademarks">TRE-PB\COSUP\SESOP</VersionInfoKeys>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName"/>
-						<VersionInfoKeys Name="ProductVersion">1.0.2010.12</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.0.2010.14</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>

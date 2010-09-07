@@ -607,25 +607,32 @@ const
     SIS_DELIVERY = 'HKEY_LOCAL_MACHINE\SOFTWARE\Modulo\SISDELIVERY\PDC';
 var
     ret : Integer;
-	 reg : TRegistryNT;
+    reg : TRegistryNT;
 begin
-	 try
-		 {$IFDEF SKIP_IPCHANGE}
+    try
+         {$IFDEF SKIP_IPCHANGE}
 		 ret := ERROR_SUCCESS;
 		 {$ELSE}
-		 ret := SetIpConfig(Self.Ip, '', Self.Subnet);
-		 {$ENDIF}
+        ret := SetIpConfig(Self.Ip, '', Self.Subnet);
+         {$ENDIF}
         if (ret <> ERROR_SUCCESS) then begin
-            raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [TAPIHnd.CheckAPI(ret)]);
+            raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [TAPIHnd.SysErrorMessageEx(ret)]);
         end;
         ret := RenameComputer(Self.Computername, Self.FDescription);
         if (ret <> ERROR_SUCCESS) then begin
-            raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [TAPIHnd.CheckAPI(ret)]);
+            raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [TAPIHnd.SysErrorMessageEx(ret)]);
         end else begin
             //Alterar o nome da maquina primaria para este computador
             reg := TRegistryNT.Create;
             try
-                reg.WriteFullString(SIS_DELIVERY, Self.Computername, True);
+                //Apaga entrada, significa que este computador é o primário para ele mesmo
+                //reg.WriteFullString(SIS_DELIVERY, Self.Computername, True);
+                if reg.FullValueExists(SIS_DELIVERY) then begin
+                    if not reg.DeleteFullValue(SIS_DELIVERY) then begin
+                        raise Exception.CreateFmt('Erro ativando máquina como primária'#13'%s',
+                            [TAPIHnd.SysErrorMessageEx(GetLastError())]);
+                    end;
+                end;
             finally
                 reg.Free;
             end;
