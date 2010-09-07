@@ -50,14 +50,14 @@
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
 			<DCC_Optimize>false</DCC_Optimize>
 			<DCC_ExeOutput>..\Debug</DCC_ExeOutput>
-			<DCC_Define>DEBUG;StrHnd;$(DCC_Define)</DCC_Define>
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 			<DCC_BplOutput>..\Debug</DCC_BplOutput>
 			<DCC_DcpOutput>..\Debug</DCC_DcpOutput>
 			<DCC_DcuOutput>..\Debug</DCC_DcuOutput>
 			<DCC_DependencyCheckOutputName>..\Debug\PCTPrep.exe</DCC_DependencyCheckOutputName>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_3)'!=''">
-			<DCC_Define>APIHnd;$(DCC_Define)</DCC_Define>
+			<DCC_Define>DEBUG_ALL;REMOTE;SKIP_IPCHANGE;$(DCC_Define)</DCC_Define>
 			<DCC_ExeOutput>\\teste-tre\swap</DCC_ExeOutput>
 			<DCC_Optimize>false</DCC_Optimize>
 			<DCC_BplOutput>\\teste-tre\swap</DCC_BplOutput>
@@ -132,7 +132,7 @@
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName"/>
-						<VersionInfoKeys Name="ProductVersion">1.0.2010.10</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.0.2010.12</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>

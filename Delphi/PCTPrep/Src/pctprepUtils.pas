@@ -1,3 +1,8 @@
+{$IFDEF pctprepUtils}
+	 {$DEFINE DEBUG_UNIT}
+{$ENDIF}
+{$I PCTPrep.inc}
+
 unit pctprepUtils;
 
 interface
@@ -62,13 +67,83 @@ function SetIpConfig(const NewIpAddr : string; const NewGateWay : string = ''; c
 implementation
 
 uses
-    APIHnd, StrHnd, WinNetHnd, WinReg32, LmCons, LmErr, LmWksta, LmJoin, Variants, OleAuto, ActiveX, UrlMon;
+    APIHnd, StrHnd, WinNetHnd, WinReg32, LmCons, LmErr, LmWksta, LmJoin, Variants, ComObj, ActiveX, UrlMon, TREUtils;
+
+ // ====================================================
+ // Set DNS Servers
+ // Instead of Primary and Alternate you may wish
+ // to rewrite this using array of string as the
+ // parameters as SetDNSServerSearchOrder will take
+ // a list of many DNS addresses. I only have use for
+ // Primary and Alternate.
+ // ====================================================
+
+function SetDnsServers(const APrimaryDNS : string;
+    const AAlternateDNS : string = '') : Integer;
+var
+    Retvar :   Integer;
+    oBindObj : IDispatch;
+    oNetAdapters, oNetAdapter, oDnsAddr, oWMIService : olevariant;
+    i, iValue, iSize : longword;
+    oEnum :    IEnumvariant;
+    oCtx :     IBindCtx;
+    oMk :      IMoniker;
+    sFileObj : WideString;
+begin
+    Retvar   := 0;
+    sFileObj := 'winmgmts:\\.\root\cimv2';
+    iSize    := 0;
+    if APrimaryDNS <> '' then begin
+        Inc(iSize);
+    end;
+    if AAlternateDNS <> '' then begin
+        Inc(iSize);
+    end;
+
+    // Create OLE [IN} Parameters
+    if iSize > 0 then begin
+        oDnsAddr    := VarArrayCreate([1, iSize], varOleStr);
+        oDnsAddr[1] := APrimaryDNS;
+        if iSize > 1 then begin
+            oDnsAddr[2] := AAlternateDNS;
+        end;
+    end;
+
+    // Connect to WMI - Emulate API GetObject()
+    OleCheck(CreateBindCtx(0, oCtx));
+    OleCheck(MkParseDisplayNameEx(oCtx, PWideChar(sFileObj), i, oMk));
+    OleCheck(oMk.BindToObject(oCtx, nil, IUnknown, oBindObj));
+    oWMIService := oBindObj;
+
+    oNetAdapters := oWMIService.ExecQuery('Select * from Win32_NetworkAdapterConfiguration where IPEnabled=TRUE');
+    oEnum := IUnknown(oNetAdapters._NewEnum) as IEnumVariant;
+
+    while oEnum.Next(1, oNetAdapter, iValue) = 0 do begin
+        try
+            if iSize > 0 then begin
+                Retvar := oNetAdapter.SetDNSServerSearchOrder(oDnsAddr);
+            end else begin
+                Retvar := oNetAdapter.SetDNSServerSearchOrder();
+            end;
+        except
+            Retvar := -1;
+        end;
+
+        oNetAdapter := Unassigned;
+    end;
+
+    oDnsAddr := Unassigned;
+    oNetAdapters := Unassigned;
+    oWMIService := Unassigned;
+    Result := Retvar;
+end;
+
 
 function SetIpConfig(const NewIpAddr : string; const NewGateWay : string = ''; const NewSubnet : string = '') : Integer;
 var
     Retvar :   Integer;
     objBind :  IDispatch;
-    objAllAdapters, objNetAdapter, oIpAddress, oGateWay, oWMIService, oSubnetMask : olevariant;
+    objAllAdapters, objNetAdapter, oIpAddress, oGateWay, oWMIService, oSubnetMask, oDNSSet : olevariant;
     i, iValue : longword;
     oEnum :    IEnumvariant;
     oCtx :     IBindCtx;
@@ -89,6 +164,11 @@ begin
     end else begin
         oSubnetMask[1] := NewSubnet;
     end;
+    //Ajusta os DNS hardcoded
+    oDNSSet    := VarArrayCreate([1, 2], varOleStr);
+    oDNSSet[1] := '10.12.1.12';
+    oDNSSet[2] := '10.12.1.0';
+
 
     // Connect to WMI - Emulate API GetObject()
     OleCheck(CreateBindCtx(0, oCtx));
@@ -97,9 +177,7 @@ begin
     oWMIService := objBind;
 
     //Monta consulta para todos os adaptadores ativos(cabo de rede conectado)
-    objAllAdapters := oWMIService.ExecQuery('Select * from ' +
-        'Win32_NetworkAdapterConfiguration ' +
-        'where IPEnabled=TRUE');
+    objAllAdapters := oWMIService.ExecQuery('Select * from Win32_NetworkAdapterConfiguration where IPEnabled=TRUE');
     oEnum := IUnknown(objAllAdapters._NewEnum) as IEnumVariant;
 
     while oEnum.Next(1, objNetAdapter, iValue) = 0 do begin //Varre todos os adaptadores
@@ -111,6 +189,9 @@ begin
                 Retvar := objNetAdapter.EnableStatic(oIpAddress, oSubnetMask);
                 if (Retvar = 0) and (NewGateway <> '') then begin // troca de gateway
                     Retvar := objNetAdapter.SetGateways(oGateway);
+                    if (Retvar = 0) then begin // troca DNS
+                        Retvar := objNetAdapter.SetDNSServerSearchOrder(oDNSSet);
+                    end;
                 end;
                 {TODO -oroger -clib : Local para colocar quaisquer limpezas de caches e regitro de dns externo, etc}
             end;
@@ -122,6 +203,7 @@ begin
     end;
 
     //liberar as instancias
+    oDNSSet     := Unassigned;
     oGateWay    := Unassigned;
     oSubnetMask := Unassigned;
     oIpAddress  := Unassigned;
@@ -132,21 +214,37 @@ end;
 
 function RenameComputerInWorkGroup(CompName : ansistring) : NET_API_STATUS;
 type
-    ProtSetComputerNameEx = function(nType : TComputerNameFormat; NewName : PAnsiChar) : boolean stdcall;
+    ProtoSetComputerNameEx = function(nType : TComputerNameFormat; NewName : PAnsiChar) : boolean stdcall;
+    ProtoNetJoinDomain = function(lpServer, lpDomain, lpAccountOU, lpAccount, lpPassword : LPCWSTR; fJoinOptions :
+            DWORD) : NET_API_STATUS; stdcall;
 var
-    FuncSetComputerNameEx : ProtSetComputerNameEx;
-    MHandle : longint;
+    FuncSetComputerNameEx : ProtoSetComputerNameEx;
+    FuncJoinDomain : ProtoNetJoinDomain;
+    MHandle, NHandle : longint;
+    grp :    string;
+    zoneId : Integer;
 begin
+    zoneId  := TTREUtils.GetComputerZone(CompName);
     MHandle := LoadLibrary('kernel32.dll');
+    NHandle := LoadLibrary('netapi32.dll');
     try
-        @FuncSetComputerNameEx := GetProcAddress(MHandle, 'SetComputerNameExA');
-        if not FuncSetComputerNameEx(ComputerNamePhysicalDnsHostname, PAnsiChar(CompName)) then begin
-            Result := GetLastError();
-        end else begin
-            Result := NERR_Success;
+        //Grupo de trabalho
+        @FuncJoinDomain := GetProcAddress(NHandle, 'NetJoinDomain');
+        grp    := 'ZNE-PB' + Format('%3.3d', [zoneId]);
+        Result := FuncJoinDomain(nil, PWideChar(grp), nil, nil, nil, 0);
+        if Result = NERR_Success then begin
+
+            //Nome do computador
+            @FuncSetComputerNameEx := GetProcAddress(MHandle, 'SetComputerNameExA');
+            if not FuncSetComputerNameEx(ComputerNamePhysicalDnsHostname, PAnsiChar(CompName)) then begin
+                Result := GetLastError();
+            end else begin
+                Result := NERR_Success;
+            end;
         end;
     finally
         FreeLibrary(MHandle);
+        FreeLibrary(NHandle);
     end;
 end;
 
@@ -188,7 +286,7 @@ begin
     if Res <> NERR_SetupNotJoined then begin //Computador não pertence a nenhum dominio
         Res := NetWkstaGetInfo(nil, 100, @PBuf);
         if Res = NERR_Success then begin
-            Result := string(PBuf^.wki100_langroup);
+            Result := ansistring(PBuf^.wki100_langroup);
         end;
     end;
 end;
@@ -340,7 +438,9 @@ begin
         end;
 
     end else begin
-        Result := RenameComputerInDomain('', newname, 'LOGIN_ADM', 'PWD_ADM');
+        {TODO -oroger -cdsg : Passar credenciais capazes de realizar a operação}
+        Result := E_NOTIMPL;
+        //Result := RenameComputerInDomain('', newname, 'LOGIN_ADM', 'PWD_ADM');
         //NetRenameMachineInDomain - W2K and XP only
     end;
 
@@ -440,7 +540,7 @@ begin
     end else begin
         pct := TTREPct.Create(PctId, sPctName, sPctIP, '255.255.255.0', sDescription);
     end;
-    zone.Add(pct);
+    Result := zone.Add(pct);
 end;
 
 constructor TTREPctZoneList.Create;
@@ -507,10 +607,14 @@ const
     SIS_DELIVERY = 'HKEY_LOCAL_MACHINE\SOFTWARE\Modulo\SISDELIVERY\PDC';
 var
     ret : Integer;
-    reg : TRegistryNT;
+	 reg : TRegistryNT;
 begin
-    try
-        ret := SetIpConfig(Self.Ip, '', Self.Subnet);
+	 try
+		 {$IFDEF SKIP_IPCHANGE}
+		 ret := ERROR_SUCCESS;
+		 {$ELSE}
+		 ret := SetIpConfig(Self.Ip, '', Self.Subnet);
+		 {$ENDIF}
         if (ret <> ERROR_SUCCESS) then begin
             raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [TAPIHnd.CheckAPI(ret)]);
         end;

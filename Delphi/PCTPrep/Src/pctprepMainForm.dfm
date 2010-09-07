@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 20
   BorderIcons = []
   Caption = 'MainForm'
-  ClientHeight = 225
+  ClientHeight = 237
   ClientWidth = 469
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -77,7 +77,7 @@ object MainForm: TMainForm
     Left = 356
     Top = 0
     Width = 113
-    Height = 225
+    Height = 218
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 3
@@ -175,6 +175,16 @@ object MainForm: TMainForm
     ItemHeight = 13
     TabOrder = 4
     OnClick = lstPctNumberClick
+  end
+  object statBar: TStatusBar
+    Left = 0
+    Top = 218
+    Width = 469
+    Height = 19
+    Panels = <
+      item
+        Width = 250
+      end>
   end
   object fvVersion: TFileVersionInfo
     Left = 176
