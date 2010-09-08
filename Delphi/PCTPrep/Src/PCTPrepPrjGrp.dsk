@@ -16,28 +16,25 @@ File_13=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\Str_Pas.pas',0,1,1,1,1,0,0,,
 File_14=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\XPClasses.pas',0,1,20,22,34,0,0,,
 
 [Modules]
-Module0=C:\Sw\WorkDir\Pcks\XPLib\Src\WinReg32.pas
-Module1=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas
-Module2=default.htm
-Module3=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepMainForm.pas
-Module4=C:\Sw\WorkDir\Pcks\TRE\Src\TREZones.pas
-Module5=C:\Sw\WorkDir\Pcks\TRE\Src\TREUtils.pas
-Module6=C:\Sw\WorkDir\Pcks\OPLib\Src\OPXMLSerializable.pas
+Module0=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas
+Module1=C:\Sw\WorkDir\Pcks\XPLib\Src\WinReg32.pas
+Module2=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepMainForm.pas
+Module3=C:\Sw\WorkDir\Pcks\TRE\Src\TREZones.pas
+Module4=C:\Sw\WorkDir\Pcks\TRE\Src\TREUtils.pas
+Module5=C:\Sw\WorkDir\Pcks\OPLib\Src\OPXMLSerializable.pas
+Module6=default.htm
 Count=7
 EditWindowCount=1
-
-[C:\Sw\WorkDir\Pcks\XPLib\Src\WinReg32.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[default.htm]
-ModuleType=TURLModule
+[C:\Sw\WorkDir\Pcks\XPLib\Src\WinReg32.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepMainForm.pas]
 ModuleType=TSourceModule
@@ -59,9 +56,12 @@ ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
+[default.htm]
+ModuleType=TURLModule
+
 [EditWindow0]
 ViewCount=7
-CurrentEditView=C:\Sw\WorkDir\Pcks\XPLib\Src\WinReg32.pas
+CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas
 View0=0
 View1=1
 View2=2
@@ -147,9 +147,9 @@ EditViewName=C:\Sw\WorkDir\Pcks\TRE\Src\TREUtils.pas
 [View5]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas
-CursorX=39
+CursorX=1
 CursorY=631
-TopLine=613
+TopLine=620
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -158,8 +158,8 @@ EditViewName=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas
 [View6]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Pcks\XPLib\Src\WinReg32.pas
-CursorX=1
-CursorY=428
+CursorX=65
+CursorY=433
 TopLine=419
 LeftCol=1
 Elisions=

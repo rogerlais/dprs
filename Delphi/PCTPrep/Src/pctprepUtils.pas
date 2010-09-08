@@ -522,9 +522,9 @@ var
 begin
     {TODO -oroger -cdsg : inserir lista dupla de zonas e pcts por zonas}
     zoneid  := StrToInt(sZone);
-    zoneKey := Format('%2.2d', [zoneId]);
-    idx     := Self.IndexOf(zoneKey);
-    if idx >= 0 then begin
+	 zoneKey := Format('%3.3d', [zoneId]);
+	 idx     := Self.IndexOf(zoneKey);
+	 if idx >= 0 then begin
         zone := TTREPctZone(Self.Objects[idx]);
     end else begin
         zone := TTREPctZone.Create(zoneId);
@@ -629,9 +629,8 @@ begin
                 //reg.WriteFullString(SIS_DELIVERY, Self.Computername, True);
                 if reg.FullValueExists(SIS_DELIVERY) then begin
                     if not reg.DeleteFullValue(SIS_DELIVERY) then begin
-                        raise Exception.CreateFmt('Erro ativando máquina como primária'#13'%s',
-                            [TAPIHnd.SysErrorMessageEx(GetLastError())]);
-                    end;
+						 raise Exception.Create('Erro de acesso ativando máquina como primária');
+					 end;
                 end;
             finally
                 reg.Free;
