@@ -12,4 +12,4 @@
 4 - Reajustar todas as senhas locais
 	4.1 - para os computadores pertencentes a centrais refazer as senhas locais para refletir o número da central
 
-5 - 
+5 - Conceder permissões de escrita para o arquivo c:\windows\temp\*.bmp (BGInfo)
