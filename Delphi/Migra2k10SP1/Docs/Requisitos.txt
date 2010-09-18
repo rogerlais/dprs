@@ -13,3 +13,9 @@
 	4.1 - para os computadores pertencentes a centrais refazer as senhas locais para refletir o número da central
 
 5 - Conceder permissões de escrita para o arquivo c:\windows\temp\*.bmp (BGInfo)
+
+6 - Associação dos arquivos TIFF para visualizador de imagens do Windows
+	6.1 - Acessar HKU\ enumerando subchaves por padrão de exatos S-1-5-21-433129518-1525629605-929701000-1059419 caracteres e 
+		montar a associação.
+		6.1.1 Entradas .\tif e .\tiff sair de google.viewer.3 para TIFImage.Document segundo arquivo de exemplo na pasta da solução
+
