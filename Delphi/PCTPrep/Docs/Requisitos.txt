@@ -1,0 +1,11 @@
+Requisitos:
+
+1 - Capacidade de alterar nome e ip do computador
+
+2 - Capacidade de ler arquivo com dados vinculados da estação a partir de planilha eletrônica
+
+3 - GUI apresenta lista com número da zona e os pcts vinculados a mesma
+	3.1 - Selecionados o par(zona,pct) recupera-se os demais atributos nome, ip , etc
+	
+4 - Por se tratar de máquina std e isolada deve-se garantir que ela é a sua própria máquina primária.
+
