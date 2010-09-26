@@ -12,7 +12,8 @@ uses
     Classes, SysUtils, Windows, FileHnd, AppSettings, Contnrs, WinReg32;
 
 const
-	VERSION_URL_FILE = 'http://dcsesop/suporte/AppData/VVer/VVer.ini';
+    VERSION_URL_FILE = 'http://arquivos/setores/sesop/AppData/VerificadorVersoes/VVer.ini';
+
 type
     TVVUpdateStatus = (usUnknow, usOld, usOK);
 
@@ -26,9 +27,13 @@ type
         FDesc :           string;
         FVerKeyEx :       string;
         _CurrentVersion : string;
+        _CurrentVersionEX : string;
         function GetCurrentVersion : string;
         function GetExpectedVerEx : string;
         function GetIsUpdated : boolean;
+        function GetCurrentVersionEx : string;
+        function ReadVersionEntry(const Entry : string) : string;
+        function GetCurrentVersionDisplay : string;
     public
         constructor Create(const ADesc, AHive, AVerKey, AVerKeyEx, AExpectedVer, AExpectedVerEx : string);
         property Desc : string read FDesc;
@@ -38,51 +43,53 @@ type
         property ExpectedVer : string read FExpectedVer;
         property ExpectedVerEx : string read GetExpectedVerEx;
         property CurrentVersion : string read GetCurrentVersion;
+        property CurrentVersionDisplay : string read GetCurrentVersionDisplay;
+        property CurrentVersionEx : string read GetCurrentVersionEx;
         property isUpdated : boolean read GetIsUpdated;
         property UpdateStatus : TVVUpdateStatus read FUpdateStatus;
     end;
 
     TVVInfo = class(TBaseStartSettings)
-	 private
-		 FProgList : TObjectList;
-		 function GetItems(index : Integer) : TProgItem;
-		 function GetProgCount : Integer;
-		 function GetGlobalStatus : string;
-		 function GetInfoText : string;
-	 public
-		 constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
-		 property Items[index : Integer] : TProgItem read GetItems;
-		 property ProgCount : Integer read GetProgCount;
-		 property GlobalStatus : string read GetGlobalStatus;
-		 property InfoText : string read GetInfoText;
-	 end;
+    private
+        FProgList : TObjectList;
+        function GetItems(index : Integer) : TProgItem;
+        function GetProgCount : Integer;
+        function GetGlobalStatus : string;
+        function GetInfoText : string;
+    public
+        constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
+        property Items[index : Integer] : TProgItem read GetItems;
+        property ProgCount : Integer read GetProgCount;
+        property GlobalStatus : string read GetGlobalStatus;
+        property InfoText : string read GetInfoText;
+    end;
 
-	 procedure LoadGlobalInfo( const Filename : string );
+procedure LoadGlobalInfo(const Filename : string);
 
 var
-	 GlobalInfo : TVVInfo = nil;
+    GlobalInfo : TVVInfo = nil;
 
 implementation
 
 uses
-	 WinNetHnd;
+    WinNetHnd;
 
-procedure LoadGlobalInfo( const Filename : string );
+procedure LoadGlobalInfo(const Filename : string);
 begin
-	 GlobalInfo := TVVInfo.Create(filename);
+    GlobalInfo := TVVInfo.Create(filename);
 end;
 
 { TVVInfo }
 
 constructor TVVInfo.Create(const FileName, AKeyPrefix : string);
 var
-	 x :     Integer;
-	 progs : TStringList;
-	 VerKey, ExpectedVerEx, ExpectedVer, Hive, Desc, VerKeyEx : string;
-	 prg :   TProgItem;
+    x :     Integer;
+    progs : TStringList;
+    VerKey, ExpectedVerEx, ExpectedVer, Hive, Desc, VerKeyEx : string;
+    prg :   TProgItem;
 begin
-	 inherited;
-	 Self.FProgList := TObjectList.Create;
+    inherited;
+    Self.FProgList := TObjectList.Create;
     Self.FProgList.OwnsObjects := True;
     progs := TStringList.Create;
     try
@@ -167,32 +174,35 @@ end;
 
 function TProgItem.GetCurrentVersion : string;
 var
-    reg : TRegistryNT;
-    veSimple, veDetail : string;
-    ret : boolean;
+    Entry : string;
 begin
-    {TODO -oroger -cdsg : Leitura das entrada svinculadas para retorno da versão instalada}
-    if Self._CurrentVersion <> EmptyStr then begin
-        Result := Self._CurrentVersion;
-    end else begin
-        Result := 'Não Identificada';
+    if (Self._CurrentVersion = EmptyStr) then begin
+		 Entry := TFileHnd.ConcatPath([Self.FHive, Self.FVerKey]);
+		 Self._CurrentVersion := Self.ReadVersionEntry(Entry);
     end;
-    reg := TRegistryNT.Create;
-    try
-        veSimple := TFileHnd.ConcatPath([Self.FHive, Self.FVerKey]);
-        veDetail := TFileHnd.ConcatPath([Self.FHive, Self.FVerKeyEx]);
-        if reg.FullKeyExists(veDetail) then begin
-            ret := reg.ReadFullString(veDetail, Result);
-        end else begin
-            ret := reg.ReadFullString(veSimple, Result);
-        end;
-        if not ret then begin
-            Result := 'Não identificada';
-        end;
-    finally
-        Self._CurrentVersion := Result;
-        reg.Free;
+    Result := Self._CurrentVersion;
+end;
+
+function TProgItem.GetCurrentVersionDisplay : string;
+begin
+    Result := Self.CurrentVersionEx;
+    if Result = EmptyStr then begin
+        Result := 'Não identificada';
     end;
+end;
+
+function TProgItem.GetCurrentVersionEx : string;
+var
+    Entry : string;
+begin
+    if (Self._CurrentVersionEX = EmptyStr) then begin
+        Entry := TFileHnd.ConcatPath([Self.FHive, Self.FVerKeyEx]);
+		 Self._CurrentVersionEX := Self.ReadVersionEntry(Entry);
+		 if Self._CurrentVersionEX = EmptyStr then begin
+		 	Self._CurrentVersionEX:=Self.CurrentVersion;
+		 end;
+    end;
+    Result := Self._CurrentVersionEX;
 end;
 
 function TProgItem.GetExpectedVerEx : string;
@@ -207,7 +217,7 @@ end;
 
 function TProgItem.GetIsUpdated : boolean;
 begin
-    {$IFDEF DEBUG}
+     {$IFDEF DEBUG________}
 	 if Self.FExpectedVer = '7.00' then begin
 		 Self.FUpdateStatus := usOK;
 	 end else begin
@@ -220,8 +230,7 @@ begin
 		 end;
 	 end;
 	 Result := (Self.UpdateStatus = usOK);
-	 {$ENDIF}
-
+	 {$ELSE}
     {TODO -oroger -cdsg : Comparar o valor da versão atual com a esperada}
     if Self.FUpdateStatus = usUnknow then begin
         if SameText(Self.CurrentVersion, Self.ExpectedVerEx) then begin
@@ -231,6 +240,23 @@ begin
         end;
     end;
     Result := (Self.UpdateStatus = usOK);
+     {$ENDIF}
+end;
+
+function TProgItem.ReadVersionEntry(const Entry : string) : string;
+var
+    reg : TRegistryNT;
+begin
+    {TODO -oroger -cdsg : Leitura das entrada svinculadas para retorno da versão instalada}
+    reg := TRegistryNT.Create;
+    try
+		 if not (reg.ReadFullString(Entry, Result)) then begin
+			 Result := EmptyStr;
+        end;
+    finally
+        Self._CurrentVersion := Result;
+        reg.Free;
+    end;
 end;
 
 end.

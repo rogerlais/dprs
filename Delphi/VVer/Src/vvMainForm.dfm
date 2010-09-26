@@ -4,8 +4,8 @@ object Form1: TForm1
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsDialog
   Caption = 'Verificador de Vers'#245'es 2010 T1'
-  ClientHeight = 354
-  ClientWidth = 563
+  ClientHeight = 319
+  ClientWidth = 509
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -39,21 +39,22 @@ object Form1: TForm1
     000000000000000000000000000000000000000000000000000000000000}
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object lblMainLabel: TLabel
-    Left = 32
-    Top = 21
+    Left = 9
+    Top = 9
     Width = 258
     Height = 13
     Caption = 'SESOP - Verificador de Vers'#245'es de Sistemas 2010 - T1'
   end
   object btnOK: TBitBtn
-    Left = 112
-    Top = 288
-    Width = 153
-    Height = 41
+    Left = 87
+    Top = 251
+    Width = 161
+    Height = 51
     Caption = '&Fechar'
     DoubleBuffered = True
     Kind = bkOK
@@ -62,15 +63,15 @@ object Form1: TForm1
     OnClick = btnOKClick
   end
   object grdList: TEnhStringGrid
-    Left = 32
-    Top = 40
+    Left = 9
+    Top = 28
     Width = 489
     Height = 217
     ColCount = 3
     FixedCols = 0
     RowCount = 2
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goRowSelect, goFixedRowClick]
-    TabOrder = 1
+    TabOrder = 2
     OnDrawCellGetProperties = grdListDrawCellGetProperties
     ColWidths = (
       288
@@ -78,10 +79,10 @@ object Form1: TForm1
       88)
   end
   object btnNotifSESOP: TBitBtn
-    Left = 277
-    Top = 288
-    Width = 153
-    Height = 41
+    Left = 256
+    Top = 251
+    Width = 161
+    Height = 52
     Caption = '&Informar'
     Default = True
     DoubleBuffered = True
@@ -378,12 +379,12 @@ object Form1: TForm1
       0000000000000000000000000000000000000000000000000000}
     ModalResult = 6
     ParentDoubleBuffered = False
-    TabOrder = 2
+    TabOrder = 1
     OnClick = btnNotifSESOPClick
   end
   object pnlLog: TPanel
-    Left = 112
-    Top = 96
+    Left = 89
+    Top = 84
     Width = 321
     Height = 129
     Caption = '....'
@@ -393,8 +394,8 @@ object Form1: TForm1
   object smtpSender: TIdSMTP
     Host = 'smtp.tre-pb.gov.br'
     SASLMechanisms = <>
-    Left = 288
-    Top = 160
+    Left = 265
+    Top = 148
   end
   object mailMsgNotify: TIdMessage
     AttachmentEncoding = 'UUE'
@@ -431,12 +432,12 @@ object Form1: TForm1
     Sender.Domain = 'tre-pb.gov.br'
     Sender.User = 'sesop'
     ConvertPreamble = True
-    Left = 192
-    Top = 160
+    Left = 169
+    Top = 148
   end
   object fvVersion: TFileVersionInfo
-    Left = 376
-    Top = 160
+    Left = 353
+    Top = 148
   end
   object httpLoader: TIdHTTP
     AllowCookies = True
@@ -447,7 +448,7 @@ object Form1: TForm1
     Request.BasicAuthentication = False
     Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
     HTTPOptions = [hoForceEncodeParams]
-    Left = 72
-    Top = 160
+    Left = 49
+    Top = 148
   end
 end
