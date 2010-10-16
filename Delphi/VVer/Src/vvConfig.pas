@@ -49,9 +49,21 @@ type
         property UpdateStatus : TVVUpdateStatus read FUpdateStatus;
     end;
 
-    TVVInfo = class(TBaseStartSettings)
+    TVVProgInfo = class(TBaseStartSettings)
     private
         FProgList : TObjectList;
+        function GetItems(index : Integer) : TProgItem;
+        function GetProgCount : Integer;
+    published
+    public
+        constructor Create(const Filename : string; const AKeyPrefix : string = ''); override;
+        property Items[index : Integer] : TProgItem read GetItems;
+        property ProgCount : Integer read GetProgCount;
+    end;
+
+    TVVConfig = class(TBaseStartSettings)
+    private
+        FProfileInfo : TVVProgInfo;
         function GetItems(index : Integer) : TProgItem;
         function GetProgCount : Integer;
         function GetGlobalStatus : string;
@@ -67,58 +79,29 @@ type
 procedure LoadGlobalInfo(const Filename : string);
 
 var
-    GlobalInfo : TVVInfo = nil;
+    GlobalInfo : TVVConfig = nil;
 
 implementation
 
 uses
-	 WinNetHnd, StrHnd;
+    WinNetHnd, StrHnd;
 
 procedure LoadGlobalInfo(const Filename : string);
 begin
-    GlobalInfo := TVVInfo.Create(filename);
+    GlobalInfo := TVVConfig.Create(filename);
 end;
 
 { TVVInfo }
 
-constructor TVVInfo.Create(const FileName, AKeyPrefix : string);
+constructor TVVConfig.Create(const FileName, AKeyPrefix : string);
 var
-    x :     Integer;
-    progs : TStringList;
-    VerKey, ExpectedVerEx, ExpectedVer, Hive, Desc, VerKeyEx : string;
-    prg :   TProgItem;
+    profileName, profileURL : string;
 begin
     inherited;
-    Self.FProgList := TObjectList.Create;
-    Self.FProgList.OwnsObjects := True;
-    progs := TStringList.Create;
-    try
-        Self.FIni.ReadSections(progs);
-        for x := 0 to progs.Count - 1 do begin
-            //Descrição e nome da seção(não pode começar com "@" )
-			 Desc     := progs.Strings[x];
-			 if TStrHnd.startsWith( Desc, '@' ) then begin
-			 	System.Continue;
-			 end;
-            //nome da chave para acesso aos atributos
-            Hive     := Self.FIni.ReadString(Desc, 'hive', '');
-            //Entrada da versão simples
-            VerKey   := Self.FIni.ReadString(Desc, 'Entry1', '');
-            //Entrada da versão detalhada
-            VerKeyEx := Self.FIni.ReadString(Desc, 'Entry2', '');
-            //Entrada do valor esperado para a versão simples
-            ExpectedVer := Self.FIni.ReadString(Desc, 'Expected1', '');
-            //Entrada do valor esperado para a versão detalhada
-            ExpectedVerEx := Self.FIni.ReadString(Desc, 'Expected2', '');
-            prg      := TProgItem.Create(Desc, Hive, VerKey, VerKeyEx, ExpectedVer, ExpectedVerEx);
-            Self.FProgList.Add(prg);
-        end;
-    finally
-        progs.Free;
-    end;
+    Self.FProfileInfo := TVVProgInfo.Create(profileURL);
 end;
 
-function TVVInfo.GetGlobalStatus : string;
+function TVVConfig.GetGlobalStatus : string;
 var
     x : Integer;
 begin
@@ -131,7 +114,7 @@ begin
     end;
 end;
 
-function TVVInfo.GetInfoText : string;
+function TVVConfig.GetInfoText : string;
 var
     x : Integer;
     p : TProgItem;
@@ -152,12 +135,12 @@ begin
     end;
 end;
 
-function TVVInfo.GetItems(index : Integer) : TProgItem;
+function TVVConfig.GetItems(index : Integer) : TProgItem;
 begin
     Result := TProgItem(Self.FProgList.Items[index]);
 end;
 
-function TVVInfo.GetProgCount : Integer;
+function TVVConfig.GetProgCount : Integer;
 begin
     Result := Self.FProgList.Count;
 end;
@@ -180,8 +163,8 @@ var
     Entry : string;
 begin
     if (Self._CurrentVersion = EmptyStr) then begin
-		 Entry := TFileHnd.ConcatPath([Self.FHive, Self.FVerKey]);
-		 Self._CurrentVersion := Self.ReadVersionEntry(Entry);
+        Entry := TFileHnd.ConcatPath([Self.FHive, Self.FVerKey]);
+        Self._CurrentVersion := Self.ReadVersionEntry(Entry);
     end;
     Result := Self._CurrentVersion;
 end;
@@ -200,10 +183,10 @@ var
 begin
     if (Self._CurrentVersionEX = EmptyStr) then begin
         Entry := TFileHnd.ConcatPath([Self.FHive, Self.FVerKeyEx]);
-		 Self._CurrentVersionEX := Self.ReadVersionEntry(Entry);
-		 if Self._CurrentVersionEX = EmptyStr then begin
-		 	Self._CurrentVersionEX:=Self.CurrentVersion;
-		 end;
+        Self._CurrentVersionEX := Self.ReadVersionEntry(Entry);
+        if Self._CurrentVersionEX = EmptyStr then begin
+            Self._CurrentVersionEX := Self.CurrentVersion;
+        end;
     end;
     Result := Self._CurrentVersionEX;
 end;
@@ -253,13 +236,57 @@ begin
     {TODO -oroger -cdsg : Leitura das entrada svinculadas para retorno da versão instalada}
     reg := TRegistryNT.Create;
     try
-		 if not (reg.ReadFullString(Entry, Result)) then begin
-			 Result := EmptyStr;
+        if not (reg.ReadFullString(Entry, Result)) then begin
+            Result := EmptyStr;
         end;
     finally
         Self._CurrentVersion := Result;
         reg.Free;
     end;
+end;
+
+{ TVVProgInfo }
+
+constructor TVVProgInfo.Create(const Filename, AKeyPrefix : string);
+begin
+    inherited;
+    Self.FProgList := TObjectList.Create;
+    Self.FProgList.OwnsObjects := True;
+    progs := TStringList.Create;
+    try
+        Self.FIni.ReadSections(progs);
+        for x := 0 to progs.Count - 1 do begin
+            //Descrição e nome da seção(não pode começar com "@" )
+            Desc := progs.Strings[x];
+            if TStrHnd.startsWith(Desc, '@') then begin
+                System.Continue;
+            end;
+            //nome da chave para acesso aos atributos
+            Hive     := Self.FIni.ReadString(Desc, 'hive', '');
+            //Entrada da versão simples
+            VerKey   := Self.FIni.ReadString(Desc, 'Entry1', '');
+            //Entrada da versão detalhada
+            VerKeyEx := Self.FIni.ReadString(Desc, 'Entry2', '');
+            //Entrada do valor esperado para a versão simples
+            ExpectedVer := Self.FIni.ReadString(Desc, 'Expected1', '');
+            //Entrada do valor esperado para a versão detalhada
+            ExpectedVerEx := Self.FIni.ReadString(Desc, 'Expected2', '');
+            prg      := TProgItem.Create(Desc, Hive, VerKey, VerKeyEx, ExpectedVer, ExpectedVerEx);
+            Self.FProgList.Add(prg);
+        end;
+    finally
+        progs.Free;
+    end;
+end;
+
+function TVVProgInfo.GetItems(index : Integer) : TProgItem;
+begin
+    Result := TProgItem(Self.FProgList.Items[index]);
+end;
+
+function TVVProgInfo.GetProgCount : Integer;
+begin
+
 end;
 
 end.
