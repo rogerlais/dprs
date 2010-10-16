@@ -72,7 +72,7 @@ var
 implementation
 
 uses
-    WinNetHnd;
+	 WinNetHnd, StrHnd;
 
 procedure LoadGlobalInfo(const Filename : string);
 begin
@@ -95,8 +95,11 @@ begin
     try
         Self.FIni.ReadSections(progs);
         for x := 0 to progs.Count - 1 do begin
-            //Descrição e nome da seção
-            Desc     := progs.Strings[x];
+            //Descrição e nome da seção(não pode começar com "@" )
+			 Desc     := progs.Strings[x];
+			 if TStrHnd.startsWith( Desc, '@' ) then begin
+			 	System.Continue;
+			 end;
             //nome da chave para acesso aos atributos
             Hive     := Self.FIni.ReadString(Desc, 'hive', '');
             //Entrada da versão simples

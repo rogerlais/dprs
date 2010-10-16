@@ -61,6 +61,7 @@
 				<Form>Form1</Form>
 			</DCCReference>
 			<DCCReference Include="vvConfig.pas"/>
+			<None Include="..\Docs\Historico.txt"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
