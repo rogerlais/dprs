@@ -52,13 +52,12 @@ type
     TVVProgInfo = class(TBaseStartSettings)
     private
         FProgList : TObjectList;
-        function GetItems(index : Integer) : TProgItem;
-        function GetProgCount : Integer;
-    published
+        function GetPrograms(index : Integer) : TProgItem;
+        function GetCount : Integer;
     public
         constructor Create(const Filename : string; const AKeyPrefix : string = ''); override;
-        property Items[index : Integer] : TProgItem read GetItems;
-        property ProgCount : Integer read GetProgCount;
+        property Programs[index : Integer] : TProgItem read GetPrograms;
+        property Count : Integer read GetCount;
     end;
 
     TVVConfig = class(TBaseStartSettings)
@@ -106,8 +105,8 @@ var
     x : Integer;
 begin
     Result := 'OK';
-    for x := 0 to Self.FProgList.Count - 1 do begin
-        if not TProgItem(Self.FProgList.Items[x]).isUpdated then begin
+    for x := 0 to Self.FProfileInfo.Count - 1 do begin
+        if not Self.FProfileInfo.Programs[x].isUpdated then begin
             Result := 'Pendente';
             Exit;
         end;
@@ -121,9 +120,9 @@ var
 begin
     Result := 'Resumo da verficação das versões'#13#10;
     Result := Result + 'Computador: ' + WinNetHnd.GetComputerName();
-    for x := 0 to Self.FProgList.Count - 1 do begin
+    for x := 0 to Self.FProfileInfo.Count - 1 do begin
         Result := Result + #13#10;
-        p      := TProgItem(Self.FProgList.Items[x]);
+        p      := Self.FProfileInfo.Programs[x];
         Result := Result + 'Sistema: ' + p.Desc + #13#10;
         Result := Result + 'Versão instalada: ' + p.CurrentVersion + #13#10;
         Result := Result + 'Versão esperada: ' + p.ExpectedVerEx + #13#10;
@@ -133,16 +132,6 @@ begin
             Result := Result + 'Situação: Pendente'#13#10;
         end;
     end;
-end;
-
-function TVVConfig.GetItems(index : Integer) : TProgItem;
-begin
-    Result := TProgItem(Self.FProgList.Items[index]);
-end;
-
-function TVVConfig.GetProgCount : Integer;
-begin
-    Result := Self.FProgList.Count;
 end;
 
 { TProgItem }
@@ -279,14 +268,14 @@ begin
     end;
 end;
 
-function TVVProgInfo.GetItems(index : Integer) : TProgItem;
+function TVVProgInfo.GetPrograms(index : Integer) : TProgItem;
 begin
     Result := TProgItem(Self.FProgList.Items[index]);
 end;
 
-function TVVProgInfo.GetProgCount : Integer;
+function TVVProgInfo.GetCount : Integer;
 begin
-
+   Result:=Self.FProgList.Count;
 end;
 
 end.
