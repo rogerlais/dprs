@@ -4,7 +4,7 @@ object Form1: TForm1
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsDialog
   Caption = 'Verificador de Vers'#245'es 2010 T1'
-  ClientHeight = 319
+  ClientHeight = 333
   ClientWidth = 509
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -50,9 +50,29 @@ object Form1: TForm1
     Height = 13
     Caption = 'SESOP - Verificador de Vers'#245'es de Sistemas 2010 - T1'
   end
+  object lblProfLabel: TLabel
+    Left = 9
+    Top = 29
+    Width = 34
+    Height = 13
+    Caption = 'Perfil : '
+  end
+  object lblProfile: TLabel
+    Left = 55
+    Top = 29
+    Width = 40
+    Height = 13
+    Caption = '----------'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clRed
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
   object btnOK: TBitBtn
     Left = 87
-    Top = 251
+    Top = 275
     Width = 161
     Height = 51
     Caption = '&Fechar'
@@ -64,7 +84,7 @@ object Form1: TForm1
   end
   object grdList: TEnhStringGrid
     Left = 9
-    Top = 28
+    Top = 52
     Width = 489
     Height = 217
     ColCount = 3
@@ -79,8 +99,8 @@ object Form1: TForm1
       88)
   end
   object btnNotifSESOP: TBitBtn
-    Left = 256
-    Top = 251
+    Left = 254
+    Top = 273
     Width = 161
     Height = 52
     Caption = '&Informar'
@@ -383,72 +403,12 @@ object Form1: TForm1
     OnClick = btnNotifSESOPClick
   end
   object pnlLog: TPanel
-    Left = 89
-    Top = 84
+    Left = 87
+    Top = 108
     Width = 321
     Height = 129
     Caption = '....'
     TabOrder = 3
     Visible = False
-  end
-  object smtpSender: TIdSMTP
-    Host = 'smtp.tre-pb.gov.br'
-    SASLMechanisms = <>
-    Left = 265
-    Top = 148
-  end
-  object mailMsgNotify: TIdMessage
-    AttachmentEncoding = 'UUE'
-    Body.Strings = (
-      'teste via indy')
-    BccList = <>
-    CCList = <>
-    Encoding = meDefault
-    FromList = <
-      item
-        Address = 'sesop@tre-pb.gov.br'
-        Name = 'VVer - Verificador de sistemas 2010 - T1'
-        Text = 'VVer - Verificador de sistemas 2010 - T1 <sesop@tre-pb.gov.br>'
-        Domain = 'tre-pb.gov.br'
-        User = 'sesop'
-      end>
-    From.Address = 'sesop@tre-pb.gov.br'
-    From.Name = 'VVer - Verificador de sistemas 2010 - T1'
-    From.Text = 'VVer - Verificador de sistemas 2010 - T1 <sesop@tre-pb.gov.br>'
-    From.Domain = 'tre-pb.gov.br'
-    From.User = 'sesop'
-    Recipients = <>
-    ReplyTo = <
-      item
-        Address = 'sesop@tre-pb.gov.br'
-        Name = 'SESOP'
-        Text = 'SESOP <sesop@tre-pb.gov.br>'
-        Domain = 'tre-pb.gov.br'
-        User = 'sesop'
-      end>
-    Sender.Address = 'sesop@tre-pb.gov.br'
-    Sender.Name = 'SESOP - Se'#195#167#195#163'o de Suporte Operacional'
-    Sender.Text = '"SESOP - Se'#195#167#195#163'o de Suporte Operacional" <sesop@tre-pb.gov.br>'
-    Sender.Domain = 'tre-pb.gov.br'
-    Sender.User = 'sesop'
-    ConvertPreamble = True
-    Left = 169
-    Top = 148
-  end
-  object fvVersion: TFileVersionInfo
-    Left = 353
-    Top = 148
-  end
-  object httpLoader: TIdHTTP
-    AllowCookies = True
-    ProxyParams.BasicAuthentication = False
-    ProxyParams.ProxyPort = 0
-    Request.ContentLength = -1
-    Request.Accept = 'text/html, */*'
-    Request.BasicAuthentication = False
-    Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
-    HTTPOptions = [hoForceEncodeParams]
-    Left = 49
-    Top = 148
   end
 end

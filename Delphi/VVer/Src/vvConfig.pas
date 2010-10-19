@@ -11,9 +11,6 @@ interface
 uses
     Classes, SysUtils, Windows, FileHnd, AppSettings, Contnrs, WinReg32;
 
-const
-    VERSION_URL_FILE = 'http://arquivos/setores/sesop/AppData/VerificadorVersoes/VVer.ini';
-
 type
     TVVUpdateStatus = (usUnknow, usOld, usOK);
 
@@ -56,6 +53,7 @@ type
         function GetCount : Integer;
     public
         constructor Create(const Filename : string; const AKeyPrefix : string = ''); override;
+        destructor Destroy; override;
         property Programs[index : Integer] : TProgItem read GetPrograms;
         property Count : Integer read GetCount;
     end;
@@ -63,16 +61,20 @@ type
     TVVConfig = class(TBaseStartSettings)
     private
         FProfileInfo : TVVProgInfo;
-        function GetItems(index : Integer) : TProgItem;
-        function GetProgCount : Integer;
+        FProfileName : string;
         function GetGlobalStatus : string;
         function GetInfoText : string;
+        function GetAutoMode : boolean;
+        function GetNotificationList : string;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
-        property Items[index : Integer] : TProgItem read GetItems;
-        property ProgCount : Integer read GetProgCount;
+        destructor Destroy; override;
         property GlobalStatus : string read GetGlobalStatus;
         property InfoText : string read GetInfoText;
+        property ProfileInfo : TVVProgInfo read FProfileInfo;
+        property AutoMode : boolean read GetAutoMode;
+        property ProfileName : string read FProfileName;
+        property NotificationList : string read GetNotificationList;
     end;
 
 procedure LoadGlobalInfo(const Filename : string);
@@ -83,21 +85,73 @@ var
 implementation
 
 uses
-    WinNetHnd, StrHnd;
+    WinNetHnd, StrHnd, TREUtils, vvMainDataModule, FileInfo;
 
 procedure LoadGlobalInfo(const Filename : string);
 begin
-    GlobalInfo := TVVConfig.Create(filename);
+    GlobalInfo := TVVConfig.Create(filename, 'VVer');
 end;
 
 { TVVInfo }
 
 constructor TVVConfig.Create(const FileName, AKeyPrefix : string);
 var
-    profileName, profileURL : string;
+    profileFilename, profileURL : string;
+    compId : Integer;
 begin
     inherited;
-    Self.FProfileInfo := TVVProgInfo.Create(profileURL);
+    //Identifica o perfil baseado no ordinal do nome do computador. Para id > 10 -> PCT, cc máquina zona
+	 {$IFDEF DEBUG}
+	 compId:=TTREUtils.GetComputerId( 'ZPB999PDC201' );
+	 {$ELSE}
+	 try
+	 compId := TTREUtils.GetComputerId(GetComputerName());
+	 except
+		on E: Exception do begin
+			compId:=-1;
+		end;
+	 end;
+	 {$ENDIF}
+
+	 if compId >= 10 then begin //Assume-se PCT
+		 Self.FProfileName := 'PCT';
+	 end else begin //Assume-se Maquina zona ou fora do padra
+		 if compId < 0 then begin
+			Self.FProfileName:='Outros';
+		 end else begin
+			Self.FProfileName := 'ZE';
+		 end;
+    end;
+    profileURL      := Self.ReadString('Profiles\' + Self.ProfileName + '\VerInfo');
+    profileFilename := dtmdMain.LoadURL(profileURL);
+    //Buscar a entrada correta para a URL do perfil
+    Self.FProfileInfo := TVVProgInfo.Create(profileFilename);
+end;
+
+destructor TVVConfig.Destroy;
+var
+    tmpDir : string;
+begin
+    //Testa se arquivo foi gerado em temporario
+    tmpDir := FileHnd.GetTempDir;
+    if TStrHnd.startsWith(Self.FIni.FileName, tmpDir) then begin
+        DeleteFile(PWideChar(Self.FIni.FileName));
+    end;
+    inherited;
+end;
+
+function TVVConfig.GetAutoMode : boolean;
+var
+    x : Integer;
+begin
+    //Identifica o modo de operação
+    Result := False;
+    for x := 0 to ParamCount do begin
+        if SameText(ParamStr(x), '/auto') then begin
+            Result := True;
+            Exit;
+        end;
+    end;
 end;
 
 function TVVConfig.GetGlobalStatus : string;
@@ -132,6 +186,11 @@ begin
             Result := Result + 'Situação: Pendente'#13#10;
         end;
     end;
+end;
+
+function TVVConfig.GetNotificationList : string;
+begin
+    Result := Self.ReadString('NotificationList');
 end;
 
 { TProgItem }
@@ -182,7 +241,7 @@ end;
 
 function TProgItem.GetExpectedVerEx : string;
 begin
-    {TODO -oroger -cdsg : Para o caso de não atribuido vai o valor da versão simples}
+    //Para o caso de não atribuido vai o valor da versão simples
     if Self.FExpectedVerEx <> EmptyStr then begin
         Result := Self.FExpectedVerEx;
     end else begin
@@ -192,37 +251,22 @@ end;
 
 function TProgItem.GetIsUpdated : boolean;
 begin
-     {$IFDEF DEBUG________}
-	 if Self.FExpectedVer = '7.00' then begin
-		 Self.FUpdateStatus := usOK;
-	 end else begin
-		 if Self.FUpdateStatus = usUnknow then begin
-			 if SameText(Self.CurrentVersion, Self.ExpectedVerEx) then begin
-				 Self.FUpdateStatus := usOK;
-			 end else begin
-				 Self.FUpdateStatus := usOld;
-			 end;
+	 //Comparar o valor da versão atual com a esperada
+	 if Self.FUpdateStatus = usUnknow then begin
+		 if FileInfo.TVersionInfo.CompareTo( Self.CurrentVersion, Self.ExpectedVerEx   ) <= 0  then begin
+			 Self.FUpdateStatus := usOK;
+		 end else begin
+			 Self.FUpdateStatus := usOld;
 		 end;
 	 end;
 	 Result := (Self.UpdateStatus = usOK);
-	 {$ELSE}
-    {TODO -oroger -cdsg : Comparar o valor da versão atual com a esperada}
-    if Self.FUpdateStatus = usUnknow then begin
-        if SameText(Self.CurrentVersion, Self.ExpectedVerEx) then begin
-            Self.FUpdateStatus := usOK;
-        end else begin
-            Self.FUpdateStatus := usOld;
-        end;
-    end;
-    Result := (Self.UpdateStatus = usOK);
-     {$ENDIF}
 end;
 
 function TProgItem.ReadVersionEntry(const Entry : string) : string;
 var
     reg : TRegistryNT;
 begin
-    {TODO -oroger -cdsg : Leitura das entrada svinculadas para retorno da versão instalada}
+    //Leitura das entradas vinculadas para retorno da versão instalada
     reg := TRegistryNT.Create;
     try
         if not (reg.ReadFullString(Entry, Result)) then begin
@@ -237,6 +281,11 @@ end;
 { TVVProgInfo }
 
 constructor TVVProgInfo.Create(const Filename, AKeyPrefix : string);
+var
+    progs : TStringList;
+    x :     Integer;
+    Desc, Hive, VerKey, VerKeyEx, ExpectedVer, ExpectedVerEx : string;
+    prg :   TProgItem;
 begin
     inherited;
     Self.FProgList := TObjectList.Create;
@@ -246,10 +295,7 @@ begin
         Self.FIni.ReadSections(progs);
         for x := 0 to progs.Count - 1 do begin
             //Descrição e nome da seção(não pode começar com "@" )
-            Desc := progs.Strings[x];
-            if TStrHnd.startsWith(Desc, '@') then begin
-                System.Continue;
-            end;
+            Desc     := progs.Strings[x];
             //nome da chave para acesso aos atributos
             Hive     := Self.FIni.ReadString(Desc, 'hive', '');
             //Entrada da versão simples
@@ -273,9 +319,21 @@ begin
     Result := TProgItem(Self.FProgList.Items[index]);
 end;
 
+destructor TVVProgInfo.Destroy;
+var
+    tmpDir : string;
+begin
+    //Testa se arquivo foi gerado em temporario
+    tmpDir := FileHnd.GetTempDir;
+    if TStrHnd.startsWith(Self.FIni.FileName, tmpDir) then begin
+        DeleteFile(PWideChar(Self.FIni.FileName));
+    end;
+    inherited;
+end;
+
 function TVVProgInfo.GetCount : Integer;
 begin
-   Result:=Self.FProgList.Count;
+    Result := Self.FProgList.Count;
 end;
 
 end.

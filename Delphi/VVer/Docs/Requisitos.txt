@@ -1,0 +1,10 @@
+1 - Configurações do aplicativo são baixadas pela intranet
+
+2 - Cada computador tem um perfil a ser calculado na carga, mediante o resultado do perfil um novo conjunto de configurações é carregado.
+        2.1 - Optado por arquivos separados de modo a permitir a multiplicidade de diferenças entre versões do mesmo aplicativo e os perfis existentes
+
+3 - O conjunto de informações de versões é comparado com as versões instaladas localmente, diante de divergências uma mensagem é exibida.
+
+4 - Um email é enviado para endereço(s) configurados globalmente, este envio pode ser manual ou automático.
+
+5 -
