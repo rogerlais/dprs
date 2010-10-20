@@ -44,8 +44,8 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object lblMainLabel: TLabel
-    Left = 9
-    Top = 9
+    Left = 8
+    Top = 10
     Width = 258
     Height = 13
     Caption = 'SESOP - Verificador de Vers'#245'es de Sistemas 2010 - T1'
