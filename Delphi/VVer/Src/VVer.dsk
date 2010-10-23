@@ -15,10 +15,17 @@ File_12=TSourceModule,'C:\Sw\WorkDir\Pcks\ECLib\Src\EnhGrids.pas',0,1,1,35,14,0,
 
 [Modules]
 Module0=C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvConfig.pas
+<<<<<<< .mine
+Module1=C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvMainForm.pas
+Module2=default.htm
+Module3=C:\Sw\WorkDir\Dprs\Delphi\VVer\Data\VVer.ini
+Module4=C:\Sw\WorkDir\Dprs\Delphi\VVer\Docs\Historico.txt
+=======
 Module1=C:\Sw\WorkDir\Dprs\Delphi\VVer\Docs\Historico.txt
 Module2=C:\Sw\WorkDir\Dprs\Delphi\VVer\Data\VVer.ini
 Module3=default.htm
 Module4=C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvMainForm.pas
+>>>>>>> .r71
 Count=5
 EditWindowCount=1
 
@@ -27,20 +34,35 @@ ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
+<<<<<<< .mine
+=======
 [C:\Sw\WorkDir\Dprs\Delphi\VVer\Docs\Historico.txt]
 ModuleType=TSourceModule
 
 [C:\Sw\WorkDir\Dprs\Delphi\VVer\Data\VVer.ini]
 ModuleType=TSourceModule
 
+>>>>>>> .r71
 [default.htm]
 ModuleType=TURLModule
 
 [C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvMainForm.pas]
 ModuleType=TSourceModule
 FormState=1
-FormOnTop=0
+FormOnTop=1
 
+<<<<<<< .mine
+[default.htm]
+ModuleType=TURLModule
+
+[C:\Sw\WorkDir\Dprs\Delphi\VVer\Data\VVer.ini]
+ModuleType=TSourceModule
+
+[C:\Sw\WorkDir\Dprs\Delphi\VVer\Docs\Historico.txt]
+ModuleType=TSourceModule
+
+=======
+>>>>>>> .r71
 [EditWindow0]
 ViewCount=5
 CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvConfig.pas
@@ -56,15 +78,36 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=10000
+Height=9162
+=======
 Width=8667
 Height=8759
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=10000
+ClientHeight=9162
+=======
 ClientWidth=8667
 ClientHeight=8759
+>>>>>>> .r71
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
+<<<<<<< .mine
+LeftPanelSize=1703
+LeftPanelClients=PropertyInspector,DockSite3
+LeftPanelData=00000800010100000000501200000000000001A70600000000000001000000005B0E000009000000446F636B536974653301000000004C1D00001100000050726F7065727479496E73706563746F72FFFFFFFF
+RightPanelSize=1570
+RightPanelClients=DockSite2,DockSite4
+RightPanelData=00000800010100000000501200000000000001220600000000000001000000004312000009000000446F636B536974653201000000004C1D000009000000446F636B5369746534FFFFFFFF
+BottomPanelSize=1625
+BottomPanelClients=DockSite1,MessageView
+BottomPanelData=0000080001020100000009000000446F636B5369746531803E0000000000000259060000000000000100000000803E00000F0000004D65737361676556696577466F726DFFFFFFFF
+=======
 LeftPanelSize=1896
 LeftPanelClients=PropertyInspector,DockSite2
 LeftPanelData=000008000101000000004E0D00000000000001680700000000000001000000005C0E000009000000446F636B53697465320100000000A81700001100000050726F7065727479496E73706563746F72FFFFFFFF
@@ -74,7 +117,10 @@ RightPanelData=000008000101000000004E0D00000000000001D00700000000000001000000004
 BottomPanelSize=2676
 BottomPanelClients=DockSite0,MessageView,DockSite4
 BottomPanelData=0000080001020100000009000000446F636B53697465302F3C00000000000002740A0000000000000100000000B32300000F0000004D65737361676556696577466F726D01000000002F3C000009000000446F636B5369746534FFFFFFFF
+>>>>>>> .r71
 BottomMiddlePanelSize=0
+BottomMiddlePanelClients=DockSite0
+BottomMiddelPanelData=0000080001000100000009000000446F636B53697465302619000000000000007E1B00000000000001000000002619000009000000446F636B5369746530FFFFFFFF
 
 [View0]
 CustomEditViewType=TWelcomePageView
@@ -89,7 +135,7 @@ TopLine=104
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvMainForm.pas
+EditViewName=Borland.FormDesignerView
 
 [View2]
 CustomEditViewType=TEditView
@@ -116,12 +162,22 @@ EditViewName=C:\Sw\WorkDir\Dprs\Delphi\VVer\Data\VVer.ini
 [View4]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvConfig.pas
+<<<<<<< .mine
+CursorX=66
+CursorY=114
+TopLine=104
+=======
 CursorX=80
 CursorY=248
 TopLine=231
+>>>>>>> .r71
 LeftCol=1
 Elisions=
+<<<<<<< .mine
+Bookmarks=
+=======
 Bookmarks={1,99,15}
+>>>>>>> .r71
 EditViewName=C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvConfig.pas
 
 [Watches]
@@ -137,20 +193,36 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=3828
+Height=1112
+=======
 Width=3823
 Height=1120
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=3828
+ClientHeight=1112
+TBDockHeight=212
+LRDockWidth=13602
+=======
 ClientWidth=3823
 ClientHeight=1120
 TBDockHeight=213
 LRDockWidth=13599
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 
 [Breakpoints]
 Count=1
+<<<<<<< .mine
+Breakpoint0='C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvConfig.pas',208,'',0,1,'',1,0,0,'',1,'','','',0,''
+=======
 Breakpoint0='C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvConfig.pas',214,'',0,1,'',1,0,0,'',1,'','','',0,''
+>>>>>>> .r71
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -160,6 +232,20 @@ PercentageSizes=1
 Create=1
 Visible=1
 Docked=0
+<<<<<<< .mine
+State=2
+Left=141
+Top=275
+Width=8930
+Height=8525
+MaxLeft=-8
+MaxTop=-12
+MaxWidth=10078
+MaxHeight=10125
+ClientWidth=10000
+ClientHeight=9812
+BottomPanelSize=9162
+=======
 State=0
 Left=0
 Top=0
@@ -170,6 +256,7 @@ MaxTop=-9
 ClientWidth=8667
 ClientHeight=9333
 BottomPanelSize=8759
+>>>>>>> .r71
 BottomPanelClients=EditWindow0
 BottomPanelData=0000080000000000000000000000000000000000000000000000000100000000000000000C0000004564697457696E646F775F30FFFFFFFF
 
@@ -181,14 +268,26 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=1570
+Height=4038
+=======
 Width=2000
 Height=4194
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=1570
+ClientHeight=4038
+TBDockHeight=5900
+LRDockWidth=2352
+=======
 ClientWidth=2000
 ClientHeight=4194
 TBDockHeight=5898
 LRDockWidth=2349
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 
@@ -198,16 +297,30 @@ Create=1
 Visible=1
 Docked=1
 State=0
+<<<<<<< .mine
+Left=0
+Top=22
+Width=10000
+Height=1350
+=======
 Left=0
 Top=23
 Width=5120
 Height=2463
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=10000
+ClientHeight=1350
+TBDockHeight=1350
+LRDockWidth=2766
+=======
 ClientWidth=5120
 ClientHeight=2463
 TBDockHeight=2463
 LRDockWidth=2771
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 
@@ -219,13 +332,24 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=1570
+Height=2550
+=======
 Width=2000
 Height=935
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=1570
+ClientHeight=2550
+TBDockHeight=7150
+=======
 ClientWidth=2000
 ClientHeight=935
 TBDockHeight=7157
+>>>>>>> .r71
 LRDockWidth=2000
 Dockable=1
 StayOnTop=0
@@ -236,16 +360,30 @@ Create=1
 Visible=1
 Docked=1
 State=0
+<<<<<<< .mine
+Left=-1179
+Top=-89
+Width=273
+Height=362
+=======
 Left=0
 Top=0
 Width=1000
 Height=8370
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=273
+ClientHeight=362
+TBDockHeight=362
+LRDockWidth=273
+=======
 ClientWidth=1000
 ClientHeight=8370
 TBDockHeight=361
 LRDockWidth=276
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 Name=120
@@ -260,14 +398,26 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=3828
+Height=1112
+=======
 Width=3823
 Height=1120
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=3828
+ClientHeight=1112
+TBDockHeight=413
+LRDockWidth=4953
+=======
 ClientWidth=3823
 ClientHeight=1120
 TBDockHeight=407
 LRDockWidth=4948
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 
@@ -279,13 +429,24 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=3828
+Height=1112
+=======
 Width=3823
 Height=1120
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=3828
+ClientHeight=1112
+TBDockHeight=212
+=======
 ClientWidth=3823
 ClientHeight=1120
 TBDockHeight=213
+>>>>>>> .r71
 LRDockWidth=7406
 Dockable=1
 StayOnTop=0
@@ -303,14 +464,26 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=3828
+Height=1112
+=======
 Width=3823
 Height=1120
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=3828
+ClientHeight=1112
+TBDockHeight=1538
+LRDockWidth=3484
+=======
 ClientWidth=3823
 ClientHeight=1120
 TBDockHeight=1537
 LRDockWidth=3479
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 
@@ -322,14 +495,26 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=3828
+Height=1112
+=======
 Width=3823
 Height=1120
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=3828
+ClientHeight=1112
+TBDockHeight=2062
+LRDockWidth=3484
+=======
 ClientWidth=3823
 ClientHeight=1120
 TBDockHeight=2056
 LRDockWidth=3479
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 
@@ -339,8 +524,13 @@ Create=1
 Visible=0
 Docked=1
 State=0
+<<<<<<< .mine
+Left=-1079
+Top=-89
+=======
 Left=-1528
 Top=-109
+>>>>>>> .r71
 Width=2844
 Height=6204
 MaxLeft=-1
@@ -360,14 +550,26 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=2336
+Height=1162
+=======
 Width=4708
 Height=2231
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=2336
+ClientHeight=1162
+TBDockHeight=2312
+LRDockWidth=2828
+=======
 ClientWidth=4708
 ClientHeight=2231
 TBDockHeight=2231
 LRDockWidth=2823
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 
@@ -379,14 +581,26 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=6680
+Height=1088
+=======
 Width=3526
 Height=2231
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=6680
+ClientHeight=1088
+TBDockHeight=3200
+LRDockWidth=2828
+=======
 ClientWidth=3526
 ClientHeight=2231
 TBDockHeight=1083
 LRDockWidth=2823
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 
@@ -398,14 +612,26 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=2336
+Height=1162
+=======
 Width=4927
 Height=2231
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=2336
+ClientHeight=1162
+TBDockHeight=1150
+LRDockWidth=3672
+=======
 ClientWidth=4927
 ClientHeight=2231
 TBDockHeight=1157
 LRDockWidth=3677
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 Column0Width=314
@@ -425,14 +651,26 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=1570
+Height=8575
+=======
 Width=2000
 Height=8370
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=1570
+ClientHeight=8575
+TBDockHeight=4875
+LRDockWidth=7148
+=======
 ClientWidth=2000
 ClientHeight=8370
 TBDockHeight=4880
 LRDockWidth=7151
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 
@@ -443,19 +681,40 @@ Visible=1
 Docked=1
 State=0
 Left=0
+<<<<<<< .mine
+Top=316
+Width=1703
+Height=3550
+=======
 Top=420
 Width=1896
 Height=2167
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=1703
+ClientHeight=3550
+TBDockHeight=8888
+LRDockWidth=1703
+=======
 ClientWidth=1896
 ClientHeight=2167
 TBDockHeight=8602
 LRDockWidth=1896
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 SplitPos=111
 
+<<<<<<< .mine
+[PropInspDesignerSelection]
+ArrangeBy=Name
+SelectedItem=Action,
+ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0
+
+=======
+>>>>>>> .r71
 [ModelViewTool]
 PercentageSizes=1
 Create=1
@@ -464,14 +723,26 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=1570
+Height=8575
+=======
 Width=2000
 Height=8370
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=1570
+ClientHeight=8575
+TBDockHeight=4875
+LRDockWidth=5305
+=======
 ClientWidth=2000
 ClientHeight=8370
 TBDockHeight=4880
 LRDockWidth=5307
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 
@@ -481,15 +752,29 @@ Create=1
 Visible=0
 Docked=1
 State=0
+<<<<<<< .mine
+Left=-109
+Top=-89
+=======
 Left=-203
 Top=-109
+>>>>>>> .r71
 Width=1844
+<<<<<<< .mine
+Height=3150
+=======
 Height=3148
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1844
+<<<<<<< .mine
+ClientHeight=3150
+TBDockHeight=3150
+=======
 ClientHeight=3148
 TBDockHeight=3148
+>>>>>>> .r71
 LRDockWidth=1844
 Dockable=1
 StayOnTop=0
@@ -502,14 +787,26 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=3828
+Height=1112
+=======
 Width=3823
 Height=1120
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=3828
+ClientHeight=1112
+TBDockHeight=1550
+LRDockWidth=8742
+=======
 ClientWidth=3823
 ClientHeight=1120
 TBDockHeight=1546
 LRDockWidth=8745
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 Column0Width=200
@@ -528,14 +825,26 @@ Docked=1
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=1703
+Height=3350
+=======
 Width=1896
 Height=3426
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=1703
+ClientHeight=3350
+TBDockHeight=3675
+LRDockWidth=1891
+=======
 ClientWidth=1896
 ClientHeight=3426
 TBDockHeight=3676
 LRDockWidth=1896
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 
@@ -547,6 +856,16 @@ Docked=0
 State=0
 Left=0
 Top=0
+<<<<<<< .mine
+Width=1828
+Height=6175
+MaxLeft=-8
+MaxTop=-12
+ClientWidth=1750
+ClientHeight=5850
+TBDockHeight=6175
+LRDockWidth=1828
+=======
 Width=1823
 Height=6176
 MaxLeft=-5
@@ -555,6 +874,7 @@ ClientWidth=1740
 ClientHeight=5861
 TBDockHeight=6176
 LRDockWidth=1823
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 
@@ -562,7 +882,51 @@ StayOnTop=0
 DockHostCount=5
 
 [DockSite0]
-HostDockSite=DockBottomPanel
+HostDockSite=DockBottomCenterPanel
+DockSiteType=1
+PercentageSizes=1
+Create=1
+Visible=0
+Docked=1
+State=0
+<<<<<<< .mine
+Left=0
+Top=22
+Width=6680
+Height=1400
+=======
+Left=0
+Top=0
+Width=3823
+Height=1352
+>>>>>>> .r71
+MaxLeft=-1
+MaxTop=-1
+<<<<<<< .mine
+ClientWidth=6680
+ClientHeight=1400
+TBDockHeight=1400
+LRDockWidth=2336
+=======
+ClientWidth=3823
+ClientHeight=1352
+TBDockHeight=1352
+LRDockWidth=3823
+>>>>>>> .r71
+Dockable=1
+StayOnTop=0
+<<<<<<< .mine
+TabPosition=1
+ActiveTabID=RefactoringForm
+TabDockClients=RefactoringForm,FindReferencsForm,ToDo List
+=======
+TabPosition=1
+ActiveTabID=DebugLogView
+TabDockClients=DebugLogView,BreakpointWindow,ThreadStatusWindow,CallStackWindow,WatchWindow,LocalVarsWindow
+>>>>>>> .r71
+
+[DockSite1]
+HostDockSite=DockRightPanel
 DockSiteType=1
 PercentageSizes=1
 Create=1
@@ -570,44 +934,39 @@ Visible=0
 Docked=1
 State=0
 Left=0
+<<<<<<< .mine
 Top=0
-Width=3823
-Height=1352
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=3823
-ClientHeight=1352
-TBDockHeight=1352
-LRDockWidth=3823
-Dockable=1
-StayOnTop=0
-TabPosition=1
-ActiveTabID=DebugLogView
-TabDockClients=DebugLogView,BreakpointWindow,ThreadStatusWindow,CallStackWindow,WatchWindow,LocalVarsWindow
-
-[DockSite1]
-HostDockSite=DockRightPanel
-DockSiteType=1
-PercentageSizes=1
-Create=1
-Visible=1
-Docked=1
-State=0
-Left=0
+Width=3828
+Height=1425
+=======
 Top=23
 Width=2000
 Height=4426
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=3828
+ClientHeight=1425
+TBDockHeight=1425
+LRDockWidth=3828
+=======
 ClientWidth=2000
 ClientHeight=4426
 TBDockHeight=8602
 LRDockWidth=2000
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
+<<<<<<< .mine
+TabPosition=1
+ActiveTabID=DebugLogView
+TabDockClients=DebugLogView,BreakpointWindow,ThreadStatusWindow,CallStackWindow,WatchWindow,LocalVarsWindow
+=======
 TabPosition=1
 ActiveTabID=ProjectManager
 TabDockClients=ProjectManager,ModelViewTool,DataExplorer,TFileExplorerForm
+>>>>>>> .r71
 
 [DockSite2]
 HostDockSite=DockLeftPanel
@@ -618,15 +977,28 @@ Visible=1
 Docked=1
 State=0
 Left=0
+<<<<<<< .mine
+Top=22
+Width=1570
+Height=4350
+=======
 Top=23
 Width=1896
 Height=3426
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=1570
+ClientHeight=4350
+TBDockHeight=8888
+LRDockWidth=1570
+=======
 ClientWidth=1896
 ClientHeight=3426
 TBDockHeight=8602
 LRDockWidth=1896
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -642,15 +1014,28 @@ Visible=1
 Docked=1
 State=0
 Left=0
+<<<<<<< .mine
+Top=22
+Width=1703
+Height=3350
+=======
 Top=528
 Width=2000
 Height=1167
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=1703
+ClientHeight=3350
+TBDockHeight=8888
+LRDockWidth=1703
+=======
 ClientWidth=2000
 ClientHeight=1167
 TBDockHeight=8602
 LRDockWidth=2000
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -665,16 +1050,30 @@ Create=1
 Visible=1
 Docked=1
 State=0
+<<<<<<< .mine
+Left=0
+Top=396
+Width=1570
+Height=2550
+=======
 Left=987
 Top=23
 Width=3526
 Height=2463
+>>>>>>> .r71
 MaxLeft=-1
 MaxTop=-1
+<<<<<<< .mine
+ClientWidth=1570
+ClientHeight=2550
+TBDockHeight=8888
+LRDockWidth=1570
+=======
 ClientWidth=3526
 ClientHeight=2463
 TBDockHeight=2463
 LRDockWidth=3401
+>>>>>>> .r71
 Dockable=1
 StayOnTop=0
 TabPosition=1
