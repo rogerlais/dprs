@@ -3,16 +3,16 @@
 			<ProjectGuid>{383F7074-3B26-43BF-A65D-C64733019E03}</ProjectGuid>
 		</PropertyGroup>
 		<ItemGroup>
-			<Projects Include="MigraTools.dproj">
+			<Projects Include="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\..\..\Pcks\OPLib\Src\OPLibD14.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="..\..\..\..\Pcks\TRE\Src\TRELib.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="..\..\..\..\Pcks\OPLib\Src\OPLibD14.dproj">
+			<Projects Include="MigraTools.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -23,24 +23,6 @@
 				<Default.Personality/>
 			</BorlandProject>
 		</ProjectExtensions>
-		<Target Name="MigraTools">
-			<MSBuild Projects="MigraTools.dproj"/>
-		</Target>
-		<Target Name="MigraTools:Clean">
-			<MSBuild Targets="Clean" Projects="MigraTools.dproj"/>
-		</Target>
-		<Target Name="MigraTools:Make">
-			<MSBuild Targets="Make" Projects="MigraTools.dproj"/>
-		</Target>
-		<Target Name="TRELib">
-			<MSBuild Projects="..\..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
-		</Target>
-		<Target Name="TRELib:Clean">
-			<MSBuild Targets="Clean" Projects="..\..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
-		</Target>
-		<Target Name="TRELib:Make">
-			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
-		</Target>
 		<Target Name="XPLibD14">
 			<MSBuild Projects="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
 		</Target>
@@ -59,14 +41,32 @@
 		<Target Name="OPLibD14:Make">
 			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\OPLib\Src\OPLibD14.dproj"/>
 		</Target>
+		<Target Name="TRELib">
+			<MSBuild Projects="..\..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
+		</Target>
+		<Target Name="TRELib:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
+		</Target>
+		<Target Name="TRELib:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
+		</Target>
+		<Target Name="MigraTools">
+			<MSBuild Projects="MigraTools.dproj"/>
+		</Target>
+		<Target Name="MigraTools:Clean">
+			<MSBuild Targets="Clean" Projects="MigraTools.dproj"/>
+		</Target>
+		<Target Name="MigraTools:Make">
+			<MSBuild Targets="Make" Projects="MigraTools.dproj"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="MigraTools;TRELib;XPLibD14;OPLibD14"/>
+			<CallTarget Targets="XPLibD14;OPLibD14;TRELib;MigraTools"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="MigraTools:Clean;TRELib:Clean;XPLibD14:Clean;OPLibD14:Clean"/>
+			<CallTarget Targets="XPLibD14:Clean;OPLibD14:Clean;TRELib:Clean;MigraTools:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="MigraTools:Make;TRELib:Make;XPLibD14:Make;OPLibD14:Make"/>
+			<CallTarget Targets="XPLibD14:Make;OPLibD14:Make;TRELib:Make;MigraTools:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

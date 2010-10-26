@@ -15,7 +15,11 @@ uses
 
 
 const
-    VERSION_URL_FILE = 'http://arquivos/setores/sesop/AppData/VerificadorVersoes/VVer.ini';
+	 {$IFDEF DEBUG}
+	 VERSION_URL_FILE = 'http://arquivos/setores/sesop/AppData/Tests/VerificadorVersoes/VVer.ini';
+	 {$ELSE}
+	 VERSION_URL_FILE = 'http://arquivos/setores/sesop/AppData/VerificadorVersoes/VVer.ini';
+	 {$ENDIF}
 
 type
     TdtmdMain = class(TDataModule)
@@ -40,7 +44,7 @@ var
 implementation
 
 uses
-    FileHnd, vvConfig, StrHnd, IdEMailAddress, WinNetHnd, AppLog, vvMainForm;
+	 FileHnd, vvConfig, StrHnd, IdEMailAddress, WinNetHnd, AppLog, vvMainForm, Str_Pas;
 
 {$R *.dfm}
 
@@ -162,7 +166,43 @@ const
     //Modelo = VVer - Versão <1.0.2010.2> - <ZPB080STD01> - 201009242359 - Pendente';
     SUBJECT_TEMPLATE = 'VVer - Versão: %s - %s - %s - %s';
 begin
-    //Coletar informações de detino de mensagem com possibilidade de macros no mesmo arquivo de configuração
+	mailMsgNotify.AttachmentEncoding := 'UUE';
+	mailMsgNotify.Encoding := meDefault;
+	mailMsgNotify.ConvertPreamble := True;
+	mailMsgNotify.From.Address := GlobalInfo.SenderAddress;
+	mailMsgNotify.From.Name := Application.Title; //'VVer - Verificador de sistemas 2010 - T1';
+	mailMsgNotify.From.Text := Format( ' %s <%s>', [ Application.Title, GlobalInfo.SenderAddress ] ); // 'VVer - Verificador de sistemas 2010 - T1 <sesop@tre-pb.gov.br>';
+	mailMsgNotify.From.Domain := Str_Pas.GetDelimitedSubStr( '@', GlobalInfo.SenderAddress, 1 );
+	mailMsgNotify.From.User := Str_Pas.GetDelimitedSubStr( '@', GlobalInfo.SenderAddress, 0 );
+	mailMsgNotify.Sender.Address := GlobalInfo.SenderAddress;
+	mailMsgNotify.Sender.Name := GlobalInfo.SenderDescription;
+	mailMsgNotify.Sender.Text := Format( '"%s" <%s>', [ GlobalInfo.SenderDescription, GlobalInfo.SenderAddress ] );
+	mailMsgNotify.Sender.Domain := mailMsgNotify.From.Domain;
+	mailMsgNotify.Sender.User := mailMsgNotify.From.User;
+
+ {
+  object mailMsgNotify: TIdMessage
+	 FromList = <
+	   item
+		 Address = 'sesop@tre-pb.gov.br'
+		 Name = 'VVer - Verificador de sistemas 2010 - T1'
+		 Text = 'VVer - Verificador de sistemas 2010 - T1 <sesop@tre-pb.gov.br>'
+		 Domain = 'tre-pb.gov.br'
+		 User = 'sesop'
+	   end>
+
+	 ReplyTo = <
+	   item
+		 Address = 'sesop@tre-pb.gov.br'
+		 Name = 'SESOP'
+		 Text = 'SESOP <sesop@tre-pb.gov.br>'
+		 Domain = 'tre-pb.gov.br'
+		 User = 'sesop'
+	   end>
+}
+
+
+	 //Coletar informações de destino de mensagem com possibilidade de macros no mesmo arquivo de configuração
     Self.AddDestinations();
     Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvVersion.FileVersion, WinNetHnd.GetComputerName(),
         FormatDateTime('yyyyMMDDhhmm', Now()), GlobalInfo.GlobalStatus]);

@@ -66,6 +66,8 @@ type
         function GetInfoText : string;
         function GetAutoMode : boolean;
         function GetNotificationList : string;
+    function GetSenderAddress: string;
+    function GetSenderDescription: string;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
         destructor Destroy; override;
@@ -74,7 +76,9 @@ type
         property ProfileInfo : TVVProgInfo read FProfileInfo;
         property AutoMode : boolean read GetAutoMode;
         property ProfileName : string read FProfileName;
-        property NotificationList : string read GetNotificationList;
+		 property NotificationList : string read GetNotificationList;
+		 property SenderAddress : string read GetSenderAddress;
+		 property SenderDescription : string read GetSenderDescription;
     end;
 
 procedure LoadGlobalInfo(const Filename : string);
@@ -190,7 +194,20 @@ end;
 
 function TVVConfig.GetNotificationList : string;
 begin
-    Result := Self.ReadString('NotificationList');
+	{TODO -oroger -cfuture : manifestas a criar }
+	 Result := Self.ReadString('NotificationList');
+end;
+
+function TVVConfig.GetSenderAddress: string;
+begin
+	{TODO -oroger -cfuture : manifestas a criar }
+	Result:=Self.ReadStringDefault('SenderAddress', 'sesop@tre-pb.gov.br' );
+end;
+
+function TVVConfig.GetSenderDescription: string;
+begin
+	{TODO -oroger -cfuture : manifestas a criar }
+	Result:=Self.ReadStringDefault('SenderDescription', 'SESOP - Seção de Suporte Operacional' );
 end;
 
 { TProgItem }

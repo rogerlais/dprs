@@ -59,8 +59,6 @@ object MigraToolsMainForm: TMigraToolsMainForm
     TabOrder = 3
     object tsPasswords: TTabSheet
       Caption = 'S&enhas'
-      ExplicitLeft = 8
-      ExplicitTop = 22
       object lblAccountFilter: TLabel
         Left = 5
         Top = 5
@@ -158,7 +156,7 @@ object MigraToolsMainForm: TMigraToolsMainForm
         ParentDoubleBuffered = False
         TabOrder = 4
       end
-      object edtNewAccount: TLabeledEdit
+      object ledtNewAccount: TLabeledEdit
         Left = 320
         Top = 24
         Width = 105
@@ -169,7 +167,7 @@ object MigraToolsMainForm: TMigraToolsMainForm
         EditLabel.Caption = 'Novo usu'#225'rio'
         TabOrder = 5
       end
-      object edtNewPass: TLabeledEdit
+      object ledtNewPass: TLabeledEdit
         Left = 320
         Top = 75
         Width = 105
@@ -201,22 +199,6 @@ object MigraToolsMainForm: TMigraToolsMainForm
         ParentDoubleBuffered = False
         TabOrder = 8
         OnClick = btnTestXMLClick
-      end
-    end
-    object tsPrinters: TTabSheet
-      Caption = '&Impressoras'
-      Enabled = False
-      ImageIndex = 1
-      object btnSetScanner: TBitBtn
-        Left = 19
-        Top = 24
-        Width = 113
-        Height = 25
-        Caption = 'Ajuste de &Portas'
-        DoubleBuffered = True
-        Enabled = False
-        ParentDoubleBuffered = False
-        TabOrder = 0
       end
     end
   end

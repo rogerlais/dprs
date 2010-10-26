@@ -62,6 +62,7 @@ end;
 
 procedure TForm1.FormCreate(Sender : TObject);
 begin
+	Application.Title:='VVer - Verificador de sistemas 2010 - T2';
 	Self.lblMainLabel.Caption:='SESOP - Verificador de Versões de Sistemas 2010 - T2';
 	{$IFDEF DEBUG}
 	Self.Caption := 'Verificador de Versões 2010-T2 *** Depuração ***  - ' + dtmdMain.fvVersion.FileVersion;

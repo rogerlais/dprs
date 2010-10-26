@@ -18,31 +18,29 @@ type
         pnlBottomPanel : TPanel;
         pnlTopPanel :    TPanel;
         btnClose :       TBitBtn;
-        pgc1 :           TPageControl;
-        tsPasswords :    TTabSheet;
-        tsPrinters :     TTabSheet;
-		 chklstAccounts : TCheckListBox;
-        cbbAccountFilter : TComboBox;
-        lblAccountFilter : TLabel;
-        btnSetDefaulPasswords : TBitBtn;
-        lblLocal :       TLabel;
-        cbbLocalDomain : TComboBox;
-        btnChepass :     TBitBtn;
-        lblAccounts :    TLabel;
-        btnSetScanner :  TBitBtn;
-        edtNewAccount :  TLabeledEdit;
-        edtNewPass :     TLabeledEdit;
-        btnAddNewUser :  TBitBtn;
         fileVerMain :    TFileVersionInfo;
         ProcessControl : TJvCreateProcess;
+    pgc1: TPageControl;
+    tsPasswords: TTabSheet;
+    lblAccountFilter: TLabel;
+    lblLocal: TLabel;
+    lblAccounts: TLabel;
+    chklstAccounts: TCheckListBox;
+    cbbAccountFilter: TComboBox;
+    btnSetDefaulPasswords: TBitBtn;
+    cbbLocalDomain: TComboBox;
+    btnChepass: TBitBtn;
+    ledtNewAccount: TLabeledEdit;
+    ledtNewPass: TLabeledEdit;
+    btnAddNewUser: TBitBtn;
     btnTestXML: TBitBtn;
-        procedure FormCreate(Sender : TObject);
-        procedure btnSetDefaulPasswordsClick(Sender : TObject);
-        procedure chklstAccountsClickCheck(Sender : TObject);
-        procedure btnAddNewUserClick(Sender : TObject);
-        procedure ProcessControlTerminate(Sender : TObject; ExitCode : cardinal);
-	 procedure btnTestXMLClick(Sender: TObject);
-    private
+		 procedure FormCreate(Sender : TObject);
+		 procedure btnSetDefaulPasswordsClick(Sender : TObject);
+		 procedure chklstAccountsClickCheck(Sender : TObject);
+		 procedure btnAddNewUserClick(Sender : TObject);
+		 procedure ProcessControlTerminate(Sender : TObject; ExitCode : cardinal);
+		 procedure btnTestXMLClick(Sender: TObject);
+	 private
 		 { Private declarations }
 		 FUserList : TZEUserList;
 		 FAutoMode : boolean;
@@ -61,26 +59,26 @@ implementation
 {$R *.dfm}
 
 uses
-    lmCons, APIHnd, FileHnd, ShellAPI, mtConfig;
+	 lmCons, APIHnd, FileHnd, ShellAPI, mtConfig;
 
 
 function ImpersonateADMUser() : Integer;
-    //----------------------------------------------------------------------------------------------------------------------------------
+	 //----------------------------------------------------------------------------------------------------------------------------------
 var
-    TKHandle :   THandle;
-    User, Pass : PChar;
+	 TKHandle :   THandle;
+	 User, Pass : PChar;
 begin
-    User   := PChar('admdanusio');
-    Pass   := PChar('ventilador');
-    Result := ERROR_SUCCESS;
-    SetLastError(Result);
-    if LogonUser(User, nil, Pass, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, TKHandle) then begin
-        if not ImpersonateLoggedOnUser(TKHandle) then begin
-            Result := GetLastError();
-        end;
-    end else begin
-        Result := GetLastError();
-    end;
+	 User   := PChar('admdanusio');
+	 Pass   := PChar('ventilador');
+	 Result := ERROR_SUCCESS;
+	 SetLastError(Result);
+	 if LogonUser(User, nil, Pass, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, TKHandle) then begin
+		 if not ImpersonateLoggedOnUser(TKHandle) then begin
+			 Result := GetLastError();
+		 end;
+	 end else begin
+		 Result := GetLastError();
+	 end;
 end;
 
 
@@ -89,12 +87,12 @@ var
     newUser : TZEUser;
     index :   Integer;
 begin
-	 if (Self.edtNewAccount.Text <> EmptyStr) then begin
-		 if Self.edtNewPass.Text <> EmptyStr then begin
-			if Self.FUserList.Find( Self.edtNewAccount.Text ) <> nil then begin
-				raise Exception.CreateFmt('Conta "%s" já existe', [ Self.edtNewAccount.Text ] );
+	 if (Self.ledtNewAccount.Text <> EmptyStr) then begin
+		 if Self.ledtNewPass.Text <> EmptyStr then begin
+			if Self.FUserList.Find( Self.ledtNewAccount.Text ) <> nil then begin
+				raise Exception.CreateFmt('Conta "%s" já existe', [ Self.ledtNewAccount.Text ] );
 			end;
-            newUser := TZEUser.Create(Self.edtNewAccount.Text, Self.edtNewPass.Text);
+            newUser := TZEUser.Create(Self.ledtNewAccount.Text, Self.ledtNewPass.Text);
             newUser.Checked := True;    //Atenção para todos os casos de inserção/alteração
             Self.FUserList.Add(newUser);
             index := Self.chklstAccounts.Items.AddObject(newUser.UserName, newUser);
@@ -111,17 +109,17 @@ procedure TMigraToolsMainForm.btnSetDefaulPasswordsClick(Sender : TObject);
 var
     log : string;
 begin
-    TControl(Sender).Enabled := False;
+	 TControl(Sender).Enabled := False;
     try
-                {$IFDEF DEBUG}
-				TAPIHnd.CheckAPI( ImpersonateADMUser() );
-				{$ENDIF}
-        log := Self.FUserList.SetPasswords();
-        if log <> EmptyStr then begin
-            raise Exception.Create('Ocorreram falhas no ajuste das senhas:'#13 + log);
-        end;
-    finally
-        Self.SaveGlobalLog;
+		{$IFDEF DEBUG}
+		TAPIHnd.CheckAPI( ImpersonateADMUser() );
+		{$ENDIF}
+		log := Self.FUserList.SetPasswords();
+		if log <> EmptyStr then begin
+			raise Exception.Create('Ocorreram falhas no ajuste das senhas:'#13 + log);
+		end;
+	 finally
+       Self.SaveGlobalLog;
     end;
 end;
 
@@ -186,9 +184,6 @@ procedure TMigraToolsMainForm.FormCreate(Sender : TObject);
 var
     x : Integer;
 begin
-    //Desabilita a página de impressoras nesta versão
-    Self.pgc1.Pages[1].Enabled := False;
-
     //carga da lista de usuários
     Self.chklstAccounts.Items.BeginUpdate;
     try
