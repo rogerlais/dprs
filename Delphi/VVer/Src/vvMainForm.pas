@@ -27,6 +27,7 @@ type
         procedure btnNotifSESOPClick(Sender : TObject);
         procedure FormShow(Sender : TObject);
         procedure FormCreate(Sender : TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     private
         { Private declarations }
     public
@@ -52,12 +53,21 @@ procedure TForm1.btnNotifSESOPClick(Sender : TObject);
 begin
 	 Self.btnNotifSESOP.Enabled := False;
 	 dtmdMain.SendNotification();
-	 MessageDlg('Notificação enviada com sucesso!!', mtInformation, [mbOK], 0);
+	 if Sender <> nil then begin
+		 MessageDlg('Notificação enviada com sucesso!!', mtInformation, [mbOK], 0);
+	 end;
 end;
 
 procedure TForm1.btnOKClick(Sender : TObject);
 begin
-    Self.Close;
+	 Self.Close;
+end;
+
+procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+	if Self.btnNotifSESOP.Enabled and GlobalInfo.EnsureNotification then begin //para o caso da notificação ser desejada, mas não enviada
+   	Self.btnNotifSESOPClick( nil ); //Passa Sender nulo para não informar do sucesso do envio
+	end;
 end;
 
 procedure TForm1.FormCreate(Sender : TObject);

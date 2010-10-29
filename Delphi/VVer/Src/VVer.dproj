@@ -100,7 +100,7 @@
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">2010</VersionInfo>
-						<VersionInfo Name="Build">10</VersionInfo>
+						<VersionInfo Name="Build">12</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -112,13 +112,13 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">TRE-PB - COSUP - SESOP</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">Verificador de versões de sistemas eleitorais</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.0.2010.10</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.0.2010.12</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName">VVer</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalCopyright">SESOP</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName"/>
-						<VersionInfoKeys Name="ProductVersion">1.0.2010.10</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.0.2010.12</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>

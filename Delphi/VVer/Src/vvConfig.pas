@@ -66,19 +66,21 @@ type
         function GetInfoText : string;
         function GetAutoMode : boolean;
         function GetNotificationList : string;
-    function GetSenderAddress: string;
-    function GetSenderDescription: string;
-    public
-        constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
-        destructor Destroy; override;
-        property GlobalStatus : string read GetGlobalStatus;
-        property InfoText : string read GetInfoText;
-        property ProfileInfo : TVVProgInfo read FProfileInfo;
-        property AutoMode : boolean read GetAutoMode;
-        property ProfileName : string read FProfileName;
+		 function GetSenderAddress: string;
+		 function GetSenderDescription: string;
+    function GetEnsureNotification: boolean;
+	 public
+		 constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
+		 destructor Destroy; override;
+		 property GlobalStatus : string read GetGlobalStatus;
+		 property InfoText : string read GetInfoText;
+		 property ProfileInfo : TVVProgInfo read FProfileInfo;
+		 property AutoMode : boolean read GetAutoMode;
+		 property ProfileName : string read FProfileName;
 		 property NotificationList : string read GetNotificationList;
 		 property SenderAddress : string read GetSenderAddress;
 		 property SenderDescription : string read GetSenderDescription;
+		 property EnsureNotification : boolean read GetEnsureNotification;
     end;
 
 procedure LoadGlobalInfo(const Filename : string);
@@ -156,6 +158,19 @@ begin
             Exit;
         end;
     end;
+end;
+
+function TVVConfig.GetEnsureNotification: boolean;
+var
+  enDefault: TDefaultSettingValue;
+begin
+	enDefault := TDefaultSettingValue.Create();
+	try
+		enDefault.AsBoolean:=False;
+		Result:=Self.ReadBoolean('EnsureNotification', enDefault );
+	finally
+		enDefault.Free;
+	end;
 end;
 
 function TVVConfig.GetGlobalStatus : string;

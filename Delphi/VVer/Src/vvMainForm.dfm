@@ -39,6 +39,7 @@ object Form1: TForm1
     000000000000000000000000000000000000000000000000000000000000}
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96

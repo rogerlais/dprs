@@ -1,4 +1,10 @@
+[Versão 1.0.2010.12 - 28/10/2010 - Roger]
+1 - Inserida configuração para garantir envio de notificação ao final do aplicativo
+        1.1 - Acesso via entrada Boolean:VVer\EnsureNotification(Padrão 0/Falso) no startup
+
+
 [ Change Requests - 15/10/2010 - Roger ]
+Requisitante: Lauricio
 1 - Funcionalidades
         1.1 - Aceita parametro /auto para executar no modo silencioso, enviando o email de notificação diretamente sem a intervenção do usuário
         1.2 - Arquivo de configuração com as informações de versões, etc será baixado para local definido e atualizado a cada execução.
