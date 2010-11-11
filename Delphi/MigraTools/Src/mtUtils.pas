@@ -8,11 +8,9 @@ unit mtUtils;
 interface
 
 uses
-    SysUtils, Windows, Classes, WinReg32, JclWin32, LmAccess, Generics.Collections;
+	 SysUtils, Windows, Classes, WinReg32, JclWin32, LmAccess, Generics.Collections, TREUsers;
 
 type
-    TUserScope = (usInvalid, usZone, usSupport);
-
     TZEUser = class
     private
         FUserName : string;
