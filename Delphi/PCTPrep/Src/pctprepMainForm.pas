@@ -1,5 +1,5 @@
 {$IFDEF pctprepMainForm}
-	 {$DEFINE DEBUG_UNIT}
+     {$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I PCTPrep.inc}
 
@@ -51,7 +51,7 @@ implementation
 {$R *.dfm}
 
 uses
-	 APIHnd, LmCons, LmErr, WinNetHnd, IdStackWindows;
+    APIHnd, LmCons, LmErr, WinNetHnd, IdStackWindows;
 
 procedure TMainForm.btnCancelClick(Sender : TObject);
 begin
@@ -85,7 +85,7 @@ end;
 procedure TMainForm.btnTestClick(Sender : TObject);
 {
 var
-	 ret : NET_API_STATUS;
+     ret : NET_API_STATUS;
 }
 begin
     {TODO -oroger -cdsg : Realizar os testes pontuais}
@@ -105,34 +105,34 @@ end;
 
 destructor TMainForm.Destroy;
 begin
-	 Self.loader.Free;
-	 inherited;
+    Self.loader.Free;
+    inherited;
 end;
 
 procedure TMainForm.FormCreate(Sender : TObject);
 var
-	 IPGetter : TIdStackWindows;
+    IPGetter : TIdStackWindows;
 begin
-	  {$IFDEF DEBUG}
-	 Self.btnClose.Visible := True;
-	 Self.btnTest.Visible := True;
-	 Self.Caption := 'Preparação de PCT - *** Depuração *** - ' + Self.fvVersion.FileVersion;
-	 {$ELSE}
-	 Self.btnClose.Visible := False;
-	 Self.btnTest.Visible := False;
-	 Self.Caption := 'Preparação de PCT - Versão: ' + Self.fvVersion.FileVersion;
-	 Self.btnClose.Visible := False;
-	 Self.btnTest.Visible := False;
-	  {$ENDIF}
-	  IPGetter := TIdStackWindows.Create;
-	 try
-		 Self.statBar.Panels[0].Text := 'Nome= ' + WinNetHnd.GetComputerName() + ' IP=' + IPGetter.LocalAddress;
-	 finally
-		 IPGetter.Free;
-	 end;
-	 Self.pnlComputerName.Caption := '';
-	 Self.pnlComputerIp.Caption := '';
-	 Self.btnOk.Enabled := False;
+      {$IFDEF DEBUG}
+    Self.btnClose.Visible := True;
+    Self.btnTest.Visible := True;
+    Self.Caption := 'Preparação de PCT - *** Depuração *** - ' + Self.fvVersion.FileVersion;
+     {$ELSE}
+    Self.btnClose.Visible := False;
+    Self.btnTest.Visible := False;
+    Self.Caption := 'Preparação de PCT - Versão: ' + Self.fvVersion.FileVersion;
+    Self.btnClose.Visible := False;
+    Self.btnTest.Visible := False;
+      {$ENDIF}
+    IPGetter     := TIdStackWindows.Create;
+    try
+        Self.statBar.Panels[0].Text := 'Nome= ' + WinNetHnd.GetComputerName() + ' IP=' + IPGetter.LocalAddress;
+    finally
+        IPGetter.Free;
+    end;
+    Self.pnlComputerName.Caption := '';
+    Self.pnlComputerIp.Caption := '';
+    Self.btnOk.Enabled := False;
 end;
 
 procedure TMainForm.FormShow(Sender : TObject);
@@ -143,14 +143,14 @@ begin
     Self.pnlComputerIp.Visible   := True;
 
     //carga da lista de pcts
-	  {$IFDEF DEBUG}
-	  {$IFDEF REMOTE}
-	  fname  := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'PCTs2010.csv']);
-	  {$ELSE}
-	  fname  := '..\Data\PCTs2010.csv';
-	  {$ENDIF}
-	  {$ELSE}
-	 fname  := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'PCTs2010.csv']);
+      {$IFDEF DEBUG}
+      {$IFDEF REMOTE}
+    fname  := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'PCTs2010.csv']);
+      {$ELSE}
+    fname  := '..\Data\PCTs2010.csv';
+      {$ENDIF}
+      {$ELSE}
+    fname  := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'PCTs2010.csv']);
      {$ENDIF}
     loader := TTREPCTZoneList.Create;
     loader.LoadFromCSV(ExpandFileName(fname));
