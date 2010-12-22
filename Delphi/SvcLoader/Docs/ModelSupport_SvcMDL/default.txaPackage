@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nodeSet version="1.0">
+  <node uin="omst74s3b4m_n">
+    <property name="$metaclass" value="Actor20" />
+    <property name="$name" value="BioService" />
+    <link uin="shauvbhqoih_l">
+      <property name="$metaclass" value="KernelAssociation20" />
+      <property name="$name" value="Association1" />
+      <participant referencedUin="design:node:::omst74s3b4m_n" role="Client" />
+      <participant referencedUin="design:node:::prvchtvy7sg_n:z80r5p9js5snam80l_n" role="Supplier" />
+    </link>
+  </node>
+  <node uin="t50cs40mnxn_n">
+    <property name="$metaclass" value="Actor20" />
+    <property name="$name" value="TransBio" />
+    <property name="mod__extends" value="Use Case1" />
+    <link uin="sgytgwggjqf_l">
+      <property name="$metaclass" value="Generalization20" />
+      <property name="$name" value="Generalization1" />
+      <property name="mod__cachedBaseName" value="Use Case1" />
+      <participant referencedUin="design:node:::t50cs40mnxn_n" role="Client" />
+    </link>
+    <link uin="hvrd0bt01i_l">
+      <property name="$metaclass" value="KernelAssociation20" />
+      <property name="$name" value="Association1" />
+      <participant referencedUin="design:node:::t50cs40mnxn_n" role="Client" />
+      <participant referencedUin="design:node:::vhu18nwrybs_n:2wrnkfcldph0pvyas_n" role="Supplier" />
+    </link>
+  </node>
+  <node uin="dubeso07mgl_n">
+    <property name="$metaclass" value="Actor20" />
+    <property name="$name" value="SvcLoader" />
+    <link uin="jgjershdve5jxegjt_l">
+      <property name="$metaclass" value="KernelAssociation20" />
+      <property name="$name" value="Association1" />
+      <participant referencedUin="design:node:::dubeso07mgl_n" role="Client" />
+      <participant referencedUin="design:node:::rz0uhshdve5g5g8gl_n:z80r5p9js5snam80l_n" role="Supplier" />
+    </link>
+    <link uin="auyx7fqi7vbwh4d4h_l">
+      <property name="$metaclass" value="KernelAssociation20" />
+      <property name="$name" value="Association2" />
+      <participant referencedUin="design:node:::dubeso07mgl_n" role="Client" />
+      <participant referencedUin="design:node:::shyvfqi7vbo088lj_n:z80r5p9js5snam80l_n" role="Supplier" />
+    </link>
+  </node>
+  <node uin="2wrnkfcldph0pvyas_n">
+    <property name="$metaclass" value="UseCaseClassifier20" />
+    <property name="$name" value="MaquinaPrimaria" />
+    <node uin="102xhk4bsmf_n">
+      <property name="$metaclass" value="UseCase20" />
+      <property name="$name" value="SendDataFiles" />
+      <node uin="maszraw32eo_n">
+        <property name="$metaclass" value="Behavior" />
+        <property name="$name" value="Behavior1" />
+      </node>
+      <link uin="8006mog8dqh_l">
+        <property name="$metaclass" value="classifierBehavior" />
+        <property name="$name" value="Behaviored classifier link1" />
+        <participant referencedUin="design:node:::102xhk4bsmf_n:2wrnkfcldph0pvyas_n" role="Client" />
+        <participant referencedUin="design:node:::maszraw32eo_n:102xhk4bsmf_n:2wrnkfcldph0pvyas_n" role="Supplier" />
+      </link>
+    </node>
+    <node uin="jr710gliccfqgrpq_n">
+      <property name="$metaclass" value="UseCase20" />
+      <property name="$name" value="MoveDataFiles" />
+      <node uin="oagfwglicc5ipb5j_n">
+        <property name="$metaclass" value="Behavior" />
+        <property name="$name" value="Behavior1" />
+      </node>
+      <link uin="kv0b5glicczd5pvf_l">
+        <property name="$metaclass" value="classifierBehavior" />
+        <property name="$name" value="Behaviored classifier link1" />
+        <participant referencedUin="design:node:::jr710gliccfqgrpq_n:2wrnkfcldph0pvyas_n" role="Client" />
+        <participant referencedUin="design:node:::oagfwglicc5ipb5j_n:jr710gliccfqgrpq_n:2wrnkfcldph0pvyas_n" role="Supplier" />
+      </link>
+    </node>
+    <node uin="vhu18nwrybs_n">
+      <property name="$metaclass" value="UseCase20" />
+      <property name="$name" value="TransportDataFiles" />
+      <node uin="d3007lx3kes_n">
+        <property name="$metaclass" value="Behavior" />
+        <property name="$name" value="Behavior1" />
+      </node>
+      <link uin="t68blkchrjm_l">
+        <property name="$metaclass" value="classifierBehavior" />
+        <property name="$name" value="Behaviored classifier link1" />
+        <participant referencedUin="design:node:::vhu18nwrybs_n:2wrnkfcldph0pvyas_n" role="Client" />
+        <participant referencedUin="design:node:::d3007lx3kes_n:vhu18nwrybs_n:2wrnkfcldph0pvyas_n" role="Supplier" />
+      </link>
+      <link uin="g4uejougoef_l">
+        <property name="$metaclass" value="Include20" />
+        <property name="$name" value="Includes2" />
+        <participant referencedUin="design:node:::vhu18nwrybs_n:2wrnkfcldph0pvyas_n" role="Client" />
+      </link>
+      <link uin="1tluf9dkprj_l">
+        <property name="$metaclass" value="Include20" />
+        <property name="$name" value="Includes3" />
+        <participant referencedUin="design:node:::vhu18nwrybs_n:2wrnkfcldph0pvyas_n" role="Client" />
+        <participant referencedUin="design:node:::jr710gliccfqgrpq_n:2wrnkfcldph0pvyas_n" role="Supplier" />
+      </link>
+      <link uin="jr710ka8trs_l">
+        <property name="$metaclass" value="Include20" />
+        <property name="$name" value="Includes1" />
+        <participant referencedUin="design:node:::vhu18nwrybs_n:2wrnkfcldph0pvyas_n" role="Client" />
+        <participant referencedUin="design:node:::102xhk4bsmf_n:2wrnkfcldph0pvyas_n" role="Supplier" />
+      </link>
+    </node>
+  </node>
+  <node uin="z80r5p9js5snam80l_n">
+    <property name="$metaclass" value="UseCaseClassifier20" />
+    <property name="$name" value="Estações" />
+    <node uin="rz0uhshdve5g5g8gl_n">
+      <property name="$metaclass" value="UseCase20" />
+      <property name="$name" value="ReplicDataFiles2PrimaryMachine" />
+      <node uin="zmhrfshdve53zns4g_n">
+        <property name="$metaclass" value="Behavior" />
+        <property name="$name" value="Behavior1" />
+      </node>
+      <link uin="pkl2tshdve5dzua0o_l">
+        <property name="$metaclass" value="classifierBehavior" />
+        <property name="$name" value="Behaviored classifier link1" />
+        <participant referencedUin="design:node:::rz0uhshdve5g5g8gl_n:z80r5p9js5snam80l_n" role="Client" />
+        <participant referencedUin="design:node:::zmhrfshdve53zns4g_n:rz0uhshdve5g5g8gl_n:z80r5p9js5snam80l_n" role="Supplier" />
+      </link>
+    </node>
+    <node uin="prvchtvy7sg_n">
+      <property name="$metaclass" value="UseCase20" />
+      <property name="$name" value="CaptureDataFiles" />
+      <node uin="onpivhngaxp_n">
+        <property name="$metaclass" value="Behavior" />
+        <property name="$name" value="Behavior1" />
+      </node>
+      <link uin="p8byq1r77f_l">
+        <property name="$metaclass" value="classifierBehavior" />
+        <property name="$name" value="Behaviored classifier link1" />
+        <participant referencedUin="design:node:::prvchtvy7sg_n:z80r5p9js5snam80l_n" role="Client" />
+        <participant referencedUin="design:node:::onpivhngaxp_n:prvchtvy7sg_n:z80r5p9js5snam80l_n" role="Supplier" />
+      </link>
+    </node>
+    <node uin="shyvfqi7vbo088lj_n">
+      <property name="$metaclass" value="UseCase20" />
+      <property name="$name" value="CreatePrimaryBackup" />
+      <node uin="g461rfqi7vbbs9pko_n">
+        <property name="$metaclass" value="Behavior" />
+        <property name="$name" value="Behavior1" />
+      </node>
+      <link uin="ptcr7fqi7vbuky0ll_l">
+        <property name="$metaclass" value="classifierBehavior" />
+        <property name="$name" value="Behaviored classifier link1" />
+        <participant referencedUin="design:node:::shyvfqi7vbo088lj_n:z80r5p9js5snam80l_n" role="Client" />
+        <participant referencedUin="design:node:::g461rfqi7vbbs9pko_n:shyvfqi7vbo088lj_n:z80r5p9js5snam80l_n" role="Supplier" />
+      </link>
+    </node>
+  </node>
+  <node uin="pzvcrecj1cfbqmrhi_n">
+    <property name="$metaclass" value="Note" />
+    <property name="$name" value="Note1" />
+    <property name="$note_text" value="ReplicDataFiles2PrimaryMachine:&#xD;&#xA;Descrição:&#xD;&#xA;Remonta estrutura de envio de arquivos para a máquina primária, como se este fosse originado da mesma.&#xD;&#xA;Fluxo primário:&#xD;&#xA;1 - A cada ciclo de execução, monta-se conjunto de arquivos .bio a serem processados, tendo como origem a pasta de aquisição da estação coletora.&#xD;&#xA;2 - Cada arquivo do conjunto será copiado para a pasta de transmissão(a transmitir) da estação local, como se o transbio o fosse transmitir[E1].&#xD;&#xA;3 - Cada arquivo será copiado para a pasta de transmissão(a transmitir) do computador primário[E2]&#xD;&#xA;4 - Após confirmado o sucesso das operações acima o arquivo é movido da pasta de aquisição para uma pasta de backup de baixa prioridade, onde o caminho será sufixado com a data de geração do arquivo(yyyymmdd).&#xD;&#xA;5 - Ao final do ciclo, opcionalmente podemos ter um agrupamento baseado em algum critério de modo a gerar mídia para armazenamento pela zona a longo prazo.&#xD;&#xA;&#xD;&#xA;Exceções:&#xD;&#xA;E1 - Falha de deslocamento para a pasta de transmissão local:&#xD;&#xA;1 - Arquivo ignorado neste ciclo, nova tentativa no próximo ciclo.&#xD;&#xA;&#xD;&#xA;E2 - Falha na cópia para o computador primário:&#xD;&#xA;1 - Apaga-se arquivo da pasta de transmitidos local&#xD;&#xA;2 - Arquivo ignorado neste ciclo e reprocessado no próximo.&#xD;&#xA;&#xD;&#xA;Requisitos:&#xD;&#xA;1 - Compartilhamento no computador primário com acesso de escrita para o local dos arquivos transmitidos.&#xD;&#xA;2 - Acesso para escrita na pasta de transmitidos do computador local.&#xD;&#xA;&#xD;&#xA;CreatePrimaryBackup:&#xD;&#xA;Descrição:&#xD;&#xA;O serviço ao rodar no computador primário se aterá apenas a coletar os arquivos localizados na pasta de arquivos transmitidos(\trans) e mover os arquivos lá encontrados para a pasta de backup, a qual será sufixada com a data de transmissão(yyyymmdd)&#xD;&#xA;Fluxo primário:&#xD;&#xA;1 - A cada ciclo, enumera-se os arquivos transmitidos pelo transbio&#xD;&#xA;2 - A cada arquivo enumerado é gerado um novo nome completo composto pela pasta base reservada para o backup acrescido da data do sistema mais o nome original do arquivo&#xD;&#xA;3 - O arquivo será movido para o novo local&#xD;&#xA;" />
+  </node>
+</nodeSet>

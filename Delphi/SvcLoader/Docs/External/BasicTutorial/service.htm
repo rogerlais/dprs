@@ -1,0 +1,869 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+
+<title>Service Application Tutorial in Delphi</title>
+<style type="text/css">
+<!--
+#smaller
+{
+	font-size:smaller
+}
+a {
+text-decoration: none
+}
+pre {
+  background-color: #ddd;
+}
+-->
+</style>
+
+
+</head><body bgcolor="#ffffff">
+
+
+<b><font size="5">Tutorial for making a Service Application using Delphi</font></b><br>
+by <br>
+Finn Tolderlund<p>
+<a href="http://www.tolderlund.eu/delphi/service/service.htm">
+http://www.tolderlund.eu/delphi/service/service.htm</a><br>
+<br>
+Last updated 18-07-2009.<br>
+<br>
+<br>
+This tutorial is not finished, it is a work in progress.<br>
+<br>
+<br>
+In this tutorial the following topics will be covered:<br>
+<br>
+<a href="#Create%20a%20service">Create a service</a><br>
+<a href="#Install%20and%20Uninstall">Install and Uninstall the service application</a><br>
+<a href="#Make%20the%20service">Make the service do something</a><br>
+<a href="#Debugging%20services">Debugging the service application</a><br>
+<a href="#Using%20LogMessage">Using the TService.LogMessage method</a><br>
+<a href="#Sample%20code">Sample code for a service application</a><br>
+<a href="#Links">Links</a><br>
+<a href="#FAQ:">FAQ</a><br>
+
+<br>
+The Tutorial assumes you have Delphi 7, but it should work the same in other Delphi versions.<br>
+<br>
+<br>
+<a name="Create a service"><font size="4" color="#0000ff">Create a service</font></a><br>
+<br>
+<b>How do we create Windows Services in Delphi?</b><br>
+Well, that's actually easy to do in Delphi. Select the menu items File, 
+New, Other and select "Service Application" and click OK.<br>
+Note that if you have the Standard edition of Delphi "Service 
+Application" may not be available. You need at least the Professional 
+edition.<br>
+You now have the framework for a service application which includes a TService class.<br>
+The TService class is where we do our stuff and it has a number of properties which you can see in the Object Inspector.<br>
+<br>
+Among the properties you will see a Name, DisplayName, ServiceStartName and Password property.<br>
+<br>
+<b>Name property:</b><br>
+Enter a good descriptive name for your service in the Name property.<br>
+Do not just leave the name as Service1, but choose a more descriptive 
+name such as "CompanynameSqlDatabaseSpecialSomething" (no blanks in the 
+name).<br>
+Why is this Name property so important?<br>
+It's important to choose a good name, because when installing the 
+service this name is automatically used to create a key in the registry 
+under
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services.<br>
+So be sure to use a name which will not be used by other services, 
+otherwise you might end up with a nasty registry key name conflict with 
+other services.<br>
+Also we will later use the Name property ourself to create a key in the registry under
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Eventlog\Application.<br>
+More about this key later.<br>
+<br>
+<b>DisplayName property:</b><br>
+Enter a user friendly and descriptive name such as "Companyname SQL 
+Database Special Something" (feel free to use spaces in the name).<br>
+The DisplayName is used for displaying when you use the Control Panel, Administration, Services applet.<br>
+<br>
+<b>ServiceStartName property:</b><br>
+You can specify an account name in this property and password in the 
+Password property to specify which account the service should log on as.<br>
+That requires that you know at design time the account name and password, and who knows that?<br>
+Just leave ServiceStartName and Password empty. You can always enter an 
+account name and password in the service properties after the service 
+has been installed.<br>
+A service runs as a specific user and that means that a service has the 
+same access permissions to different things such as folders as the 
+account under which the service runs. Many services runs as "Local 
+System" unless you specify a specific username when installing the 
+service. For many things "Local System" is sufficient, however if the 
+service needs to have access to things such as a folder on a network 
+drive/share (which are normally user/password protected) you may need to
+ specify an account which has been granted access to the network share.<br>
+<br>
+I'll assume that you have created the service framework as shown above. 
+We haven't written a single line of code ourself yet, that will come 
+shortly.<br>
+Let's first install the service and see if it can run.<br>
+First save the project (File, Save All) in a folder on your local 
+harddrive. Windows won't run a service application if it's located on a 
+network drive.<br>
+For this tutorial save the unit as MyServiceUnit.pas and the project as MyService.dpr. Compile or Build the project.<br>
+<br>
+<br>
+<font size="4" color="#0000ff"><a name="Install and Uninstall">Install and Uninstall the service application</a></font><br>
+<br>
+Note that you need administrator rights to install and uninstall service
+ applications, because it is necessary to write or delete registry 
+entries in HKEY_LOCAL_MACHINE, and that requires permissions that normal
+ or restricted users do not have.<br>
+<br>
+To install the service application you open a command prompt and type:<br>
+  MyService.exe /install<br>
+You will see a confirmation dialog when the service has been 
+successfully installed or an error message if it failed. It can fail if 
+you do not have sufficient rights.<br>
+If you do not want to see the confirmation dialog you can add the /silent switch like this:<br>
+</p>
+<pre>  MyService.exe /install /silent</pre>
+<br>
+To uninstall the service application you open a command prompt and type:<br>
+<pre>  MyService.exe /uninstall</pre>
+You will see a confirmation dialog when the service has been 
+successfully uninstalled or an error message if it failed. It can fail 
+if you do not have sufficient rights.<br>
+If you do not want to see the confirmation dialog you can add the /silent switch like this:<br>
+<pre>  MyService.exe /uninstall /silent</pre>
+<br>
+So type "MyService.exe /install" in the command prompt now and klick OK to the confirmation dialog.<br>
+Open the Control Panel, go into Administration and into the Services 
+applet. You will see a list of currently installed services. Locate your
+ service name in the list, right click on it and select "Start" menuitem
+ in the popup menu. Notice that the Status for the service changes to 
+Started. You can press the F5 key or select the Refresh command to 
+update the list to make sure that the service keeps running.<br>
+You can also see your service in the Task Manager. Right click on an 
+open area of your task bar at the bottom of your screen, then select 
+"Task Manager", select the Processes tab. Here you can see a list of 
+currently running processes. See if you can find your services. It's 
+listed as Myservice.exe. Close the Task Manager.<br>
+So now we have a service application running. Great eh? Well, it's 
+running but it doesn't really do anything because we haven't put in any 
+code to make it do anything useful. Let's do that now. In the Services 
+applet right click on the service name and select the Stop command.<br>
+It's necessary to stop the service because we can't compile and update the exe-file when it's running.<br>
+We could also uninstall the service, but it's not necessary to uninstall
+ the service while we change it, as long as we don't change the Name and
+ DisplayName properties. If you need to change these properties you 
+should uninstall the service first.<br>
+For now just stop the service. When we have put in some code we only have to start the service again to run it.<br>
+<br>
+<br>
+
+
+When you look at your service in the Services applet do you notice that the Description column is empty?<br>
+Unfortunately Delphi do not have a property in the TService class to set the description.<br>
+We have to set the description ourself after the Service Application has been installed.<br>
+Fortunately this is easy enough to do using the TRegistry class in the TService AfterInstall event.<br>
+The description is stored in the registry in the datavalue Description under the key<br>
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\YourServiceName]<br>
+Try take a look there with the <b>regedit</b> application.<br>
+You set the Description datavalue like this:<br>
+
+<pre>procedure TMyTestServiceApp.ServiceAfterInstall(Sender: TService);
+var
+  Reg: TRegistry;
+begin
+  Reg := TRegistry.Create(KEY_READ or KEY_WRITE);
+  try
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    if Reg.OpenKey('\SYSTEM\CurrentControlSet\Services\' + Name, false) then
+    begin
+      Reg.WriteString('Description', 'This is a description for my fine Service Application.');
+      Reg.CloseKey;
+    end;
+  finally
+    Reg.Free;
+  end;
+end;
+</pre>
+
+Remember to add <b>Registry</b> to the uses clause.<br>
+Compile the service application.<br>
+Uninstall the service application and install it again and see that you now have a description in the Services applet.<br>
+Note that you do not need to delete the description when you uninstall the service application.<br>
+This is because everything under the key 
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\YourServiceName] 
+is automatically deleted, including the description.<br>
+
+
+<br>
+<br>
+<font size="4" color="#0000ff"><a name="Make the service">Make the service do something</a></font><br>
+<br>
+There are basically two places where you can put your service code:<br>
+In the OnExecute method or the OnStart event.<br>
+<br>
+<b>OnExecute method:</b><br>
+Put your code in the TService.OnExecute method. Here you can also create a thread with your code if you want.<br>
+Quote from the help under OnExecute:<br>
+"Occurs when the thread associated with the service starts up."<br>
+"If you are not spawning a new thread to handle individual service 
+requests in an OnStart event handler, this is where you implement the 
+service. When the OnExecute event handler finishes, the service thread 
+terminates. Most OnExecute event handlers contain a loop that calls the 
+service thread&#8217;s ProcessRequests method so that other service requests 
+are not locked out."<br>
+<br>
+<b>OnStart event:</b><br>
+Create a thread (TThread) that contains your code and start the thread in the TService.OnStart event.<br>
+Quote from the help under OnStart:<br>
+"OnStartup occurs when the service first starts up, before the OnExecute event."<br>
+"This event should be used to initialize the service. For example, if 
+each service request is handled in a separate thread (a good idea if 
+handling the request takes much time) the thread for a request is 
+spawned in an OnStart event handler."<br>
+<br>
+Which method you use is a personal matter, both work fine.<br>
+Below is an example of both methods.<br>
+<br>
+<br>
+<b>Using OnExecute method</b><br>
+<br>
+<pre>procedure TCompanySqlDatabaseSpecialSomething.ServiceExecute(
+  Sender: TService);
+const
+  SecBetweenRuns = 10;
+var
+  Count: Integer;
+begin
+  Count := 0;
+  while not Terminated do
+  begin
+    Inc(Count);
+    if Count &gt;= SecBetweenRuns then
+    begin
+      Count := 0;
+
+      { place your service code here }
+      { this is where the action happens }
+      SomeProcedureInAnotherUnit;
+
+    end;
+    Sleep(1000);
+    ServiceThread.ProcessRequests(False);
+  end;
+end;
+</pre>
+<br>
+We loop around in the while-do loop until the service should be 
+terminated, either when the machine is shutting down or the service is 
+stopped from the service applet.<br>
+In this example the procedure "SomeProcedureInAnotherUnit" is called every 10 seconds.<br>
+Note that we do not use Sleep(10000) in order to wait 10 seconds.<br>
+If we did that our service would not be able to responds quickly to commands sent from the SCM (Service Control Manager).<br>
+Instead we sleep only for 1 second at a time and use a counter to count 
+how many seconds how gone since the last call to 
+SomeProcedureInAnotherUnit.<br>
+You can use the OnStart event if you want to perform some initialization
+ here instead of doing it in the OnExecute event and that allows you to 
+set the Started variable to False if you find that some needed settings 
+is missing and don't want the service to start.<br>
+<br>
+Using the OnExecute method this way has it's advantages and drawbacks.<br>
+Advantage:<br>
+The code is simple. You do not need to create a secondary thread.<br>
+Pausing and resuming the service is handled automatically without extra code.<br>
+Drawbacks:<br>
+The SomeProcedureInAnotherUnit must take only a very short time to 
+finish, it should take no more than a few seconds at the most.<br>
+<br>
+The OnExecute method works well if the code takes only short time to finish on each run.<br>
+If the code takes a long time to run, you should consider starting a secondary thread in the OnStart event instead.<br>
+<br>
+<br>
+<b>Using OnStart event</b><br>
+<br>
+First you need to define your secondary thread class where you put all 
+your code to do what ever it is you want your service to do.<br>
+Create the thread as you usually make thread classes. One way is to select the menu item File, New, Other, "Thread Object".<br>
+If you do not have any experience with threads you need to get a working
+ knowledge about threads before you continue with the service 
+application.<br>
+<br>
+Tutorials on thread programming in Delphi:<br>
+Original, now removed:<br>
+<a href="http://www.pergolesi.demon.co.uk/prog/threads/ToC.html">http://www.pergolesi.demon.co.uk/prog/threads/ToC.html</a><br>
+Can now be found here:<br>
+<a href="http://www.eonclash.com/Tutorials/Multithreading/MartinHarvey1.1/ToC.html">http://www.eonclash.com/Tutorials/Multithreading/MartinHarvey1.1/ToC.html</a><br>
+<br>
+<a href="http://www.sklobovsky.com/community/index.html">http://www.sklobovsky.com/community/index.html</a><br>
+<a href="http://sklobovsky.nstemp.com/community/threadmare/threadmare.htm">http://sklobovsky.nstemp.com/community/threadmare/threadmare.htm</a><br>
+<a href="http://sklobovsky.nstemp.com/community/threadmare/perks.htm">http://sklobovsky.nstemp.com/community/threadmare/perks.htm</a><br>
+<a href="http://sklobovsky.nstemp.com/community/threadmare/fixes.htm">http://sklobovsky.nstemp.com/community/threadmare/fixes.htm</a><br>
+How to handle exceptions in TThread objects - by Borland Developer Support Staff:<br>
+<a href="http://community.borland.com/article/0,1410,10452,00.html">http://community.borland.com/article/0,1410,10452,00.html</a><br>
+<br>
+Let's say you have made a TThread called TMyServiceThread.<br>
+This thread should be made so that it will automatically free itself when the thread's Execute method terminates.<br>
+(This is actually wrong, but right now just do it. I'll correct it further down in this tutorial.)<br>
+<br>
+For now, just set the thread's FreeOnTerminate property to True.<br>
+<br>
+Define a thread variable in your TService's private section like this:<br>
+<pre>  private
+    { Private declarations }
+    MyServiceThread: TMyServiceThread;
+</pre>
+
+Now you need to create and fill in the OnStart and OnStop events like this:<br>
+
+<pre>procedure TCompanySqlDatabaseSpecialSomething.ServiceStart(
+  Sender: TService; var Started: Boolean);
+begin
+  { Create an instance of the secondary thread where your service code is placed }
+  MyServiceThread := TMyServiceThread.Create;
+  { Set misc. properties you need (if any) in your thread }
+  //MyServiceThread.Property1 := whatever;
+  // and so on
+  MyServiceThread.Resume;
+end;
+
+procedure TCompanySqlDatabaseSpecialSomething.ServiceStop(Sender: TService;
+  var Stopped: Boolean);
+begin
+  MyServiceThread.Terminate;
+end;
+</pre>
+
+What happens here is that the secondary thread is created and started in the service's OnStart event.<br>
+Then the thread goes on running until the thread is notified that it 
+should stop. This is done in the service's OnStop event by calling the 
+thread's Terminate method.<br>
+Note that calling the Terminate method does not stop the thread. All it 
+does is to set the thread's Terminated property to true and it is then 
+up to the thread to check this property at short intervals to see if the
+ thread should stop. The thread then stops simply by exiting the 
+thread's Execute method.<br>
+<br>
+An very simple example of a thread that does this can be seen here:<br>
+
+<pre>unit MyServiceThreadUnit;
+{ This thread frees itself when it terminates }
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics;
+
+type
+  TMyServiceThread = class(TThread)
+  private
+    { Private declarations }
+  protected
+    procedure Execute; override;
+  public
+    constructor Create;
+  end;
+
+implementation
+
+{ Important: Methods and properties of objects in visual components can only be
+  used in a method called using Synchronize, for example,
+
+      Synchronize(UpdateCaption);
+
+  and UpdateCaption could look like,
+
+    procedure TMyServiceThread.UpdateCaption;
+    begin
+      Form1.Caption := 'Updated in a thread';
+    end; }
+
+{ TMyServiceThread }
+
+constructor TMyServiceThread.Create;
+// Create the thread Suspended so that properties can be set before resuming the thread.
+begin
+  FreeOnTerminate := True;
+  inherited Create(True);
+end;
+
+procedure TMyServiceThread.Execute;
+const
+  SecBetweenRuns = 10;
+var
+  Count: Integer;
+begin
+  { Place thread code here }
+  while not Terminated do  // loop around until we should stop
+  begin
+    Inc(Count);
+    if Count &gt;= SecBetweenRuns then
+    begin
+      Count := 0;
+
+      { place your service code here }
+      { this is where the action happens }
+      SomeProcedureInAnotherUnit;
+
+    end;
+    Sleep(1000);
+  end;
+end;
+
+end.
+</pre>
+
+
+Using the OnStart method to start a secondary thread has it's advantages and drawbacks.<br>
+Advantage:<br>
+The code is a little more complicated and you need knowledge about threads.<br>
+You can make the Execute method simpler by removing the Count variable 
+and all the code that uses the Count variable and simply call Sleep with
+ a larger value. Just don't make the Sleep value too large.<br>
+The SomeProcedureInAnotherUnit can take longer time to finish on each run and we can sleep for longer intervals.<br>
+But note that we should still check the Terminated property at regularly
+ intervals so that the thread and service can shut down within 
+reasonable time when Windows is shutting down or when asked to shut down
+ by the SCM.<br>
+Drawbacks:<br>
+Pausing and resuming the service is not handled automatically. You need 
+to define the OnPause and OnContinue events and add code to notify your 
+thread when to pause and continue.<br>
+Note that although you could simply call the thread's Pause and Resume method this could potentially be a very bad idea.<br>
+If the thread has opened files or an active database connection or 
+active network connection these resources would be hanging as long as 
+the thread is paused. Instead you should set a property in your thread 
+to signal that the thread should stop working and only loop around and 
+call Sleep until it gets told to either continue or shut down.<br>
+The easy way to handle service Pause and Continue in this setup is to 
+disable these options by setting the service's AllowPause property to 
+False.<br>
+<br>
+The OnStart method works well if the code takes longer time to finish on each run.<br>
+<br>
+<br>
+<b>Caveats:</b><br>
+<br>
+There are several issues we need to be aware of.<br>
+<br>
+First I have a confession to make.<br>
+I told you above that you should set the thread's FreeOnTerminate 
+property to True in order to make it free itself when the service 
+application is shutting down. This is dead wrong.<br>
+Actually, letting the thread terminate itself in a service application is a recipe for disaster.<br>
+You have to make sure that the thread is terminated from within the 
+TService class before you exit the TService. This is necessary because 
+if you let the TService exit and shut down before the thread is 
+terminated then the thread is simply killed in the middle of whatever it
+ was doing. This of course is bad.<br>
+So you have to set the thread's FreeOnTerminate property to False and 
+wait in the TService until the thread has finished. You do this by using
+ the thread's WaitFor method.<br>
+<br>
+<b>Another pitfall:</b><br>
+<br>
+When the service is stopped manually the OnStop event is called (OnShutdown is not called).<br>
+When the system shuts down the OnShutdown event is called (OnStop is not called).<br>
+So in order to properly clean up you have to implement both OnStop and 
+OnShutdown. It's probably best just to call a common procedure to do the
+ cleaning up.<br>
+<br>
+We can do it like this:<br>
+
+<pre>constructor TMyServiceThread.Create;
+// Create the thread Suspended so that properties can be set before resuming the thread.
+begin
+  FreeOnTerminate := False;
+  inherited Create(True);
+end;
+</pre>
+
+And like this:<br>
+
+<pre>type
+  TCompanySqlDatabaseSpecialSomething = class(TService)
+    procedure ServiceStart(Sender: TService; var Started: Boolean);
+    procedure ServiceStop(Sender: TService; var Stopped: Boolean);
+    procedure ServiceShutdown(Sender: TService);
+  private
+    { Private declarations }
+    MyServiceThread: TMyServiceThread;
+    procedure ServiceStopShutdown;
+  public
+    function GetServiceController: TServiceController; override;
+    { Public declarations }
+  end;
+
+procedure TCompanySqlDatabaseSpecialSomething.ServiceStart(Sender: TService;
+  var Started: Boolean);
+begin
+  // Allocate resources here that you need when the service is running
+  { Create an instance of the secondary thread where your service code is placed }
+  MyServiceThread := TMyServiceThread.Create;
+  { Set misc. properties you need (if any) in your thread }
+  //MyServiceThread.Property1 := whatever;
+  // and so on
+  MyServiceThread.Resume;
+end;
+
+procedure TCompanySqlDatabaseSpecialSomething.ServiceStop(Sender: TService;
+  var Stopped: Boolean);
+begin
+  ServiceStopShutdown;
+end;
+
+procedure TCompanySqlDatabaseSpecialSomething.ServiceShutdown(
+  Sender: TService);
+begin
+  ServiceStopShutdown;
+end;
+
+procedure TCompanySqlDatabaseSpecialSomething.ServiceStopShutdown;
+begin
+  // Deallocate resources here
+  if Assigned(MyServiceThread) then
+  begin
+    // The TService must WaitFor the thread to finish (and free it)
+    // otherwise the thread is simply killed when the TService ends.
+    MyServiceThread.Terminate;
+    MyServiceThread.WaitFor;
+    FreeAndNil(MyServiceThread);
+  end;
+end;
+</pre>
+
+
+<pre>Debugging the service application
+Quote from
+http://info.borland.com/techpubs/delphi/delphi5/dg/buildap.html
+
+<h3> <font color="#0000ff"><a name="Debugging services">Debugging services</a></font></h3>
+
+<p><a name="1053581"></a>
+ The simplest way to debug your service application is to attach to the process when the service is running. To do this, choose Run|Attach To Process and select the service application from the list of available processes. 
+</p> 
+<p><a name="1053663"></a>
+ In some cases, this may fail, due to insufficient rights. If that happens, you can use the Service Control Manager to enable your service to work with the debugger: 
+</p> 
+<p></p><ol>
+<a name="1053694"> </a>
+<li> First create a key called <strong>Image File Execution Options </strong>in the following registry location: 
+
+<pre>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion 
+</pre><a name="1053688"> </a>
+</li><li> Create a subkey with the same name as your service (for example, MYSERV.EXE). To this subkey, add a value of type REG_SZ, named Debugger. Use the full path to the debugger as the string value. 
+
+<a name="1053769"> </a>
+</li><li> In the Services control panel applet, select your service, click Startup and check Allow Service to Interact with Desktop. 
+
+</li></ol><p>
+
+</p></pre>
+
+
+
+
+According to this:
+http://groups.google.dk/group/borland.public.delphi.nativeapi.win32/msg/13df743b00f57603?dmode=source&amp;hl=da
+
+Go to
+http://www.wilsonc.demon.co.uk/delphi.htm
+and download 'NT Low Level Utilities' and use TDebugServiceApplication in unitDebugService.pas.
+Apparently Colin Wilson uses it for debugging only.
+
+
+
+
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<font size="4" color="#0000ff"><a name="Using LogMessage">Using the TService.LogMessage method</a></font><br>
+<br>
+If something happens during the execution of your service which you want
+ to log, you can use the LogMessage method to save a message which later
+ can be viewed using Windows built in event viewer.<br>
+You simply call the LogMessage method like this:<br>
+<pre>  LogMessage('Your message goes here SUCC', EVENTLOG_SUCCESS, 0, 1);
+  LogMessage('Your message goes here INFO', EVENTLOG_INFORMATION_TYPE, 0, 2);
+  LogMessage('Your message goes here WARN', EVENTLOG_WARNING_TYPE, 0, 3);
+  LogMessage('Your message goes here ERRO', EVENTLOG_ERROR_TYPE, 0, 4);
+</pre>
+Use the message type as you think appropriate.<br>
+When you look in the event viewer the message may then look something like this:<br>
+<pre>The description for Event ID ( 0 ) in Source ( MyService.exe ) cannot be
+found. The local computer may not have the necessary registry information or
+message DLL files to display messages from a remote computer. The following
+information is part of the event: Your message goes here.
+</pre>
+As you can see there is a lot of nonsense text in front of the message we specified in LogMessage.<br>
+You could simply ignore all that and be done with it, right?<br>
+No?<br>
+Well, if we want to remove the garbage text and only have our message shown, we need to do some extra coding.<br>
+My personal opinion: This is where Microsoft managed to screw up and 
+make something really complicated which could have been very simple.<br>
+As it is we have to live with it.<br>
+Now, before we go on, make sure that you have a message compiler installed on your machine.<br>
+And what exactly is a message compiler?<br>
+It's like a resource compiler, except a message compiler is used to compile message resource files.<br>
+You can get a message compiler if you install Visual Studio from Microsoft, for example Microsoft Visual Studio .NET 2003.<br>
+Then in the "C:\Program Files\Microsoft Visual Studio .NET 
+2003\Common7\Tools\Bin" directory there is a mc.exe which is the message
+ compiler.<br>
+If you don't have Visual Studio you could take a look at the free Visual Studio 2005 Express Editions<br>
+http://msdn.microsoft.com/vstudio/express/<br>
+Note that I don't know if the message compiler is included in the free versions.<br>
+Someone wrote to me: You'll find it in the free Microsoft Platform SDK for Windows Server 2003 as well:<br>
+Microsoft Platform SDK for Windows Server 2003 R2\Bin\MC.Exe<br>
+(no need to install the SDK, just copy the .exe)<br>
+<br>
+Now we need to make a message resource file and compile it and include it in the service application project.<br>
+Make a text file containing these lines:<br>
+<pre>; /* -------------------------------------------------------------------------
+; HEADER SECTION
+;*/
+SeverityNames=(Success=0x0:       STATUS_SEVERITY_SUCCESS
+               Informational=0x1: STATUS_SEVERITY_INFORMATIONAL
+               Warning=0x2:       STATUS_SEVERITY_WARNING
+               Error=0x3:         STATUS_SEVERITY_ERROR
+              )
+
+FacilityNames=(System=0x0:  FACILITY_SYSTEM
+               Runtime=0x2: FACILITY_RUNTIME
+               Stubs=0x3:   FACILITY_STUBS
+               Io=0x4:      FACILITY_IO_ERROR_CODE
+              )
+
+LanguageNames=(English=0x409:MSG00409)
+;LanguageNames=(German=0x407:MSG00407)
+
+;
+;/* -------------------------------------------------------------------------
+; MESSAGE DEFINITION SECTION
+;*/
+
+MessageIdTypedef=WORD
+
+;/*
+; The message in the LogMessage call is shown in event log.
+;  LogMessage('Your message goes here', EVENTLOG_SUCCESS, 0, 1);
+;  LogMessage('Your message goes here', EVENTLOG_INFORMATION_TYPE, 0, 2);
+;  LogMessage('Your message goes here', EVENTLOG_WARNING_TYPE, 0, 3);
+;  LogMessage('Your message goes here', EVENTLOG_ERROR_TYPE, 0, 4);
+; The message in the LogMessage call is not shown in event log.
+;  LogMessage('Your message goes here SUCC', EVENTLOG_SUCCESS, 0, 5);
+;  LogMessage('Your message goes here INFO', EVENTLOG_INFORMATION_TYPE, 0, 6);
+;  LogMessage('Your message goes here WARN', EVENTLOG_WARNING_TYPE, 0, 7);
+;  LogMessage('Your message goes here ERRO', EVENTLOG_ERROR_TYPE, 0, 8);
+;*/
+
+MessageId=0x1
+Severity=Success
+Facility=Application
+SymbolicName=CATEGORY_SUCCESS
+Language=English
+%1
+.
+
+MessageId=0x2
+Severity=Success
+Facility=Application
+SymbolicName=CATEGORY_INFORMATION
+Language=English
+%1
+.
+
+MessageId=0x3
+Severity=Success
+Facility=Application
+SymbolicName=CATEGORY_WARNING
+Language=English
+%1
+.
+
+MessageId=0x4
+Severity=Success
+Facility=Application
+SymbolicName=CATEGORY_ERROR
+Language=English
+%1
+.
+
+MessageId=0x5
+Severity=Success
+Facility=Application
+SymbolicName=CATEGORY_SUCCESS
+Language=English
+Here is id5 success message
+.
+
+MessageId=0x6
+Severity=Success
+Facility=Application
+SymbolicName=CATEGORY_INFORMATION
+Language=English
+Here is id6 information message
+.
+
+MessageId=0x7
+Severity=Success
+Facility=Application
+SymbolicName=CATEGORY_WARNING
+Language=English
+Here is id5 warning message
+.
+
+MessageId=0x8
+Severity=Success
+Facility=Application
+SymbolicName=CATEGORY_ERROR
+Language=English
+Here is id5 error message
+.
+
+;/*
+; For some reason Severity &lt;&gt; Success doesn't work properly ???
+;MessageId=0x6
+;Severity=Informational
+;Facility=Application
+;SymbolicName=CATEGORY_INFORMATION
+;Language=English
+;Here is id6 information message
+;.
+;
+;MessageId=0x7
+;Severity=Warning
+;Facility=Application
+;SymbolicName=CATEGORY_WARNING
+;Language=English
+;Here is id5 warning message
+;.
+;
+;MessageId=0x8
+;Severity=Error
+;Facility=Application
+;SymbolicName=CATEGORY_ERROR
+;Language=English
+;Here is id5 error message
+;.
+;*/
+</pre>
+You must write the lines exactly as shown here, otherwise you will get 
+an error when you compile it. The message compiler is very picky.<br>
+You can of course change the lines if you know what you are doing, but since you are reading this I assume you don't :-)<br>
+Save these lines in a text file in the same directory as the service 
+application and give it a name such as "MyServiceMessageResource.mc".<br>
+In a command prompt issue the command (also type the " characters)<br>
+<pre>"%VS71COMNTOOLS%Bin\mc.exe" MyServiceMessageResource.mc
+</pre>
+VS71COMNTOOLS is an environment variable created when Visual Studio is 
+installed. It points to the "C:\Program Files\Microsoft Visual Studio 
+.NET 2003\Common7\Tools\" directory.<br>
+If the message compiler gives an error you need to correct the message resource file and compile it again.<br>
+The message compiler generates these files:<br>
+One binary resource file per supported language (msg00001.bin, msg00002.bin, and so on),<br>
+and a resource file (.rc) that contains the appropriate statements to include each .bin file as a resource.<br>
+Now we have a file called "MyServiceMessageResource.rc" which must be compiled using the resource compiler.<br>
+You can use the resource compiler installed with Visual Studio or the resource compiler installed with Delphi.<br>
+<br>
+For the Visual Studio resource compiler issue the command<br>
+<pre>"%VS71COMNTOOLS%Bin\rc.exe" MyServiceMessageResource.rc<br>
+</pre>
+For the Delphi resource compiler issue the command<br>
+<pre>brcc32.exe MyServiceMessageResource.rc<br>
+</pre>
+Now we have a MyServiceMessageResource.res file which we can include in the project with the line<br>
+<pre>{$R MyServiceMessageResource.res}<br>
+</pre>
+<br>
+I did say it was complicated, right?<br>
+But we are not done yet.<br>
+<br>
+In the ServiceAfterInstall method add these lines:<br>
+<pre>  // Create registry entries so that the event viewer show messages properly when we use the LogMessage method.
+  Key := '\SYSTEM\CurrentControlSet\Services\Eventlog\Application\' + Self.Name;
+  Reg := TRegistry.Create(KEY_READ or KEY_WRITE);
+  try
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    if Reg.OpenKey(Key, True) then
+    begin
+      Reg.WriteString('EventMessageFile', ParamStr(0));
+      Reg.WriteInteger('TypesSupported', 7);
+      Reg.CloseKey;
+    end;
+  finally
+    Reg.Free;
+  end;
+</pre>
+
+In the ServiceAfterUninstall method add these lines:<br>
+<pre>var
+  Reg: TRegistry;
+  Key: string;
+begin
+  // Delete registry entries for event viewer.
+  Key := '\SYSTEM\CurrentControlSet\Services\Eventlog\Application\' + Self.Name;
+  Reg := TRegistry.Create(KEY_READ or KEY_WRITE);
+  try
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    if Reg.KeyExists(Key) then
+      Reg.DeleteKey(Key);
+  finally
+    Reg.Free;
+  end;
+</pre>
+
+Now when we use the LogMessage method the event viewer will only show our message, without all the other junk.<br>
+As I said Microsoft has managed to make it very complicated.<br>
+
+<br>
+<br>
+<br>
+
+<font size="4" color="#0000ff"><a name="Sample code">Sample code for a service application</a></font><br>
+DO NOT ask me for any sample code or demos.<br>
+I do not yet have any sample code.<br>
+When I write a sample code, it will be posted here.<br>
+<br>
+<br>
+
+<font size="4" color="#0000ff"><a name="Links">Links to other articles:</a></font><br>
+Old dead link: http://info.borland.com/techpubs/delphi/delphi5/dg/buildap.html<br>
+You can now find the page on the Internet Archive Wayback Machine:<br>
+<a href="http://web.archive.org/web/20070629132322/http://info.borland.com/techpubs/delphi/delphi5/dg/buildap.html">http://web.archive.org/web/20070629132322/http://info.borland.com/techpubs/delphi/delphi5/dg/buildap.html</a><br>
+Or see my local copy of the page here: <a href="http://www.tolderlund.eu/delphi/service/buildap.htm">buildap.htm</a><br>
+<br>
+<br>
+<br>
+
+<font size="4" color="#0000ff"><a name="FAQ:">FAQ:</a></font><br>
+<br>
+Q:<br>
+I've written a service app, and after I install it, when I try to start 
+it in the Services console, it immediately shuts down saying
+that it has no work to do.<br>
+Do you happen to know what causes this or how I can deal with it?  I've 
+looked all over for a solution, but information on service applications 
+in Delphi is difficult to come by.<br>
+<br>
+A:<br>
+That could be caused by an unhandled exception in the startup code.<br>
+Check if you have an exception somewhere in your code.<br>
+You MUST handle all exceptions in a service application.<br>
+<br>
+<br>
+<br>
+
+<a href="mailto:finn@tolderlund.eu?subject=Service%20Application%20Tutorial">Send me an e-mail</a> if you have any comments, questions, suggestions for improvements, or if you find errors in this tutorial.<br>
+
+<br>
+My Delphi page: <a href="http://www.tolderlund.eu/delphi/">http://www.tolderlund.eu/delphi/</a><br>
+
+
+</body></html>
