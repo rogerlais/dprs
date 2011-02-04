@@ -4,7 +4,7 @@ interface
 
 
 uses
-    JwaWindows; //JwaWinNT, JwaWinType, JwaNtStatus, JwaNtSecApi, JwaLmCons;
+    JwaWindows; // todas as units ao lado são agrupadas na JwaWindows JwaWinNT, JwaWinType, JwaNtStatus, JwaNtSecApi, JwaLmCons;
 
 function LogonAsServiceToAccount(AAccountName : string) : DWORD;
 function AddPrivilegeToAccount(AAccountName, APrivilege : string) : DWORD;
