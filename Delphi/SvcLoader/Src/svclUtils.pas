@@ -1,3 +1,8 @@
+{$IFDEF svclUtils}
+	 {$DEFINE DEBUG_UNIT}
+{$ENDIF}
+{$I SvcLoader.inc}
+
 unit svclUtils;
 
 interface

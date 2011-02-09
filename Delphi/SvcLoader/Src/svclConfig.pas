@@ -195,12 +195,12 @@ end;
 
 function TBioReplicatorConfig.GetServiceAccountName : string;
 begin
-     {$IFDEF DEBUG}
+	  {$IFDEF DEBUG}
 	 Result := WinNetHnd.GetUserName;
 	  {$ELSE}
 	 Result := 'vncacesso'; {TODO -oroger -cdsg : Realizar os testes para as contas locais/dominio }
       {$ENDIF}
-    Result := Self.ReadStringDefault('ServiceAccountName', Result);
+	 Result := Self.ReadStringDefault('ServiceAccountName', Result);
 end;
 
 function TBioReplicatorConfig.GetServiceAccountPassword : string;
@@ -212,7 +212,7 @@ begin
     zu := TTREZEUser.Create(Self.ServiceAccountName, 'admin<1>str<2>d<3>'); //NOTA.: Raiz da senha hardcoded
     try
          {$IFDEF DEBUG}
-        Result := zu.TranslatedPwd(TTREUtils.GetComputerZone('zpb111std02'));
+		 Result := zu.TranslatedPwd(TTREUtils.GetComputerZone('zpb111std02'));
         if Result <> EmptyStr then begin
             Result := EmptyStr;
         end;

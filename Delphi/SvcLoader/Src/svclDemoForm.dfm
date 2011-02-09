@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 131
+  ClientHeight = 188
   ClientWidth = 301
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -76,6 +76,17 @@ object Form1: TForm1
     ParentDoubleBuffered = False
     TabOrder = 5
     OnClick = btnServiceLogonClick
+  end
+  object btnGetDomain: TBitBtn
+    Left = 105
+    Top = 136
+    Width = 75
+    Height = 25
+    Caption = 'btnServiceLogon'
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
+    TabOrder = 6
+    OnClick = btnGetDomainClick
   end
   object tmrServiceThread: TTimer
     Enabled = False

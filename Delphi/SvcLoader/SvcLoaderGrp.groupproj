@@ -21,6 +21,9 @@
 			<Projects Include="..\MigraTools\Src\MigraTools.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj">
+				<Dependencies/>
+			</Projects>
 			<Projects Include="Src\SvcLoader.dproj">
 				<Dependencies/>
 			</Projects>
@@ -89,6 +92,15 @@
 		<Target Name="MigraTools:Make">
 			<MSBuild Targets="Make" Projects="..\MigraTools\Src\MigraTools.dproj"/>
 		</Target>
+		<Target Name="WinNetLibD14">
+			<MSBuild Projects="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj"/>
+		</Target>
+		<Target Name="WinNetLibD14:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj"/>
+		</Target>
+		<Target Name="WinNetLibD14:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj"/>
+		</Target>
 		<Target Name="SvcLoader">
 			<MSBuild Projects="Src\SvcLoader.dproj"/>
 		</Target>
@@ -108,13 +120,13 @@
 			<MSBuild Targets="Make" Projects="Src\SvcLoaderInteractiveDebugger.dproj"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="SvcMDL;XPLibD14;WinSysLibD14;StFLibD14;TRELib;MigraTools;SvcLoader;SvcLoaderInteractiveDebugger"/>
+			<CallTarget Targets="SvcMDL;XPLibD14;WinSysLibD14;StFLibD14;TRELib;MigraTools;WinNetLibD14;SvcLoader;SvcLoaderInteractiveDebugger"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="SvcMDL:Clean;XPLibD14:Clean;WinSysLibD14:Clean;StFLibD14:Clean;TRELib:Clean;MigraTools:Clean;SvcLoader:Clean;SvcLoaderInteractiveDebugger:Clean"/>
+			<CallTarget Targets="SvcMDL:Clean;XPLibD14:Clean;WinSysLibD14:Clean;StFLibD14:Clean;TRELib:Clean;MigraTools:Clean;WinNetLibD14:Clean;SvcLoader:Clean;SvcLoaderInteractiveDebugger:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="SvcMDL:Make;XPLibD14:Make;WinSysLibD14:Make;StFLibD14:Make;TRELib:Make;MigraTools:Make;SvcLoader:Make;SvcLoaderInteractiveDebugger:Make"/>
+			<CallTarget Targets="SvcMDL:Make;XPLibD14:Make;WinSysLibD14:Make;StFLibD14:Make;TRELib:Make;MigraTools:Make;WinNetLibD14:Make;SvcLoader:Make;SvcLoaderInteractiveDebugger:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

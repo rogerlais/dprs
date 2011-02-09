@@ -6,7 +6,8 @@ uses
   svclTransBio in 'svclTransBio.pas',
   svclBiometricFiles in 'svclBiometricFiles.pas' {BioFilesService: TService},
   FSEnum in 'FSEnum.pas',
-  svclConfig in 'svclConfig.pas';
+  svclConfig in 'svclConfig.pas',
+  WNetExHnd in '..\..\..\..\Pcks\WinNetLib\Src\WNetExHnd.pas';
 
 {$R *.res}
 
