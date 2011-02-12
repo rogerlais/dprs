@@ -56,7 +56,7 @@ object Form1: TForm1
     OnClick = btnCloseClick
   end
   object btnRegister: TBitBtn
-    Left = 105
+    Left = 111
     Top = 80
     Width = 75
     Height = 25
@@ -65,17 +65,6 @@ object Form1: TForm1
     ParentDoubleBuffered = False
     TabOrder = 4
     OnClick = btnRegisterClick
-  end
-  object btnServiceLogon: TBitBtn
-    Left = 198
-    Top = 80
-    Width = 75
-    Height = 25
-    Caption = 'btnServiceLogon'
-    DoubleBuffered = True
-    ParentDoubleBuffered = False
-    TabOrder = 5
-    OnClick = btnServiceLogonClick
   end
   object btnGetDomain: TBitBtn
     Left = 105
@@ -92,7 +81,7 @@ object Form1: TForm1
     Enabled = False
     Interval = 5000
     OnTimer = tmrServiceThreadTimer
-    Left = 8
-    Top = 8
+    Left = 224
+    Top = 80
   end
 end

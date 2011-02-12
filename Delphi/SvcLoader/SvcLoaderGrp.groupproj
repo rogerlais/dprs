@@ -3,16 +3,10 @@
 			<ProjectGuid>{8CE3A465-0698-4FC4-9BBB-1F7731BBFB86}</ProjectGuid>
 		</PropertyGroup>
 		<ItemGroup>
-			<Projects Include="Docs\SvcMDL.tgproj">
-				<Dependencies/>
-			</Projects>
 			<Projects Include="..\..\..\Pcks\XPLib\Src\XPLibD14.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="..\..\..\Pcks\StFLib\Src\StFLibD14.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="..\..\..\Pcks\TRE\Src\TRELib.dproj">
@@ -21,9 +15,15 @@
 			<Projects Include="..\MigraTools\Src\MigraTools.dproj">
 				<Dependencies/>
 			</Projects>
+<<<<<<< .mine
+			<Projects Include="Docs\SvcMDL.tgproj">
+				<Dependencies/>
+			</Projects>
+=======
 			<Projects Include="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj">
 				<Dependencies/>
 			</Projects>
+>>>>>>> .r82
 			<Projects Include="Src\SvcLoader.dproj">
 				<Dependencies/>
 			</Projects>
@@ -38,15 +38,6 @@
 				<Default.Personality/>
 			</BorlandProject>
 		</ProjectExtensions>
-		<Target Name="SvcMDL">
-			<MSBuild Projects="Docs\SvcMDL.tgproj"/>
-		</Target>
-		<Target Name="SvcMDL:Clean">
-			<MSBuild Targets="Clean" Projects="Docs\SvcMDL.tgproj"/>
-		</Target>
-		<Target Name="SvcMDL:Make">
-			<MSBuild Targets="Make" Projects="Docs\SvcMDL.tgproj"/>
-		</Target>
 		<Target Name="XPLibD14">
 			<MSBuild Projects="..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
 		</Target>
@@ -64,15 +55,6 @@
 		</Target>
 		<Target Name="WinSysLibD14:Make">
 			<MSBuild Targets="Make" Projects="..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj"/>
-		</Target>
-		<Target Name="StFLibD14">
-			<MSBuild Projects="..\..\..\Pcks\StFLib\Src\StFLibD14.dproj"/>
-		</Target>
-		<Target Name="StFLibD14:Clean">
-			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\StFLib\Src\StFLibD14.dproj"/>
-		</Target>
-		<Target Name="StFLibD14:Make">
-			<MSBuild Targets="Make" Projects="..\..\..\Pcks\StFLib\Src\StFLibD14.dproj"/>
 		</Target>
 		<Target Name="TRELib">
 			<MSBuild Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
@@ -92,6 +74,17 @@
 		<Target Name="MigraTools:Make">
 			<MSBuild Targets="Make" Projects="..\MigraTools\Src\MigraTools.dproj"/>
 		</Target>
+<<<<<<< .mine
+		<Target Name="SvcMDL">
+			<MSBuild Projects="Docs\SvcMDL.tgproj"/>
+		</Target>
+		<Target Name="SvcMDL:Clean">
+			<MSBuild Targets="Clean" Projects="Docs\SvcMDL.tgproj"/>
+		</Target>
+		<Target Name="SvcMDL:Make">
+			<MSBuild Targets="Make" Projects="Docs\SvcMDL.tgproj"/>
+		</Target>
+=======
 		<Target Name="WinNetLibD14">
 			<MSBuild Projects="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj"/>
 		</Target>
@@ -101,6 +94,7 @@
 		<Target Name="WinNetLibD14:Make">
 			<MSBuild Targets="Make" Projects="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj"/>
 		</Target>
+>>>>>>> .r82
 		<Target Name="SvcLoader">
 			<MSBuild Projects="Src\SvcLoader.dproj"/>
 		</Target>
@@ -120,13 +114,25 @@
 			<MSBuild Targets="Make" Projects="Src\SvcLoaderInteractiveDebugger.dproj"/>
 		</Target>
 		<Target Name="Build">
+<<<<<<< .mine
+			<CallTarget Targets="XPLibD14;WinSysLibD14;TRELib;MigraTools;SvcMDL;SvcLoader;SvcLoaderInteractiveDebugger"/>
+=======
 			<CallTarget Targets="SvcMDL;XPLibD14;WinSysLibD14;StFLibD14;TRELib;MigraTools;WinNetLibD14;SvcLoader;SvcLoaderInteractiveDebugger"/>
+>>>>>>> .r82
 		</Target>
 		<Target Name="Clean">
+<<<<<<< .mine
+			<CallTarget Targets="XPLibD14:Clean;WinSysLibD14:Clean;TRELib:Clean;MigraTools:Clean;SvcMDL:Clean;SvcLoader:Clean;SvcLoaderInteractiveDebugger:Clean"/>
+=======
 			<CallTarget Targets="SvcMDL:Clean;XPLibD14:Clean;WinSysLibD14:Clean;StFLibD14:Clean;TRELib:Clean;MigraTools:Clean;WinNetLibD14:Clean;SvcLoader:Clean;SvcLoaderInteractiveDebugger:Clean"/>
+>>>>>>> .r82
 		</Target>
 		<Target Name="Make">
+<<<<<<< .mine
+			<CallTarget Targets="XPLibD14:Make;WinSysLibD14:Make;TRELib:Make;MigraTools:Make;SvcMDL:Make;SvcLoader:Make;SvcLoaderInteractiveDebugger:Make"/>
+=======
 			<CallTarget Targets="SvcMDL:Make;XPLibD14:Make;WinSysLibD14:Make;StFLibD14:Make;TRELib:Make;MigraTools:Make;WinNetLibD14:Make;SvcLoader:Make;SvcLoaderInteractiveDebugger:Make"/>
+>>>>>>> .r82
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

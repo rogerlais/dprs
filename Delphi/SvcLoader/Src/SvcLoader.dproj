@@ -54,10 +54,6 @@
 				<DesignClass>TService</DesignClass>
 			</DCCReference>
 			<DCCReference Include="svclTransBio.pas"/>
-			<DCCReference Include="..\..\..\..\Pcks\XPLib\Src\AppLog.pas"/>
-			<DCCReference Include="..\..\..\..\Pcks\XPLib\Src\FileHnd.pas"/>
-			<DCCReference Include="svclUtils.pas"/>
-			<DCCReference Include="svclConfig.pas"/>
 			<None Include="ModelSupport_SvcLoader\default.txaPackage"/>
 			<None Include="ModelSupport_SvcLoader\default.txvpck"/>
 			<None Include="ModelSupport_SvcLoader\Use Case Diagram1.txvuse"/>
@@ -96,7 +92,7 @@
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">2010</VersionInfo>
-						<VersionInfo Name="Build">18</VersionInfo>
+						<VersionInfo Name="Build">12</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -108,13 +104,13 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">TRE-PB/COSUP/SESOP</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">SESOP Service Loader</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.0.2010.18</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.0.2010.12</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName">SESOP Service Loader</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName">SESOP Service Loader</VersionInfoKeys>
-						<VersionInfoKeys Name="ProductVersion">1.0.2010.18</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.0.2010.12</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
