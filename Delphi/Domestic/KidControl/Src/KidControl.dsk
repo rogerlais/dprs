@@ -16,11 +16,14 @@ File_13=TSourceModule,'C:\Sw\WorkDir\Pcks\BDELib\Src\BDEHnd.pas',0,1,384,56,398,
 File_14=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Win32\db\DBTables.pas',0,1,952,1,973,0,0,,
 
 [Modules]
-Module0=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\kcMainDataModule.pas
-Module1=default.htm
-Module2=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dproj
+Module0=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dproj
+Module1=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\kcMainDataModule.pas
+Module2=default.htm
 Count=3
 EditWindowCount=1
+
+[C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dproj]
+ModuleType=TBaseProject
 
 [C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\kcMainDataModule.pas]
 ModuleType=TSourceModule
@@ -30,12 +33,9 @@ FormOnTop=0
 [default.htm]
 ModuleType=TURLModule
 
-[C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dproj]
-ModuleType=TBaseProject
-
 [EditWindow0]
 ViewCount=3
-CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\kcMainDataModule.pas
+CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dpr
 View0=0
 View1=1
 View2=2
@@ -92,7 +92,7 @@ TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=C:\Sw\WorkDir\Project1.dpr
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dpr
 
 [Watches]
 Count=0
@@ -423,11 +423,6 @@ LRDockWidth=1896
 Dockable=1
 StayOnTop=0
 SplitPos=111
-
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=AllowPause,
-ExpandedItems=
 
 [ModelViewTool]
 PercentageSizes=1
