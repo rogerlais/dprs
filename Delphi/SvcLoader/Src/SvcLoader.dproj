@@ -60,6 +60,7 @@
 			<None Include="ModelSupport_SvcLoader\svclTransBio\default.txvpck"/>
 			<None Include="ModelSupport_SvcLoader\svclBiometricFiles\default.txvpck"/>
 			<None Include="ModelSupport_SvcLoader\SvcLoader\default.txvpck"/>
+			<None Include="SvcLoader.todo"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

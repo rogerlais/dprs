@@ -20,16 +20,15 @@ type
         tmrServiceThread : TTimer;
         btnRegister :      TBitBtn;
         btnServiceLogon :  TBitBtn;
-    btnGetDomain: TBitBtn;
+        btnGetDomain :     TBitBtn;
         procedure btnStartClick(Sender : TObject);
         procedure btnCloseClick(Sender : TObject);
         procedure tmrServiceThreadTimer(Sender : TObject);
         procedure btnRegisterClick(Sender : TObject);
         procedure btnServiceLogonClick(Sender : TObject);
-    procedure btnGetDomainClick(Sender: TObject);
+        procedure btnGetDomainClick(Sender : TObject);
     private
-		 { Private declarations }
-		 function GetDomainNameEx( const Name : string ) : string;
+        { Private declarations }
     public
         { Public declarations }
     end;
@@ -40,7 +39,7 @@ var
 implementation
 
 uses
-	 svclBiometricFiles, svclConfig, JwaWindows, svclUtils, WNetExHnd, WinNetHnd;
+    svclBiometricFiles, svclConfig, JwaWindows, svclUtils, WNetExHnd, WinNetHnd, StrHnd;
 
 {$R *.dfm}
 
@@ -49,15 +48,14 @@ begin
     Self.Close;
 end;
 
-procedure TForm1.btnGetDomainClick(Sender: TObject);
+procedure TForm1.btnGetDomainClick(Sender : TObject);
 var
-	ret : string;
+    ret : string;
 begin
-   --- usar GetDomainNameEx desta classe
-	ret:=WinNetHnd.GetComputerName();
-	InputQuery('Nome da estação', 'Estação:', ret );
-	ret := WNetExHnd.GetWorkstationDomain( ret );
-	MessageDlg(ret,  mtInformation, [mbOK], 0);
+    ret := WinNetHnd.GetComputerName();
+    InputQuery('Nome da estação', 'Estação:', ret);
+	 ret := WNetExHnd.GetDomainFromComputerName(ret);
+    MessageDlg(ret, mtInformation, [mbOK], 0);
 end;
 
 procedure TForm1.btnRegisterClick(Sender : TObject);
@@ -70,7 +68,7 @@ procedure TForm1.btnServiceLogonClick(Sender : TObject);
 var
     lStatus : DWORD;
 begin
-	 //lStatus := AddPrivilegeToAccount('Administrators'{or any account/group name}, 'SeServiceLogonRight');
+    //lStatus := AddPrivilegeToAccount('Administrators'{or any account/group name}, 'SeServiceLogonRight');
     lStatus := AddPrivilegeToAccount('TRE-PB\Roger'{or any account/group name}, SE_SERVICE_LOGON_NAME);
     if lStatus = ERROR_SUCCESS then begin
         Caption := 'OK';
@@ -86,31 +84,6 @@ begin
     Started := False;
     BioFilesService.ServiceStart(BioFilesService, Started);
     Self.tmrServiceThread.Enabled := True;
-end;
-
-function TForm1.GetDomainNameEx(const Name: string): string;
-var
-  Count1, Count2: DWORD;
-  Sd: PSID; // PSecurityDescriptor; // FPC requires PSID
-  Snu: SID_Name_Use;
-begin
-  Count1 := 0;
-  Count2 := 0;
-  Sd := nil;
-  Snu := SIDTypeUser;
-  Result := '';
-  LookUpAccountName(nil, PChar(Name), Sd, Count1, PChar(Result), Count2, Snu);
-  // set buffer size to Count2 + 2 characters for safety
-  SetLength(Result, Count2 + 1);
-  Sd := AllocMem(Count1);
-  try
-	 if LookUpAccountName(nil, PChar(Name), Sd, Count1, PChar(Result), Count2, Snu) then
-	   StrResetLength(Result) --Altera comprimento para o valor efetivo da cadeia??? dispensavel???
-	 else
-	   Result := EmptyStr;
-  finally
-	 FreeMem(Sd);
-  end;
 end;
 
 procedure TForm1.tmrServiceThreadTimer(Sender : TObject);

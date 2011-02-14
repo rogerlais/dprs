@@ -19,3 +19,9 @@
 		montar a associação.
 		6.1.1 Entradas .\tif e .\tiff sair de google.viewer.3 para TIFImage.Document segundo arquivo de exemplo na pasta da solução
 
+7 - Ajustar o agendamento de emissão do CVC para horário compatível com o funcionamento da zona eleitoral
+
+8 - Montar lancador para vncviewer com a sintaxe
+	8.1 vncviewer dcsesop /viewonly /user administrator /password supadm2k11
+	8.2 Colocar créditos para Basilio
+	

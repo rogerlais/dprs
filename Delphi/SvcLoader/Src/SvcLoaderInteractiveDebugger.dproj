@@ -58,7 +58,6 @@
 			</DCCReference>
 			<DCCReference Include="FSEnum.pas"/>
 			<DCCReference Include="svclConfig.pas"/>
-			<DCCReference Include="..\..\..\..\Pcks\WinNetLib\Src\WNetExHnd.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
