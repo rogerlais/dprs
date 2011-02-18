@@ -8,7 +8,8 @@ program SvcLoader;
 uses
   SvcMgr,
   svclBiometricFiles in 'svclBiometricFiles.pas' {BioFilesService: TService},
-  svclTransBio in 'svclTransBio.pas';
+  svclTransBio in 'svclTransBio.pas',
+  svclConfig in 'svclConfig.pas';
 
 {$R *.RES}
 

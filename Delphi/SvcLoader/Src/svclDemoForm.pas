@@ -19,14 +19,14 @@ type
         btnClose :         TBitBtn;
         tmrServiceThread : TTimer;
         btnRegister :      TBitBtn;
-        btnServiceLogon :  TBitBtn;
         btnGetDomain :     TBitBtn;
         procedure btnStartClick(Sender : TObject);
         procedure btnCloseClick(Sender : TObject);
         procedure tmrServiceThreadTimer(Sender : TObject);
         procedure btnRegisterClick(Sender : TObject);
-        procedure btnServiceLogonClick(Sender : TObject);
-        procedure btnGetDomainClick(Sender : TObject);
+		 procedure btnServiceLogonClick(Sender : TObject);
+
+		 procedure btnGetDomainClick(Sender : TObject);
     private
         { Private declarations }
     public
@@ -53,8 +53,8 @@ var
     ret : string;
 begin
     ret := WinNetHnd.GetComputerName();
-    InputQuery('Nome da estação', 'Estação:', ret);
-	 ret := WNetExHnd.GetDomainFromComputerName(ret);
+	 InputQuery('Nome da estação', 'Estação:', ret);
+	 ret := WNetExHnd.GetWorkstationDomain(ret);
     MessageDlg(ret, mtInformation, [mbOK], 0);
 end;
 

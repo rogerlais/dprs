@@ -20,29 +20,29 @@ type
         _FLocalBackup :       string;
         _FIsPrimaryComputer : Integer;
         function GetStationSourcePath : string;
-		 function GetStationRemoteTransPath : string;
+        function GetStationRemoteTransPath : string;
         function GetStationLocalTransPath : string;
         function GetStationBackupPath : string;
         function GetServiceAccountPassword : string;
         function GetServiceAccountName : string;
         function GetCycleInterval : Integer;
         function GetIsPrimaryComputer : boolean;
-        function GetPrimaryBackupPath : string;
-        function GetPrimaryTransmittedPath : string;
+		 function GetPrimaryBackupPath : string;
+		 function GetPrimaryToTransmitPath : string;
         function GetDebugLevel : Integer;
-	 public
-		 constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
-		 //Atributos privativos da estação
-		 property StationSourcePath : string read GetStationSourcePath;
-		 property StationLocalTransPath : string read GetStationLocalTransPath;
-		 property StationBackupPath : string read GetStationBackupPath;
-		 property StationRemoteTransPath : string read GetStationRemoteTransPath;
-		 //Atributos privativos do computador primario
+    public
+        constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
+        //Atributos privativos da estação
+        property StationSourcePath : string read GetStationSourcePath;
+        property StationLocalTransPath : string read GetStationLocalTransPath;
+        property StationBackupPath : string read GetStationBackupPath;
+        property StationRemoteTransPath : string read GetStationRemoteTransPath;
+        //Atributos privativos do computador primario
 		 property PrimaryBackupPath : string read GetPrimaryBackupPath;
-		 property PrimaryTransmittedPath : string read GetPrimaryTransmittedPath;
-		 //Atributos do servico
-		 property ServiceAccountPassword : string read GetServiceAccountPassword;
-		 property ServiceAccountName : string read GetServiceAccountName;
+		 property PrimaryTransmittedPath : string read GetPrimaryToTransmitPath;
+        //Atributos do servico
+        property ServiceAccountPassword : string read GetServiceAccountPassword;
+        property ServiceAccountName : string read GetServiceAccountName;
         property CycleInterval : Integer read GetCycleInterval;
         //Atributos da sessão
         property isPrimaryComputer : boolean read GetIsPrimaryComputer;
@@ -50,7 +50,7 @@ type
     end;
 
 var
-	 GlobalConfig : TBioReplicatorConfig;
+    GlobalConfig : TBioReplicatorConfig;
 
 implementation
 
@@ -168,13 +168,15 @@ begin
     Result := ExpandFileName(Self.ReadStringDefault('PrimaryBackupPath', Result));
 end;
 
-function TBioReplicatorConfig.GetPrimaryTransmittedPath : string;
+function TBioReplicatorConfig.GetPrimaryToTransmitPath : string;
+///
+/// Leitura do local onde a estação primária armazena os arquivos para transmissão
+///
 begin
-    {TODO -oroger -cdsg : Leitura do local onde a estação primária armazena os arquivos para transmissão}
 {$IFDEF DEBUG}
-    Result := ExpandFileName('..\Data\PrimaryTransmitted');
+	 Result := ExpandFileName('..\Data\PrimaryTransmitted');
 {$ELSE}
-    Result := 'D:\Aplic\TransBio\Files\Trans';
+	 Result := 'D:\Aplic\TransBio\Files\Bio';
 {$ENDIF}
     Result := ExpandFileName(Self.ReadStringDefault('PrimaryTransmittedPath', Result));
 end;
@@ -195,12 +197,12 @@ end;
 
 function TBioReplicatorConfig.GetServiceAccountName : string;
 begin
-	  {$IFDEF DEBUG}
-	 Result := WinNetHnd.GetUserName;
-	  {$ELSE}
-	 Result := 'vncacesso'; {TODO -oroger -cdsg : Realizar os testes para as contas locais/dominio }
+      {$IFDEF DEBUG}
+    Result := WinNetHnd.GetUserName;
+      {$ELSE}
+    Result := 'vncacesso'; {TODO -oroger -cdsg : Realizar os testes para as contas locais/dominio }
       {$ENDIF}
-	 Result := Self.ReadStringDefault('ServiceAccountName', Result);
+    Result := Self.ReadStringDefault('ServiceAccountName', Result);
 end;
 
 function TBioReplicatorConfig.GetServiceAccountPassword : string;
@@ -212,7 +214,7 @@ begin
     zu := TTREZEUser.Create(Self.ServiceAccountName, 'admin<1>str<2>d<3>'); //NOTA.: Raiz da senha hardcoded
     try
          {$IFDEF DEBUG}
-		 Result := zu.TranslatedPwd(TTREUtils.GetComputerZone('zpb111std02'));
+        Result := zu.TranslatedPwd(TTREUtils.GetComputerZone('zpb111std02'));
         if Result <> EmptyStr then begin
             Result := EmptyStr;
         end;

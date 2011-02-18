@@ -74,7 +74,7 @@ object Form1: TForm1
     Caption = 'btnServiceLogon'
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 6
+    TabOrder = 5
     OnClick = btnGetDomainClick
   end
   object tmrServiceThread: TTimer

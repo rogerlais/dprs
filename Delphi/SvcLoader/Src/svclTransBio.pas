@@ -15,8 +15,9 @@ type
     private
         FStream :    TFileStream;
         FConnected : boolean;
-        procedure DoCycle;
-        procedure DoReplicate(const Filename : string);
+		 procedure DoCycle;
+		 procedure ReplicDataFiles2PrimaryMachine(const Filename : string);
+		 procedure CreatePrimaryBackup( const Filename : string );
         procedure CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
         procedure SetConnected(const Value : boolean);
     public
@@ -55,25 +56,31 @@ begin
     end;
 end;
 
+procedure TTransBioThread.CreatePrimaryBackup(const Filename: string);
+begin
+
+end;
+
 procedure TTransBioThread.DoCycle;
 ///Inicia novo ciclo de operação
 var
     FileEnt : IEnumerable<TFileSystemEntry>;
     f : TFileSystemEntry;
 begin
-    if GlobalConfig.isPrimaryComputer then begin
-        //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
+	FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
+	FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
+	 if GlobalConfig.isPrimaryComputer then begin
+		 //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
+
 	 end else begin
 		 //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
         for f in FileEnt do begin
-            Self.DoReplicate(f.FullName);
+            Self.ReplicDataFiles2PrimaryMachine(f.FullName);
         end;
     end;
 end;
 
-procedure TTransBioThread.DoReplicate(const Filename : string);
+procedure TTransBioThread.ReplicDataFiles2PrimaryMachine(const Filename : string);
  //Realiza a operação unitária com o arquivo dado:
  //1 - Copia para a pasta local de transmissão
  //2 - Copia para a pasta de transmissão primária
@@ -84,18 +91,17 @@ const
 var
     PrimaryTransName, LocalTransName, LocalBackupName : string;
 begin
-    //Copia para a pasta local de transmissão
-	 LocalTransName := TFileHnd.ConcatPath([GlobalConfig.StationTransPath, ExtractFileName(Filename)]);
-    Self.CopyBioFile(Filename, LocalTransName, 'Transbio Loocal', ERR_MSG, False);
+	 //Copia para a pasta local de transmissão
+	 LocalTransName := TFileHnd.ConcatPath([GlobalConfig.StationLocalTransPath, ExtractFileName(Filename)]);
+	 Self.CopyBioFile(Filename, LocalTransName, 'Transbio Local', ERR_MSG, False);
 
     //Copia arquivo para local remoto de transmissão
-    PrimaryTransName := TFileHnd.ConcatPath([GlobalConfig.PrimaryTransPath, ExtractFileName(Filename)]);
+	 PrimaryTransName := TFileHnd.ConcatPath([GlobalConfig.StationRemoteTransPath, ExtractFileName(Filename)]);
     Self.CopyBioFile(Filename, PrimaryTransName, 'Repositório primário', ERR_MSG, False);
 
     //Move arquivo para backup local
 	 LocalBackupName := TFileHnd.ConcatPath([GlobalConfig.StationBackupPath, ExtractFileName(Filename)]);
 	 Self.CopyBioFile(Filename, LocalBackupName, 'Backup Local', ERR_MSG, True);
-
 end;
 
 procedure TTransBioThread.Execute;
@@ -139,7 +145,7 @@ var
     Path : string;
 begin
     if Value then begin //Acessar o mapeamento para o repositório da máquina primária
-		 Path := GlobalConfig.PrimaryTransPath;
+		 Path := GlobalConfig.PrimaryTransmittedPath;
 		 if not (DirectoryExists(Path)) then begin
 			 raise Exception.CreateFmt('Falha acessando repositório dos arquivos no computador primário.'#13'"%s', [Path]);
         end;
