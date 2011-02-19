@@ -16,26 +16,26 @@ File_13=TSourceModule,'C:\Sw\WorkDir\Pcks\BDELib\Src\BDEHnd.pas',0,1,384,56,398,
 File_14=TSourceModule,'c:\program files\embarcadero\rad studio\7.0\source\Win32\db\DBTables.pas',0,1,952,1,973,0,0,,
 
 [Modules]
-Module0=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dproj
-Module1=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\kcMainDataModule.pas
+Module0=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\kcMainDataModule.pas
+Module1=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dproj
 Module2=default.htm
 Count=3
 EditWindowCount=1
-
-[C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dproj]
-ModuleType=TBaseProject
 
 [C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\kcMainDataModule.pas]
 ModuleType=TSourceModule
 FormState=1
 FormOnTop=0
 
+[C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dproj]
+ModuleType=TBaseProject
+
 [default.htm]
 ModuleType=TURLModule
 
 [EditWindow0]
 ViewCount=3
-CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dpr
+CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\kcMainDataModule.pas
 View0=0
 View1=1
 View2=2
