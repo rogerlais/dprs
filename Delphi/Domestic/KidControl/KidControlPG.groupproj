@@ -6,6 +6,9 @@
 			<Projects Include="Src\KidControl.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="Src\Demos\KidControlDemo\kcDemo1.dproj">
+				<Dependencies/>
+			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -23,14 +26,23 @@
 		<Target Name="KidControl:Make">
 			<MSBuild Targets="Make" Projects="Src\KidControl.dproj"/>
 		</Target>
+		<Target Name="kcDemo1">
+			<MSBuild Projects="Src\Demos\KidControlDemo\kcDemo1.dproj"/>
+		</Target>
+		<Target Name="kcDemo1:Clean">
+			<MSBuild Targets="Clean" Projects="Src\Demos\KidControlDemo\kcDemo1.dproj"/>
+		</Target>
+		<Target Name="kcDemo1:Make">
+			<MSBuild Targets="Make" Projects="Src\Demos\KidControlDemo\kcDemo1.dproj"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="KidControl"/>
+			<CallTarget Targets="KidControl;kcDemo1"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="KidControl:Clean"/>
+			<CallTarget Targets="KidControl:Clean;kcDemo1:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="KidControl:Make"/>
+			<CallTarget Targets="KidControl:Make;kcDemo1:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>
