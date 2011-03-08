@@ -6,7 +6,7 @@
 			<Projects Include="Src\KidControl.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Src\Demos\KidControlDemo\kcDemo1.dproj">
+			<Projects Include="Src\Demos\KidControlDemo\Src\kcDemo1.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -27,13 +27,13 @@
 			<MSBuild Targets="Make" Projects="Src\KidControl.dproj"/>
 		</Target>
 		<Target Name="kcDemo1">
-			<MSBuild Projects="Src\Demos\KidControlDemo\kcDemo1.dproj"/>
+			<MSBuild Projects="Src\Demos\KidControlDemo\Src\kcDemo1.dproj"/>
 		</Target>
 		<Target Name="kcDemo1:Clean">
-			<MSBuild Targets="Clean" Projects="Src\Demos\KidControlDemo\kcDemo1.dproj"/>
+			<MSBuild Targets="Clean" Projects="Src\Demos\KidControlDemo\Src\kcDemo1.dproj"/>
 		</Target>
 		<Target Name="kcDemo1:Make">
-			<MSBuild Targets="Make" Projects="Src\Demos\KidControlDemo\kcDemo1.dproj"/>
+			<MSBuild Targets="Make" Projects="Src\Demos\KidControlDemo\Src\kcDemo1.dproj"/>
 		</Target>
 		<Target Name="Build">
 			<CallTarget Targets="KidControl;kcDemo1"/>
