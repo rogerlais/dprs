@@ -16,20 +16,17 @@ File_13=TSourceModule,'C:\Sw\WorkDir\Pcks\BDELib\Src\BDEHnd.pas',0,1,384,56,398,
 
 [Modules]
 Module0=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\Demos\KidControlDemo\Src\kcDemo1Main.pas
-Module1=default.htm
-Module2=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dproj
-Module3=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\kcMainDataModule.pas
-Module4=C:\Sw\WorkDir\Pcks\Jedi\jwscl\source\JwsclLsa.pas
+Module1=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dproj
+Module2=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\kcMainDataModule.pas
+Module3=C:\Sw\WorkDir\Pcks\Jedi\jwscl\source\JwsclLsa.pas
+Module4=default.htm
 Count=5
 EditWindowCount=1
 
 [C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\Demos\KidControlDemo\Src\kcDemo1Main.pas]
 ModuleType=TSourceModule
 FormState=1
-FormOnTop=1
-
-[default.htm]
-ModuleType=TURLModule
+FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\KidControl.dproj]
 ModuleType=TBaseProject
@@ -43,6 +40,9 @@ FormOnTop=0
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
+
+[default.htm]
+ModuleType=TURLModule
 
 [EditWindow0]
 ViewCount=5
@@ -94,7 +94,7 @@ TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=Borland.FormDesignerView
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\Domestic\KidControl\Src\Demos\KidControlDemo\Src\kcDemo1Main.pas
 
 [View2]
 CustomEditViewType=TEditView
@@ -460,11 +460,6 @@ LRDockWidth=1703
 Dockable=1
 StayOnTop=0
 SplitPos=111
-
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Action,
-ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0
 
 [ModelViewTool]
 PercentageSizes=1
