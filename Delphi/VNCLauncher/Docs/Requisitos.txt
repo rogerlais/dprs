@@ -1,0 +1,2 @@
+1 - Linha de comando para o viewer passando os dados de conexão
+vncviewer dcsesop /viewonly /user administrator /password supadm2k11
