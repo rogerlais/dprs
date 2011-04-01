@@ -10,7 +10,7 @@ interface
 uses
     Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
     StdCtrls, Registry, ShellApi, ExtCtrls, FileCtrl, NB30,
-    WinSvc, Contnrs, AppLog;
+	 WinSvc, Contnrs, AppLog;
 
 const
     OS_WIN95: ansistring  = 'WIN95';
@@ -31,7 +31,7 @@ type
         constructor Create(AZoneId : Integer);
         destructor Destroy; override;
         property Id : Integer read FId;
-        function Add(PCT : TTREPct) : Integer;
+        function Add(PCT : TTREPct) : Integer; reintroduce; overload;
     end;
 
 
@@ -60,6 +60,8 @@ type
         procedure LoadFromCSV(const Filename : string);
     end;
 
+	 ETREPctException = class( ELoggedException );
+
 function RenameComputer(newname, CompDescription : ansistring) : Integer;
 function GetComputerDomain() : ansistring;
 function SetIpConfig(const NewIpAddr : string; const NewGateWay : string = ''; const NewSubnet : string = '') : Integer;
@@ -67,7 +69,7 @@ function SetIpConfig(const NewIpAddr : string; const NewGateWay : string = ''; c
 implementation
 
 uses
-    APIHnd, StrHnd, WinNetHnd, WinReg32, LmCons, LmErr, LmWksta, LmJoin, Variants, ComObj, ActiveX, UrlMon, TREUtils;
+	 APIHnd, StrHnd, WinNetHnd, WinReg32, LmCons, LmErr, LmWksta, LmJoin, Variants, ComObj, ActiveX, UrlMon, TREUtils;
 
  // ====================================================
  // Set DNS Servers
@@ -81,37 +83,37 @@ uses
 function SetDnsServers(const APrimaryDNS : string;
     const AAlternateDNS : string = '') : Integer;
 var
-    Retvar :   Integer;
-    oBindObj : IDispatch;
-    oNetAdapters, oNetAdapter, oDnsAddr, oWMIService : olevariant;
-    i, iValue, iSize : longword;
-    oEnum :    IEnumvariant;
-    oCtx :     IBindCtx;
-    oMk :      IMoniker;
-    sFileObj : WideString;
+	 Retvar :   Integer;
+	 oBindObj : IDispatch;
+	 oNetAdapters, oNetAdapter, oDnsAddr, oWMIService : olevariant;
+	 i, iValue, iSize : longword;
+	 oEnum :    IEnumvariant;
+	 oCtx :     IBindCtx;
+	 oMk :      IMoniker;
+	 sFileObj : WideString;
 begin
-    Retvar   := 0;
-    sFileObj := 'winmgmts:\\.\root\cimv2';
-    iSize    := 0;
-    if APrimaryDNS <> '' then begin
-        Inc(iSize);
-    end;
-    if AAlternateDNS <> '' then begin
-        Inc(iSize);
-    end;
+	 Retvar   := 0;
+	 sFileObj := 'winmgmts:\\.\root\cimv2';
+	 iSize    := 0;
+	 if APrimaryDNS <> '' then begin
+		 Inc(iSize);
+	 end;
+	 if AAlternateDNS <> '' then begin
+		 Inc(iSize);
+	 end;
 
-    // Create OLE [IN} Parameters
-    if iSize > 0 then begin
-        oDnsAddr    := VarArrayCreate([1, iSize], varOleStr);
-        oDnsAddr[1] := APrimaryDNS;
-        if iSize > 1 then begin
-            oDnsAddr[2] := AAlternateDNS;
-        end;
-    end;
+	 // Create OLE [IN} Parameters
+	 if iSize > 0 then begin
+		 oDnsAddr    := VarArrayCreate([1, iSize], varOleStr);
+		 oDnsAddr[1] := APrimaryDNS;
+		 if iSize > 1 then begin
+			 oDnsAddr[2] := AAlternateDNS;
+		 end;
+	 end;
 
-    // Connect to WMI - Emulate API GetObject()
-    OleCheck(CreateBindCtx(0, oCtx));
-    OleCheck(MkParseDisplayNameEx(oCtx, PWideChar(sFileObj), i, oMk));
+	 // Connect to WMI - Emulate API GetObject()
+	 OleCheck(CreateBindCtx(0, oCtx));
+	 OleCheck(MkParseDisplayNameEx(oCtx, PWideChar(sFileObj), i, oMk));
     OleCheck(oMk.BindToObject(oCtx, nil, IUnknown, oBindObj));
     oWMIService := oBindObj;
 
@@ -230,7 +232,7 @@ begin
     try
         //Grupo de trabalho
         @FuncJoinDomain := GetProcAddress(NHandle, 'NetJoinDomain');
-        grp    := 'ZNE-PB' + Format('%3.3d', [zoneId]);
+        grp    := 'ZNE-PB' + Format('%3.3d', [zoneId]);    { TODO -oroger -cdsg : Resolver como ajustar o novo grupo de trabalho deste computador }
         Result := FuncJoinDomain(nil, PWideChar(grp), nil, nil, nil, 0);
         if Result = NERR_Success then begin
 
@@ -421,10 +423,10 @@ begin
         CheckValidityofCompterName(newname)
     except
         on E : Exception do begin
-            {TODO -oroger -cdsg : Ação de registro de erro}
+            raise ETREPctException.Create( 'Validação do novo nome do computador falhou'#13 + E.Message  );
         end;
     end;
-    LocalComputerName := WinNetHnd.GetComputerName();
+    LocalComputerName := AnsiString( WinNetHnd.GetComputerName() );
     if SameText(LocalComputerName, newName) then begin
         Result := ERROR_XP_ALREADY_DONE;
         Exit;
@@ -438,8 +440,7 @@ begin
         end;
 
     end else begin
-        {TODO -oroger -cdsg : Passar credenciais capazes de realizar a operação}
-        Result := E_NOTIMPL;
+		 Result := E_NOTIMPL;
         //Result := RenameComputerInDomain('', newname, 'LOGIN_ADM', 'PWD_ADM');
         //NetRenameMachineInDomain - W2K and XP only
     end;
@@ -520,7 +521,7 @@ var
     zoneKey, pctKey : string;
     pct :  TTREPct;
 begin
-    {TODO -oroger -cdsg : inserir lista dupla de zonas e pcts por zonas}
+	//insere lista dupla de zonas e pcts por zonas}
     zoneid  := StrToInt(sZone);
 	 zoneKey := Format('%3.3d', [zoneId]);
 	 idx     := Self.IndexOf(zoneKey);
@@ -618,7 +619,7 @@ begin
         if (ret <> ERROR_SUCCESS) then begin
             raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [TAPIHnd.SysErrorMessageEx(ret)]);
         end;
-        ret := RenameComputer(Self.Computername, Self.FDescription);
+        ret := RenameComputer(AnsiString(Self.Computername), AnsiString(Self.FDescription));
         if (ret <> ERROR_SUCCESS) then begin
             raise Exception.CreateFmt('Erro ajustando o ip deste computador:'#13'%s', [TAPIHnd.SysErrorMessageEx(ret)]);
         end else begin

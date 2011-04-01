@@ -88,7 +88,7 @@ var
      ret : NET_API_STATUS;
 }
 begin
-    {TODO -oroger -cdsg : Realizar os testes pontuais}
+    //Realizar os testes pontuais
     //Renomear computador
      {
      ret := RenameComputer('teste-pct', 'teste-pct descrição');
@@ -113,7 +113,7 @@ procedure TMainForm.FormCreate(Sender : TObject);
 var
     IPGetter : TIdStackWindows;
 begin
-      {$IFDEF DEBUG}
+	   {$IFDEF DEBUG}
     Self.btnClose.Visible := True;
     Self.btnTest.Visible := True;
     Self.Caption := 'Preparação de PCT - *** Depuração *** - ' + Self.fvVersion.FileVersion;

@@ -15,6 +15,12 @@
 			<Projects Include="..\..\..\..\Pcks\TRE\Src\TRELib.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="..\..\..\..\Pcks\WMILib\Src\WMILib.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\Demos\WMIDemo.dproj">
+				<Dependencies/>
+			</Projects>
 			<Projects Include="PCTPrep.dproj">
 				<Dependencies/>
 			</Projects>
@@ -62,6 +68,24 @@
 		<Target Name="TRELib:Make">
 			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
 		</Target>
+		<Target Name="WMILib">
+			<MSBuild Projects="..\..\..\..\Pcks\WMILib\Src\WMILib.dproj"/>
+		</Target>
+		<Target Name="WMILib:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\..\Pcks\WMILib\Src\WMILib.dproj"/>
+		</Target>
+		<Target Name="WMILib:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\WMILib\Src\WMILib.dproj"/>
+		</Target>
+		<Target Name="WMIDemo">
+			<MSBuild Projects="..\Demos\WMIDemo.dproj"/>
+		</Target>
+		<Target Name="WMIDemo:Clean">
+			<MSBuild Targets="Clean" Projects="..\Demos\WMIDemo.dproj"/>
+		</Target>
+		<Target Name="WMIDemo:Make">
+			<MSBuild Targets="Make" Projects="..\Demos\WMIDemo.dproj"/>
+		</Target>
 		<Target Name="PCTPrep">
 			<MSBuild Projects="PCTPrep.dproj"/>
 		</Target>
@@ -72,13 +96,13 @@
 			<MSBuild Targets="Make" Projects="PCTPrep.dproj"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="XPLibD14;WinNetLibD14;OPLibD14;TRELib;PCTPrep"/>
+			<CallTarget Targets="XPLibD14;WinNetLibD14;OPLibD14;TRELib;WMILib;WMIDemo;PCTPrep"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="XPLibD14:Clean;WinNetLibD14:Clean;OPLibD14:Clean;TRELib:Clean;PCTPrep:Clean"/>
+			<CallTarget Targets="XPLibD14:Clean;WinNetLibD14:Clean;OPLibD14:Clean;TRELib:Clean;WMILib:Clean;WMIDemo:Clean;PCTPrep:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="XPLibD14:Make;WinNetLibD14:Make;OPLibD14:Make;TRELib:Make;PCTPrep:Make"/>
+			<CallTarget Targets="XPLibD14:Make;WinNetLibD14:Make;OPLibD14:Make;TRELib:Make;WMILib:Make;WMIDemo:Make;PCTPrep:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

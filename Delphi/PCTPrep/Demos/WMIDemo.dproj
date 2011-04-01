@@ -1,8 +1,8 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{49A99D62-A507-4FBE-BFBF-B58740EB988C}</ProjectGuid>
+			<ProjectGuid>{F0EBEC91-CD86-42EB-835B-41A0EDC6FA61}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
-			<MainSource>PCTPrep.dpr</MainSource>
+			<MainSource>WMIDemo.dpr</MainSource>
 			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
@@ -19,72 +19,40 @@
 			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
-		<PropertyGroup Condition="'$(Config)'=='Debug_Remote' or '$(Cfg_3)'!=''">
-			<Cfg_3>true</Cfg_3>
-			<CfgParent>Cfg_2</CfgParent>
-			<Cfg_2>true</Cfg_2>
-			<Base>true</Base>
-		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_DependencyCheckOutputName>PCTPrep.exe</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>WMIDemo.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<DCC_Platform>x86</DCC_Platform>
-			<DCC_E>false</DCC_E>
-			<DCC_N>false</DCC_N>
-			<DCC_S>false</DCC_S>
-			<DCC_F>false</DCC_F>
-			<DCC_K>false</DCC_K>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_DependencyCheckOutputName>..\Release\WMIDemo.exe</DCC_DependencyCheckOutputName>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
 			<DCC_ExeOutput>..\Release</DCC_ExeOutput>
 			<DCC_BplOutput>..\Release</DCC_BplOutput>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
-			<DCC_DependencyCheckOutputName>..\Release\PCTPrep.exe</DCC_DependencyCheckOutputName>
 			<DCC_DcuOutput>..\Release</DCC_DcuOutput>
 			<DCC_DcpOutput>..\Release</DCC_DcpOutput>
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
-			<DCC_Optimize>false</DCC_Optimize>
-			<DCC_ExeOutput>..\Debug</DCC_ExeOutput>
-			<DCC_Define>DEBUG;DEBUG_ALL;$(DCC_Define)</DCC_Define>
+			<DCC_DependencyCheckOutputName>..\Debug\WMIDemo.exe</DCC_DependencyCheckOutputName>
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 			<DCC_BplOutput>..\Debug</DCC_BplOutput>
+			<DCC_ExeOutput>..\Debug</DCC_ExeOutput>
 			<DCC_DcpOutput>..\Debug</DCC_DcpOutput>
 			<DCC_DcuOutput>..\Debug</DCC_DcuOutput>
-			<DCC_DependencyCheckOutputName>..\Debug\PCTPrep.exe</DCC_DependencyCheckOutputName>
-		</PropertyGroup>
-		<PropertyGroup Condition="'$(Cfg_3)'!=''">
-			<DCC_Define>DEBUG_ALL;REMOTE;SKIP_IPCHANGE;$(DCC_Define)</DCC_Define>
-			<DCC_ExeOutput>\\teste-tre\swap</DCC_ExeOutput>
-			<DCC_Optimize>false</DCC_Optimize>
-			<DCC_BplOutput>\\teste-tre\swap</DCC_BplOutput>
-			<DCC_RemoteDebug>true</DCC_RemoteDebug>
-			<DCC_DcuOutput>\\teste-tre\swap</DCC_DcuOutput>
-			<DCC_DcpOutput>\\teste-tre\swap</DCC_DcpOutput>
-			<DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
-			<DCC_DependencyCheckOutputName>\\teste-tre\swap\PCTPrep.exe</DCC_DependencyCheckOutputName>
-			<DCC_MapFile>3</DCC_MapFile>
 		</PropertyGroup>
 		<ItemGroup>
-			<DelphiCompile Include="PCTPrep.dpr">
+			<DelphiCompile Include="WMIDemo.dpr">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="pctprepMainForm.pas">
-				<Form>MainForm</Form>
+			<DCCReference Include="WMIDemoMainForm.pas">
+				<Form>Form1</Form>
 			</DCCReference>
-			<DCCReference Include="pctprepUtils.pas"/>
-			<None Include="ModelSupport_PCTPrep\default.txaPackage"/>
-			<None Include="ModelSupport_PCTPrep\default.txvpck"/>
-			<None Include="ModelSupport_PCTPrep\pctprepUtils\default.txvpck"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
-			</BuildConfiguration>
-			<BuildConfiguration Include="Debug_Remote">
-				<Key>Cfg_3</Key>
-				<CfgParent>Cfg_2</CfgParent>
 			</BuildConfiguration>
 			<BuildConfiguration Include="Debug">
 				<Key>Cfg_2</Key>
@@ -102,7 +70,7 @@
 			<BorlandProject>
 				<Delphi.Personality>
 					<Source>
-						<Source Name="MainSource">PCTPrep.dpr</Source>
+						<Source Name="MainSource">WMIDemo.dpr</Source>
 					</Source>
 					<Parameters>
 						<Parameters Name="UseLauncher">False</Parameters>
@@ -110,12 +78,12 @@
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
 					</Parameters>
 					<VersionInfo>
-						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
-						<VersionInfo Name="Release">2010</VersionInfo>
-						<VersionInfo Name="Build">16</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">0</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -125,19 +93,18 @@
 						<VersionInfo Name="CodePage">1252</VersionInfo>
 					</VersionInfo>
 					<VersionInfoKeys>
-						<VersionInfoKeys Name="CompanyName">TRE-PB - SESOP</VersionInfoKeys>
-						<VersionInfoKeys Name="FileDescription">Preparação de PCTs/MRs</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.0.2010.16</VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
-						<VersionInfoKeys Name="LegalTrademarks">TRE-PB\COSUP\SESOP</VersionInfoKeys>
+						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName"/>
-						<VersionInfoKeys Name="ProductVersion">1.0.2010.16</VersionInfoKeys>
-						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
 				</Delphi.Personality>
-				<ModelSupport>True</ModelSupport>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>
