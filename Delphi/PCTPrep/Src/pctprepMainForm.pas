@@ -35,6 +35,7 @@ type
         procedure lstZoneClick(Sender : TObject);
         procedure lstPctNumberClick(Sender : TObject);
         procedure btnOkClick(Sender : TObject);
+    procedure btnInserirClick(Sender: TObject);
     private
         { Private declarations }
         loader : TTREPCTZoneList;
@@ -55,7 +56,7 @@ uses
 
 procedure TMainForm.btnCancelClick(Sender : TObject);
 begin
-    Self.Close;
+	 Self.Close;
     AppLog.AppFatalError('Cancelado pelo usuário', 1);
 end;
 
@@ -64,11 +65,16 @@ begin
     Self.Close;
 end;
 
+procedure TMainForm.btnInserirClick(Sender: TObject);
+begin
+{ TODO -oroger -cdsg : Coletar atributos para gerar nova estação e seleciona-la nos controles }
+end;
+
 procedure TMainForm.btnOkClick(Sender : TObject);
 var
     ActivePct : TTREPct;
 begin
-    if Self.lstPctNumber.ItemIndex >= 0 then begin
+	 if Self.lstPctNumber.ItemIndex >= 0 then begin
         //Desabilita controles de alteração de estado
         TControl(Sender).Enabled := False;
         lstZone.Enabled := False;
@@ -78,14 +84,14 @@ begin
         ActivePct.Prepare;
         //Informa do sucesso
         MessageDlg('Operação concluída com sucesso!', mtInformation, [mbOK], 0);
-        Self.Close;
-    end;
+		 Self.Close;
+	 end;
 end;
 
 procedure TMainForm.btnTestClick(Sender : TObject);
 {
 var
-     ret : NET_API_STATUS;
+	  ret : NET_API_STATUS;
 }
 begin
     //Realizar os testes pontuais

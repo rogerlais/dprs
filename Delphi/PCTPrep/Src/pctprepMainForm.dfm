@@ -118,6 +118,7 @@ object MainForm: TMainForm
       NumGlyphs = 2
       ParentDoubleBuffered = False
       TabOrder = 1
+      OnClick = btnInserirClick
     end
     object btnCancel: TBitBtn
       Left = 19
