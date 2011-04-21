@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nodeSet version="1.0">
+  <view uin="f10xx9sid9n_v">
+    <property name="$defaultDiagram" value="true" />
+    <property name="$metaclass" value="Package Diagram" />
+    <property name="$name" value="default" />
+    <reference referencedUin="design:view:::bfdrkc814ao_v">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_class:src:KidControl:KidControl.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::upt1o9fdjpe_v">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_class:src:KidControl:kcMainDataModule.TService1" />
+      <reference referencedUin="delphi:e_class:src:KidControl:kcMainDataModule.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::i0qahpqgf5p_v">
+      <property name="$shortcutReference" value="true" />
+    </reference>
+  </view>
+</nodeSet>

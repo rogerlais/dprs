@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nodeSet version="1.0">
+  <node uin="q431eek3cho_n">
+    <property name="$metaclass" value="Actor" />
+    <property name="$name" value="Service" />
+    <link uin="iiqapqpek04qeaijk_l">
+      <property name="$metaclass" value="Association Link" />
+      <property name="$name" value="Association Link1" />
+      <property name="@stereotype" value="communicate" />
+      <participant referencedUin="design:node:::q431eek3cho_n" role="Client" />
+      <participant referencedUin="design:node:::qkaa9c0f9qf_n" role="Supplier" />
+    </link>
+    <link uin="zfn66c0nxz4hd11is_l">
+      <property name="$metaclass" value="Association Link" />
+      <property name="$name" value="Association Link2" />
+      <property name="@stereotype" value="communicate" />
+      <participant referencedUin="design:node:::q431eek3cho_n" role="Client" />
+      <participant referencedUin="design:node:::d8mfwnsqmah_n" role="Supplier" />
+    </link>
+    <link uin="rgdam7bguw5q2bqjl_l">
+      <property name="$metaclass" value="Association Link" />
+      <property name="$name" value="Association Link3" />
+      <property name="@stereotype" value="communicate" />
+      <participant referencedUin="design:node:::q431eek3cho_n" role="Client" />
+      <participant referencedUin="design:node:::5learhxjc9n_n" role="Supplier" />
+    </link>
+    <link uin="0olvqnkcal6kv504g_l">
+      <property name="$metaclass" value="Association Link" />
+      <property name="$name" value="Association Link4" />
+      <property name="@stereotype" value="communicate" />
+      <participant referencedUin="design:node:::q431eek3cho_n" role="Client" />
+      <participant referencedUin="design:node:::f6xd1o5je9a3bj06n_n" role="Supplier" />
+    </link>
+  </node>
+  <node uin="qkaa9c0f9qf_n">
+    <property name="$description" value="No inicio da carga do servico o mesmo carrega as configurações locais do computador" />
+    <property name="$metaclass" value="Use Case" />
+    <property name="$name" value="LoadLocalConfig" />
+  </node>
+  <node uin="d8mfwnsqmah_n">
+    <property name="$description" value="Baseada nas configurações locais o serviço carrega as configurações remotas, entre elas os tempos das sessões dos usuários" />
+    <property name="$metaclass" value="Use Case" />
+    <property name="$name" value="LoadRemoteConfig" />
+  </node>
+  <node uin="5learhxjc9n_n">
+    <property name="$description" value="Interceptação da msgina.dll se comunica com o serviço, caso o usuário esteja na lista de auditoria as condições para início de sessão serão validadas" />
+    <property name="$metaclass" value="Use Case" />
+    <property name="$name" value="ValidateLogon" />
+  </node>
+  <node uin="n3sstc0au53slj4vo_n">
+    <property name="$description" value="Caso a checagem da sessão gere o evento de finalização da sessão este caso de uso será chamado" />
+    <property name="$metaclass" value="Use Case" />
+    <property name="$name" value="ForceLogoff" />
+  </node>
+  <node uin="f6xd1o5je9a3bj06n_n">
+    <property name="$description" value="Valida as condições da sessão dos usuários logados, caso se encontre algum com condições inválidas o logoff será forçado" />
+    <property name="$metaclass" value="Use Case" />
+    <property name="$name" value="CheckSession" />
+    <link uin="izbg9ifv712krdmyn_l">
+      <property name="$metaclass" value="Includes Link" />
+      <property name="$name" value="Includes Link1" />
+      <participant referencedUin="design:node:::f6xd1o5je9a3bj06n_n" role="Client" />
+      <participant referencedUin="design:node:::n3sstc0au53slj4vo_n" role="Supplier" />
+    </link>
+  </node>
+</nodeSet>

@@ -42,6 +42,11 @@
 				<Form>Service1</Form>
 				<DesignClass>TService</DesignClass>
 			</DCCReference>
+			<None Include="ModelSupport_KidControl\default.txaPackage"/>
+			<None Include="ModelSupport_KidControl\default.txvpck"/>
+			<None Include="ModelSupport_KidControl\KidControl\default.txvpck"/>
+			<None Include="ModelSupport_KidControl\kcMainDataModule\default.txvpck"/>
+			<None Include="ModelSupport_KidControl\PrimaryUseCase.txvuse"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -102,6 +107,7 @@
 						<Excluded_Packages Name="$(BDS)\bin\dclofficexp140.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
 					</Excluded_Packages>
 				</Delphi.Personality>
+				<ModelSupport>True</ModelSupport>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>
