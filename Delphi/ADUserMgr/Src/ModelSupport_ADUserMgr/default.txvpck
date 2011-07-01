@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nodeSet version="1.0">
+  <view uin="lv04kcy52k6mspag_v">
+    <property name="$defaultDiagram" value="true" />
+    <property name="$metaclass" value="Package Diagram" />
+    <property name="$name" value="default" />
+    <reference referencedUin="design:view:::mu6i3rxof8oza1ldg_v">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:adumMainDataModule.TDtMdMainADUserMgr" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:adumMainDataModule.TADUserControler" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:adumMainDataModule.TExternalLoader" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:adumMainDataModule.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::agr1156vl8o79bccj_v">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:adumFrameStatusOperation.TFrameStatusOperation" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:adumFrameStatusOperation.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::r3wlgb0yo8o681xai_v">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:adumConfig.TADUMConfig" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:adumConfig.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::w5gtdph4v8op9yamo_v">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:adumFrameUserBrowser.TFrmUserBrowser" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:adumFrameUserBrowser.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::91tfuof1rflq715ko_v">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:ADUserMgr.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::gdwpv3q019ooopb6j_v">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:adumMainForm.TfrmADUserMgr" />
+      <reference referencedUin="delphi:e_class:src:ADUserMgr:adumMainForm.@unitclass" />
+    </reference>
+  </view>
+</nodeSet>
