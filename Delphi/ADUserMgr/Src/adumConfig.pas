@@ -44,7 +44,7 @@ var
    fname : string;
 begin
      fname:=ParamStr(0);
-     fname:= TFileHnd.ForceFileExtension( fname, '.ini' );
+     fname:= SysUtils.ChangeFileExt( fname, '.ini' );
      GlobalConfig :=TADUMConfig.Create( fname, 'ADUM\1.0' );
 end;
 
@@ -63,6 +63,7 @@ end;
 
 function TADUMConfig.GetServerName : string;
 begin
+     {TODO -oroger -cdsg : Recupera nome do servidor com }
      Result:='localhost';
 end;
 
@@ -84,7 +85,7 @@ end;
 
 finalization
 begin
-
+     FreeAndNil( GlobalConfig );
 end;
 
 

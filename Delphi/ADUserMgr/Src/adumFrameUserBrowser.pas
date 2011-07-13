@@ -10,7 +10,7 @@ interface
 
 uses
     Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-    Dialogs, DB, DBClient, SimpleDS, Grids, DBGrids, adumMainDataModule, StdCtrls, ExtCtrls, ComCtrls;
+    Dialogs, DB, DBClient, SimpleDS, Grids, DBGrids, adumMainDataModule, StdCtrls, ExtCtrls, ComCtrls, ToolWin, ActnMan, ActnCtrls;
 
 type
     TFrmUserBrowser = class(TFrame)
@@ -28,6 +28,10 @@ type
     chkRequisit: TCheckBox;
     chkEstag: TCheckBox;
     chkTodos: TCheckBox;
+    edtLogin: TLabeledEdit;
+    edtFullName: TLabeledEdit;
+    edtRuledName: TLabeledEdit;
+    procedure dsUserFullDataChange(Sender: TObject; Field: TField);
     private
         { Private declarations }
     public
@@ -42,6 +46,12 @@ implementation
 
 
 { TFrmUserBrowser }
+
+procedure TFrmUserBrowser.dsUserFullDataChange(Sender: TObject; Field: TField);
+begin
+     {TODO -oroger -cdsg : Recarregar os valores relativos a mudanca de registro}
+
+end;
 
 procedure TFrmUserBrowser.LoadData;
 begin

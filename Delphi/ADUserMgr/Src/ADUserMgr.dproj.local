@@ -2,5 +2,10 @@
 <BorlandProject>
 	<Transactions>
     <Transaction>2011/06/26 23:07:28.700.pas,F:\__WORK\ADUserMgr\Src\Unit1.pas=F:\__WORK\ADUserMgr\Src\adumConfig.pas</Transaction>
+    <Transaction>2011/07/03 13:45:03.924.pas,C:\Sw\WorkDir\Dprs\Delphi\ADUserMgr\Src\Unit1.pas=C:\Sw\WorkDir\Dprs\Delphi\ADUserMgr\Src\adumUtils.pas</Transaction>
+    <Transaction>2011/07/03 21:11:38.412.htm,C:\Sw\WorkDir\Dprs\Delphi\ADUserMgr\Src\Untitled1.htm=C:\Sw\WorkDir\Dprs\Delphi\ADUserMgr\Docs\ADUserMgrMainPage.htm</Transaction>
+    <Transaction>2011/07/10 20:16:16.874.txvuse,c:\sw\workdir\dprs\delphi\adusermgr\src\modelsupport_adusermgr\use case diagram1.txvuse=</Transaction>
+    <Transaction>2011/07/10 20:18:59.675.pas,C:\Sw\WorkDir\Dprs\Delphi\ADUserMgr\Src\Unit1.pas=C:\Sw\WorkDir\Dprs\Delphi\ADUserMgr\Src\adumModelContainerUnit.pas</Transaction>
+    <Transaction>2011/07/10 20:19:18.964.txvuse,C:\Sw\WorkDir\Dprs\Delphi\ADUserMgr\Src\ModelSupport_ADUserMgr\GlobalUseCaseDiagram.txvuse=</Transaction>
   </Transactions>
 </BorlandProject>

@@ -9,12 +9,17 @@ interface
 
 uses
     SysUtils, Classes, WideStrings, DBXMySql, DB, SqlExpr,
-    Forms, adumFrameStatusOperation, XPThreads, FMTBcd, DBClient, SimpleDS, adumConfig;
+    Forms, adumFrameStatusOperation, XPThreads, FMTBcd, DBClient, SimpleDS, adumConfig,
+  adumUtils;
 
 type
     TDtMdMainADUserMgr = class(TDataModule)
         conMySQLADUsrMgrConnection : TSQLConnection;
-        dsExtUserSD : TSimpleDataSet;
+    dsUserFullNames: TSimpleDataSet;
+    fldUserNameId: TIntegerField;
+    fldFullNameUse: TStringField;
+    fldRuledFullName: TStringField;
+    dtstfldUserFullNamesFldUserEntries: TDataSetField;
     private
         { Private declarations }
 
@@ -25,7 +30,7 @@ type
     TADUserControler = class
     public
         procedure CancelPressed(Sender : TObject);
-        function LoadAllData(MainForm : TForm) : TFrame;
+        procedure LoadAllData(MainForm : TForm);
         procedure OpenDatabase;
         function ShowUserBrowser(MainForm : TForm) : TFrame;
     end;
@@ -52,7 +57,7 @@ begin
     {TODO -oroger -cdsg : Cancelar o thread em execucao}
 end;
 
-function TADUserControler.LoadAllData(MainForm : TForm) : TFrame;
+procedure TADUserControler.LoadAllData(MainForm : TForm);
     ///  <summary>
     ///    Carrega todos os bancos de dados externos para o interno.
     /// Exibe o frame de progresso, durante o processo e vincula os controles de progressbar e botão cancelar
@@ -60,19 +65,21 @@ function TADUserControler.LoadAllData(MainForm : TForm) : TFrame;
     ///  <remarks>
     ///
     ///  </remarks>
+var
+   f : TframeStatusOperation;
 begin
+     f := TframeStatusOperation.Create(MainForm);
     try
-        Result := TframeStatusOperation.Create(MainForm);
-        TframeStatusOperation(Result).btnCancel.OnClick := Self.CancelPressed;
-        Result.Parent := MainForm;
-        Result.Show;
-        Result.BringToFront;
+        TframeStatusOperation(f).btnCancel.OnClick := Self.CancelPressed;
+        f.Parent := MainForm;
+        f.Show;
+        f.BringToFront;
         MainForm.Refresh;
         Application.ProcessMessages;
         Self.OpenDatabase;
         //Sleep(3000);
     finally
-        //frm.Free;
+        f.Free;
     end;
 end;
 
@@ -87,24 +94,35 @@ begin
     DtMdMainADUserMgr.conMySQLADUsrMgrConnection.Params.Add('Database=usr_mgr');
     DtMdMainADUserMgr.conMySQLADUsrMgrConnection.Params.Add('HostName=' + GlobalConfig.ServerName);
     DtMdMainADUserMgr.conMySQLADUsrMgrConnection.Params.Add('User_Name=' + GlobalConfig.DBUserName);  //login
-	 DtMdMainADUserMgr.conMySQLADUsrMgrConnection.Params.Add('Password=' + GlobalConfig.DBPassword);   //Senha
-	 DtMdMainADUserMgr.conMySQLADUsrMgrConnection.Connected := True;
-	 DtMdMainADUserMgr.dsExtUserSD.Active:=True;
+    DtMdMainADUserMgr.conMySQLADUsrMgrConnection.Params.Add('Password=' + GlobalConfig.DBPassword);   //Senha
+    try
+    DtMdMainADUserMgr.conMySQLADUsrMgrConnection.Connected := True;
+    DtMdMainADUserMgr.dsUserFullNames.Active := True;
+    except
+          on E : Exception do begin
+             raise EADUMException.Create('Falha abrindo banco de dados:'#13#10 + E.Message );
+          end;
+    end;
 end;
 
 function TADUserControler.ShowUserBrowser(MainForm : TForm) : TFrame;
 begin
-	 try
-		 Result := TFrmUserBrowser.Create(MainForm);
-		 Result.Parent := MainForm;
-		 Result.Show;
-		 Result.BringToFront;
-		 MainForm.Refresh;
-		 Application.ProcessMessages;
-		 TFrmUserBrowser(Result).LoadData;
-	 finally
-
-	 end;
+    try
+        Result := TFrmUserBrowser.Create(MainForm);
+        Result.Parent := MainForm;
+        Result.Show;
+        Result.BringToFront;
+        MainForm.Refresh;
+        Application.ProcessMessages;
+        TFrmUserBrowser(Result).LoadData;
+    except
+        on E : Exception do begin
+            if Assigned(Result) then begin
+                FreeAndNil(Result);
+            end;
+            raise E;
+        end;
+    end;
 end;
 
 initialization

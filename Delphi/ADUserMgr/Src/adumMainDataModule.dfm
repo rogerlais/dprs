@@ -10,8 +10,8 @@ object DtMdMainADUserMgr: TDtMdMainADUserMgr
     LoginPrompt = False
     Params.Strings = (
       'drivername=MYSQL'
-      'Database=usr_mgr'
-      'HostName=pbocomon'
+      'Database=desenv'
+      'HostName=localhost'
       'User_Name=desenv'
       'Password=desenv')
     VendorLib = 'LIBMYSQL.dll'
@@ -19,14 +19,33 @@ object DtMdMainADUserMgr: TDtMdMainADUserMgr
     Left = 74
     Top = 26
   end
-  object dsExtUserSD: TSimpleDataSet
+  object dsUserFullNames: TSimpleDataSet
     Aggregates = <>
     Connection = conMySQLADUsrMgrConnection
+    DataSet.CommandText = 'select * from `user_names`'
     DataSet.MaxBlobSize = -1
     DataSet.Params = <>
     Params = <>
     ReadOnly = True
     Left = 72
     Top = 88
+    object fldUserNameId: TIntegerField
+      FieldName = 'iduser_names'
+      Required = True
+    end
+    object fldFullNameUse: TStringField
+      FieldName = 'full_name'
+      Size = 45
+    end
+    object fldRuledFullName: TStringField
+      FieldName = 'ruled_full_name'
+      Size = 45
+    end
+    object dtstfldUserFullNamesFldUserEntries: TDataSetField
+      DefaultExpression = 
+        'select * from `users_entry` where idexternal_users = :iduser_nam' +
+        'es'#13#10
+      FieldName = 'FldUserEntries'
+    end
   end
 end

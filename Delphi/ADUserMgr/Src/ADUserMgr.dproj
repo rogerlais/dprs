@@ -64,6 +64,8 @@
 				<DesignClass>TFrame</DesignClass>
 			</DCCReference>
 			<DCCReference Include="adumConfig.pas"/>
+			<DCCReference Include="adumUtils.pas"/>
+			<DCCReference Include="adumModelContainerUnit.pas"/>
 			<None Include="ModelSupport_ADUserMgr\default.txaPackage"/>
 			<None Include="ModelSupport_ADUserMgr\default.txvpck"/>
 			<None Include="ModelSupport_ADUserMgr\ADUserMgr\default.txvpck"/>
@@ -72,6 +74,13 @@
 			<None Include="ModelSupport_ADUserMgr\adumConfig\default.txvpck"/>
 			<None Include="ModelSupport_ADUserMgr\adumFrameUserBrowser\default.txvpck"/>
 			<None Include="ModelSupport_ADUserMgr\adumMainForm\default.txvpck"/>
+			<None Include="..\Docs\ADUserMgrMainPage.htm"/>
+			<None Include="ModelSupport_ADUserMgr\adumUtils\default.txvpck"/>
+			<None Include="ModelSupport_ADUserMgr\adumModelContainerUnit\default.txvpck"/>
+			<None Include="ModelSupport_ADUserMgr\adumModelContainerUnit\default.txaPackage"/>
+			<None Include="ModelSupport_ADUserMgr\adumModelContainerUnit\GlobalUseCaseDiagram.txvuse"/>
+			<None Include="ModelSupport_ADUserMgr\Unit1\default.txvpck"/>
+			<None Include="ModelSupport_ADUserMgr\Unit1\default.txaPackage"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

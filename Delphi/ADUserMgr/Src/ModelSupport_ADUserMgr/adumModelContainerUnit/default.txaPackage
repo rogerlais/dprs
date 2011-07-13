@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nodeSet version="1.0">
+  <node uin="co0fviopm1r_n">
+    <property name="$metaclass" value="Actor" />
+    <property name="$name" value="System" />
+    <link uin="bpwqimpjgbbupactn_l">
+      <property name="$metaclass" value="Association Link" />
+      <property name="$name" value="Association Link1" />
+      <property name="@stereotype" value="communicate" />
+      <participant referencedUin="design:node:::co0fviopm1r_n" role="Client" />
+      <participant referencedUin="design:node:::cg59lz1hi7k_n:b0qcs0zg3f65p2dbn_n" role="Supplier" />
+    </link>
+  </node>
+  <node uin="b0qcs0zg3f65p2dbn_n">
+    <property name="$metaclass" value="System Boundary" />
+    <property name="$name" value="System Boundary1" />
+    <node uin="cg59lz1hi7k_n">
+      <property name="$description" value="Initialize database and all tables:&#xD;&#xA;1 - WorkUsers(usuários)&#xD;&#xA;2 - Sources(lotações)&#xD;&#xA;" />
+      <property name="$metaclass" value="Use Case" />
+      <property name="$name" value="LoadAllData" />
+    </node>
+    <node uin="j6d662wvfds_n">
+      <property name="$description" value="Reload the AD database to the internal database. Uses FullName as search key for both&#xD;&#xA;Mantains All records from estagiarios etc&#xD;&#xA;" />
+      <property name="$metaclass" value="Use Case" />
+      <property name="$name" value="SynchData" />
+    </node>
+  </node>
+</nodeSet>

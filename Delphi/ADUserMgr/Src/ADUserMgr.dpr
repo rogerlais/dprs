@@ -6,7 +6,9 @@ uses
   adumMainDataModule in 'adumMainDataModule.pas' {DtMdMainADUserMgr: TDataModule},
   adumFrameUserBrowser in 'adumFrameUserBrowser.pas' {FrmUserBrowser: TFrame},
   adumFrameStatusOperation in 'adumFrameStatusOperation.pas' {FrameStatusOperation: TFrame},
-  adumConfig in 'adumConfig.pas';
+  adumConfig in 'adumConfig.pas',
+  adumUtils in 'adumUtils.pas',
+  adumModelContainerUnit in 'adumModelContainerUnit.pas';
 
 {$R *.res}
 

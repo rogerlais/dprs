@@ -1,5 +1,5 @@
 {$IFDEF adumMainForm}
-	{$DEFINE DEBUG_UNIT}
+    {$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I ADUserMgr.inc}
 
@@ -10,13 +10,16 @@ interface
 
 uses
     Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-    Dialogs, adumMainDataModule, FileInfo, ToolWin, ActnMan, ActnCtrls, ComCtrls, PlatformDefaultStyleActnCtrls, ActnList;
+    Dialogs, adumMainDataModule, FileInfo, ToolWin, ActnMan, ActnCtrls, ComCtrls, PlatformDefaultStyleActnCtrls, ActnList, ImgList,
+  StdActns;
 
 type
     TfrmADUserMgr = class(TForm)
         statbarMain :    TStatusBar;
         acttbTopMain :   TActionToolBar;
         actmgrMainForm : TActionManager;
+    ilMainForm: TImageList;
+    actSave: TFileSaveAs;
         procedure FormCreate(Sender : TObject);
         procedure FormShow(Sender : TObject);
     private
@@ -54,16 +57,8 @@ begin
 end;
 
 procedure TfrmADUserMgr.FormShow(Sender : TObject);
-var
-    f : TFrame;
 begin
-     f := AppControl.LoadAllData(Self);
-    try
-       f.Show;
-       f.Refresh;
-    finally
-        f.Free;
-    end;
+    AppControl.LoadAllData(Self);
     AppControl.ShowUserBrowser(Self);
     {TODO -oroger -cdsg : Carregar todos os dados dos bancos externos}
 end;
