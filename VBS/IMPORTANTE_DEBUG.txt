@@ -1,0 +1,4 @@
+C:\Arquivos de programas\Arquivos comuns\Microsoft Shared\OFFICE12\mse7.exe Denominado o Microsoft Script Editor
+pode ser usado para a depuração de scripts VBS diante a inserção de linha de comando na lista de comandos de exibição
+Menu - exibir - abrir com....
+Inserir linha de comando apontando para o caminho "C:\Windows\System32\wscript.exe //x"
