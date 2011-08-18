@@ -1,31 +1,31 @@
 object FrmUserBrowser: TFrmUserBrowser
   Left = 0
   Top = 0
-  Width = 742
-  Height = 554
+  Width = 451
+  Height = 304
   Align = alClient
   TabOrder = 0
   object splSplitter: TSplitter
-    Left = 277
+    Left = -12
     Top = 0
-    Height = 554
+    Height = 304
     Align = alRight
     ExplicitLeft = -6
     ExplicitHeight = 480
   end
   object pgcDetails: TPageControl
-    Left = 280
+    Left = -9
     Top = 0
     Width = 460
-    Height = 554
+    Height = 304
     ActivePage = tsAD
     Align = alRight
     TabOrder = 0
-    ExplicitLeft = -9
-    ExplicitHeight = 304
     object tsAD: TTabSheet
       Caption = 'Actice Diretory'
-      ExplicitHeight = 276
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       object edtLogin: TLabeledEdit
         Left = 24
         Top = 48
@@ -60,34 +60,39 @@ object FrmUserBrowser: TFrmUserBrowser
     object tsTitular: TTabSheet
       Caption = 'Servidores do Quadro'
       ImageIndex = 3
-      ExplicitHeight = 276
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
     end
     object tsRequisit: TTabSheet
       Caption = 'Requisitados'
       ImageIndex = 1
-      ExplicitHeight = 276
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
     end
     object tsEstag: TTabSheet
       Caption = 'Estagi'#225'rios'
       ImageIndex = 2
-      ExplicitHeight = 276
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
     end
   end
   object pnlLeft: TPanel
     Left = 0
     Top = 0
-    Width = 277
-    Height = 554
+    Width = 396
+    Height = 304
     Align = alClient
     Caption = 'pnlLeft'
     TabOrder = 1
-    ExplicitWidth = 207
-    ExplicitHeight = 304
+    ExplicitWidth = 277
     object dbgrdUserBrowser: TDBGrid
       Left = 1
       Top = 1
-      Width = 275
-      Height = 449
+      Width = 394
+      Height = 385
       Align = alClient
       DataSource = dsUserFull
       ReadOnly = True
@@ -100,13 +105,13 @@ object FrmUserBrowser: TFrmUserBrowser
     end
     object pnlBrowseFilters: TPanel
       Left = 1
-      Top = 450
-      Width = 275
+      Top = 386
+      Width = 394
       Height = 103
       Align = alBottom
       TabOrder = 1
       ExplicitTop = 200
-      ExplicitWidth = 205
+      ExplicitWidth = 275
       object chkTitular: TCheckBox
         Left = 16
         Top = 6
@@ -143,7 +148,6 @@ object FrmUserBrowser: TFrmUserBrowser
   end
   object dsUserFull: TDataSource
     AutoEdit = False
-    DataSet = DtMdMainADUserMgr.dsExtUserSD
     OnDataChange = dsUserFullDataChange
     Left = 104
     Top = 128

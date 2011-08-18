@@ -30,11 +30,11 @@ object frmADUserMgr: TfrmADUserMgr
     Height = 26
     ActionManager = actmgrMainForm
     Caption = 'acttbTopMain'
-    Color = clMenuBar
-    ColorMap.HighlightColor = clWhite
-    ColorMap.UnusedColor = clWhite
+    ColorMap.HighlightColor = 15660791
+    ColorMap.BtnSelectedColor = clBtnFace
+    ColorMap.UnusedColor = 15660791
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
+    Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []

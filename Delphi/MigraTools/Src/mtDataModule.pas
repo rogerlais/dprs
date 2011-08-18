@@ -12,7 +12,6 @@ uses
 
 type
   TMainDataModule = class(TDataModule)
-    procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -26,10 +25,5 @@ implementation
 
 {$R *.dfm}
 
-
-procedure TMainDataModule.DataModuleCreate(Sender: TObject);
-begin
-     Self.AfterConstruction;
-end;
 
 end.

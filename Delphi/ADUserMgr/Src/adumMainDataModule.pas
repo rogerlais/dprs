@@ -10,16 +10,26 @@ interface
 uses
     SysUtils, Classes, WideStrings, DBXMySql, DB, SqlExpr,
     Forms, adumFrameStatusOperation, XPThreads, FMTBcd, DBClient, SimpleDS, adumConfig,
-  adumUtils;
+    adumUtils, OleServer, ActiveDs_TLB;
 
 type
     TDtMdMainADUserMgr = class(TDataModule)
         conMySQLADUsrMgrConnection : TSQLConnection;
-    dsUserFullNames: TSimpleDataSet;
-    fldUserNameId: TIntegerField;
-    fldFullNameUse: TStringField;
-    fldRuledFullName: TStringField;
-    dtstfldUserFullNamesFldUserEntries: TDataSetField;
+        dsUserFullNames :  TSimpleDataSet;
+    intgrfldUserFullNamesidexternal_users: TIntegerField;
+    strngfldUserFullNamesext_user_ad_login: TStringField;
+    strngfldUserFullNamesext_user_ad_sis_login: TStringField;
+    strngfldUserFullNamesext_users_name: TStringField;
+    strngfldUserFullNamesext_users_ruled_name: TStringField;
+    strngfldUserFullNamesext_users_location: TStringField;
+    strngfldUserFullNamesext_users_source: TStringField;
+    sqltmstmpfldUserFullNamesext_users_start_time: TSQLTimeStampField;
+    sqltmstmpfldUserFullNamesext_users_end_time: TSQLTimeStampField;
+    strngfldUserFullNamesext_users_ad: TStringField;
+    strngfldUserFullNamesext_uses_estag: TStringField;
+    strngfldUserFullNamesext_users_requisit: TStringField;
+    strngfldUserFullNamesext_users_titular: TStringField;
+    strngfldUserFullNamesext_users_sis: TStringField;
     private
         { Private declarations }
 
@@ -58,21 +68,21 @@ begin
 end;
 
 procedure TADUserControler.LoadAllData(MainForm : TForm);
-    ///  <summary>
-    ///    Carrega todos os bancos de dados externos para o interno.
-    /// Exibe o frame de progresso, durante o processo e vincula os controles de progressbar e botão cancelar
-    ///  </summary>
-    ///  <remarks>
-    ///
-    ///  </remarks>
+ ///  <summary>
+ ///    Carrega todos os bancos de dados externos para o interno.
+ /// Exibe o frame de progresso, durante o processo e vincula os controles de progressbar e botão cancelar
+ ///  </summary>
+ ///  <remarks>
+ ///
+ ///  </remarks>
 var
-   f : TframeStatusOperation;
+    f : TframeStatusOperation;
 begin
-     f := TframeStatusOperation.Create(MainForm);
+    f := TframeStatusOperation.Create(MainForm);
     try
         TframeStatusOperation(f).btnCancel.OnClick := Self.CancelPressed;
         f.Parent := MainForm;
-        f.Show;
+		 f.Show;
         f.BringToFront;
         MainForm.Refresh;
         Application.ProcessMessages;
@@ -96,18 +106,18 @@ begin
     DtMdMainADUserMgr.conMySQLADUsrMgrConnection.Params.Add('User_Name=' + GlobalConfig.DBUserName);  //login
     DtMdMainADUserMgr.conMySQLADUsrMgrConnection.Params.Add('Password=' + GlobalConfig.DBPassword);   //Senha
     try
-    DtMdMainADUserMgr.conMySQLADUsrMgrConnection.Connected := True;
-    DtMdMainADUserMgr.dsUserFullNames.Active := True;
+        DtMdMainADUserMgr.conMySQLADUsrMgrConnection.Connected := True;
+        DtMdMainADUserMgr.dsUserFullNames.Active := True;
     except
-          on E : Exception do begin
-             raise EADUMException.Create('Falha abrindo banco de dados:'#13#10 + E.Message );
-          end;
+		 on E : Exception do begin
+            raise EADUMException.Create('Falha abrindo banco de dados:'#13#10 + E.Message);
+		 end;
     end;
 end;
 
 function TADUserControler.ShowUserBrowser(MainForm : TForm) : TFrame;
 begin
-    try
+	 try
         Result := TFrmUserBrowser.Create(MainForm);
         Result.Parent := MainForm;
         Result.Show;

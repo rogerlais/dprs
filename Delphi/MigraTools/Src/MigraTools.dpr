@@ -16,6 +16,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
+  Application.Title := 'Migra Tools 2011';
   Application.CreateForm(TMigraToolsMainForm, MigraToolsMainForm);
   Application.CreateForm(TMainDataModule, MainDataModule);
   Application.Run;

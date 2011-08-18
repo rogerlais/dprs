@@ -43,27 +43,27 @@ procedure InitConfig;
 var
    fname : string;
 begin
-     fname:=ParamStr(0);
-     fname:= SysUtils.ChangeFileExt( fname, '.ini' );
-     GlobalConfig :=TADUMConfig.Create( fname, 'ADUM\1.0' );
+	  fname:=ParamStr(0);
+	  fname:= SysUtils.ChangeFileExt( fname, '.ini' );
+	  GlobalConfig :=TADUMConfig.Create( fname, 'ADUM\1.0' );
 end;
 
 
 function TADUMConfig.GetDBPassword : string;
 begin
-    {TODO -oroger -cdsg : Leitura da senha do arquivo de configuração de forma criptografada}
-    Result:='desenv';
+	 {TODO -oroger -cdsg : Leitura da senha do arquivo de configuração de forma criptografada}
+	 Result:='desenv';
 end;
 
 function TADUMConfig.GetDBUserName : string;
 begin
-    {TODO -oroger -cdsg : Leitura do nome da conta de acesso ao banco de dados de forma criptografada }
-    Result:='desenv';
+	 {TODO -oroger -cdsg : Leitura do nome da conta de acesso ao banco de dados de forma criptografada }
+	 Result:='desenv';
 end;
 
 function TADUMConfig.GetServerName : string;
 begin
-     {TODO -oroger -cdsg : Recupera nome do servidor com }
+	  {TODO -oroger -cdsg : Recupera nome do servidor com a base de dados }
      Result:='localhost';
 end;
 

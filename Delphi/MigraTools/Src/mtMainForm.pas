@@ -1,5 +1,5 @@
 {$IFDEF mtMainForm }
-	{$DEFINE DEBUG_UNIT}
+    {$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I MigraTools.inc}
 
@@ -68,9 +68,9 @@ var
     TKHandle :   THandle;
     User, Pass : PChar;
 begin
-    User   := PChar('admdanusio');
-    Pass   := PChar('ventilador');
-    Result := ERROR_SUCCESS;
+	 User   := PChar('admroger');
+	 Pass   := PChar('SENHA!!!!');
+	 Result := ERROR_SUCCESS;
     SetLastError(Result);
     if LogonUser(User, nil, Pass, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, TKHandle) then begin
         if not ImpersonateLoggedOnUser(TKHandle) then begin
@@ -112,8 +112,8 @@ begin
     TControl(Sender).Enabled := False;
     try
         {$IFDEF DEBUG}
-		TAPIHnd.CheckAPI( ImpersonateADMUser() );
-		{$ENDIF}
+        TAPIHnd.CheckAPI(ImpersonateADMUser());
+        {$ENDIF}
         log := Self.FUserList.SetPasswords();
         if log <> EmptyStr then begin
             raise Exception.Create('Ocorreram falhas no ajuste das senhas:'#13 + log);
@@ -199,11 +199,11 @@ begin
     finally
         Self.chklstAccounts.Items.EndUpdate;
     end;
-        {$IFDEF DEBUG}
-		Self.Caption:='Ferramentas de Migração - ***Versão Depuração***' + Self.fileVerMain.FileVersion;
-		{$ELSE}
-    Self.Caption := 'Ferramentas de Migração - ' + Self.fileVerMain.FileVersion;
-        {$ENDIF}
+	 {$IFDEF DEBUG}
+	 Self.Caption := 'Ferramentas de Migração - ***Versão Depuração***' + Self.fileVerMain.FileVersion;
+	 {$ELSE}
+	 Self.Caption := 'Ferramentas de Migração - ' + Self.fileVerMain.FileVersion;
+	 {$ENDIF}
 end;
 
 procedure TMigraToolsMainForm.ProcessControlTerminate(Sender : TObject; ExitCode : cardinal);

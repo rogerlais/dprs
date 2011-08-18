@@ -1,0 +1,357 @@
+    Nome                                          Órgão de Origem						   Comissão Data Requis   Limit Req  Tipo Req 	
+
+    ANA AUGUSTA LIRA MORENO LUNA                  INSS-SUPERINTENDENCIA DA PB              FC-6     08/03/2004    08/03/2012 Por Cessão
+    ANA CRISTINA DUARTE MEMÓRIA CASTRO            SUB GERÊNCIA RECURSOS HUMANOS DA SECRETARFC-1AUDE 05/03/1998    22/10/2011 Por Cessão
+    ANDRÉ VIEIRA QUEIROZ                          SUPERIOR TRIBUNAL DE JUSTIÇA             FC-6     25/04/2007    29/04/2012 Por Cessão
+    ANTÔNIO LEAL DE BARROS                        UNIVERSIDADE FEDERAL DA PARAIBA          FC-1     10/03/2005    10/03/2012 Por Cessão
+    CARLOS ANTÔNIO GONÇALVES CRUZ                 SECRETARIA DA SAÚDE DO MUNICÍPIO DE JOÃO PESSOA   27/07/2010    27/07/2011 Por Requerimento
+    CÍCERO RODRIGUES SILVA                        TRIBUNAL REGIONAL DO DO TRABALHO DA 10a. FC-1ÃO   10/09/2004    09/09/2011 Por Cessão
+    EDILZA VICENTE DA SILVA                       UNIVERSIDADE FEDERAL DA PARAIBA                   02/08/2010    02/08/2011 Por Requerimento
+    FÁTIMA LÚCIA DE MARTINS FARIA GRISI           INSS-SUPERINTENDENCIA DA PB              FC-1     30/01/2002    30/01/2012 Por Cessão
+    HERIVALDO CARLOS GOMES                        FNS-FUNDACAO NACIONAL DE SAUDE/PB        FC-3     29/07/1992    29/07/2011 Por Cessão
+    IVANILDO RODRIGUES DA SILVA                   UNIVERSIDADE FEDERAL DA PARAIBA          FC-1     30/03/2006    30/03/2012 Por Cessão
+    JOÃO AMARO DE OLIVEIRA                        SECRETARIA DE SEGURANÇA PÚBLICA DO ESTADOFC-1     11/06/2008    11/06/2011 Por Cessão
+    JOSÉ CARLOS FERNANDES                         SECRETARIA DE EDUCAÇÃO E CULTURA DO ESTADFC-1     07/05/1986    07/05/2011 Por Cessão
+    JOSÉ EDUARDO CAVALCANTI DE MELO               TRIBUNAL REGIONAL DO DO TRABALHO DA 13a. FC-6AO   05/02/2002    05/02/2012 Por Cessão
+    JOSEFA GONCALO DE BRITO                       SECRETARIA DE EDUCAÇÃO E CULTURA DO ESTADFC-1     14/11/1978    14/11/2011 Por Cessão
+    LUCIANA MARIA BARBOSA GUSMÃO                  TRIBUNAL REGIONAL DO DO TRABALHO DA 11a. FC-1AO   25/10/2001    09/12/2011 Por Cessão
+    MANOEL PEREIRA DA CUNHA                       UNIVERSIDADE FEDERAL DA PARAIBA                   14/03/2011    14/03/2012 Por Requerimento
+    MÁRCIA RAFAELA MONTENEGRO OLIVEIRA DE QUEIROGATRIBUNAL REGIONAL DO DO TRABALHO DA 13a. CJ-2AO   07/03/2005    07/03/2012 Por Cessão
+    MARINESIO JOSE DO NASCIMENTO                  SECRETARIA DE EDUCAÇÃO E CULTURA DA PMJP          27/07/2010    27/07/2011 Por Requerimento
+    MÔNICA MARIA DA COSTA MACÊDO                  SUB GERÊNCIA RECURSOS HUMANOS DA SECRETARIA SAUDE 01/04/2011    01/04/2012 Por Requerimento
+    REGINA FILLOL GIANELLO                        TRIBUNAL REGIONAL DO DO TRABALHO DA 2a. RFC-1O    19/11/2001    01/07/2011 Por Cessão
+    ROSÁLIA NAVARRO DE ALMEIDA FERREIRA           SUB GERÊNCIA RECURSOS HUMANOS DA SECRETARFC-6AUDE 03/05/2001    03/05/2011 Por Cessão
+
+    TARCISIO SOARES DE MORAIS                     SECRETARIA DE CIENCIA E TECNOL E DO MEIO FC-1ENTE 27/08/2001    25/08/2011 Por Cessão
+    ZENEIDE BEZERRA DE OLIVEIRA                   UNIVERSIDADE FEDERAL DA PARAIBA                   02/08/2010    02/08/2011 Por Requerimento
+
+    ANILSON NAVARRO XAVIER                        IBGE-FUND.INST.BRASILEIRO DE GEOGRAFIA E ESTATISTI02/06/2008    29/07/2011 Por Requerimento
+    ANTÔNIO EMÍDIO DA NÓBREGA NETO                UNIVERSIDADE FEDERAL DA PARAIBA                   06/07/2010    06/07/2011 Por Requerimento
+    CARLOS HENRIQUE DA SILVA MACENA               UNIVERSIDADE FEDERAL DA PARAIBA                   05/11/2008    05/11/2011 Por Requerimento
+    DIOGEVAL COSTA DO NASCIMENTO                  SECRETARIA DE ADMINISTRAÇÃO DA PMJP               24/05/2010    24/05/2012 Por Requerimento
+    JANET-CLAIR LINS MONTENEGRO ARAÚJO            FNS-FUNDACAO NACIONAL DE SAUDE/PB                 06/10/2009    05/10/2011 Por Requerimento
+    JOSÉ GERMANO RAMOS                            UNIVERSIDADE FEDERAL DA PARAIBA                   24/02/2010    23/02/2012 Por Requerimento
+    LENI RODRIGUES DA SILVA                       SECRETARIA DE EDUCAÇÃO E CULTURA DA PMJP          16/04/2008    15/04/2012 Por Requerimento
+    MARIA DAS NEVES MENDES                        DETRAN-PB                                         26/09/2009    25/09/2011 Por Requerimento
+    MARILIA CRISPIM V ROSENDO                     SECRETARIA DO DESENV. SUSTENTAVEL DE JOÃO PESSOA  16/04/2010    15/04/2012 Por Requerimento
+    RICARDO DANTAS DE MENEZES                     SECRETARIA DE EDUCAÇÃO E CULTURA DO ESTADO DA     16/06/2010    16/06/2011 Por Requerimento
+    SAMARA RAQUEL VIEIRA ARNAUD                   SECRETARIA DE EDUCAÇÃO E CULTURA DA PMJP          16/04/2010    15/04/2012 Por Requerimento
+    VALÉRIA SILVA DA COSTA FARIAS                 SECRETARIA DE ADMINISTRAÇÃO DO ESTADO DA PARAIBA  22/02/2010    21/02/2012 Por Requerimento
+
+    CLÁUDIA SERRANO FERNANDES                     PREFEITURA MUNICIPAL DE SANTA RITA                19/09/2002               Por Requerimento
+    DOUGLAS FABIANO BARROS AMORIM                 PREFEITURA MUNICIPAL DE SANTA RITA                25/05/2004               Por Requerimento
+
+    ELISANGELA DE CASTRO ARAÚJO                   PREFEITURA MUNICIPAL DE SANTA RITA                21/05/2008               Por Requerimento
+    IVANICE DOS SANTOS SOUZA                      PREFEITURA MUNICIPAL DE JOÃO PESSOA               15/04/1986               Por Requerimento
+    IVANILDA VERISSIMO FERREIRA DOS SANTOS        SEC. ESTADO DA CIDADANIA E ADMINISTRAÇÃO PENITENCI16/05/2005               Por Requerimento
+    JOSÉ SEVERINO DA SILVA BATISTA                PREFEITURA MUNICIPAL DE SANTA RITA                20/04/1998               Por Requerimento
+    JOSELMA FÉLIX DE MORAIS                       PREFEITURA MUNICIPAL DE SANTA RITA                04/04/2007               Por Requerimento
+    JOSILENE SOARES DE MORAIS                     PREFEITURA MUNICIPAL DE SANTA RITA                21/09/2010               Por Requerimento
+    MARIA MICHELINE ROBERTO DE MOURA              PREFEITURA MUNICIPAL DE SANTA RITA                19/09/2000               Por Requerimento
+    RINALDO RIBEIRO DA SILVA                      PREFEITURA MUNICIPAL DE SANTA RITA                01/01/2009               Por Requerimento
+
+    IRIS FERNANDA ROSENDO DA SILVA                PREFEITURA MUNICIPAL DE CRUZ DO ESPÍRITO SANTO    21/05/2008               Por Requerimento
+
+    AILSON FERNANDES THOMAZ DA SILVA              PREFEITURA MUNICIPAL DE SAPÉ                      01/03/2002               Por Requerimento
+    ANA CRISTINA SILVA DOS SANTOS                 PREFEITURA MUNICIPAL DE SAPÉ                      13/09/2005               Por Requerimento
+    ANDRÉA PEREIRA DA SILVA                       PREFEITURA MUNICIPAL DE SAPÉ                      24/04/2003               Por Requerimento
+    ANTÔNIO CARLOS DA SILVA LIMA                  PREFEITURA MUNICIPAL DE SAPÉ                      13/01/2011               Por Requerimento
+    CLÁUDIA BARBOSA DE LIMA                       PREFEITURA MUNICIPAL DE SAPÉ                      01/04/2004               Por Requerimento
+    JALMIR BRAGA                                  PREFEITURA MUNICIPAL DE MARI                      01/08/1997               Por Requerimento
+
+    JACILENE DA SILVA SOUZA                       PREFEITURA MUNICIPAL DE SÃO MIGUEL DE TAIPU       05/01/1998               Por Requerimento
+    RUBENS DE ANDRADE MONTEIRO                    PREFEITURA MUNICIPAL DE PILAR                     09/04/2002               Por Requerimento
+
+    AURILEIDE GONÇALVES DO NASCIMENTO             PREFEITURA MUNICIPAL DE ITABAIANA                 08/06/1989               Por Requerimento
+    EDILENE MARIA DA SILVA                        PREFEITURA MUNICIPAL DE ITABAIANA                 24/04/1991               Por Requerimento
+    JOSÉ CARLOS DE MELO                           PREFEITURA MUNICIPAL DE ITABAIANA                 26/06/1991               Por Requerimento
+    MÔNICA CRISTINA ANDRADE DE ALMEIDA            PREFEITURA MUNICIPAL DE ITABAIANA                 26/06/1992               Por Requerimento
+    ROSÂNGELA PAULO DA COSTA                      PREFEITURA MUNICIPAL DE ITABAIANA                 21/09/1994               Por Requerimento
+
+    ADRIANA PINTO SILVA DE SOUSA                  PREFEITURA MUNICIPAL DE ITAPOROROCA               04/04/1994               Por Requerimento
+    FABIANO BENTO DA SILVA                        PREFEITURA MUNICIPAL DE MAMANGUAPE                10/06/2008               Por Requerimento
+    PERLA SOARES DOS SANTOS                       PREFEITURA MUNICIPAL DE MAMANGUAPE                20/04/2010               Por Requerimento
+    SOLANGE MADEIRO DA COSTA                      PREFEITURA MUNICIPAL DE MATARACA                  13/08/2007               Por Requerimento
+    SUZI CABRAL DA SILVA                          PREFEITURA MUNICIPAL DE CAPIM                     04/04/1994               Por Requerimento
+    ZENEIDE SOARES LIMA DA LIMA                   PREFEITURA MUNICIPAL DE MAMANGUAPE                24/08/2007               Por Requerimento
+
+    CECÍLIA JOSÉ DA SILVA                         PREFEITURA MUNICIPAL DO RIACHÃO DO BACAMARTE      30/11/2009               Por Requerimento
+
+    ALEXANDRE ARAÚJO DA SILVA                     PREFEITURA MUNICIPAL DE ALAGOA GRANDE             25/04/2001               Por Requerimento
+    SEVERINA CARVALHO DE OLIVEIRA                 PREFEITURA MUNICIPAL DE ALAGOA GRANDE             01/04/2008               Por Requerimento
+
+    ADAILTON DA SILVA CAZÉ                        PREFEITURA MUNICIPAL DE GUARABIRA                 08/10/2003               Por Requerimento
+    ANAZILDO FRANCISCO DA SILVA                   PREFEITURA MUNICIPAL DE GUARABIRA                 22/09/2006               Por Requerimento
+    MARIA JOSÉ DA COSTA SILVA                     PREFEITURA MUNICIPAL DE GUARABIRA                 05/04/1986               Por Requerimento
+    MARILDA PACÍFICO DE ARAÚJO                    PREFEITURA MUNICIPAL DE ARAÇAGI                   16/04/2008               Por Requerimento
+
+    LAURA CARDOSO MAIA                            SECRETARIA DE EDUCAÇÃO E CULTURA DO ESTADO DA     04/10/1988               Por Requerimento
+    MARIA DO SOCORRO RODRIGUES DA SILVA           PREFEITURA MUNICIPAL DE AREIA                     01/10/1998               Por Requerimento
+
+    DIJALMA DOS SANTOS DA COSTA                   PREFEITURA MUNICIPAL DE SERRARIA                  25/03/2010               Por Requerimento
+
+    ARMANDO JOSÉ BARBOSA TEIXEIRA                 PREFEITURA MUNICIPAL DE ALAGOA NOVA               23/07/2009               Por Requerimento
+    VERÔNICA AVELINO DE MORAIS                    PREFEITURA MUNICIPAL DE ALAGOA NOVA               16/03/2009               Por Requerimento
+
+    ARTEMÍSIA FRAGOSO DE FIGUEIREDO               TRIBUNAL DE JUSTIÇA DO ESTADO DA PARAIBA          24/05/2006               Por Requerimento
+    FRANCISCO TARGINO DOS SANTOS                  PREFEITURA MUNICIPAL DE BANANEIRAS                17/02/2009               Por Requerimento
+    MARLY SANTANA DA SILVA                        SECRETARIA DE EDUCAÇÃO E CULTURA DO ESTADO DA     17/12/1992               Por Requerimento
+
+    MARINALVA DO NASCIMENTO DA SILVA              PREFEITURA MUNICIPAL DE CAIÇARA                   07/04/2009               Por Requerimento
+
+    AÉCIO FLÁVIO OLIVEIRA DE MORAIS               DEPARTAMENTO ESTADUAL DE ESTRADAS DE RODAGEM DA PB16/09/2003               Por Requerimento
+
+    ANDERSON BRUNO DE CARVALHO SILVA              PREFEITURA MUNICIPAL DE LAGOA SECA                02/01/2009               Por Requerimento
+    CARLOS ALBERTO  PEREIRA DUARTE                DNOCS                                             24/04/2002               Por Requerimento
+    CARLOS EPAMINONDAS DE ALMEIDA NETO            DNOCS                                             15/01/1998               Por Requerimento
+    EDJÚNIOR FERREIRA DE MEDEIROS                 CAGEPA-COMPANHIA DE AGUA E ESGOTOS DA PARAIBA     03/07/2008               Por Requerimento
+    EVELINE PIRES DE ARAÚJO                       PREFEITURA MUNICIPAL DE MASSARANDUBA              26/04/2010               Por Requerimento
+    FÁTIMA GOIS DA COSTA                          PREFEITURA MUNICIPAL DE CAMPINA GRANDE            22/09/2000               Por Requerimento
+    HELDER DE BARROS CARLOS                       SUPERINTENDÊNCIA DE TRANSPORTE E TRÂNSITO         01/06/2008               Por Requerimento
+    JESUALDO FERREIRA GUEDES                      DNOCS                                             14/06/2000               Por Requerimento
+    JOÃO ARAÚJO DOS SANTOS FILHO                  DNOCS                                             05/08/2003               Por Requerimento
+    JOSÉ DE ARIMATÉIA SILVA OLIVEIRA              PREFEITURA MUNICIPAL DE CAMPINA GRANDE            10/07/2009               Por Requerimento
+    JOSÉ FELIZARDO FILHO                          DNOCS                                             05/08/2003               Por Requerimento
+    JOSÉ JONAS DE OLIVEIRA                        UNIVERSIDADE FEDERAL DE CAMPINA GRANDE            04/06/1988               Por Requerimento
+    JOSEFA ELIANE GOMES                           SUPLAN-SUPERINT. DE OBRAS DO PLANO DE DESENVOLV.  19/05/2003               Por Requerimento
+    LUCIANO EVARISTO DA SILVA                     DNOCS                                             01/04/1986               Por Requerimento
+    LÚCIO FERNANDO DIAS DA SILVA                  UNIVERSIDADE FEDERAL DE CAMPINA GRANDE            18/07/1986               Por Requerimento
+    LUÍS CLAUDIO DE OLIVEIRA                      PREFEITURA MUNICIPAL DE CAMPINA GRANDE            10/07/2009               Por Requerimento
+    MÁRCIO EDSON DINIZ BARROS                     PREFEITURA MUNICIPAL DE CAMPINA GRANDE            01/03/2003               Por Requerimento
+    MARIA DAILMA DE ASSIS DE SOUSA SANTOS         UNIVERSIDADE FEDERAL DE CAMPINA GRANDE            08/06/2001               Por Requerimento
+    MARIA DAS GRAÇAS MENEZES DE LIMA              DNOCS                                             05/04/1995               Por Requerimento
+    MARIA DULCINÉIA FREITAS DOS SANTOS            DNOCS                                             03/04/2001               Por Requerimento
+    PAULO ROBERTO DE OLIVEIRA PEREIRA             PREFEITURA MUNICIPAL DE CAMPINA GRANDE            29/08/2000               Por Requerimento
+    RICARDO COSTA                                 UNIVERSIDADE FEDERAL DE CAMPINA GRANDE            30/08/1998               Por Requerimento
+    RICARDO JOSÉ DE ALMEIDA FIGUEIREDO            DNOCS                                             05/04/2004               Por Requerimento
+
+    SIDCLEY BOSCOLLI SILVA RODRIGUES              PREFEITURA MUNICIPAL DE MASSARANDUBA              23/07/2009               Por Requerimento
+
+    LUIZ CARLOS DE FARIAS ALVES                   DNOCS                                             06/05/2002               Por Requerimento
+    LUIZA FEITOSA DE MORAIS                       PREFEITURA MUNICIPAL DE CAMPINA GRANDE            23/05/2001               Por Requerimento
+    MARCONI JOSÉ GOMES MEDEIROS                   CAGEPA-COMPANHIA DE AGUA E ESGOTOS DA PARAIBA     20/01/1986               Por Requerimento
+    MARIA DE FÁTIMA NUNES                         PREFEITURA MUNICIPAL DE CAMPINA GRANDE            13/11/1985               Por Requerimento
+    MARIA DO SOCORRO ARAUJO                       PREFEITURA MUNICIPAL DE CAMPINA GRANDE            20/01/1986               Por Requerimento
+    VALDEMIR VIEIRA DE OLIVEIRA                   DNOCS                                             01/09/2009               Por Requerimento
+
+    JACIARA ALVES BARBOSA                         PREFEITURA MUNICIPAL DE UMBUZEIRO                 03/01/2000               Por Requerimento
+    LADJANE MIGUEL ROMÃO DA SILVA                 PREFEITURA MUNICIPAL DE UMBUZEIRO                 03/03/1988               Por Requerimento
+
+    SONIA MARIA FERREIRA DOS SANTOS               PREFEITURA MUNICIPAL DE MONTADAS                  25/09/1995               Por Requerimento
+
+    IRAILDE COSTA DA SILVA                        PREFEITURA MUNICIPAL DE ARARUNA                   05/07/1996               Por Requerimento
+    MARIA DO SOCORRO BORGES MUNIZ                 PREFEITURA MUNICIPAL DE ARARUNA                   08/10/1999               Por Requerimento
+
+    JERÔNIMO DE ALMEIDA CASTRO                    PREFEITURA MUNICIPAL DE JOÃO PESSOA               01/07/1982               Por Requerimento
+
+    MARIA NAZARÉ NUNES DE LIMA                    TRIBUNAL DE JUSTIÇA DO ESTADO DA PARAIBA          25/03/2008               Por Requerimento
+
+    LUCIENE FERNANDES LIMA                        PREFEITURA MUNICIPAL DE SOLEDADE                  01/02/2008               Por Requerimento
+    MARLUCE TEODORO DE ARAÚJO                     PREFEITURA MUNICIPAL DE SOLEDADE                  15/01/1987               Por Requerimento
+
+    FRANCISCA CRENILDA SILVA                      PREFEITURA MUNICIPAL DE CUITÉ                     18/03/2009               Por Requerimento
+    JOSÉ UIRIS ALBUQUERQUE BURITI                 PREFEITURA MUNICIPAL DE CUITÉ                     21/06/2007               Por Requerimento
+    MANOEL SIMPLICIO DO NASCIMENTO NETO           PREFEITURA MUNICIPAL DE CUITÉ                     23/03/2008               Por Requerimento
+    MARIA DO SOCORRO FONSECA                      PREFEITURA MUNICIPAL DE CUITÉ                     28/08/2009               Por Requerimento
+
+    ANTÔNIO GONÇALVES DA SILVA                    PREFEITURA MUNICIPAL DE PICUÍ                     26/01/2009               Por Requerimento
+
+    LÚCIA DE FÁTIMA SILVA                         PREFEITURA MUNICIPAL DE SANTA LUZIA               18/07/2008               Por Requerimento
+    MARIA ALBANISE DA SILVA                       PREFEITURA MUNICIPAL DE SANTA LUZIA               15/07/2008               Por Requerimento
+    ROZANA MEDEIROS DAMASCENO AZEVEDO             PREFEITURA MUNICIPAL DE VÁRZEA                    06/08/2008               Por Requerimento
+
+    ANA MARIA DE OLIVEIRA                         PREFEITURA MUNICIPAL DE TAPEROÁ                   03/06/1987               Por Requerimento
+
+    EXPEDITO GOMES DE ARAÚJO                      SECRETARIA DE ADMINISTRAÇÃO DO ESTADO DA PARAIBA  12/05/2009               Por Requerimento
+    GERALDO PAULINO DA SILVA                      PREFEITURA MUNICIPAL DE PATOS                     27/03/2008               Por Requerimento
+    LUANA DA SILVA SANTOS                         PREFEITURA MUNICIPAL DE SÃO JOSÉ DE ESPINHARAS    27/03/2008               Por Requerimento
+
+    MARIA CLIMENE FERREIRA DE SOUSA               SECRETARIA DE ADMINISTRAÇÃO DO ESTADO DA PARAIBA  10/04/1974               Por Requerimento
+    MAURICEIA DA SILVA GOMES                      PREFEITURA MUNICIPAL DE MONTEIRO                  02/03/2010               Por Requerimento
+    SEBASTIÃO FERREIRA VASCONCELOS                SECRETARIO DE ESTADO DA RECEITA                   10/07/2008               Por Requerimento
+
+    DÁCIO RABELO JÚNIOR                           PREFEITURA MUNICIPAL DE TEIXEIRA                  19/07/2005               Por Requerimento
+    PATRÍCIA SILVA DE LIMA                        PREFEITURA MUNICIPAL DE MATURÉIA                  19/07/2002               Por Requerimento
+
+    HILDOMÁRIA DOS SANTOS CEZAR                   PREFEITURA MUNICIPAL DE POMBAL                    16/11/2009               Por Requerimento
+    KÁTIA REJANE DE SOUSA SILVA                   PREFEITURA MUNICIPAL DE CAJAZEIRINHAS             08/03/2006               Por Requerimento
+    SABRINA DOS SANTOS COSTA                      UNIVERSIDADE FEDERAL DE CAMPINA GRANDE            02/05/2010               Por Requerimento
+    VALCLEIDE LIMA DE ALMEIDA                     PREFEITURA MUNICIPAL DE POMBAL                    02/01/2009               Por Requerimento
+
+    MARLEIDE GOMES RODRIGUES                      PREFEITURA MUNICIPAL DE PIANCÓ                    15/06/2009               Por Requerimento
+    MYRELA SAYANE DAS NEVES SILVA                 PREFEITURA MUNICIPAL DE PIANCÓ                    10/05/2010               Por Requerimento
+
+    GIZÉLIA FIGUEIREDO DA SILVA                   PREFEITURA MUNICIPAL DE ITAPORANGA                27/02/2009               Por Requerimento
+    JEOVACI JOSÉ DE OLIVEIRA                      UNIVERSIDADE FEDERAL DE CAMPINA GRANDE            17/05/2001               Por Requerimento
+    ROBERTO XAVIER DE SOUSA                       SECRETARIA DE DESENVOLVIMENTO HUMANO DO ESTADO DA 02/06/1998               Por Requerimento
+
+    COSMA DA SILVA FERREIRA                       PREFEITURA MUNICIPAL DE PRINCESA ISABEL           14/10/2007               Por Requerimento
+    EDINALDO ISIDRO BARBOSA                       PREFEITURA MUNICIPAL DE PRINCESA ISABEL           15/10/2007               Por Requerimento
+    FRANCISCO DE ASSIS DA SILVA                   PREFEITURA MUNICIPAL DE ÁGUA BRANCA               06/05/2007               Por Requerimento
+    GLEDSON NUNES GOMES                           PREFEITURA MUNICIPAL DE PRINCESA ISABEL           27/03/2004               Por Requerimento
+
+    FRANCISCA DANTAS PINHEIRO                     PREFEITURA MUNICIPAL DE MARIZOPOLIS               29/08/2006               Por Requerimento
+    MARIA DO SOCORRO ABRANTES DE LIMA             PREFEITURA MUNICIPAL DE NAZAREZINHO               29/04/2008               Por Requerimento
+    MARIA GORETE VIEIRA MESSIAS                   PREFEITURA MUNICIPAL DE SÃO FRANCISCO             01/08/1998               Por Requerimento
+
+    ANDRESSA NERY DA SILVA OLIVEIRA               PREFEITURA MUNICIPAL DE BREJO DOS SANTOS          23/11/2010               Por Requerimento
+    CLEIDIMAR FLORÊNCIO DE MESQUITA               PREFEITURA MUNICIPAL DE CATOLÉ DO ROCHA           25/02/2002               Por Requerimento
+    EDSON JOAQUIM DE OLIVEIRA                     COMPANHIA NACIONAL DE ABASTECIMENTO               10/03/2009               Por Requerimento
+    GEORGE FÉLIX DE SOUSA                         PREFEITURA MUNICIPAL DE BOM SUCESSO               04/11/2010               Por Requerimento
+
+    JOSEFA ABREU DE SOUSA                         PREFEITURA MUNICIPAL DE SÃO JOÃO DO RIO DO PEIXE  12/05/2005               Por Requerimento
+    LUCIANA PEREIRA DA SILVA                      PREFEITURA MUNICIPAL DE TRIUNFO                   10/12/2009               Por Requerimento
+    MARIA JOSÉ DO NASCIMENTO GOMES                PREFEITURA MUNICIPAL DE SÃO JOÃO DO RIO DO PEIXE  20/05/2007               Por Requerimento
+
+    FRANCISCA IRANI GUEDES DA SILVA               PREFEITURA MUNICIPAL DE BREJO DOS SANTOS          05/04/2010               Por Requerimento
+    GELMA DA SILVA DOS SANTOS                     CÂMARA MUNICIPAL DE BREJO DO CRUZ                 08/04/2007               Por Requerimento
+
+    MARIA ARISTEA DE SOUSA CAJU                   PREFEITURA MUNICIPAL DE BONITO DE SANTA FÉ        18/12/1976               Por Requerimento
+
+    MARIA DO CARMO FRANÇA DA SILVA                PREFEITURA MUNICIPAL DE SÃO JOSÉ DE PIRANHAS      01/09/2009               Por Requerimento
+    MARIA ELIANE VIEIRA ROLIM                     PREFEITURA MUNICIPAL DE SÃO JOSÉ DE PIRANHAS      25/05/2001               Por Requerimento
+
+    FRANCISCO RAMALHO DE LIMA                     PREFEITURA MUNICIPAL DE SANTANA DE MANGUEIRA      04/02/2010               Por Requerimento
+    REGINALDO ANTÔNIO MALTIDE                     PREFEITURA MUNICIPAL DE CONCEIÇÃO                 16/12/1987               Por Requerimento
+
+    GERCILENE ROLIM FORMIGA                       SECRETARIA DE SAÚDE DO ESTADO DA PARAÍBA          02/12/2005               Por Requerimento
+    RICHARD JOSÉ CAVALCANTE SANTOS                PREFEITURA MUNICIPAL DE CAJAZEIRAS                20/06/2004               Por Requerimento
+
+    EVANDRO BRITO DE ALCÂNTARA                    PREFEITURA MUNICIPAL DE SUMÉ                      10/07/2006               Por Requerimento
+    MARIA DAS NEVES OLIVEIRA DA ROCHA             PREFEITURA MUNICIPAL DE SUMÉ                      25/02/2008               Por Requerimento
+
+    MARIA JOSÉ CAVALCANTE ANDRADE                 PREFEITURA MUNICIPAL DE PEDRAS DE FOGO            01/03/2004               Por Requerimento
+    VALÉRIA MARIA CABRAL DE QUEIROZ               PREFEITURA MUNICIPAL DE PEDRAS DE FOGO            01/03/1982               Por Requerimento
+
+    AÍDA SIMPLICIO DA GLÓRIA                      PREFEITURA MUNICIPAL DE PILÕES                    24/09/1999               Por Requerimento
+
+    MARIA HENRIQUE DO NASCIMENTO                  PREFEITURA MUNICIPAL DE ALAGOINHA                 01/03/2005               Por Requerimento
+    SORAYA AQUINO DE OLIVEIRA                     PREFEITURA MUNICIPAL DE ALAGOINHA                 21/09/2001               Por Requerimento
+
+    MARINEIDE GOMES DA SILVA SANTOS               PREFEITURA MUNICIPAL DE PIRPIRITUBA               01/07/2004               Por Requerimento
+
+    ADRIANA CAVALCANTI DA SILVA                   PREFEITURA MUNICIPAL DE SOLÂNEA                   03/02/2010               Por Requerimento
+    MARIA ARLETE AZEVÊDO E SILVA                  PREFEITURA MUNICIPAL DE SOLÂNEA                   03/06/1994               Por Requerimento
+
+    MARIA COSTA MACIEL ALVES                      PREFEITURA MUNICIPAL DE AROEIRA                   09/03/2005               Por Requerimento
+    ROSSANA PEREIRA DA SILVA                      PREFEITURA MUNICIPAL DE AROEIRA                   17/09/2008               Por Requerimento
+
+    JOÃO DE DEUS SALES SANTOS                     PREFEITURA MUNICIPAL DE POCINHOS                  01/12/0008               Por Requerimento
+
+    CARLOS ANTÔNIO DOS SANTOS SOARES              PREFEITURA MUNICIPAL DE VISTA SERRANA             17/02/2011               Por Requerimento
+
+    MARIA DAS DORES FAUSTINO EUFRÁSIO             PREFEITURA MUNICIPAL DE COREMAS                   10/08/2006               Por Requerimento
+
+    NIVALDO JOSÉ DA SILVA                         PREFEITURA MUNICIPAL DE UIRAUNA                   10/03/2011               Por Requerimento
+
+    MARLENE FERNANDES DA SILVA                    PREFEITURA MUNICIPAL DE BELEM                     17/12/2007               Por Requerimento
+
+    CLAUDETE DE MATOS GABRIEL                     PREFEITURA MUNICIPAL RIO TINTO                    05/02/1987               Por Requerimento
+    RAIMUNDO DE SOUZA FERRAZ JÚNIOR               PREFEITURA MUNICIPAL DE MARCAÇÃO                  31/08/1994               Por Requerimento
+
+    JOSÉ CARLOS ARAÚJO SANTOS                     PREFEITURA MUNICIPAL DE JUAZEIRINHO               04/12/2007               Por Requerimento
+
+    JOSELI DE OLIVEIRA ARAÚJO                     PREFEITURA MUNICIPAL DE CABEDELO                  15/04/2004               Por Requerimento
+    MARLÉCIA DOS SANTOS SILVA DE FREITAS          PREFEITURA MUNICIPAL DE CABEDELO                  10/02/2011               Por Requerimento
+    VALÉRIA CARNEIRO ARAÚJO ATAIDE                PREFEITURA MUNICIPAL DE CABEDELO                  03/02/1986               Por Requerimento
+
+    MARIA DE FÁTIMA SOUSA                         PREFEITURA MUNICIPAL DE SERRA BRANCA              01/03/1989               Por Requerimento
+
+    HÉRGITON TEODOMIRO LINHARES MAIA              CAGEPA-COMPANHIA DE AGUA E ESGOTOS DA PARAIBA     01/05/2008               Por Requerimento
+    LUZIA BARBOSA GANGORRA                        PREFEITURA MUNICIPAL DE QUEIMADAS                 01/07/2005               Por Requerimento
+    MARLI BEZERRA MARTINS                         PREFEITURA MUNICIPAL DE QUEIMADAS                 03/04/1998               Por Requerimento
+    RIVANDA GUEDES DA ROCHA                       SECRETARIA DE EDUCAÇÃO E CULTURA DO ESTADO DA     01/05/1978               Por Requerimento
+
+    ALBALÚCIA FERNANDES                           PREFEITURA MUNICIPAL DE LAGOA DE DENTRO           16/03/2010               Por Requerimento
+    ANGELA DOS ANJOS GALVÃO FELIX                 PREFEITURA MUNICIPAL DE PEDRO RÉGIA               19/01/2009               Por Requerimento
+    JOSEFA LÚCIA SIMÃO PESSOA                     PREFEITURA MUNICIPAL DE JACARAÚ                   18/11/1991               Por Requerimento
+
+    EVANILSON PEREIRA DA SILVA                    PREFEITURA MUNICIPAL DE BAYEUX                    01/09/2010               Por Requerimento
+    FÁBIO DE PAULA MARTINS                        PREFEITURA MUNICIPAL DE BAYEUX                    03/12/2009               Por Requerimento
+    HELDER SILVA DE PAIVA                         PREFEITURA MUNICIPAL DE BAYEUX                    03/12/2009               Por Requerimento
+    MÔNICA APARECIDA DA SILVA                     PREFEITURA MUNICIPAL DE BAYEUX                    15/04/2010               Por Requerimento
+    RINALDO JORGE DO NASCIMENTO                   PREFEITURA MUNICIPAL DE BAYEUX                    15/04/2010               Por Requerimento
+
+    EDNA MACEDO DE SOUSA                          PREFEITURA MUNICIPAL DE BOQUEIRÃO                 06/03/2006               Por Requerimento
+    FRANCISCA COSTA MACÊDO                        PREFEITURA MUNICIPAL DE BOQUEIRÃO                 30/05/1998               Por Requerimento
+    SEVERINA BETÂNIA DE SALES                     PREFEITURA MUNICIPAL DE BOQUEIRÃO                 04/04/2006               Por Requerimento
+
+    JOSÉ JESUALDO SOARES                          PREFEITURA MUNICIPAL DE SÃO JOSÉ DA LAGOA TAPADA  01/07/2006               Por Requerimento
+    MARIA DO SOCORRO BRAGA RIBEIRO                PREFEITURA MUNICIPAL DE SÃO FRANCISCO             01/09/2006               Por Requerimento
+
+    ANÉSIO LIRA MORENO FILHO                      TRIBUNAL DE JUSTIÇA DO ESTADO DA PARAIBA          18/02/2008    01/02/2012 Por Requerimento
+    DENISE MARIA BARBOSA ARCOVERDE                MINISTÉRIO DA SAUDE                               04/02/2009    04/02/2012 Por Requerimento
+    FÁTIMA MARIA DOS SANTOS                       CENTRO FEDERAL DE EDUCACAO TECNOLOGICA DA PARAIBA 22/10/2009    22/10/2011 Por Requerimento
+    GIOVANNI BARBOSA DE ANDRADE                   UNIVERSIDADE FEDERAL DA PARAIBA                   01/10/2008    01/10/2011 Por Requerimento
+    LUIS CARLOS PACHECO TORRES DE CASTRO          CENTRO FEDERAL DE EDUCACAO TECNOLOGICA DA PARAIBA 22/10/2009    22/10/2011 Por Requerimento
+    MARIA DE FÁTIMA DOS SANTOS OLIVEIRA           SECRETARIA DE EDUCAÇÃO E CULTURA DA PMJP          02/02/2009    01/02/2011 Por Requerimento
+    VALDECI FERREIRA AMORIM                       INSTITUTO DE PREVIDÊNCIA DO ESTADO DA PARAÍBA - IP24/02/2010    23/02/2012 Por Requerimento
+
+    AVANEIDE GOMES ALVES                          PREFEITURA MUNICIPAL DE PATOS                     03/11/2009               Por Requerimento
+    MANUEL MOACIR DE ANDRADE                      FNS-FUNDACAO NACIONAL DE SAUDE/PB                 15/09/2010               Por Requerimento
+    MARIA SELENE NASCIMENTO PEREIRA               PREFEITURA MUNICIPAL DE PATOS                     03/01/1988               Por Requerimento
+    MARICÉLIO BARBOSA WANDERLEY                   CÂMARA MUNICIPAL DE PATOS                         12/06/2000               Por Requerimento
+
+    FLÁVIO FERNANDES LEITE                        PREFEITURA MUNICIPAL DE IGARACY                   18/03/2008               Por Requerimento
+    MARIA BEZERRA VALDEVINO                       PREFEITURA MUNICIPAL DE PIANCÓ                    05/05/1982                
+    MARIA DE FÁTIMA JOSÉ DA SILVA REGIS           PREFEITURA MUNICIPAL DE AGUIAR                    01/07/1982               Por Requerimento
+
+    MARGUILEIDE ROQUE CANANÉA                     PREFEITURA MUNICIPAL DE AREIA                     30/11/2000               Por Requerimento
+
+    GILBERTO SOARES SARMENTO                      CENTRO FEDERAL DE EDUCACAO TECNOLOGICA DA PARAIBA 15/12/2008               Por Requerimento
+    HÉBER ROLIM MEIRELES                          PREFEITURA MUNICIAPAL DE CAJAZEIRAS               14/09/2010               Por Requerimento
+
+    ELODI ALVES DA SILVA SÁ                       PREFEITURA MUNICIPAL DE SÃO BENTO                 06/05/2001               Por Requerimento
+    IOLANDA FERREIRA CAVALCANTE                   PREFEITURA MUNICIPAL DE SÃO BENTO                 17/07/2001               Por Requerimento
+
+    AMARILES PEREIRA DE MEDEIROS                  SECRETARIA DE ADMINISTRAÇÃO DO ESTADO DA PARAIBA  22/05/2010    22/05/2012 Por Requerimento
+    EDNALDO RIBEIRO SERPA                         GABINETE CIVIL DO GOVERNADOR                      12/02/2009    15/01/2012 Por Requerimento
+    HELOYSA HELENA MEIRA DE MENEZES               DELEGACIA REGIONAL DO TRABALHO NA PARAIBA         04/12/2008    04/12/2010 Por Requerimento
+    JACIARA DE OLIVEIRA DIAS                      SEC. ESTADO DA CIDADANIA E ADMINISTRAÇÃO PENITENCI30/11/2007    23/04/2012 Por Requerimento
+    JOSEFA COSTA MARQUES                          SECRETARIA DE EDUCAÇÃO E CULTURA DO ESTADO DA     03/10/2008    02/10/2011 Por Requerimento
+    MARIA DAS GRAÇAS DE OLIVEIRA MAIA             SEC. ESTADO DA CIDADANIA E ADMINISTRAÇÃO PENITENCI28/12/2009    27/12/2010 Por Requerimento
+    MARIA DE FÁTIMA DO NASCIMENTO                 INSS-SUPERINTENDENCIA DA PB                       04/09/2009    03/09/2011 Por Requerimento
+    MARIA DE LOURDES KEHRLE FILGUEIRAS            SECRETARIA DE FINANÇAS DO ESTADO DA PARAÍBA       03/10/2009    02/10/2011 Por Requerimento
+    SIMONE BRINDEIRO LACET VIEGAS                 IBGE-FUND.INST.BRASILEIRO DE GEOGRAFIA E ESTATISTI01/10/2009    30/09/2011 Por Requerimento
+    TEREZINHA DE LOURDES PESSOA ARAGÃO            MINISTÉRIO DA AGRICULTURA, PECUÁRIA E ABASTECIMENT19/08/2010    18/08/2011 Por Requerimento
+
+    DUCIMAR GOMES DOS SANTOS                      SECRETARIA DE DESENVOLVIMENTO HUMANO DO ESTADO DA 27/05/1992               Por Requerimento
+    EDVALDO LACERDA CAVALCANTI                    DNOCS                                             08/08/2002               Por Requerimento
+
+    IRENEIDE DA SILVA GALDINO                     PREFEITURA MUNICIPAL DE CAMPINA GRANDE            02/09/1994               Por Requerimento
+    MARIA DE FÁTIMA PAULO E SILVA                 PREFEITURA MUNICIPAL DE CAMPINA GRANDE            18/04/1986               Por Requerimento
+    SALOMÉ FEITOSA NAVARRO DE ARAÚJO ALVES        UNIVERSIDADE FEDERAL DE CAMPINA GRANDE            01/06/2006               Por Requerimento
+
+    ÂNGELA CRISTINA CAVALCANTE                    UNIVERSIDADE FEDERAL DE CAMPINA GRANDE            29/03/2000               Por Requerimento
+    FRANCISCA PEREIRA DA SILVA                    UNIVERSIDADE FEDERAL DE CAMPINA GRANDE            02/08/2004               Por Requerimento
+    LUCIANO TAVARES DE LIMA                       PREFEITURA MUNICIPAL DE CAMPINA GRANDE            19/06/2000               Por Requerimento
+    LUCIENE MARIA SILVA                           UNIVERSIDADE FEDERAL DE CAMPINA GRANDE            01/04/2004               Por Requerimento
+    MARIA APARECIDA LISBOA DA COSTA               UNIVERSIDADE FEDERAL DE CAMPINA GRANDE            01/04/2004               Por Requerimento
+    MARIA IZABEL DE SOUSA                         DEPARTAMENTO ESTADUAL DE ESTRADAS DE RODAGEM DA PB20/09/1986               Por Requerimento
+    RICARDO LUIZ MARTINS LACERDA                  TRIBUNAL REGIONAL DO DO TRABALHO DA 13a. REGIAO   04/08/2009               Por Requerimento
+    SANDRA SILVA ARAÚJO                           PREFEITURA MUNICIPAL DE CAMPINA GRANDE            03/09/1986               Por Requerimento
+
+    ADRIANA BEZERRA DO NASCIMENTO                 PREFEITURA MUNICIPAL DE ALHANDRA                  22/09/2005               Por Requerimento
+    GRISÉLIA MARINHO DA SILVA                     PREFEITURA MUNICIPAL DE ALHANDRA                  15/05/2009               Por Requerimento
+    VERA LÚCIA DA SILVA RAMOS                     PREFEITURA MUNICIPAL DE ALHANDRA                  17/03/2001               Por Requerimento
+
+    NÚBIA ALVES DOS SANTOS GONÇALVES LEITE        PREFEITURA MUNICIPAL DE PRATA                     05/06/2002               Por Requerimento
+
+    MARIA JOSÉ DO NASCIMENTO BANDEIRA             CÂMARA MUNICIPAL DE GURINHÉM                      31/05/1994               Por Requerimento
+
+    CARLOS EDUARDO BORGES ANDRADE                 CENTRO FEDERAL DE EDUCACAO TECNOLOGICA DA PARAIBA 28/04/2008    27/04/2012 Por Requerimento
+    MARCUS VINÍCIUS DIAS DE MEDEIROS              CENTRO FEDERAL DE EDUCACAO TECNOLOGICA DA PARAIBA 28/04/2008    27/04/2012 Por Requerimento
+    MARIA AUXILIADORA SERAFIM DE MELO             DELEGACIA DA RECEITA FEDERAL DO BRASIL            29/06/2010    28/06/2011 Por Requerimento
+    MARIA DAS GRAÇAS LINS SARMENTO                TRIBUNAL DE JUSTIÇA DO ESTADO DA PARAIBA          22/03/2010    22/03/2012 Por Requerimento
+    ROGÉRIO DA SILVA SALES                        SECRETARIA DE ADMINISTRAÇÃO DA PMJP               17/04/2010    16/04/2012 Por Requerimento
+    ROSA MARIA MEIRA FONSECA                      TRIBUNAL DE JUSTIÇA DO ESTADO DA PARAIBA          11/03/2010    10/03/2012 Por Requerimento
+    ROZIBERTO DAS NEVES NUNES                     UNIVERSIDADE FEDERAL DA PARAIBA                   05/11/2009    04/11/2011 Por Requerimento
+
+    FLAVIANO GONÇALVES COUTINHO                   UNIVERSIDADE ESTADUAL DA PARAIBA                  31/08/2008    08/04/2012 Por Requerimento
+    FLORIPES DE LIMA  OLIVEIRA                    MINISTÉRIO DA SAUDE                               15/03/2010    14/03/2011 Por Requerimento
+
+    GILVÂNIA CORREIA DE ARAÚJO                    PREFEITURA MUNICIPAL DE SOBRADO                   05/02/2010    04/02/2011 Por Requerimento
+    LUCIELZA COSTA DE ANDRADE SILVA               EMLUR-AUTARQUIA ESP. MUNIC. DE LIMPEZA URBANA     27/04/2009    27/04/2012 Por Requerimento
+    MARIA DAS GRAÇAS ASSIS DE CASTRO              DEPARTAMENTO NACIONAL DE INFRA ESTRUTURA DE TRANSP04/11/2009    04/11/2011 Por Requerimento
+    MARTA SUELI SILVA BEZERRA                     PREFEITURA MUNICIPAL DE CAMPINA GRANDE            12/02/2010    14/03/2012 Por Requerimento
+    TEREZA CRISTINA DE OLIVEIRA DE SENA           FNS-FUNDACAO NACIONAL DE SAUDE/PB                 18/01/2010    17/01/2012 Por Requerimento

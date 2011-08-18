@@ -1,5 +1,5 @@
 {$IFDEF adumFrameUserBrowser}
-	{$DEFINE DEBUG_UNIT}
+    {$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I ADUserMgr.inc}
 
@@ -14,24 +14,24 @@ uses
 
 type
     TFrmUserBrowser = class(TFrame)
-        dsUserFull :       TDataSource;
-    pgcDetails: TPageControl;
-    tsAD: TTabSheet;
-    tsTitular: TTabSheet;
-    tsRequisit: TTabSheet;
-    tsEstag: TTabSheet;
-    pnlLeft: TPanel;
-    splSplitter: TSplitter;
-    dbgrdUserBrowser: TDBGrid;
-    pnlBrowseFilters: TPanel;
-    chkTitular: TCheckBox;
-    chkRequisit: TCheckBox;
-    chkEstag: TCheckBox;
-    chkTodos: TCheckBox;
-    edtLogin: TLabeledEdit;
-    edtFullName: TLabeledEdit;
-    edtRuledName: TLabeledEdit;
-    procedure dsUserFullDataChange(Sender: TObject; Field: TField);
+        dsUserFull :   TDataSource;
+        pgcDetails :   TPageControl;
+        tsAD :         TTabSheet;
+        tsTitular :    TTabSheet;
+        tsRequisit :   TTabSheet;
+        tsEstag :      TTabSheet;
+        pnlLeft :      TPanel;
+        splSplitter :  TSplitter;
+        dbgrdUserBrowser : TDBGrid;
+        pnlBrowseFilters : TPanel;
+        chkTitular :   TCheckBox;
+        chkRequisit :  TCheckBox;
+        chkEstag :     TCheckBox;
+        chkTodos :     TCheckBox;
+        edtLogin :     TLabeledEdit;
+        edtFullName :  TLabeledEdit;
+        edtRuledName : TLabeledEdit;
+        procedure dsUserFullDataChange(Sender : TObject; Field : TField);
     private
         { Private declarations }
     public
@@ -47,9 +47,9 @@ implementation
 
 { TFrmUserBrowser }
 
-procedure TFrmUserBrowser.dsUserFullDataChange(Sender: TObject; Field: TField);
+procedure TFrmUserBrowser.dsUserFullDataChange(Sender : TObject; Field : TField);
 begin
-     {TODO -oroger -cdsg : Recarregar os valores relativos a mudanca de registro}
+    {TODO -oroger -cdsg : Recarregar os valores relativos a mudanca de registro}
 
 end;
 

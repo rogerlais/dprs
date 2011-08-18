@@ -8,7 +8,7 @@ unit mtUtils;
 interface
 
 uses
-	 SysUtils, Windows, Classes, WinReg32, JclWin32, LmAccess, Generics.Collections, TREUsers;
+    SysUtils, Windows, Classes, WinReg32, JclWin32, LmAccess, Generics.Collections, TREUsers;
 
 type
     TZEUser = class
@@ -69,7 +69,7 @@ uses
 
 const
 {$IFDEF DEBUG}
-	HOOK_USER_ACCOUNT = 'roger'; //Conta usada para recuperar o dominio da máquina
+    HOOK_USER_ACCOUNT = 'roger'; //Conta usada para recuperar o dominio da máquina
 {$ELSE}
     HOOK_USER_ACCOUNT = '000000010191'; //Conta usada para recuperar o dominio da máquina
 {$ENDIF}
@@ -161,11 +161,11 @@ begin
     Self.FUsers.OwnsObjects := True;
     //Adiciona a lista de usuários conhecida
      {$IFDEF DEBUG}
-	 //Self.FUsers.Add( TZEUser.Create('ghost', 'esmeralda' ) );
-	 dUser:=TZEUser.Create('000000010191', 'util<1>z<2>d<3>');
-	 dUser.Scope:=usSupport;
-	 Self.FUsers.Add(dUser);
-	 {$ELSE}
+    //Self.FUsers.Add( TZEUser.Create('ghost', 'esmeralda' ) );
+    dUser := TZEUser.Create('000000010191', 'util<1>z<2>d<3>');
+    dUser.Scope := usSupport;
+    Self.FUsers.Add(dUser);
+     {$ELSE}
     dUser := TZEUser.Create('suporte', 'admin<1>str<2>d<3>');
     dUser.Scope := usSupport;
     Self.FUsers.Add(dUser);
@@ -273,12 +273,20 @@ begin
 end;
 
 function TZEUserList.GetZoneId : Integer;
+var
+    domainName : string;
 begin
-    {$IFDEF DEBUG}
-		Result:=TTREUtils.GetComputerZone('ZPB081WKS145');
-		{$ELSE}
-    Result := TTREUtils.GetComputerZone(GetComputerName());
-    {$ENDIF}
+	 if Self.isDomain then begin
+		 //Formato do nome do dominio = cae-pbnnn ou zne-pbnnn
+		 domainName := Copy(Self.Domain, 7, 3);
+		 Result     := StrToInt(domainName);
+	 end else begin
+		 {$IFDEF DEBUG}
+		 Result := TTREUtils.GetComputerZone('ZPB081WKS145');
+		 {$ELSE}
+		 Result := TTREUtils.GetComputerZone(GetComputerName());
+		 {$ENDIF}
+	 end;
 end;
 
 function TZEUserList.LookupStationDomain(const CurUser : string) : string;

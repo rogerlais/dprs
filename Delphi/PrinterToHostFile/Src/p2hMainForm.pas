@@ -61,6 +61,8 @@ const
     REG_HKCU_SAMSUNG_ENTRY = 'HKEY_CURRENT_USER\Software\SSScan\Samsung SCX-4x28 Series';
 
 
+{TODO -oroger -cdsg : Alterar lógica do aplicativo para registrar em todos os servidores de DNS os hosts das impressoras }
+	
 procedure TPthfMainForm.btnCancelClick(Sender : TObject);
 begin
     Self.Close;

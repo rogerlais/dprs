@@ -11,15 +11,15 @@ interface
 uses
     Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
     Dialogs, adumMainDataModule, FileInfo, ToolWin, ActnMan, ActnCtrls, ComCtrls, PlatformDefaultStyleActnCtrls, ActnList, ImgList,
-  StdActns;
+    StdActns;
 
 type
     TfrmADUserMgr = class(TForm)
         statbarMain :    TStatusBar;
         acttbTopMain :   TActionToolBar;
         actmgrMainForm : TActionManager;
-    ilMainForm: TImageList;
-    actSave: TFileSaveAs;
+        ilMainForm :     TImageList;
+        actSave :        TFileSaveAs;
         procedure FormCreate(Sender : TObject);
         procedure FormShow(Sender : TObject);
     private
@@ -58,8 +58,15 @@ end;
 
 procedure TfrmADUserMgr.FormShow(Sender : TObject);
 begin
-    AppControl.LoadAllData(Self);
-    AppControl.ShowUserBrowser(Self);
+    try
+        AppControl.LoadAllData(Self);
+        AppControl.ShowUserBrowser(Self);
+    except
+        on E : Exception do begin
+			 Self.acttbTopMain.Enabled := False;
+			 MessageDlg(E.Message, mtError, [ mbOK ] , 0);
+        end;
+    end;
     {TODO -oroger -cdsg : Carregar todos os dados dos bancos externos}
 end;
 
