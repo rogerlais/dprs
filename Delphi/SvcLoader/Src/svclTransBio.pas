@@ -64,18 +64,18 @@ end;
 procedure TTransBioThread.DoCycle;
 ///Inicia novo ciclo de operação
 var
-    FileEnt : IEnumerable<TFileSystemEntry>;
+	 FileEnt : IEnumerable<TFileSystemEntry>;
     f : TFileSystemEntry;
 begin
-	FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
+	//FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
 	FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
 	 if GlobalConfig.isPrimaryComputer then begin
 		 //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
-
+		 Self.CreatePrimaryBackup( GlobalConfig.StationSourcePath );
 	 end else begin
 		 //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
         for f in FileEnt do begin
-            Self.ReplicDataFiles2PrimaryMachine(f.FullName);
+			 Self.ReplicDataFiles2PrimaryMachine(f.FullName);
         end;
     end;
 end;
