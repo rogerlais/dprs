@@ -1,0 +1,16 @@
+Original adaptada
+<LDAP://DC=tre-pb,DC=gov,DC=br>;(|(|(cn=shenoy*))(sn=*));cn,mail,sn,st,homePhone;subtree
+
+
+original sem filtros
+<LDAP://DC=tre-pb,DC=gov,DC=br>;;cn,mail,sn,st,homePhone;subtree
+
+
+Provider=ADsDSOObject;Encrypt Password=False;Mode=Read;Bind Flags=0;ADSI Flag=-2147483648;Extended Properties="Cache Results=False;Page Size=5000"
+
+
+
+[http://support.microsoft.com/default.aspx?scid=kb;en-us;315071&sd=tech]
+Explicita as politicas de acesso as consultas ao LDAP do servidor
+
+
