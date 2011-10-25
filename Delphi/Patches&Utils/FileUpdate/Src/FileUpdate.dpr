@@ -5,18 +5,17 @@
 
 program FileUpdate;
 
-{$APPTYPE CONSOLE}
-
 uses
   SysUtils,
-  fuMainDataModule in 'fuMainDataModule.pas' {DMMainController: TDataModule};
+  Forms,
+  fuMainDataModule in 'fuMainDataModule.pas' {DMMainController: TDataModule},
+  fuMainForm in 'fuMainForm.pas' {FUMainWindow};
+
+
+{$R *.RES}
 
 begin
-  try
-	 { TODO -oUser -cConsole Main : Insert code here }
-
-  except
-	 on E: Exception do
-      Writeln(E.ClassName, ': ', E.Message);
-  end;
+	Application.CreateForm( TDMMainController, DMMainController );
+	Application.CreateForm( TFUMainWindow, FUMainWindow );
+	Application.Run;
 end.

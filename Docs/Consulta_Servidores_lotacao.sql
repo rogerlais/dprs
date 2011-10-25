@@ -18,4 +18,4 @@ on
     ( lot.mat_servidor = serv.mat_servidor ) and ( lot.llotacao = serv.dt_ini_lotacao )
 where
     (dt_fim_lotacao is null ) and ( nomes.mat_servidor = serv.mat_servidor ) and ( siglas.cd = serv.COD_UNID_TSE )
-order by 1;
+order by 1,2;

@@ -38,7 +38,7 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
 			<DCC_DependencyCheckOutputName>..\Debug\FileUpdate.exe</DCC_DependencyCheckOutputName>
-			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+			<DCC_Define>DEBUG;DEBUG_ALL;$(DCC_Define)</DCC_Define>
 			<DCC_BplOutput>..\Debug</DCC_BplOutput>
 			<DCC_ExeOutput>..\Debug</DCC_ExeOutput>
 			<DCC_DcpOutput>..\Debug</DCC_DcpOutput>
@@ -51,6 +51,9 @@
 			<DCCReference Include="fuMainDataModule.pas">
 				<Form>DMMainController</Form>
 				<DesignClass>TDataModule</DesignClass>
+			</DCCReference>
+			<DCCReference Include="fuMainForm.pas">
+				<Form>FUMainWindow</Form>
 			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
