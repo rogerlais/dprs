@@ -27,8 +27,8 @@ type
         function GetServiceAccountName : string;
         function GetCycleInterval : Integer;
         function GetIsPrimaryComputer : boolean;
-		 function GetPrimaryBackupPath : string;
-		 function GetPrimaryToTransmitPath : string;
+        function GetPrimaryBackupPath : string;
+        function GetPrimaryToTransmitPath : string;
         function GetDebugLevel : Integer;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
@@ -38,8 +38,8 @@ type
         property StationBackupPath : string read GetStationBackupPath;
         property StationRemoteTransPath : string read GetStationRemoteTransPath;
         //Atributos privativos do computador primario
-		 property PrimaryBackupPath : string read GetPrimaryBackupPath;
-		 property PrimaryTransmittedPath : string read GetPrimaryToTransmitPath;
+        property PrimaryBackupPath : string read GetPrimaryBackupPath;
+        property PrimaryTransmittedPath : string read GetPrimaryToTransmitPath;
         //Atributos do servico
         property ServiceAccountPassword : string read GetServiceAccountPassword;
         property ServiceAccountName : string read GetServiceAccountName;
@@ -93,11 +93,14 @@ var
     pc : string;
 begin
     if Self._FIsPrimaryComputer < 0 then begin  //Deve ser calculado nesta pessagem
-         {$IFDEF DEBUG}
+        {$IFDEF DEBUG}
         pc := TTREUtils.GetZonePrimaryComputer('ZPB080STD99');
-         {$ELSE}
-        pc := TTREUtils.GetZonePrimaryComputer(WinNetHnd.GetComputerName());
-         {$ENDIF}
+        {$ELSE}
+        Self.ReadStringDefault('ForcedPrimaryComputer');
+        if pc = EmptyStr then begin
+            pc := TTREUtils.GetZonePrimaryComputer(WinNetHnd.GetComputerName());
+        end;
+        {$ENDIF}
         if SameText(pc, WinNetHnd.GetComputerName()) then begin
             Self._FIsPrimaryComputer := 1;
         end else begin
@@ -169,14 +172,14 @@ begin
 end;
 
 function TBioReplicatorConfig.GetPrimaryToTransmitPath : string;
-///
-/// Leitura do local onde a estação primária armazena os arquivos para transmissão
-///
+    ///
+    /// Leitura do local onde a estação primária armazena os arquivos para transmissão
+    ///
 begin
 {$IFDEF DEBUG}
-	 Result := ExpandFileName('..\Data\PrimaryTransmitted');
+    Result := ExpandFileName('..\Data\PrimaryTransmitted');
 {$ELSE}
-	 Result := 'D:\Aplic\TransBio\Files\Bio';
+    Result := 'D:\Aplic\TransBio\Files\Bio';
 {$ENDIF}
     Result := ExpandFileName(Self.ReadStringDefault('PrimaryTransmittedPath', Result));
 end;
@@ -206,21 +209,28 @@ begin
 end;
 
 function TBioReplicatorConfig.GetServiceAccountPassword : string;
-    //Retorna a senha para a conta usada para levantar os serviços
+//Retorna a senha para a conta usada para levantar os serviços
 var
     zu : TTREZEUser;
+    zoneId : Integer;
 begin
     //Retornar a senha para a conta que levanta os serviços de acordo com o valor do nome do computador
-    zu := TTREZEUser.Create(Self.ServiceAccountName, 'admin<1>str<2>d<3>'); //NOTA.: Raiz da senha hardcoded
+    zu := TTREZEUser.Create(Self.ServiceAccountName, PWD_SEED_CURRENT_SUPORTE); //NOTA.: Raiz da senha hardcoded
     try
-         {$IFDEF DEBUG}
+        {$IFDEF DEBUG}
         Result := zu.TranslatedPwd(TTREUtils.GetComputerZone('zpb111std02'));
         if Result <> EmptyStr then begin
             Result := EmptyStr;
         end;
         {$ELSE}
-        Result := zu.TranslatedPwd(TTREUtils.GetComputerZone(WinNetHnd.GetComputerName()));
-       {$ENDIF}
+        {TODO -oroger -curgente : remover hardcoded de emergencia}
+        zoneId:=Self.ReadIntegerDefault('ForcedZoneID');
+        if zoneId <>  0 then begin
+           Result := zu.TranslatedPwd(TTREUtils.GetComputerZone(WinNetHnd.GetComputerName()));
+        end else begin
+            Result := zu.TranslatedPwd( zoneId );
+        end;
+        {$ENDIF}
     finally
         zu.Free;
     end;

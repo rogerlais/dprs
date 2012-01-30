@@ -15,9 +15,9 @@ type
     private
         FStream :    TFileStream;
         FConnected : boolean;
-		 procedure DoCycle;
-		 procedure ReplicDataFiles2PrimaryMachine(const Filename : string);
-		 procedure CreatePrimaryBackup( const Filename : string );
+        procedure DoCycle;
+        procedure ReplicDataFiles2PrimaryMachine(const Filename : string);
+        procedure CreatePrimaryBackup(const Filename : string);
         procedure CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
         procedure SetConnected(const Value : boolean);
     public
@@ -56,7 +56,7 @@ begin
     end;
 end;
 
-procedure TTransBioThread.CreatePrimaryBackup(const Filename: string);
+procedure TTransBioThread.CreatePrimaryBackup(const Filename : string);
 begin
 
 end;
@@ -64,18 +64,18 @@ end;
 procedure TTransBioThread.DoCycle;
 ///Inicia novo ciclo de operação
 var
-	 FileEnt : IEnumerable<TFileSystemEntry>;
+    FileEnt : IEnumerable<TFileSystemEntry>;
     f : TFileSystemEntry;
 begin
-	//FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
-	FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
-	 if GlobalConfig.isPrimaryComputer then begin
-		 //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
-		 Self.CreatePrimaryBackup( GlobalConfig.StationSourcePath );
-	 end else begin
-		 //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
+    //FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
+    FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
+    if GlobalConfig.isPrimaryComputer then begin
+        //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
+        Self.CreatePrimaryBackup(GlobalConfig.StationSourcePath);
+    end else begin
+        //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
         for f in FileEnt do begin
-			 Self.ReplicDataFiles2PrimaryMachine(f.FullName);
+            Self.ReplicDataFiles2PrimaryMachine(f.FullName);
         end;
     end;
 end;
@@ -91,17 +91,17 @@ const
 var
     PrimaryTransName, LocalTransName, LocalBackupName : string;
 begin
-	 //Copia para a pasta local de transmissão
-	 LocalTransName := TFileHnd.ConcatPath([GlobalConfig.StationLocalTransPath, ExtractFileName(Filename)]);
-	 Self.CopyBioFile(Filename, LocalTransName, 'Transbio Local', ERR_MSG, False);
+    //Copia para a pasta local de transmissão
+    LocalTransName := TFileHnd.ConcatPath([GlobalConfig.StationLocalTransPath, ExtractFileName(Filename)]);
+    Self.CopyBioFile(Filename, LocalTransName, 'Transbio Local', ERR_MSG, False);
 
     //Copia arquivo para local remoto de transmissão
-	 PrimaryTransName := TFileHnd.ConcatPath([GlobalConfig.StationRemoteTransPath, ExtractFileName(Filename)]);
+    PrimaryTransName := TFileHnd.ConcatPath([GlobalConfig.StationRemoteTransPath, ExtractFileName(Filename)]);
     Self.CopyBioFile(Filename, PrimaryTransName, 'Repositório primário', ERR_MSG, False);
 
     //Move arquivo para backup local
-	 LocalBackupName := TFileHnd.ConcatPath([GlobalConfig.StationBackupPath, ExtractFileName(Filename)]);
-	 Self.CopyBioFile(Filename, LocalBackupName, 'Backup Local', ERR_MSG, True);
+    LocalBackupName := TFileHnd.ConcatPath([GlobalConfig.StationBackupPath, ExtractFileName(Filename)]);
+    Self.CopyBioFile(Filename, LocalBackupName, 'Backup Local', ERR_MSG, True);
 end;
 
 procedure TTransBioThread.Execute;
@@ -145,9 +145,9 @@ var
     Path : string;
 begin
     if Value then begin //Acessar o mapeamento para o repositório da máquina primária
-		 Path := GlobalConfig.PrimaryTransmittedPath;
-		 if not (DirectoryExists(Path)) then begin
-			 raise Exception.CreateFmt('Falha acessando repositório dos arquivos no computador primário.'#13'"%s', [Path]);
+        Path := GlobalConfig.PrimaryTransmittedPath;
+        if not (DirectoryExists(Path)) then begin
+            raise Exception.CreateFmt('Falha acessando repositório dos arquivos no computador primário.'#13'"%s', [Path]);
         end;
     end;
     FConnected := Value;

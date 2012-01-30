@@ -15,19 +15,22 @@
 			<Projects Include="..\..\..\Pcks\StFLib\Src\StFLibD14.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="..\..\..\Pcks\TRE\Src\TRELib.dproj">
-				<Dependencies/>
-			</Projects>
 			<Projects Include="..\MigraTools\Src\MigraTools.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="..\..\..\Pcks\TRE\Src\TRELib.dproj">
+				<Dependencies/>
+			</Projects>
 			<Projects Include="Src\SvcLoader.dproj">
 				<Dependencies/>
 			</Projects>
 			<Projects Include="Src\SvcLoaderInteractiveDebugger.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Demos\PrivilegeTest\Src\PrivilegeTest.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -74,15 +77,6 @@
 		<Target Name="StFLibD14:Make">
 			<MSBuild Targets="Make" Projects="..\..\..\Pcks\StFLib\Src\StFLibD14.dproj"/>
 		</Target>
-		<Target Name="TRELib">
-			<MSBuild Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
-		</Target>
-		<Target Name="TRELib:Clean">
-			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
-		</Target>
-		<Target Name="TRELib:Make">
-			<MSBuild Targets="Make" Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
-		</Target>
 		<Target Name="MigraTools">
 			<MSBuild Projects="..\MigraTools\Src\MigraTools.dproj"/>
 		</Target>
@@ -100,6 +94,15 @@
 		</Target>
 		<Target Name="WinNetLibD14:Make">
 			<MSBuild Targets="Make" Projects="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj"/>
+		</Target>
+		<Target Name="TRELib">
+			<MSBuild Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
+		</Target>
+		<Target Name="TRELib:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
+		</Target>
+		<Target Name="TRELib:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
 		</Target>
 		<Target Name="SvcLoader">
 			<MSBuild Projects="Src\SvcLoader.dproj"/>
@@ -119,14 +122,23 @@
 		<Target Name="SvcLoaderInteractiveDebugger:Make">
 			<MSBuild Targets="Make" Projects="Src\SvcLoaderInteractiveDebugger.dproj"/>
 		</Target>
+		<Target Name="PrivilegeTest">
+			<MSBuild Projects="Demos\PrivilegeTest\Src\PrivilegeTest.dproj"/>
+		</Target>
+		<Target Name="PrivilegeTest:Clean">
+			<MSBuild Targets="Clean" Projects="Demos\PrivilegeTest\Src\PrivilegeTest.dproj"/>
+		</Target>
+		<Target Name="PrivilegeTest:Make">
+			<MSBuild Targets="Make" Projects="Demos\PrivilegeTest\Src\PrivilegeTest.dproj"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="SvcMDL;XPLibD14;WinSysLibD14;StFLibD14;TRELib;MigraTools;WinNetLibD14;SvcLoader;SvcLoaderInteractiveDebugger"/>
+			<CallTarget Targets="SvcMDL;XPLibD14;WinSysLibD14;StFLibD14;MigraTools;WinNetLibD14;TRELib;SvcLoader;SvcLoaderInteractiveDebugger;PrivilegeTest"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="SvcMDL:Clean;XPLibD14:Clean;WinSysLibD14:Clean;StFLibD14:Clean;TRELib:Clean;MigraTools:Clean;WinNetLibD14:Clean;SvcLoader:Clean;SvcLoaderInteractiveDebugger:Clean"/>
+			<CallTarget Targets="SvcMDL:Clean;XPLibD14:Clean;WinSysLibD14:Clean;StFLibD14:Clean;MigraTools:Clean;WinNetLibD14:Clean;TRELib:Clean;SvcLoader:Clean;SvcLoaderInteractiveDebugger:Clean;PrivilegeTest:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="SvcMDL:Make;XPLibD14:Make;WinSysLibD14:Make;StFLibD14:Make;TRELib:Make;MigraTools:Make;WinNetLibD14:Make;SvcLoader:Make;SvcLoaderInteractiveDebugger:Make"/>
+			<CallTarget Targets="SvcMDL:Make;XPLibD14:Make;WinSysLibD14:Make;StFLibD14:Make;MigraTools:Make;WinNetLibD14:Make;TRELib:Make;SvcLoader:Make;SvcLoaderInteractiveDebugger:Make;PrivilegeTest:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

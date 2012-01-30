@@ -1,5 +1,5 @@
 {$IFDEF svclBiometricFiles}
-	{$DEFINE DEBUG_UNIT}
+    {$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I SvcLoader.inc}
 
@@ -63,25 +63,50 @@ begin
 end;
 
 procedure TBioFilesService.ServiceBeforeInstall(Sender : TService);
+var
+    reg : TRegistryNT;
+    lst : TStringList;
 begin
     //Ajusta as credenciais para instalação do serviço
-    Self.Password := GlobalConfig.ServiceAccountPassword;
-    Self.ServiceStartName := GlobalConfig.ServiceAccountName;
-    TLogFile.Log(Format('Iniciando o registro do serviço com as credenciais:'#13'Conta: %s'#13'Senha: %s',
-        [Self.ServiceStartName, Self.Password]));
+    { TODO -oroger -cURGENTE : Rever pois apenas system deu ok }
+    //Self.Password := GlobalConfig.ServiceAccountPassword;
+    //Self.ServiceStartName := GlobalConfig.ServiceAccountName;
+
+
+
+    TLogFile.Log(Format('Registrando o registro do serviço com as credenciais:'#13'Conta: %s'#13'Senha: %s',
+        [Self.ServiceStartName, Self.Password]), lmtInformation);
+    reg := TRegistryNT.Create;
+    lst := TStringList.Create;
+    try
+        reg.ReadFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst);
+        if lst.IndexOf(Self.Name) < 0 then begin
+           lst.Add('BioFilesService');
+           lst.Add('SESOP TransBio Replicator');
+           TLogFile.Log('Alterando ordem de inicializalçao dos serviços no registro local');
+           reg.WriteFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst, True );
+        end;
+    finally
+        reg.Free;
+        lst.Free;
+    end;
 end;
 
 procedure TBioFilesService.ServiceCreate(Sender : TObject);
 begin
     {TODO -oroger -cdsg : Ajustar o StartName e o Password de acordo com a configuração ou linha de comando}
-    Self.FSvcThread      := TTransBioThread.Create(True);
+    Self.FSvcThread := TTransBioThread.Create(True);
     Self.FSvcThread.Name := 'SESOP TransBio Replicator';
+    Self.Password := GlobalConfig.ServiceAccountPassword;
+    Self.ServiceStartName := GlobalConfig.ServiceAccountName;
+    TLogFile.Log(Format('Iniciando o registro do serviço com as credenciais:'#13'Conta: %s'#13'Senha: %s',
+        [Self.ServiceStartName, Self.Password]), lmtInformation );
 end;
 
 procedure TBioFilesService.ServiceStart(Sender : TService; var Started : boolean);
 begin
-	 //Rotina de inicio do servico, cria o thread da operação e o inicia
-	 Self.tmrCycleEvent.Interval:=GlobalConfig.CycleInterval;
+    //Rotina de inicio do servico, cria o thread da operação e o inicia
+    Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
     Self.FSvcThread.Start;
     Sleep(300);
     Self.FSvcThread.Suspended := False;

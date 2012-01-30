@@ -1,9 +1,9 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{3ACEC0AB-990B-4AE8-9C77-8ABA2145FACE}</ProjectGuid>
+			<ProjectGuid>{A3450485-5F57-4C3B-A9DE-FA2CB7874D27}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
-			<MainSource>SvcLoader.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<MainSource>PrivilegeTest.dpr</MainSource>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -20,13 +20,14 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_DependencyCheckOutputName>SvcLoader.exe</DCC_DependencyCheckOutputName>
+			<DCC_UnitSearchPath>$(Pcks)\Jedi\jwscl\source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_DependencyCheckOutputName>PrivilegeTest.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<DCC_Platform>x86</DCC_Platform>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
-			<DCC_DependencyCheckOutputName>..\Release\SvcLoader.exe</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\Release\PrivilegeTest.exe</DCC_DependencyCheckOutputName>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
 			<DCC_ExeOutput>..\Release</DCC_ExeOutput>
 			<DCC_BplOutput>..\Release</DCC_BplOutput>
@@ -37,8 +38,7 @@
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
-			<DCC_DebugDCUs>true</DCC_DebugDCUs>
-			<DCC_DependencyCheckOutputName>..\Debug\SvcLoader.exe</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\Debug\PrivilegeTest.exe</DCC_DependencyCheckOutputName>
 			<DCC_Define>DEBUG;DEBUG_ALL;$(DCC_Define)</DCC_Define>
 			<DCC_BplOutput>..\Debug</DCC_BplOutput>
 			<DCC_ExeOutput>..\Debug</DCC_ExeOutput>
@@ -46,23 +46,12 @@
 			<DCC_DcuOutput>..\Debug</DCC_DcuOutput>
 		</PropertyGroup>
 		<ItemGroup>
-			<DelphiCompile Include="SvcLoader.dpr">
+			<DelphiCompile Include="PrivilegeTest.dpr">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="svclBiometricFiles.pas">
-				<Form>BioFilesService</Form>
-				<DesignClass>TService</DesignClass>
+			<DCCReference Include="ptMaindForm.pas">
+				<Form>Form2</Form>
 			</DCCReference>
-			<DCCReference Include="svclTransBio.pas"/>
-			<DCCReference Include="svclConfig.pas"/>
-			<None Include="ModelSupport_SvcLoader\default.txaPackage"/>
-			<None Include="ModelSupport_SvcLoader\default.txvpck"/>
-			<None Include="ModelSupport_SvcLoader\Use Case Diagram1.txvuse"/>
-			<None Include="ModelSupport_SvcLoader\svclTransBio\default.txvpck"/>
-			<None Include="ModelSupport_SvcLoader\svclBiometricFiles\default.txvpck"/>
-			<None Include="ModelSupport_SvcLoader\SvcLoader\default.txvpck"/>
-			<None Include="SvcLoader.todo"/>
-			<None Include="ModelSupport_SvcLoader\svclConfig\default.txaPackage"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -82,7 +71,7 @@
 			<BorlandProject>
 				<Delphi.Personality>
 					<Source>
-						<Source Name="MainSource">SvcLoader.dpr</Source>
+						<Source Name="MainSource">PrivilegeTest.dpr</Source>
 					</Source>
 					<Parameters>
 						<Parameters Name="UseLauncher">False</Parameters>
@@ -90,12 +79,12 @@
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
 					</Parameters>
 					<VersionInfo>
-						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
-						<VersionInfo Name="Release">2012</VersionInfo>
-						<VersionInfo Name="Build">18</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">0</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -105,19 +94,18 @@
 						<VersionInfo Name="CodePage">1252</VersionInfo>
 					</VersionInfo>
 					<VersionInfoKeys>
-						<VersionInfoKeys Name="CompanyName">TRE-PB/COSUP/SESOP</VersionInfoKeys>
-						<VersionInfoKeys Name="FileDescription">SESOP Service Loader</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.0.2012.18</VersionInfoKeys>
-						<VersionInfoKeys Name="InternalName">SESOP Service Loader</VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
-						<VersionInfoKeys Name="ProductName">SESOP Service Loader</VersionInfoKeys>
-						<VersionInfoKeys Name="ProductVersion">1.0.2010.17</VersionInfoKeys>
-						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductName"/>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
 				</Delphi.Personality>
-				<ModelSupport>True</ModelSupport>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>
