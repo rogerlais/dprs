@@ -33,7 +33,7 @@ EditWindowCount=1
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas]
 ModuleType=TSourceModule
-FormState=0
+FormState=1
 FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas]
@@ -71,7 +71,7 @@ FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\PrivilegeTest\Src\ptMaindForm.pas]
 ModuleType=TSourceModule
-FormState=0
+FormState=1
 FormOnTop=0
 
 [C:\Sw\WorkDir\Pcks\Jedi\jwscl\source\JwsclSecureObjects.pas]
@@ -86,7 +86,7 @@ FormOnTop=0
 
 [C:\Sw\WorkDir\Pcks\Jedi\jwscl\examples\UACAware\Unit1.pas]
 ModuleType=TSourceModule
-FormState=0
+FormState=1
 FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20]
@@ -128,15 +128,15 @@ ClientHeight=9380
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
-LeftPanelSize=1281
+LeftPanelSize=1703
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800010100000000A10E00000000000001010500000000000001000000005C0E000009000000446F636B53697465330100000000011A00001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=000008000101000000009C1400000000000001A70600000000000001000000005C0E000009000000446F636B53697465330100000000A42400001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=1568
 RightPanelClients=DockSite2,DockSite4
-RightPanelData=00000800010100000000A10E00000000000001200600000000000001000000004412000009000000446F636B53697465320100000000011A000009000000446F636B5369746534FFFFFFFF
-BottomPanelSize=2694
+RightPanelData=000008000101000000009C1400000000000001200600000000000001000000004412000009000000446F636B53697465320100000000A424000009000000446F636B5369746534FFFFFFFF
+BottomPanelSize=0
 BottomPanelClients=DockSite1,MessageView
-BottomPanelData=0000080001020100000009000000446F636B5369746531724500000000000002860A0000000000000100000000724500000F0000004D65737361676556696577466F726DFFFFFFFF
+BottomPanelData=0000080001020200000009000000446F636B53697465310F0000004D65737361676556696577466F726D1F34000000000000022606000000000000FFFFFFFF
 BottomMiddlePanelSize=0
 BottomMiddlePanelClients=DockSite0
 BottomMiddelPanelData=0000080001000100000009000000446F636B53697465302319000000000000007D1B000000000000FFFFFFFF
@@ -357,18 +357,18 @@ StayOnTop=0
 [MessageView]
 PercentageSizes=1
 Create=1
-Visible=1
+Visible=0
 Docked=1
 State=0
 Left=0
-Top=22
-Width=10000
-Height=2491
+Top=0
+Width=2766
+Height=1426
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=10000
-ClientHeight=2491
-TBDockHeight=2491
+ClientWidth=2766
+ClientHeight=1426
+TBDockHeight=1426
 LRDockWidth=2766
 Dockable=1
 StayOnTop=0
@@ -382,11 +382,11 @@ State=0
 Left=0
 Top=0
 Width=1568
-Height=1778
+Height=4500
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1568
-ClientHeight=1778
+ClientHeight=4500
 TBDockHeight=7148
 LRDockWidth=2000
 Dockable=1
@@ -605,17 +605,17 @@ Docked=1
 State=0
 Left=0
 Top=419
-Width=1281
-Height=2778
+Width=1703
+Height=5500
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1281
-ClientHeight=2778
+ClientWidth=1703
+ClientHeight=5500
 TBDockHeight=9176
-LRDockWidth=1281
+LRDockWidth=1703
 Dockable=1
 StayOnTop=0
-SplitPos=84
+SplitPos=111
 
 [ModelViewTool]
 PercentageSizes=1
@@ -689,11 +689,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1281
+Width=1703
 Height=3435
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1281
+ClientWidth=1703
 ClientHeight=3435
 TBDockHeight=3676
 LRDockWidth=1891
@@ -804,14 +804,14 @@ Docked=1
 State=0
 Left=0
 Top=22
-Width=1281
+Width=1703
 Height=3435
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1281
+ClientWidth=1703
 ClientHeight=3435
 TBDockHeight=9176
-LRDockWidth=1281
+LRDockWidth=1703
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -829,11 +829,11 @@ State=0
 Left=0
 Top=527
 Width=1568
-Height=1778
+Height=4500
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1568
-ClientHeight=1778
+ClientHeight=4500
 TBDockHeight=9176
 LRDockWidth=1568
 Dockable=1
