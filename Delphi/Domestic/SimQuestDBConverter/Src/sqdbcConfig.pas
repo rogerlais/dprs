@@ -10,10 +10,12 @@ type
     private
         function GetDestDir : string;
         function GetSourceDir : string;
+        procedure SetDestDir(const Value : string);
+        procedure SetSourceDir(const Value : string);
     published
     public
-        property SourceDir : string read GetSourceDir;
-        property DestDir : string read GetDestDir;
+        property SourceDir : string read GetSourceDir write SetSourceDir;
+        property DestDir : string read GetDestDir write SetDestDir;
     end;
 
 var
@@ -24,10 +26,14 @@ implementation
 uses
     FileHnd;
 
+resourcestring
+    StrDestDir   = 'DestDir';
+    StrSourceDir = 'SourceDir';
+
 
 procedure InitConfig();
 begin
-    GlobalConfig := TSQConvConfig.Create(ChangeFileExt(ParamStr(0), '.ini'));
+	 GlobalConfig := TSQConvConfig.Create(ChangeFileExt(ParamStr(0), '.ini'), 'SQConverter' );
 end;
 
 procedure FinalizeConfig();
@@ -40,12 +46,22 @@ end;
 
 function TSQConvConfig.GetDestDir : string;
 begin
-    Result := Self.ReadStringDefault('DestDir', GetCurrentDir());
+    Result := Self.ReadStringDefault(StrDestDir, GetCurrentDir());
 end;
 
 function TSQConvConfig.GetSourceDir : string;
 begin
-    Result := Self.ReadStringDefault('SourceDir', TFileHnd.ConcatPath([GetCurrentDir(), 'HTML Questions']));
+    Result := Self.ReadStringDefault(StrSourceDir, TFileHnd.ConcatPath([GetCurrentDir(), 'HTML Questions']));
+end;
+
+procedure TSQConvConfig.SetDestDir(const Value : string);
+begin
+    Self.WriteString(StrDestDir, Value);
+end;
+
+procedure TSQConvConfig.SetSourceDir(const Value : string);
+begin
+    Self.WriteString(StrSourceDir, Value);
 end;
 
 initialization
