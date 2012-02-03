@@ -27,7 +27,7 @@ object Form1: TForm1
   end
   object edtDestDir: TJvDirectoryEdit
     Left = 32
-    Top = 64
+    Top = 57
     Width = 409
     Height = 21
     DialogKind = dkWin32
@@ -36,7 +36,7 @@ object Form1: TForm1
   end
   object fllstSource: TFileListBox
     Left = 32
-    Top = 99
+    Top = 133
     Width = 193
     Height = 233
     ItemHeight = 13
@@ -65,7 +65,7 @@ object Form1: TForm1
   end
   object edtRTF: TJvRichEdit
     Left = 240
-    Top = 104
+    Top = 138
     Width = 425
     Height = 225
     Font.Charset = ANSI_CHARSET
@@ -93,6 +93,6 @@ object Form1: TForm1
     ServerMode = False
     UseBreakingSpaces = False
     Left = 568
-    Top = 344
+    Top = 378
   end
 end
