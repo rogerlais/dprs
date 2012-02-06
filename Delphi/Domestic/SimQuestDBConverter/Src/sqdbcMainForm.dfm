@@ -95,4 +95,24 @@ object Form1: TForm1
     Left = 568
     Top = 378
   end
+  object rvsystm: TRvSystem
+    TitleSetup = 'Output Options'
+    TitleStatus = 'Report Status'
+    TitlePreview = 'Report Preview'
+    DefaultDest = rdFile
+    SystemFiler.StatusFormat = 'Generating page %p'
+    SystemPreview.ZoomFactor = 100.000000000000000000
+    SystemPrinter.ScaleX = 100.000000000000000000
+    SystemPrinter.ScaleY = 100.000000000000000000
+    SystemPrinter.StatusFormat = 'Printing page %p'
+    SystemPrinter.Title = 'Rave Report'
+    SystemPrinter.UnitsFactor = 1.000000000000000000
+    Left = 304
+    Top = 336
+  end
+  object rvprjct: TRvProject
+    Engine = rvsystm
+    Left = 624
+    Top = 352
+  end
 end
