@@ -39,22 +39,24 @@ var
 implementation
 
 uses
-    sqdbcConfig, FileHnd;
+    sqdbcConfig, FileHnd, RpCon, RpConDS, RpDevice, RvClass, RvCsData, RvCsDraw, RvCsStd, RvCsRpt, RvData, RvDefine, RvDirectDataView, RvUtil;
 
 {$R *.dfm}
 
 
 
 procedure TForm1.btnConvertClick(Sender : TObject);
+var
+	page : TRavePage;
 begin
-    {
-    Self.jvrchdthtml.ConvertToHtml(Self.edtRTF, TFileHnd.ConcatPath([Self.edtDestDir.Directory,
-        ExtractFileName(Self.fllstSource.FileName)]));
+	 {
+	 Self.jvrchdthtml.ConvertToHtml(Self.edtRTF, TFileHnd.ConcatPath([Self.edtDestDir.Directory,
+		 ExtractFileName(Self.fllstSource.FileName)]));
 
-    }
+	 }
 
-    //Tentativa via Rave Reports prar html
-    //Ajuste do render html
+	 //Tentativa via Rave Reports prar html
+	 //Ajuste do render html
 
   Self.rvsystm.DefaultDest := rdFile;
   Self.rvsystm.DoNativeOutput := False;
@@ -62,9 +64,13 @@ begin
   Self.rvsystm.OutputFileName := 'RogerSQTesteHTML.html';
   Self.rvsystm.SystemSetups := Self.rvsystm.SystemSetups - [ssAllowSetup];
 
-  Self.rvsystm.
   Self.rvprjct.Engine := Self.rvsystm;
   Self.rvprjct.Execute;
+
+
+  Page := Self.rvprjct.ProjMan.FindRaveComponent('Report1.Page1', Nil) As TRavePage;
+
+
 
 end;
 

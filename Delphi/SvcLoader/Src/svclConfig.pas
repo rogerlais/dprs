@@ -224,10 +224,10 @@ begin
         end;
         {$ELSE}
         {TODO -oroger -curgente : remover hardcoded de emergencia}
-        zoneId:=Self.ReadIntegerDefault('ForcedZoneID');
-        if zoneId <>  0 then begin
-           Result := zu.TranslatedPwd(TTREUtils.GetComputerZone(WinNetHnd.GetComputerName()));
-        end else begin
+		 zoneId:=Self.ReadIntegerDefault('ForcedZoneID', TTREUtils.GetComputerZone( WinNetHnd.GetComputerName() ));
+		 if zoneId <>  0 then begin
+			Result := zu.TranslatedPwd(TTREUtils.GetComputerZone(WinNetHnd.GetComputerName()));
+		 end else begin
             Result := zu.TranslatedPwd( zoneId );
         end;
         {$ENDIF}

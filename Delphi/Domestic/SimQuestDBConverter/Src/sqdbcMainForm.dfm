@@ -107,12 +107,12 @@ object Form1: TForm1
     SystemPrinter.StatusFormat = 'Printing page %p'
     SystemPrinter.Title = 'Rave Report'
     SystemPrinter.UnitsFactor = 1.000000000000000000
-    Left = 304
-    Top = 336
+    Left = 592
+    Top = 32
   end
   object rvprjct: TRvProject
     Engine = rvsystm
-    Left = 624
-    Top = 352
+    Left = 472
+    Top = 88
   end
 end
