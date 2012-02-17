@@ -62,12 +62,23 @@ object Form1: TForm1
       TabOrder = 0
       OnClick = btnConvertClick
     end
+    object btnGenerateRTF: TBitBtn
+      Left = 150
+      Top = 8
+      Width = 91
+      Height = 25
+      Caption = 'Exportar RTFs'
+      DoubleBuffered = True
+      ParentDoubleBuffered = False
+      TabOrder = 1
+      OnClick = btnGenerateRTFClick
+    end
   end
   object edtRTF: TJvRichEdit
     Left = 240
-    Top = 138
+    Top = 133
     Width = 425
-    Height = 225
+    Height = 233
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -92,8 +103,8 @@ object Form1: TForm1
     OnDecodeImage = rvrndrhtmlDecodeImage
     ServerMode = False
     UseBreakingSpaces = False
-    Left = 568
-    Top = 378
+    Left = 520
+    Top = 90
   end
   object rvsystm: TRvSystem
     TitleSetup = 'Output Options'
