@@ -1,7 +1,0 @@
-Resultado da operação realizada em: 19/04/2012
-
-***  Senhas  ***
-000000010191=       ***IMPORTANTE: Operação falhou para 000000010191. Não foi possível localizar o nome de usuário.
-
-TRE-PB.GOV.BR\000000010191=       ***IMPORTANTE: Operação falhou para TRE-PB.GOV.BR\000000010191. Não foi possível localizar o nome de usuário.
-
