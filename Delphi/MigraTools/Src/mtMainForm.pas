@@ -69,7 +69,7 @@ var
     User, Pass : PChar;
 begin
 	 User   := PChar('admroger');
-	 Pass   := PChar('SENHA!!!!');
+	 Pass   := PChar('ras.@234');
 	 Result := ERROR_SUCCESS;
     SetLastError(Result);
     if LogonUser(User, nil, Pass, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, TKHandle) then begin
@@ -119,7 +119,8 @@ begin
             raise Exception.Create('Ocorreram falhas no ajuste das senhas:'#13 + log);
         end;
     finally
-        Self.SaveGlobalLog;
+		 TControl(Sender).Enabled := True;
+		 Self.SaveGlobalLog;
     end;
 end;
 

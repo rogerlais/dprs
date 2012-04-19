@@ -65,7 +65,7 @@ var
 implementation
 
 uses
-    APIHnd, WinNetHnd, StrHnd, Str_Pas, TREUtils;
+    APIHnd, WinNetHnd, StrHnd, Str_Pas, TREUtils, AppLog;
 
 const
 {$IFDEF DEBUG}
@@ -133,14 +133,21 @@ var
     chain : string;
     zv :    array[1..3] of char;
 begin
-    chain  := Format('%3.3d', [Zone]);
-    zv[1]  := Chr(Ord('i') + StrToInt(Copy(chain, 1, 1)));
-    zv[2]  := Chr(Ord('a') + StrToInt(Copy(chain, 2, 1)));
-    zv[3]  := Chr(Ord('o') + StrToInt(Copy(chain, 3, 1)));
-    Result := Self.Password;
-    Result := Str_Pas.ReplaceSubString(Result, '<1>', zv[1]);
-    Result := Str_Pas.ReplaceSubString(Result, '<2>', zv[2]);
-    Result := Str_Pas.ReplaceSubString(Result, '<3>', zv[3]);
+    try
+        chain  := Format('%3.3d', [Zone]);
+        zv[1]  := Chr(Ord('i') + StrToInt(Copy(chain, 1, 1)));
+        zv[2]  := Chr(Ord('a') + StrToInt(Copy(chain, 2, 1)));
+        zv[3]  := Chr(Ord('o') + StrToInt(Copy(chain, 3, 1)));
+        Result := Self.Password;
+        Result := Str_Pas.ReplaceSubString(Result, '<1>', zv[1]);
+        Result := Str_Pas.ReplaceSubString(Result, '<2>', zv[2]);
+        Result := Str_Pas.ReplaceSubString(Result, '<3>', zv[3]);
+    except
+        on E : Exception do begin
+            raise Exception.CreateFmt('Erro traduzindo senha para a conta "%s" para o identificador %d',
+                [Self.UserName, Zone, E.Message]);
+        end;
+    end;
 end;
 
 { TZEUserList }
@@ -160,17 +167,17 @@ begin
     Self.FUsers := TObjectList<TZEUser>.Create();
     Self.FUsers.OwnsObjects := True;
     //Adiciona a lista de usuários conhecida
-     {$IFDEF DEBUG}
+      {$IFDEF DEBUG}
     //Self.FUsers.Add( TZEUser.Create('ghost', 'esmeralda' ) );
-    dUser := TZEUser.Create('000000010191', 'util<1>z<2>d<3>');
+    dUser := TZEUser.Create('000000010191', 'xp2k3oper');
     dUser.Scope := usSupport;
     Self.FUsers.Add(dUser);
-     {$ELSE}
-    dUser := TZEUser.Create('suporte', 'admin<1>str<2>d<3>');
+      {$ELSE}
+    dUser := TZEUser.Create('suporte', '$!$adm!n');
     dUser.Scope := usSupport;
     Self.FUsers.Add(dUser);
 
-    dUser := TZEUser.Create('vncacesso', 'admin<1>str<2>d<3>');
+    dUser := TZEUser.Create('vncacesso', 'ac3ss0vnc');
     dUser.Scope := usSupport;
     Self.FUsers.Add(dUser);
 
@@ -190,7 +197,7 @@ begin
     dUser.Scope := usZone;
     Self.FUsers.Add(dUser);
 
-    dUser := TZEUser.Create('000000010191', 'util<1>z<2>d<3>');
+    dUser := TZEUser.Create('000000010191', 'xp2k3oper');
     dUser.Scope := usSupport;
     Self.FUsers.Add(dUser);
 
@@ -198,10 +205,10 @@ begin
 
     //duplicar contas de usuários para o caso de haver domínio
     dName := Self.Domain;
-    if not (TStrHnd.endsWith(dName, '.GOV.BR')) then begin
-        dName := dName + '.GOV.BR';
-    end;
     if dName <> EmptyStr then begin
+        if not (TStrHnd.endsWith(dName, '.GOV.BR')) then begin
+            dName := dName + '.GOV.BR';
+        end;
         for x := Self.FUsers.Count - 1 downto 0 do begin
             dUser := TZEUser.Create(dName + '\' + Self.FUsers.Items[x].UserName, Self.FUsers.Items[x].Password);
             dUser.Scope := Self.FUsers.Items[x].Scope;
@@ -260,11 +267,13 @@ function TZEUserList.GetIsDomain : boolean;
 var
     cName : string;
 begin
-    cName  := UpperCase(GetComputerName());
-    {TODO -oroger -cfuture : Melhorar forma de recuperar dominio sem as gambiarras}
-    //Usa-se conta pertinente exclusivamente ao dominio(não podemos ter outra de mesmo nome na máquina) para pegar o dominio vinculado
-    Result := UpperCase(Self.Domain) <> cName;
-    Result := Result or TStrHnd.Contains('WKS', cName) or TStrHnd.Contains('PDC', cName);
+    Result := (Self.Domain <> EmptyStr);
+     (*
+     cName  := UpperCase(GetComputerName());
+     {TODO -oroger -cfuture : Melhorar forma de recuperar dominio sem as gambiarras}
+     //Usa-se conta pertinente exclusivamente ao dominio(não podemos ter outra de mesmo nome na máquina) para pegar o dominio vinculado
+     Result := TStrHnd.Contains('WKS', cName) or TStrHnd.Contains('PDC', cName);     
+     *)
 end;
 
 function TZEUserList.GetItems(index : Integer) : TZEUser;
@@ -276,17 +285,27 @@ function TZEUserList.GetZoneId : Integer;
 var
     domainName : string;
 begin
-	 if Self.isDomain then begin
-		 //Formato do nome do dominio = cae-pbnnn ou zne-pbnnn
-		 domainName := Copy(Self.Domain, 7, 3);
-		 Result     := StrToInt(domainName);
-	 end else begin
-		 {$IFDEF DEBUG}
-		 Result := TTREUtils.GetComputerZone('ZPB081WKS145');
-		 {$ELSE}
-		 Result := TTREUtils.GetComputerZone(GetComputerName());
-		 {$ENDIF}
-	 end;
+    if Self.isDomain then begin
+        //Formato do nome do dominio = cae-pbnnn ou zne-pbnnn
+         {$IFDEF DEBUG}
+        domainName := Copy('cae-pb123.gov.br', 7, 3);
+         {$ELSE}
+        domainName := Copy(Self.Domain, 7, 3);
+         {$ENDIF}
+        Result     := StrToInt(domainName);
+    end else begin
+         {$IFDEF DEBUG}
+        Result := TTREUtils.GetComputerZone('ZPB081WKS145');
+         {$ELSE}
+        try
+            Result := TTREUtils.GetComputerZone(GetComputerName());
+        except
+            on E : Exception do begin
+                raise Exception.CreateFmt('Impossível determinar a zona deste computador(%s).#13''%s', [GetComputerName(), E.Message]);
+            end;
+        end;
+         {$ENDIF}
+    end;
 end;
 
 function TZEUserList.LookupStationDomain(const CurUser : string) : string;

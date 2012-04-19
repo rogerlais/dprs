@@ -62,7 +62,7 @@ const
 
 
 {TODO -oroger -cdsg : Alterar lógica do aplicativo para registrar em todos os servidores de DNS os hosts das impressoras }
-	
+
 procedure TPthfMainForm.btnCancelClick(Sender : TObject);
 begin
     Self.Close;
@@ -180,7 +180,7 @@ function THostFile.SetPrinters(zone, oct3 : Integer) : Integer;
 var
     prtName, ipBase, prtIp : string;
 begin
-   {TODO -oroger -cdsg : Colocar cada uma das impressoras em vetor e com saltos de 2 calcular o 4o octeto do endereco. tentar alterar o incio da faixa de 70 para 80 de modo a fugir do roteador }
+    {TODO -oroger -cdsg : Colocar cada uma das impressoras em vetor e com saltos de 2 calcular o 4o octeto do endereco. tentar alterar o incio da faixa de 70 para 80 de modo a fugir do roteador }
     Result  := 0;
     ipBase  := '10.183.' + IntToStr(oct3);
     // Xerox
@@ -241,11 +241,11 @@ var
 begin
     inherited;
     Self.fileVerMain.FileName := ParamStr(0);
-    // identificar e precarregar o valor para a zona 
-{$IFDEF DEBUG}
-	zone := 70;
-	Self.Caption:=BASE_MAINFORM_CAPTION + ' *** Versão depuração*** ' + Self.fileVerMain.FileVersion;
-{$ELSE}
+    // identificar e precarregar o valor para a zona
+    {$IFDEF DEBUG}
+    zone := 70;
+    Self.Caption := BASE_MAINFORM_CAPTION + ' *** Versão depuração*** ' + Self.fileVerMain.FileVersion;
+    {$ELSE}
     Self.Caption := BASE_MAINFORM_CAPTION + Self.fileVerMain.FileVersion;
     try
         zone := TREUtils.TTREUtils.GetComputerZone(WinNetHnd.GetComputerName());
@@ -256,7 +256,7 @@ begin
                 + WinNetHnd.GetComputerName());
         end;
     end;
-{$ENDIF}
+    {$ENDIF}
     Self.edtZoneId.Text := IntToStr(zone);
     try
         Self.hostFile := THostFile.Create;

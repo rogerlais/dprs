@@ -37,6 +37,7 @@
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<BRCC_Defines>AppLog;$(BRCC_Defines)</BRCC_Defines>
 			<DCC_Define>DEBUG;TRELib;XPLib;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<ItemGroup>
@@ -48,19 +49,20 @@
 			</DCCReference>
 			<DCCReference Include="mtUtils.pas"/>
 			<DCCReference Include="mtConfig.pas"/>
-			<DCCReference Include="..\..\..\..\Pcks\XPLib\Src\APIHnd.pas"/>
 			<DCCReference Include="mtDataModule.pas">
 				<Form>MainDataModule</Form>
 				<DesignClass>TDataModule</DesignClass>
 			</DCCReference>
-			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREConfig.pas"/>
-			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREZones.pas"/>
-			<DCCReference Include="..\..\..\..\Pcks\OPLib\Src\OPXMLSerializable.pas"/>
 			<None Include="ModelSupport_MigraTools\default.txaPackage"/>
 			<None Include="ModelSupport_MigraTools\default.txvpck"/>
 			<None Include="ModelSupport_MigraTools\mtUtils\default.txvpck"/>
 			<None Include="ModelSupport_MigraTools\MigraTools\default.txvpck"/>
 			<None Include="ModelSupport_MigraTools\mtMainForm\default.txvpck"/>
+			<None Include="ModelSupport_MigraTools\OPXMLSerializable\default.txvpck"/>
+			<None Include="ModelSupport_MigraTools\AppLog\default.txvpck"/>
+			<None Include="ModelSupport_MigraTools\mtDataModule\default.txvpck"/>
+			<None Include="ModelSupport_MigraTools\TREConfig\default.txvpck"/>
+			<None Include="ModelSupport_MigraTools\mtConfig\default.txvpck"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -92,8 +94,8 @@
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
 						<VersionInfo Name="MajorVer">2</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
-						<VersionInfo Name="Release">2011</VersionInfo>
-						<VersionInfo Name="Build">0</VersionInfo>
+						<VersionInfo Name="Release">2012</VersionInfo>
+						<VersionInfo Name="Build">38</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -105,13 +107,13 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">TRE-PB</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">2.0.2011.0</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">2.0.2012.38</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName"/>
-						<VersionInfoKeys Name="ProductVersion">2.0.2011.0</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">2.0.2012.38</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>

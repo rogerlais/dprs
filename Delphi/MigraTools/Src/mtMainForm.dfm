@@ -59,10 +59,6 @@ object MigraToolsMainForm: TMigraToolsMainForm
     TabOrder = 3
     object tsPasswords: TTabSheet
       Caption = 'S&enhas'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lblAccountFilter: TLabel
         Left = 5
         Top = 5
