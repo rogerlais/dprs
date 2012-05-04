@@ -28,7 +28,7 @@ type
 implementation
 
 uses
-	 FSEnum, svclConfig, FileHnd, AppLog;
+	 XPFileEnumerator, svclConfig, FileHnd, AppLog;
 
 { TTransBioThread }
 procedure TTransBioThread.CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);

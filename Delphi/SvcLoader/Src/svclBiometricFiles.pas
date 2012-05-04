@@ -63,18 +63,25 @@ begin
 end;
 
 procedure TBioFilesService.ServiceBeforeInstall(Sender : TService);
+///  <summary>
+///    Ajusta os parametros do serviço antes de sua instalação. Dentre as ações está levantar o serviço como o último da lista de
+/// serviços
+///  </summary>
+///  <remarks>
+///
+///  </remarks>
 var
-    reg : TRegistryNT;
-    lst : TStringList;
+	 reg : TRegistryNT;
+	 lst : TStringList;
 begin
-    //Ajusta as credenciais para instalação do serviço
-    { TODO -oroger -cURGENTE : Rever pois apenas system deu ok }
-    //Self.Password := GlobalConfig.ServiceAccountPassword;
-    //Self.ServiceStartName := GlobalConfig.ServiceAccountName;
+	 //Ajusta as credenciais para instalação do serviço
+	 { TODO -oroger -cURGENTE : Rever pois apenas system deu ok. Desta forma não ajustar os valores abaixo }
+	 //Self.Password := GlobalConfig.ServiceAccountPassword;
+	 //Self.ServiceStartName := GlobalConfig.ServiceAccountName;
 
 
 
-    TLogFile.Log(Format('Registrando o registro do serviço com as credenciais:'#13'Conta: %s'#13'Senha: %s',
+	 TLogFile.Log(Format('Registrando o registro do serviço com as credenciais:'#13'Conta: %s'#13'Senha: %s',
         [Self.ServiceStartName, Self.Password]), lmtInformation);
     reg := TRegistryNT.Create;
     lst := TStringList.Create;
@@ -94,11 +101,15 @@ end;
 
 procedure TBioFilesService.ServiceCreate(Sender : TObject);
 begin
-    {TODO -oroger -cdsg : Ajustar o StartName e o Password de acordo com a configuração ou linha de comando}
-    Self.FSvcThread := TTransBioThread.Create(True);
-    Self.FSvcThread.Name := 'SESOP TransBio Replicator';
-    Self.Password := GlobalConfig.ServiceAccountPassword;
-    Self.ServiceStartName := GlobalConfig.ServiceAccountName;
+	 //Dados para a execução dos threads de serviço
+	 Self.Password := GlobalConfig.ServiceAccountPassword;
+	 Self.ServiceStartName := GlobalConfig.ServiceAccountName;
+
+	 {TODO -oroger -cdsg : Ajustar o StartName e o Password de acordo com a configuração ou linha de comando}
+	 Self.FSvcThread := TTransBioThread.Create(True);  //Criar thread de operação primário
+	 Self.FSvcThread.Name := 'SESOP TransBio Replicator';  //Nome de exibição do thread primário
+
+
     TLogFile.Log(Format('Iniciando o registro do serviço com as credenciais:'#13'Conta: %s'#13'Senha: %s',
         [Self.ServiceStartName, Self.Password]), lmtInformation );
 end;

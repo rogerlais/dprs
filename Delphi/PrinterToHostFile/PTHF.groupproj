@@ -3,10 +3,10 @@
 			<ProjectGuid>{6BFBC4AD-89AC-496F-BA49-80774FC4BA5B}</ProjectGuid>
 		</PropertyGroup>
 		<ItemGroup>
-			<Projects Include="Src\PrinterToHostFile.dproj">
+			<Projects Include="..\..\..\Pcks\TRE\Src\TRELib.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="..\..\Pcks\TRE\Src\TRELib.dproj">
+			<Projects Include="Src\PrinterToHostFile.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -17,6 +17,15 @@
 				<Default.Personality/>
 			</BorlandProject>
 		</ProjectExtensions>
+		<Target Name="TRELib">
+			<MSBuild Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
+		</Target>
+		<Target Name="TRELib:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
+		</Target>
+		<Target Name="TRELib:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
+		</Target>
 		<Target Name="PrinterToHostFile">
 			<MSBuild Projects="Src\PrinterToHostFile.dproj"/>
 		</Target>
@@ -26,23 +35,14 @@
 		<Target Name="PrinterToHostFile:Make">
 			<MSBuild Targets="Make" Projects="Src\PrinterToHostFile.dproj"/>
 		</Target>
-		<Target Name="TRELib">
-			<MSBuild Projects="..\..\Pcks\TRE\Src\TRELib.dproj"/>
-		</Target>
-		<Target Name="TRELib:Clean">
-			<MSBuild Targets="Clean" Projects="..\..\Pcks\TRE\Src\TRELib.dproj"/>
-		</Target>
-		<Target Name="TRELib:Make">
-			<MSBuild Targets="Make" Projects="..\..\Pcks\TRE\Src\TRELib.dproj"/>
-		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="PrinterToHostFile;TRELib"/>
+			<CallTarget Targets="TRELib;PrinterToHostFile"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="PrinterToHostFile:Clean;TRELib:Clean"/>
+			<CallTarget Targets="TRELib:Clean;PrinterToHostFile:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="PrinterToHostFile:Make;TRELib:Make"/>
+			<CallTarget Targets="TRELib:Make;PrinterToHostFile:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

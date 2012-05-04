@@ -5,7 +5,6 @@ uses
   svclDemoForm in 'svclDemoForm.pas' {Form1},
   svclTransBio in 'svclTransBio.pas',
   svclBiometricFiles in 'svclBiometricFiles.pas' {BioFilesService: TService},
-  FSEnum in 'FSEnum.pas',
   svclConfig in 'svclConfig.pas';
 
 {$R *.res}

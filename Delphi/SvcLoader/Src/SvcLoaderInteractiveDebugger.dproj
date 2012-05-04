@@ -56,7 +56,6 @@
 				<Form>BioFilesService</Form>
 				<DesignClass>TService</DesignClass>
 			</DCCReference>
-			<DCCReference Include="FSEnum.pas"/>
 			<DCCReference Include="svclConfig.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>

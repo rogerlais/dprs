@@ -3,7 +3,7 @@
 			<ProjectGuid>{F6348DBE-5006-4017-934A-B1C4E1E8D0C6}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>PrinterToHostFile.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -47,8 +47,6 @@
 				<Form>PthfMainForm</Form>
 			</DCCReference>
 			<DCCReference Include="p2hUtils.pas"/>
-			<DCCReference Include="..\..\..\Pcks\TRE\Src\TREZones.pas"/>
-			<DCCReference Include="..\..\..\Pcks\TRE\Src\TREUtils.pas"/>
 			<None Include="ModelSupport_PrinterToHostFile\default.txaPackage"/>
 			<None Include="ModelSupport_PrinterToHostFile\default.txvpck"/>
 			<None Include="ModelSupport_PrinterToHostFile\p2hMainForm\default.txvpck"/>
@@ -84,9 +82,9 @@
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
 						<VersionInfo Name="MajorVer">1</VersionInfo>
-						<VersionInfo Name="MinorVer">0</VersionInfo>
-						<VersionInfo Name="Release">2010</VersionInfo>
-						<VersionInfo Name="Build">2</VersionInfo>
+						<VersionInfo Name="MinorVer">1</VersionInfo>
+						<VersionInfo Name="Release">2012</VersionInfo>
+						<VersionInfo Name="Build">4</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -98,13 +96,13 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">TRE-PB</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">1.0.2010.2</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.1.2012.4</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName"/>
-						<VersionInfoKeys Name="ProductVersion">1.0.2010.2</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.1.2012.4</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>

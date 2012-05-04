@@ -200,18 +200,18 @@ end;
 
 function TBioReplicatorConfig.GetServiceAccountName : string;
 begin
-      {$IFDEF DEBUG}
-    Result := WinNetHnd.GetUserName;
-      {$ELSE}
-    Result := 'vncacesso'; {TODO -oroger -cdsg : Realizar os testes para as contas locais/dominio }
-      {$ENDIF}
+	 {$IFDEF DEBUG}
+	 Result := WinNetHnd.GetUserName;
+	 {$ELSE}
+	 Result := 'vncacesso'; {TODO -oroger -cdsg : Realizar os testes para as contas locais/dominio }
+    {$ENDIF}
     Result := Self.ReadStringDefault('ServiceAccountName', Result);
 end;
 
 function TBioReplicatorConfig.GetServiceAccountPassword : string;
 //Retorna a senha para a conta usada para levantar os serviços
 var
-    zu : TTREZEUser;
+    zu :     TTREZEUser;
     zoneId : Integer;
 begin
     //Retornar a senha para a conta que levanta os serviços de acordo com o valor do nome do computador
@@ -224,11 +224,11 @@ begin
         end;
         {$ELSE}
         {TODO -oroger -curgente : remover hardcoded de emergencia}
-		 zoneId:=Self.ReadIntegerDefault('ForcedZoneID', TTREUtils.GetComputerZone( WinNetHnd.GetComputerName() ));
-		 if zoneId <>  0 then begin
-			Result := zu.TranslatedPwd(TTREUtils.GetComputerZone(WinNetHnd.GetComputerName()));
-		 end else begin
-            Result := zu.TranslatedPwd( zoneId );
+        zoneId := Self.ReadIntegerDefault('ForcedZoneID', TTREUtils.GetComputerZone(WinNetHnd.GetComputerName()));
+        if zoneId <> 0 then begin
+            Result := zu.TranslatedPwd(TTREUtils.GetComputerZone(WinNetHnd.GetComputerName()));
+        end else begin
+            Result := zu.TranslatedPwd(zoneId);
         end;
         {$ENDIF}
     finally

@@ -19,7 +19,7 @@ type
         function GetScannerHost(zone : Integer) : string;
         /// <summary> Ajusta arquivo para conter todas as impressoras da zona corretamente relacionadas </summary>
         /// <param name="zone">Indentificador da zona </param>
-        function SetPrinters(zone, oct3 : Integer) : Integer;
+        function SetPrinters(zone, RangeOffSet, oct3 : Integer) : Integer;
         function AdjustHosts(ZoneId : Integer) : Integer;
         procedure SetSCX4828ScannerPort(zoneId : Integer);
     end;
@@ -74,11 +74,11 @@ var
 begin
     try
         zoneId := StrToInt(Self.edtZoneId.Text);
-        if not InRange(zoneId, CMPNAME_LOCAL_MIN_VALUE, CMPNAME_LOCAL_MAX_VALUE) then begin
+        if not InRange(zoneId, TREConsts.CMPNAME_LOCAL_MIN_VALUE, TREConsts.CMPNAME_LOCAL_MAX_VALUE) then begin
             raise Exception.Create('Valor fora da faixa');
         end;
     except
-        raise Exception.CreateFmt('Valor inteiro entre %d e %d requerido', [CMPNAME_LOCAL_MIN_VALUE, CMPNAME_LOCAL_MIN_VALUE]);
+        raise Exception.CreateFmt('Valor inteiro entre %d e %d requerido', [CMPNAME_LOCAL_MIN_VALUE, CMPNAME_LOCAL_MAX_VALUE]);
     end;
     try
         changeCount := Self.hostFile.AdjustHosts(zoneId);
@@ -110,18 +110,18 @@ var
 begin
     zone := GlobalZoneMapping.GetZoneById(ZoneId);
     if not Assigned(zone) then begin
-        Result := Self.SetPrinters(ZoneId, ZoneId);
+        Result := Self.SetPrinters(ZoneId, 0, ZoneId);
     end else begin
         central := zone.Central;
         if not Assigned(central) then begin
             subNet := ZoneId;
-            Result := Self.SetPrinters(ZoneId, subNet);
+            Result := Self.SetPrinters(ZoneId, 0, subNet);
         end else begin
             subNet := central.PrimaryZone.id; //Subrede igual ao octeto da zona primaria
             Result := 0;
             for x := 0 to central.Count - 1 do begin
                 zone   := central.Zones[x];
-                Result := Result + Self.SetPrinters(zone.Id, subNet);
+                Result := Result + Self.SetPrinters(zone.Id, Zone.CentralIndex, subNet);
             end;
         end;
     end;
@@ -139,13 +139,17 @@ begin
 end;
 
 function THostFile.GetZoneSubNet(ZoneId : Integer) : Integer;
+///  <summary>
+///    Retorna a sub-rede da zona em seu endereçamento IP
+///  </summary>
+///  <remarks>
+///	Para esta recuperação existe um mapeamento carregado de diversas maneiras, certificar-se de usar o correto, bem como seus dados
+///  </remarks>
 var
-    z : TTREZone;
-    central : TTRECentral;
+	 z : TTREZone;
+	 central : TTRECentral;
 begin
-    {TODO -oroger -cdsg : Traduzir para qual subrede a zona vai trabalhar, exemplo: 66->32 }
-    {TODO -oroger -cdsg : Após implementado realizar a tradução ao longo do codigo}
-    Result := ZoneId; //Assume inicialmente o id da zona para 3 octeto
+	 Result := ZoneId; //Assume inicialmente o id da zona para 3 octeto
     z      := GlobalZoneMapping.GetZoneById(ZoneId);
     if Assigned(z) then begin
         central := z.Central;
@@ -176,31 +180,48 @@ begin
     Inc(Result);
 end;
 
-function THostFile.SetPrinters(zone, oct3 : Integer) : Integer;
+function THostFile.SetPrinters(zone, RangeOffset, oct3 : Integer) : Integer;
+///  <summary>
+///    <param>Zone</param> - Id da zona
+///    <param>RangeOffSet</param>  - Salto para ip do modelo da impressora
+///    <param>oct3</param> - terceiro octeto do ipv4 a ser usado como endereço da impressora
+///  </summary>
+///  <remarks>
+///
+///  </remarks>
 var
-    prtName, ipBase, prtIp : string;
+	 prtName, ipBase, prtIp : string;
 begin
-    {TODO -oroger -cdsg : Colocar cada uma das impressoras em vetor e com saltos de 2 calcular o 4o octeto do endereco. tentar alterar o incio da faixa de 70 para 80 de modo a fugir do roteador }
-    Result  := 0;
-    ipBase  := '10.183.' + IntToStr(oct3);
-    // Xerox
-    prtName := 'Z' + Format('%2.2d', [zone]) + '-X3428';
-    prtIp   := ipBase + '.90';
-    Result  := Result + Self.SetIPLink(prtName, prtIp);
+	if RangeOffSet < 0 then begin
+		RangeOffSet:= 0;
+	end;
 
-    // Samsung  ML-3050
-    prtName := 'Z' + Format('%2.2d', [zone]) + '-S3050';
-    prtIp   := ipBase + '.94';
-    Result  := Result + Self.SetIPLink(prtName, prtIp);
+	 {TODO -oroger -cdsg : Colocar cada uma das impressoras em vetor e com saltos de 2 calcular o 4o octeto do endereco. tentar alterar o incio da faixa de 70 para 80 de modo a fugir do roteador }
+	 Result  := 0;
+	 ipBase  := '10.183.' + IntToStr(oct3);
+	 // Xerox
+	 prtName := 'Z' + Format('%2.2d', [zone]) + '-X3428';
+	 prtIp   := ipBase + '.' + IntToStr( 90 + RangeOffSet );
+	 Result  := Result + Self.SetIPLink(prtName, prtIp);
 
-    // Samsung  SCX-4828
-    prtName := 'Z' + Format('%2.2d', [zone]) + '-S4828';
-    prtIp   := ipBase + '.92';
-    Result  := Result + Self.SetIPLink(prtName, prtIp);
+	 // Samsung  ML-3050
+	 prtName := 'Z' + Format('%2.2d', [zone]) + '-S3050';
+	 prtIp   := ipBase + '.' + IntToStr( 94 + RangeOffSet );
+	 Result  := Result + Self.SetIPLink(prtName, prtIp);
 
-    if Result > 0 then begin
-        Self.SaveToFile(HOSTS_FILE); // atualiza arquivo
-    end;
+	 // Samsung  SCX-4828
+	 prtName := 'Z' + Format('%2.2d', [zone]) + '-S4828';
+	 prtIp   := ipBase + '.' + IntToStr( 92 + RangeOffSet );
+	 Result  := Result + Self.SetIPLink(prtName, prtIp);
+
+	 // Samsung  ML-3710
+	 prtName := 'Z' + Format('%2.2d', [zone]) + '-S3710';
+	 prtIp   := ipBase + '.' + IntToStr( 96 + RangeOffSet );
+	 Result  := Result + Self.SetIPLink(prtName, prtIp);
+
+	 if Result > 0 then begin
+		 Self.SaveToFile(HOSTS_FILE); // atualiza arquivo
+	 end;
 end;
 
 procedure THostFile.SetSCX4828ScannerPort(zoneId : Integer);
@@ -243,7 +264,7 @@ begin
     Self.fileVerMain.FileName := ParamStr(0);
     // identificar e precarregar o valor para a zona
     {$IFDEF DEBUG}
-    zone := 70;
+    zone := 35;
     Self.Caption := BASE_MAINFORM_CAPTION + ' *** Versão depuração*** ' + Self.fileVerMain.FileVersion;
     {$ELSE}
     Self.Caption := BASE_MAINFORM_CAPTION + Self.fileVerMain.FileVersion;

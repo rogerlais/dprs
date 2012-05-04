@@ -39,7 +39,7 @@ var
 implementation
 
 uses
-    svclBiometricFiles, svclConfig, JwaWindows, svclUtils, WNetExHnd, WinNetHnd, StrHnd;
+    svclBiometricFiles, svclConfig, JwaWindows, svclUtils, WinNetHnd, StrHnd, WNetExHnd;
 
 {$R *.dfm}
 
@@ -54,8 +54,8 @@ var
 begin
     ret := WinNetHnd.GetComputerName();
 	 InputQuery('Nome da estação', 'Estação:', ret);
-	 ret := WNetExHnd.GetWorkstationDomain(ret);
-    MessageDlg(ret, mtInformation, [mbOK], 0);
+	 ret := WNetExHnd.GetDomainFromComputerName(ret);
+	 MessageDlg(ret, mtInformation, [mbOK], 0);
 end;
 
 procedure TForm1.btnRegisterClick(Sender : TObject);
