@@ -30,6 +30,7 @@ type
         function GetPrimaryBackupPath : string;
         function GetPrimaryToTransmitPath : string;
         function GetDebugLevel : Integer;
+        function GetCypherServiceAccountPwd : string;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
         //Atributos privativos da estação
@@ -42,6 +43,7 @@ type
         property PrimaryTransmittedPath : string read GetPrimaryToTransmitPath;
         //Atributos do servico
         property ServiceAccountPassword : string read GetServiceAccountPassword;
+        property CypherServiceAccountPwd : string read GetCypherServiceAccountPwd;
         property ServiceAccountName : string read GetServiceAccountName;
         property CycleInterval : Integer read GetCycleInterval;
         //Atributos da sessão
@@ -49,17 +51,31 @@ type
         property DebugLevel : Integer read GetDebugLevel;
     end;
 
+
+const
+    APP_SERVICE_NAME = 'BioFilesService';
+    APP_SERVICE_KEY  = 'BioSvc';
+
+    APP_SUPORTE_DEFAULT_PWD = '$!$adm!n';
+
 var
     GlobalConfig : TBioReplicatorConfig;
 
 implementation
 
 uses
-    FileHnd, TREUtils, TREConsts, WinDisks, TREUsers, WinNetHnd;
+    FileHnd, TREUtils, TREConsts, WinDisks, TREUsers, WinNetHnd, CryptIni, WNetExHnd;
+
+const
+    IE_SERVICE_PASSWORD = 'EncodedSvcPwd';
+    IE_SHARE_USERNAME   = 'ShareAccountName';
+
+    DV_SERVICE_SHARE_USERNAME = 'suporte';
 
 procedure InitConfiguration();
 begin
-    GlobalConfig := TBioReplicatorConfig.Create(RemoveFileExtension(ParamStr(0)) + '.ini', 'BioFilesService');
+    //Instancia de configuração com o mesmo nome do runtime + .ini
+    GlobalConfig := TBioReplicatorConfig.Create(RemoveFileExtension(ParamStr(0)) + '.ini', APP_SERVICE_NAME);
 end;
 
 { TBioReplicatorConfig }
@@ -83,6 +99,22 @@ begin
     end;
 end;
 
+function TBioReplicatorConfig.GetCypherServiceAccountPwd : string;
+var
+    Cypher : TCypher;
+begin
+    Cypher := TCypher.Create(APP_SERVICE_KEY);
+    try
+        Result := GlobalConfig.ReadStringDefault(IE_SERVICE_PASSWORD, EmptyStr);
+        if Result = EmptyStr then begin
+            Result := Cypher.Encode(APP_SUPORTE_DEFAULT_PWD);
+            GlobalConfig.WriteString(IE_SERVICE_PASSWORD, Result);
+        end;
+    finally
+        Cypher.Free;
+    end;
+end;
+
 function TBioReplicatorConfig.GetDebugLevel : Integer;
 begin
     Result := Self.ReadIntegerDefault('DebugLevel', 0);
@@ -92,16 +124,18 @@ function TBioReplicatorConfig.GetIsPrimaryComputer : boolean;
 var
     pc : string;
 begin
-    if Self._FIsPrimaryComputer < 0 then begin  //Deve ser calculado nesta pessagem
-        {$IFDEF DEBUG}
-        pc := TTREUtils.GetZonePrimaryComputer('ZPB080STD99');
-        {$ELSE}
-        Self.ReadStringDefault('ForcedPrimaryComputer');
-        if pc = EmptyStr then begin
-            pc := TTREUtils.GetZonePrimaryComputer(WinNetHnd.GetComputerName());
-        end;
-        {$ENDIF}
-        if SameText(pc, WinNetHnd.GetComputerName()) then begin
+	 if Self._FIsPrimaryComputer < 0 then begin  //Deve ser calculado nesta pessagem
+		 {$IFDEF DEBUG}
+		 pc := TTREUtils.GetZonePrimaryComputer('CPB080WKS99');
+		 //Linha abaixo força este computador como primario
+		 pc:=WinNetHnd.GetComputerName();
+		 {$ELSE}
+		 pc:=Self.ReadStringDefault('ForcedPrimaryComputer');
+		 {$ENDIF}
+		 if pc = EmptyStr then begin
+			 pc := TTREUtils.GetZonePrimaryComputer(WinNetHnd.GetComputerName());
+		 end;
+		 if SameText(pc, WinNetHnd.GetComputerName()) then begin
             Self._FIsPrimaryComputer := 1;
         end else begin
             Self._FIsPrimaryComputer := 0;
@@ -199,40 +233,36 @@ begin
 end;
 
 function TBioReplicatorConfig.GetServiceAccountName : string;
+    ///
+    /// Leitura da conta de acesso ao compartilhamento remoto do computador primário
+    ///
+var
+    domain : string;
 begin
-	 {$IFDEF DEBUG}
-	 Result := WinNetHnd.GetUserName;
-	 {$ELSE}
-	 Result := 'vncacesso'; {TODO -oroger -cdsg : Realizar os testes para as contas locais/dominio }
-    {$ENDIF}
-    Result := Self.ReadStringDefault('ServiceAccountName', Result);
+    Result := Self.ReadStringDefault(IE_SHARE_USERNAME, Result);
+    if (Result = EmptyStr) then begin
+        domain := GetDomainFromComputerName(EmptyStr);
+        if (domain <> EmptyStr) then begin
+            Result := domain + '\' + DV_SERVICE_SHARE_USERNAME;
+        end;
+        Self.WriteString(IE_SHARE_USERNAME, Result);
+    end;
 end;
 
 function TBioReplicatorConfig.GetServiceAccountPassword : string;
-//Retorna a senha para a conta usada para levantar os serviços
+    /// Retorna a senha para a conta usada para levantar os serviços
+    ///
+    /// Revision - 20120510 - roger
+    /// Para 2012 as senhas de suporte são estáticas e constantes
+    /// Assim serão salvas de forma criptografada no arquivo de inicialização
 var
-    zu :     TTREZEUser;
-    zoneId : Integer;
+    cp : TCypher;
 begin
-    //Retornar a senha para a conta que levanta os serviços de acordo com o valor do nome do computador
-    zu := TTREZEUser.Create(Self.ServiceAccountName, PWD_SEED_CURRENT_SUPORTE); //NOTA.: Raiz da senha hardcoded
+    cp := TCypher.Create(APP_SERVICE_KEY);
     try
-        {$IFDEF DEBUG}
-        Result := zu.TranslatedPwd(TTREUtils.GetComputerZone('zpb111std02'));
-        if Result <> EmptyStr then begin
-            Result := EmptyStr;
-        end;
-        {$ELSE}
-        {TODO -oroger -curgente : remover hardcoded de emergencia}
-        zoneId := Self.ReadIntegerDefault('ForcedZoneID', TTREUtils.GetComputerZone(WinNetHnd.GetComputerName()));
-        if zoneId <> 0 then begin
-            Result := zu.TranslatedPwd(TTREUtils.GetComputerZone(WinNetHnd.GetComputerName()));
-        end else begin
-            Result := zu.TranslatedPwd(zoneId);
-        end;
-        {$ENDIF}
+		 Result := cp.Decode(Self.CypherServiceAccountPwd);
     finally
-        zu.Free;
+        cp.Free;
     end;
 end;
 

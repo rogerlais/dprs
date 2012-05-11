@@ -57,6 +57,7 @@
 				<DesignClass>TService</DesignClass>
 			</DCCReference>
 			<DCCReference Include="svclConfig.pas"/>
+			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREUtils.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

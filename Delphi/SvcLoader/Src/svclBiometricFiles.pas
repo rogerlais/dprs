@@ -88,8 +88,8 @@ begin
     try
         reg.ReadFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst);
         if lst.IndexOf(Self.Name) < 0 then begin
-           lst.Add('BioFilesService');
-           lst.Add('SESOP TransBio Replicator');
+			lst.Add(APP_SERVICE_NAME);
+			lst.Add('SESOP TransBio Replicator');
            TLogFile.Log('Alterando ordem de inicializalçao dos serviços no registro local');
            reg.WriteFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst, True );
         end;
@@ -109,9 +109,11 @@ begin
 	 Self.FSvcThread := TTransBioThread.Create(True);  //Criar thread de operação primário
 	 Self.FSvcThread.Name := 'SESOP TransBio Replicator';  //Nome de exibição do thread primário
 
-
     TLogFile.Log(Format('Iniciando o registro do serviço com as credenciais:'#13'Conta: %s'#13'Senha: %s',
-        [Self.ServiceStartName, Self.Password]), lmtInformation );
+		 [Self.ServiceStartName, GlobalConfig.CypherServiceAccountPwd ]), lmtInformation );
+
+	 //Self.DoStart();
+
 end;
 
 procedure TBioFilesService.ServiceStart(Sender : TService; var Started : boolean);

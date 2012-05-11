@@ -5,7 +5,8 @@ uses
   svclDemoForm in 'svclDemoForm.pas' {Form1},
   svclTransBio in 'svclTransBio.pas',
   svclBiometricFiles in 'svclBiometricFiles.pas' {BioFilesService: TService},
-  svclConfig in 'svclConfig.pas';
+  svclConfig in 'svclConfig.pas',
+  TREUtils in '..\..\..\..\Pcks\TRE\Src\TREUtils.pas';
 
 {$R *.res}
 

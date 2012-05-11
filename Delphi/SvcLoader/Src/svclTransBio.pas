@@ -8,7 +8,7 @@ unit svclTransBio;
 interface
 
 uses
-    SysUtils, Windows, Classes, XPThreads;
+    SysUtils, Windows, Classes, XPFileEnumerator, XPThreads;
 
 type
     TTransBioThread = class(TXPNamedThread)
@@ -17,9 +17,10 @@ type
         FConnected : boolean;
         procedure DoCycle;
         procedure ReplicDataFiles2PrimaryMachine(const Filename : string);
-        procedure CreatePrimaryBackup(const Filename : string);
+        procedure CreatePrimaryBackup(const DirName : string);
         procedure CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
         procedure SetConnected(const Value : boolean);
+        procedure StoreTransmitted(SrcFile : TFileSystemEntry);
     public
         procedure Execute(); override;
         property Connected : boolean read FConnected write SetConnected;
@@ -28,7 +29,7 @@ type
 implementation
 
 uses
-	 XPFileEnumerator, svclConfig, FileHnd, AppLog;
+    svclConfig, FileHnd, AppLog;
 
 { TTransBioThread }
 procedure TTransBioThread.CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
@@ -56,9 +57,17 @@ begin
     end;
 end;
 
-procedure TTransBioThread.CreatePrimaryBackup(const Filename : string);
+procedure TTransBioThread.CreatePrimaryBackup(const DirName : string);
+ ///Monta arvore de diretorios baseado na data do arquivo no padrão <root>\year\month\day
+ /// Onde <root> é configurado
+var
+    FileEnt : IEnumerable<TFileSystemEntry>;
+    f : TFileSystemEntry;
 begin
-
+	 FileEnt := TDirectory.FileSystemEntries( DirName , BIOMETRIC_FILE_MASK, False);
+    for f in FileEnt do begin
+        Self.StoreTransmitted(f);
+    end;
 end;
 
 procedure TTransBioThread.DoCycle;
@@ -71,7 +80,7 @@ begin
     FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
     if GlobalConfig.isPrimaryComputer then begin
         //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
-        Self.CreatePrimaryBackup(GlobalConfig.StationSourcePath);
+        Self.CreatePrimaryBackup(GlobalConfig.PrimaryTransmittedPath);
     end else begin
         //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
         for f in FileEnt do begin
@@ -151,6 +160,24 @@ begin
         end;
     end;
     FConnected := Value;
+end;
+
+procedure TTransBioThread.StoreTransmitted(SrcFile : TFileSystemEntry);
+ ///
+ /// Move arquivo da pasta de transmitidos de acordo com a data de criação para a pasta raiz de armazenamento
+ ///
+var
+    DestPath, FullDateStr, sy, sm, sd : string;
+    dummy, t : TDateTime;
+begin
+    TFileHnd.FileTimeProperties(SrcFile.FullName, dummy, dummy, t);
+    FullDateStr := FormatDateTime('YYYYMMDD', t);
+    sy := Copy(FullDateStr, 1, 4);
+	 sm := Copy(FullDateStr, 5, 2);
+    sd := Copy(FullDateStr, 7, 2);
+	 DestPath := TFileHnd.ConcatPath([GlobalConfig.PrimaryBackupPath, sy, sm, sd]);
+	 ForceDirectories( DestPath );
+	 MoveFile( PChar( SrcFile.FullName ), PChar( DestPath + '\' + SrcFile.Name ) );
 end;
 
 end.
