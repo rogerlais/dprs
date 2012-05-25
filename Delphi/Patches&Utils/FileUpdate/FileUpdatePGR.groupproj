@@ -1,0 +1,72 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{69A2B50B-3507-4CE9-B63B-CFAD865B8034}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\..\..\Pcks\ShellLib\Src\ShellLibD14.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Src\FileUpdate.dproj">
+				<Dependencies>..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj;..\..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj;..\..\..\..\Pcks\ShellLib\Src\ShellLibD14.dproj</Dependencies>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="XPLibD14">
+			<MSBuild Projects="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
+		</Target>
+		<Target Name="XPLibD14:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
+		</Target>
+		<Target Name="XPLibD14:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
+		</Target>
+		<Target Name="WinSysLibD14">
+			<MSBuild Projects="..\..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj"/>
+		</Target>
+		<Target Name="WinSysLibD14:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj"/>
+		</Target>
+		<Target Name="WinSysLibD14:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj"/>
+		</Target>
+		<Target Name="ShellLibD14">
+			<MSBuild Projects="..\..\..\..\Pcks\ShellLib\Src\ShellLibD14.dproj"/>
+		</Target>
+		<Target Name="ShellLibD14:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\..\Pcks\ShellLib\Src\ShellLibD14.dproj"/>
+		</Target>
+		<Target Name="ShellLibD14:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\..\Pcks\ShellLib\Src\ShellLibD14.dproj"/>
+		</Target>
+		<Target DependsOnTargets="XPLibD14;WinSysLibD14;ShellLibD14" Name="FileUpdate">
+			<MSBuild Projects="Src\FileUpdate.dproj"/>
+		</Target>
+		<Target DependsOnTargets="XPLibD14:Clean;WinSysLibD14:Clean;ShellLibD14:Clean" Name="FileUpdate:Clean">
+			<MSBuild Targets="Clean" Projects="Src\FileUpdate.dproj"/>
+		</Target>
+		<Target DependsOnTargets="XPLibD14:Make;WinSysLibD14:Make;ShellLibD14:Make" Name="FileUpdate:Make">
+			<MSBuild Targets="Make" Projects="Src\FileUpdate.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="XPLibD14;WinSysLibD14;ShellLibD14;FileUpdate"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="XPLibD14:Clean;WinSysLibD14:Clean;ShellLibD14:Clean;FileUpdate:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="XPLibD14:Make;WinSysLibD14:Make;ShellLibD14:Make;FileUpdate:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

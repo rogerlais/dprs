@@ -69,7 +69,7 @@ var
     User, Pass : PChar;
 begin
 	 User   := PChar('admroger');
-	 Pass   := PChar('ras.@234');
+	 Pass   := PChar('EUEUEUEUEU');
 	 Result := ERROR_SUCCESS;
     SetLastError(Result);
     if LogonUser(User, nil, Pass, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, TKHandle) then begin

@@ -3,7 +3,7 @@
 			<ProjectGuid>{4F22916E-FD56-4107-8B6B-3454805F7504}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>FileUpdate.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -20,15 +20,16 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_UsePackage>vclx;vcl;vclimg;dbrtl;Rave77VCL;bdertl;rtl;vclactnband;xmlrtl;vcldb;vcldbx;vcltouch;dsnap;dsnapcon;TeeUI;TeeDB;Tee;vclib;ibxpress;adortl;IndyCore;IndySystem;IndyProtocols;inet;intrawebdb_100_140;Intraweb_100_140;VclSmp;vclie;websnap;webdsnap;inetdb;inetdbbde;inetdbxpress;soaprtl;vclribbon;dbexpress;DbxCommonDriver;DataSnapIndy10ServerTransport;DataSnapProviderClient;DbxClientDriver;DataSnapServer;DBXInterBaseDriver;DBXMySQLDriver;dbxcds;DBXFirebirdDriver;DBXSybaseASEDriver;DBXSybaseASADriver;DBXOracleDriver;DBXMSSQLDriver;DBXInformixDriver;DBXDb2Driver;QR5RunD2010;Jcl;JclVcl;JvCoreD14R;JvSystemD14R;JvStdCtrlsD14R;JvAppFrmD14R;JvBandsD14R;JvDBD14R;JvDlgsD14R;JvBDED14R;JvCmpD14R;JvCryptD14R;JvCtrlsD14R;JvCustomD14R;JvDockingD14R;JvDotNetCtrlsD14R;JvEDID14R;JvGlobusD14R;JvHMID14R;JvInterpreterD14R;JvJansD14R;JvManagedThreadsD14R;JvMMD14R;JvNetD14R;JvPageCompsD14R;JvPluginD14R;JvPrintPreviewD14R;JvRuntimeDesignD14R;JvTimeFrameworkD14R;JvValidatorsD14R;JvWizardD14R;JvXPCtrlsD14R;OPLibD14;GDBLibD14;FXLibD14;XPLibD14;WinSysLibD14;StFLibD14;WinNetLibD14;BDELibD14;INetLibD14;ECLibD14;WMILib;ZComponent;ZDbc;ZPlain;ZCore;ZParseSql;GeneralLibD14;HTMLEditor;TRELib</DCC_UsePackage>
 			<DCC_DependencyCheckOutputName>FileUpdate.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<DCC_Platform>x86</DCC_Platform>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
-			<DCC_DependencyCheckOutputName>..\Release\FileUpdate.exe</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>D:\Documentos\FileUpdate.exe</DCC_DependencyCheckOutputName>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
-			<DCC_ExeOutput>..\Release</DCC_ExeOutput>
+			<DCC_ExeOutput>D:\Documentos</DCC_ExeOutput>
 			<DCC_BplOutput>..\Release</DCC_BplOutput>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 			<DCC_DcuOutput>..\Release</DCC_DcuOutput>
@@ -55,6 +56,9 @@
 			<DCCReference Include="fuMainForm.pas">
 				<Form>FUMainWindow</Form>
 			</DCCReference>
+			<DCCReference Include="..\..\..\..\..\Pcks\ShellLib\Src\ShellFilesHnd.pas"/>
+			<DCCReference Include="..\..\..\..\..\Pcks\XPLib\Src\AppLog.pas"/>
+			<DCCReference Include="..\..\..\..\..\Pcks\XPLib\Src\FileHnd.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -80,14 +84,15 @@
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+						<Parameters Name="RunParams">/dbglvl=10 /auto</Parameters>
 					</Parameters>
 					<VersionInfo>
-						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
-						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">0</VersionInfo>
+						<VersionInfo Name="Release">2012</VersionInfo>
+						<VersionInfo Name="Build">6</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -99,15 +104,21 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName"/>
 						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.0.2012.6</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName"/>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName"/>
-						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.0.2012.6</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcboffice2k140.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcbofficexp140.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k140.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclofficexp140.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+					</Excluded_Packages>
 				</Delphi.Personality>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>
