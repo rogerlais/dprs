@@ -82,9 +82,9 @@ begin
         ForceDirectories(ACESSO_PATH);
         MessageBoxW(0, 'Destino gerado', 'entrada', MB_OK + MB_ICONSTOP + MB_TOPMOST);
         CpOK := CpOK and Self.MirrorCopy(SrcDir, ACESSO_PATH, 'AcessoCli.exe');
-        CpOK := CpOK and Self.MirrorCopy(SrcDir, ACESSO_PATH, 'AcessoCli.ini');
-        CpOK := CpOK and Self.MirrorCopy(SrcDir, ACESSO_PATH, 'Atualizador.exe');
-        CpOK := CpOK and Self.MirrorCopy(SrcDir, ACESSO_PATH, 'Atualizador.ini');
+		 CpOK := CpOK and Self.MirrorCopy(SrcDir, ACESSO_PATH, 'AcessoCli.ini');
+		 CpOK := CpOK and Self.MirrorCopy(SrcDir, ACESSO_PATH, 'Atualizador.ini');
+		 CpOK := CpOK and Self.MirrorCopy(SrcDir, ACESSO_PATH, 'Atualizador.exe');
 
         if (not CpOK) then begin
             MessageBoxW(0, 'Falha copiando arquivos do acesso cliente para caminho padrão', 'ERRO!',
@@ -411,12 +411,14 @@ begin
 end;
 
 function TDMMainController.TakeOwership(const filename: string): Integer;
+(*
 var
 	secureFile : TJwSecureFileObject;
 	Sid : TJwSecurityId;
 	Token : TJwSecurityToken;
+*)
 begin
-
+(*
 	 if not FileExists( filenae ) then begin
 	 exit;
 	 end;
@@ -446,5 +448,8 @@ end;
 	 end;
 end;
 
+*)
 end;
+
+
 end.
