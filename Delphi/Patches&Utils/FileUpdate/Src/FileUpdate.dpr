@@ -10,9 +10,8 @@ uses
   Forms,
   fuMainDataModule in 'fuMainDataModule.pas' {DMMainController: TDataModule},
   fuMainForm in 'fuMainForm.pas' {FUMainWindow},
-  ShellFilesHnd in '..\..\..\..\..\Pcks\ShellLib\Src\ShellFilesHnd.pas',
-  AppLog in '..\..\..\..\..\Pcks\XPLib\Src\AppLog.pas',
-  FileHnd in '..\..\..\..\..\Pcks\XPLib\Src\FileHnd.pas';
+  fuCustomLog in 'fuCustomLog.pas',
+  fuUserSwitcher in 'fuUserSwitcher.pas';
 
 {$R *.RES}
 

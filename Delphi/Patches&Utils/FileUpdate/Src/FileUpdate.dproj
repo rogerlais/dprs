@@ -56,9 +56,8 @@
 			<DCCReference Include="fuMainForm.pas">
 				<Form>FUMainWindow</Form>
 			</DCCReference>
-			<DCCReference Include="..\..\..\..\..\Pcks\ShellLib\Src\ShellFilesHnd.pas"/>
-			<DCCReference Include="..\..\..\..\..\Pcks\XPLib\Src\AppLog.pas"/>
-			<DCCReference Include="..\..\..\..\..\Pcks\XPLib\Src\FileHnd.pas"/>
+			<DCCReference Include="fuCustomLog.pas"/>
+			<DCCReference Include="fuUserSwitcher.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
