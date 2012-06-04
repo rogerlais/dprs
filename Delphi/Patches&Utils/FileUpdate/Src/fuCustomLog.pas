@@ -35,12 +35,12 @@ end;
 procedure TFULog.StreamDispose;
 begin
 	 inherited;
-	 Self.FSwitcher.
+	 Self.FSwitcher.RevertToPrevious();
 end;
 
 procedure TFULog.StreamNeeded;
 begin
-	Self.IncreaseNetAcess();
+	Self.FSwitcher.SwitchTo( APP_NET_USER );
 	 inherited;
 end;
 

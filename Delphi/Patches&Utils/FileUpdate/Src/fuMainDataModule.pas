@@ -22,6 +22,7 @@ type
         FAcessoUpdated : boolean;
         FAtualizadorUpdated : boolean;
         FNetToken :      THandle;
+        FSwitcher :      TFUUserSwitcher;
         procedure UpdateAcesso(const DestName : string);
         procedure UpdateSRH(const DestName : string);
         procedure UpdateAtualizador(const DestName : string);
@@ -37,8 +38,6 @@ type
         function GetSourceFilePath : string;
         function MirrorCopy(const SrcPath, DestPath, Filename : string) : boolean;
         function GetNetworkUserToken(const UserName, Pwd : string) : Integer;
-        procedure GetNetAcess();
-        procedure ReleaseNetAccess();
         function GetLogFilename : string;
         function GetSignatureFilename : string;
     public
@@ -64,9 +63,10 @@ uses
 
 const
     IE_GPO_FULLY_APPLIED_DATE = 'HKEY_LOCAL_MACHINE\SOFTWARE\SESOP\Patches\AppliedDates\SRH_ACESSO';
-    RE_LOG_APP   = 'HKEY_CURRENT_USER\SESOP\Log\SRH_ACESSO';
+    //RE_LOG_APP   = 'HKEY_CURRENT_USER\SESOP\Log\SRH_ACESSO';
     //LOG_ROOT_DIR = 'C:\Temp';
-    LOG_ROOT_DIR = '\\macgyver.tre-pb.gov.br\ftp_sesop\FileUpdate.log';
+    SOURCE_FILES_ROOT_DIR = '\\macgyver.tre-pb.gov.br\ftp_sesop\FileUpdate\Files';
+    LOG_ROOT_DIR = '\\macgyver.tre-pb.gov.br\ftp_sesop\FileUpdate\Logs';
     ACESSO_PATH  = 'D:\AplicTRE\AcessoCliente';
     SRH_PATH     = 'D:\AplicTRE\SGRH';
 
@@ -101,18 +101,6 @@ begin
             TLogFile.Log('SRH atualizado COM SUCESSO');
         end;
     end;
-end;
-
-
-procedure TDMMainController.ReleaseNetAccess;
-var
-	UName : string;
-begin
-	 UName:=WinNetHnd.GetUserName();
-	 Self.FTmpList.Add( UName );
-	 RevertToSelf();
-	 UName:=WinNetHnd.GetUserName();
-	 Self.FTmpList.Add( UName );
 end;
 
 procedure TDMMainController.RunUpdates(List : TStrings);
@@ -180,9 +168,10 @@ end;
 
 constructor TDMMainController.Create(AOwner : TComponent);
 begin
-	 inherited;
-	 Self.FTmpList := TStringList.Create;
-	 Self.InitLog();
+    inherited;
+    Self.FTmpList  := TStringList.Create;
+    Self.FSwitcher := TFUUserSwitcher.Create('SYSTEM');
+    Self.InitLog();
 end;
 
 procedure TDMMainController.DataModuleCreate(Sender : TObject);
@@ -261,11 +250,15 @@ end;
 
 procedure TDMMainController.UpdateAtualizador(const DestName : string);
 //Atualizar atualizador
+var
+    admPath : string;
 begin
-    if not (SameText(TFileHnd.ParentDir(DestName), ACESSO_PATH)) then begin
+    admPath := TFileHnd.ChangeFileName(DestName, 'Acessoadm.exe');
+    if ((not FileExists(admPath)) and (not (SameText(TFileHnd.ParentDir(DestName), ACESSO_PATH)))) then begin
         DeleteFile(PChar(DestName));
     end else begin
-        Self.FAtualizadorUpdated := Self.MirrorCopy(Self.SourceFilePath, ACESSO_PATH, 'Atualizador.exe');
+        Self.FAtualizadorUpdated := (not FileExists(admPath)) and Self.MirrorCopy(Self.SourceFilePath,
+            ACESSO_PATH, 'Atualizador.exe');
         //Flag de atualizador atualizado
     end;
 end;
@@ -284,19 +277,25 @@ procedure TDMMainController.InitLog;
 var
     Log : TFULog;
 begin
+
+    Self.FSwitcher.AddUserCrendentials(APP_NET_USER, APP_NET_PWD);
+    (*
     if (GetNetworkUserToken('download@tre-pb.gov.br', 'pinico123') <> 0) then begin
-        raise Exception.Create('Logon alternativo download@tre-pb.gov.br falhou para a atualização de sistemas(Acess, SRH).');
-    end;
-    Self.GetNetAcess();
+         raise Exception.Create('Logon alternativo download@tre-pb.gov.br falhou para a atualização de sistemas(Acess, SRH).');
+     end;
+     Self.GetNetAcess();
+
+     *)
+    Self.FSwitcher.SwitchTo(APP_NET_USER);
     try
         ForceDirectories(LOG_ROOT_DIR);
-        Log := TFULog.Create(Self.LogFilename, False, Self.FNetToken);
+        Log := TFULog.Create(Self.LogFilename, False, Self.FSwitcher);
         TLogFile.SetDefaultLogFile(Log);
-         {$IFDEF DEBUG}
+          {$IFDEF DEBUG}
         TLogFile.GetDefaultLogFile.DebugLevel := DBGLEVEL_ULTIMATE;
-         {$ENDIF}
+          {$ENDIF}
     finally
-        Self.ReleaseNetAccess();
+        Self.FSwitcher.RevertToPrevious();
     end;
 end;
 
@@ -309,11 +308,11 @@ begin
     if (FileExists(DestFile)) then begin
         DeleteFile(PChar(DestFile));
     end;
-    Self.GetNetAcess();
+    Self.FSwitcher.SwitchTo(APP_NET_USER);
     try
         Result := FileHnd.FileCopy(SrcFile, DestFile, True) = ERROR_SUCCESS;
     finally
-        Self.ReleaseNetAccess();
+        Self.FSwitcher.RevertToPrevious();
     end;
 end;
 
@@ -323,7 +322,7 @@ var
 begin
     Result := Self.GetIsPatchAppliedRegVersion();
     if (not Result) then begin
-        Self.GetNetAcess();
+        Self.FSwitcher.SwitchTo(APP_NET_USER);
         try
             RuntimeDate := TFileHnd.FileTimeChangeTime(ParamStr(0));
             if (FileExists(Self.SignatureFilename)) then begin
@@ -333,7 +332,7 @@ begin
                 Result := False;
             end;
         finally
-            Self.ReleaseNetAccess();
+            Self.FSwitcher.RevertToPrevious();
         end;
         if (not Result) then begin
             Self.DebugLog('Detectada a necessidade de atualização');
@@ -346,18 +345,18 @@ procedure TDMMainController.SetIsPatchApplied(const Value : boolean);
 begin
     Self.SetIsPatchAppliedRegVersion(Value);
     if (Value) then begin
-        Self.GetNetAcess;
+        Self.FSwitcher.SwitchTo(APP_NET_USER);
         try
             TFileHnd.ForceFilename(Self.SignatureFilename);
         finally
-            Self.ReleaseNetAccess;
+            Self.FSwitcher.RevertToPrevious();
         end;
     end else begin
-        Self.GetNetAcess;
+        Self.FSwitcher.SwitchTo(APP_NET_USER);
         try
             DeleteFile(PChar(Self.SignatureFilename));
         finally
-            Self.ReleaseNetAccess;
+            Self.FSwitcher.RevertToPrevious();
         end;
     end;
 end;
@@ -370,11 +369,17 @@ function TDMMainController.GetIsPatchAppliedRegVersion : boolean;
 var
     reg : TRegistryNT;
     RegDate, RunTimeDate : TDateTime;
+    suc : boolean;
 begin
     Result := False;
     reg    := TRegistryNT.Create();
     try
-        if (reg.ReadFullDateTime(IE_GPO_FULLY_APPLIED_DATE, RegDate)) then begin
+        try
+            suc := reg.ReadFullDateTime(IE_GPO_FULLY_APPLIED_DATE, RegDate);
+        except
+            suc := False;
+        end;
+        if (suc) then begin
             TLogFile.LogDebug('Carregando runtime em ' + ParamStr(0), DBGLEVEL_ULTIMATE);
             RunTimeDate := TFileHnd.FileTimeChangeTime(ParamStr(0));
             TLogFile.LogDebug('Usando data de referência de atualização: ' + DateTimeToStr(RunTimeDate), DBGLEVEL_ULTIMATE);
@@ -404,7 +409,7 @@ function TDMMainController.GetSourceFilePath : string;
 begin
     //Result := TFileHnd.SlashRem(ExtractFilePath(ParamStr(0)));
        {$MESSAGE WARN 'alerta de camino hc' }
-    Result := '\\macgyver.tre-pb.gov.br\ftp_sesop';
+    Result := SOURCE_FILES_ROOT_DIR;
 end;
 
 procedure TDMMainController.SetIsPatchAppliedRegVersion(const Value : boolean);
@@ -427,17 +432,6 @@ begin
             MessageBoxW(0, PWideChar(E.Message + #13 + SysErrorMessage(GetLastError())), 'Registro de erro',
                 MB_OK + MB_ICONSTOP + MB_TOPMOST);
         end;
-    end;
-end;
-
-procedure TDMMainController.GetNetAcess;
-begin
-    if (Self.FNetToken <> 0) then begin
-        if not ImpersonateLoggedOnUser(Self.FNetToken) then begin
-            raise Exception.Create('Acesso a rede falhou' + SysErrorMessage(GetLastError()));
-        end;
-    end else begin
-        raise Exception.Create('Conta de acesso a rede indefinida.');
     end;
 end;
 

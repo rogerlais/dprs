@@ -3,7 +3,7 @@
 			<ProjectGuid>{3ACEC0AB-990B-4AE8-9C77-8ABA2145FACE}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>SvcLoader.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">

@@ -3,7 +3,7 @@
 			<ProjectGuid>{4F22916E-FD56-4107-8B6B-3454805F7504}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>FileUpdate.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -27,9 +27,9 @@
 			<DCC_Platform>x86</DCC_Platform>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
-			<DCC_DependencyCheckOutputName>D:\Documentos\FileUpdate.exe</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\Release\FileUpdate.exe</DCC_DependencyCheckOutputName>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
-			<DCC_ExeOutput>D:\Documentos</DCC_ExeOutput>
+			<DCC_ExeOutput>..\Release</DCC_ExeOutput>
 			<DCC_BplOutput>..\Release</DCC_BplOutput>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 			<DCC_DcuOutput>..\Release</DCC_DcuOutput>
