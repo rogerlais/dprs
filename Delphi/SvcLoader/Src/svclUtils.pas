@@ -9,7 +9,10 @@ interface
 
 
 uses
-    JwaWindows; // todas as units ao lado são agrupadas na JwaWindows JwaWinNT, JwaWinType, JwaNtStatus, JwaNtSecApi, JwaLmCons;
+	 AppLog, JwaWindows; // todas as units ao lado são agrupadas na JwaWindows JwaWinNT, JwaWinType, JwaNtStatus, JwaNtSecApi, JwaLmCons;
+
+type
+	ESVCLException = class(  ELoggedException );
 
 function LogonAsServiceToAccount(AAccountName : string) : DWORD;
 function AddPrivilegeToAccount(AAccountName, APrivilege : string) : DWORD;

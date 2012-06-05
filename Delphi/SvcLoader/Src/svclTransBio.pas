@@ -14,22 +14,23 @@ type
     TTransBioThread = class(TXPNamedThread)
     private
         FStream :    TFileStream;
-        FConnected : boolean;
+        FUserToken : THandle;
         procedure DoCycle;
         procedure ReplicDataFiles2PrimaryMachine(const Filename : string);
         procedure CreatePrimaryBackup(const DirName : string);
         procedure CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
-        procedure SetConnected(const Value : boolean);
         procedure StoreTransmitted(SrcFile : TFileSystemEntry);
+        procedure NetAccess(link : boolean);
     public
         procedure Execute(); override;
-        property Connected : boolean read FConnected write SetConnected;
+        function InitNetUserAccess(const AUsername, APassword : string) : Integer;
+        destructor Destroy; override;
     end;
 
 implementation
 
 uses
-    svclConfig, FileHnd, AppLog;
+    svclConfig, FileHnd, AppLog, svclUtils;
 
 { TTransBioThread }
 procedure TTransBioThread.CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
@@ -38,21 +39,31 @@ var
     DestName : string;
 begin
     //Verificar se existe o destino, garantindo nome único
-    if FileExists(Dest) then begin
-        DestName := TFileHnd.NextFamilyFilename(Dest);
-    end else begin
-        DestName := Dest;
-    end;
-    if not (ForceDirectories(ExtractFilePath(Dest))) then begin
-        raise Exception.CreateFmt(ErrMsg, [Source, DestName, Fase, SysErrorMessage(ERROR_CANNOT_MAKE)]);
+    Self.NetAccess(True);
+    try
+        if FileExists(Dest) then begin
+            DestName := TFileHnd.NextFamilyFilename(Dest);
+        end else begin
+            DestName := Dest;
+        end;
+        if not (ForceDirectories(ExtractFilePath(Dest))) then begin
+            raise ESVCLException.CreateFmt(ErrMsg, [Source, DestName, Fase, SysErrorMessage(ERROR_CANNOT_MAKE)]);
+        end;
+    finally
+        Self.NetAccess(False);
     end;
     if ToMove then begin
         if not MoveFile(PWideChar(Source), PWideChar(DestName)) then begin
-            raise Exception.CreateFmt(ErrMsg, [Source, DestName, Fase, SysErrorMessage(GetLastError())]);
+            raise ESVCLException.CreateFmt(ErrMsg, [Source, DestName, Fase, SysErrorMessage(GetLastError())]);
         end;
     end else begin
-        if not CopyFile(PWideChar(Source), PWideChar(DestName), True) then begin
-            raise Exception.CreateFmt(ErrMsg, [Source, DestName, Fase, SysErrorMessage(GetLastError())]);
+        Self.NetAccess(True);
+        try
+            if not CopyFile(PWideChar(Source), PWideChar(DestName), True) then begin
+                raise ESVCLException.CreateFmt(ErrMsg, [Source, DestName, Fase, SysErrorMessage(GetLastError())]);
+            end;
+        finally
+            Self.NetAccess(False);
         end;
     end;
 end;
@@ -64,10 +75,18 @@ var
     FileEnt : IEnumerable<TFileSystemEntry>;
     f : TFileSystemEntry;
 begin
-	 FileEnt := TDirectory.FileSystemEntries( DirName , BIOMETRIC_FILE_MASK, False);
+    FileEnt := TDirectory.FileSystemEntries(DirName, BIOMETRIC_FILE_MASK, False);
     for f in FileEnt do begin
         Self.StoreTransmitted(f);
     end;
+end;
+
+destructor TTransBioThread.Destroy;
+begin
+	 //Liberar o Token usado pela conta alternativa
+	 CloseHandle( Self.FUserToken );
+	 Self.FUserToken := 0;
+    inherited;
 end;
 
 procedure TTransBioThread.DoCycle;
@@ -76,12 +95,12 @@ var
     FileEnt : IEnumerable<TFileSystemEntry>;
     f : TFileSystemEntry;
 begin
-    //FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
-    FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
     if GlobalConfig.isPrimaryComputer then begin
         //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
         Self.CreatePrimaryBackup(GlobalConfig.PrimaryTransmittedPath);
     end else begin
+        //FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
+        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
         //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
         for f in FileEnt do begin
             Self.ReplicDataFiles2PrimaryMachine(f.FullName);
@@ -137,29 +156,51 @@ begin
                 end;
             end;
             //Suspende este thread até a liberação pelo thread do serviço
-              {$IFDEF DEBUG}
+               {$IFDEF DEBUG}
             //SwitchToThread();
             Self.Suspended := True;
-             {$ELSE}
+              {$ELSE}
             Self.Suspended := True;
-            {$ENDIF}
+             {$ENDIF}
         end;
     finally
         Self.FStream.Destroy;
     end;
 end;
 
-procedure TTransBioThread.SetConnected(const Value : boolean);
+function TTransBioThread.InitNetUserAccess(const AUsername, APassword : string) : Integer;
 var
-    Path : string;
+    User, Pass : PChar;
 begin
-    if Value then begin //Acessar o mapeamento para o repositório da máquina primária
-        Path := GlobalConfig.PrimaryTransmittedPath;
-        if not (DirectoryExists(Path)) then begin
-            raise Exception.CreateFmt('Falha acessando repositório dos arquivos no computador primário.'#13'"%s', [Path]);
-        end;
+    TLogFile.LogDebug(Format('Usando conta: %s para acesso à rede com a senha: "%s"', [AUsername, APassword]), DBGLEVEL_DETAILED);
+
+    User   := PChar(AUserName);
+    Pass   := PChar(APassword);
+    Result := ERROR_SUCCESS;
+    SetLastError(Result);
+    if not LogonUser(User, nil, Pass, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, Self.FUserToken) then begin
+        Result := GetLastError();
     end;
-    FConnected := Value;
+end;
+
+procedure TTransBioThread.NetAccess(link : boolean);
+ ///  <summary>
+ ///    Habilita o acesso a um compartilhamento remoto para a replicação dos arquivos
+ ///  </summary>
+ ///  <remarks>
+ ///  A inicialização deve ter sido chamada anteriormente
+ ///  </remarks>
+var
+    ret : boolean;
+begin
+    if (link) then begin
+        ret := ImpersonateLoggedOnUser(Self.FUserToken);
+    end else begin
+        ret := RevertToSelf();
+    end;
+    if (not ret) then begin
+        TLogFile.Log('Acesso a rede falhou!!!'#13 + SysErrorMessage(GetLastError()));
+    end;
 end;
 
 procedure TTransBioThread.StoreTransmitted(SrcFile : TFileSystemEntry);
@@ -173,11 +214,14 @@ begin
     TFileHnd.FileTimeProperties(SrcFile.FullName, dummy, dummy, t);
     FullDateStr := FormatDateTime('YYYYMMDD', t);
     sy := Copy(FullDateStr, 1, 4);
-	 sm := Copy(FullDateStr, 5, 2);
+    sm := Copy(FullDateStr, 5, 2);
     sd := Copy(FullDateStr, 7, 2);
-	 DestPath := TFileHnd.ConcatPath([GlobalConfig.PrimaryBackupPath, sy, sm, sd]);
-	 ForceDirectories( DestPath );
-	 MoveFile( PChar( SrcFile.FullName ), PChar( DestPath + '\' + SrcFile.Name ) );
+    DestPath := TFileHnd.ConcatPath([GlobalConfig.PrimaryBackupPath, sy, sm, sd]);
+    ForceDirectories(DestPath);
+    if (not MoveFile(PChar(SrcFile.FullName), PChar(DestPath + '\' + SrcFile.Name))) then begin
+        TLogFile.Log('Erro movendo arquivo para o repositório definitivo no computador primário'#13 +
+            SysErrorMessage(GetLastError()));
+    end;
 end;
 
 end.

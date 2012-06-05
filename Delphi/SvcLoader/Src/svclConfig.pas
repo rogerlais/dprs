@@ -23,14 +23,14 @@ type
         function GetStationRemoteTransPath : string;
         function GetStationLocalTransPath : string;
         function GetStationBackupPath : string;
-        function GetServiceAccountPassword : string;
-        function GetServiceAccountName : string;
+        function GetNetAccountPassword : string;
+        function GetNetAccessUsername : string;
         function GetCycleInterval : Integer;
         function GetIsPrimaryComputer : boolean;
         function GetPrimaryBackupPath : string;
-        function GetPrimaryToTransmitPath : string;
+        function GetPrimaryTransmittedPath : string;
         function GetDebugLevel : Integer;
-        function GetCypherServiceAccountPwd : string;
+        function GetCypherNetAccessPassword : string;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
         //Atributos privativos da estação
@@ -40,11 +40,11 @@ type
         property StationRemoteTransPath : string read GetStationRemoteTransPath;
         //Atributos privativos do computador primario
         property PrimaryBackupPath : string read GetPrimaryBackupPath;
-        property PrimaryTransmittedPath : string read GetPrimaryToTransmitPath;
+        property PrimaryTransmittedPath : string read GetPrimaryTransmittedPath;
         //Atributos do servico
-        property ServiceAccountPassword : string read GetServiceAccountPassword;
-        property CypherServiceAccountPwd : string read GetCypherServiceAccountPwd;
-        property ServiceAccountName : string read GetServiceAccountName;
+        property NetAccesstPassword : string read GetNetAccountPassword;
+        property CypherNetAccessPassword : string read GetCypherNetAccessPassword;
+        property NetAccessUserName : string read GetNetAccessUsername;
         property CycleInterval : Integer read GetCycleInterval;
         //Atributos da sessão
         property isPrimaryComputer : boolean read GetIsPrimaryComputer;
@@ -56,7 +56,8 @@ const
     APP_SERVICE_NAME = 'BioFilesService';
     APP_SERVICE_KEY  = 'BioSvc';
 
-    APP_SUPORTE_DEFAULT_PWD = '$!$adm!n';
+	 APP_SUPORTE_DEFAULT_PWD = '$!$adm!n';
+    //APP_SUPORTE_DEFAULT_PWD = '12345678';
 
 var
     GlobalConfig : TBioReplicatorConfig;
@@ -64,13 +65,13 @@ var
 implementation
 
 uses
-    FileHnd, TREUtils, TREConsts, WinDisks, TREUsers, WinNetHnd, CryptIni, WNetExHnd;
+    FileHnd, TREUtils, TREConsts, WinDisks, TREUsers, WinNetHnd, CryptIni, WNetExHnd, svclUtils, StrHnd;
 
 const
-    IE_SERVICE_PASSWORD = 'EncodedSvcPwd';
-    IE_SHARE_USERNAME   = 'ShareAccountName';
+    IE_NET_ACCESS_PASSWORD = 'EncodedSvcPwd';
+    IE_NET_USERNAME = 'ShareAccountName';
 
-    DV_SERVICE_SHARE_USERNAME = 'suporte';
+    DV_SERVICE_NET_USERNAME = 'suporte';
 
 procedure InitConfiguration();
 begin
@@ -99,16 +100,16 @@ begin
     end;
 end;
 
-function TBioReplicatorConfig.GetCypherServiceAccountPwd : string;
+function TBioReplicatorConfig.GetCypherNetAccessPassword : string;
 var
     Cypher : TCypher;
 begin
     Cypher := TCypher.Create(APP_SERVICE_KEY);
     try
-        Result := GlobalConfig.ReadStringDefault(IE_SERVICE_PASSWORD, EmptyStr);
+        Result := GlobalConfig.ReadStringDefault(IE_NET_ACCESS_PASSWORD, EmptyStr);
         if Result = EmptyStr then begin
             Result := Cypher.Encode(APP_SUPORTE_DEFAULT_PWD);
-            GlobalConfig.WriteString(IE_SERVICE_PASSWORD, Result);
+            GlobalConfig.WriteString(IE_NET_ACCESS_PASSWORD, Result);
         end;
     finally
         Cypher.Free;
@@ -122,20 +123,17 @@ end;
 
 function TBioReplicatorConfig.GetIsPrimaryComputer : boolean;
 var
-    pc : string;
+    pc :  string;
+    ret : boolean;
 begin
-	 if Self._FIsPrimaryComputer < 0 then begin  //Deve ser calculado nesta pessagem
-		 {$IFDEF DEBUG}
-		 pc := TTREUtils.GetZonePrimaryComputer('CPB080WKS99');
-		 //Linha abaixo força este computador como primario
-		 pc:=WinNetHnd.GetComputerName();
-		 {$ELSE}
-		 pc:=Self.ReadStringDefault('ForcedPrimaryComputer');
-		 {$ENDIF}
-		 if pc = EmptyStr then begin
-			 pc := TTREUtils.GetZonePrimaryComputer(WinNetHnd.GetComputerName());
-		 end;
-		 if SameText(pc, WinNetHnd.GetComputerName()) then begin
+    if Self._FIsPrimaryComputer < 0 then begin  //Deve ser calculado nesta pessagem
+        //Verificas PDC(assumidos como primarios e unicos sempre)
+        ret := Pos('PDC01', UpperCase(GetComputerName())) > 0;
+        if (not ret) then begin //Checa STD01 assumida como sempre primaria em STDs
+            ret := TStrHnd.endsWith(UpperCase(GetComputerName), 'STD01');
+        end;
+        ret := Self.ReadBooleanDefault('IsPrimaryComputer', ret);
+        if (ret) then begin
             Self._FIsPrimaryComputer := 1;
         end else begin
             Self._FIsPrimaryComputer := 0;
@@ -162,7 +160,7 @@ begin
             end;
         end;
         if ImgVolume = EmptyStr then begin
-            raise Exception.Create('Impossível determinar o volume de imagens deste computador');
+            raise ESVCLException.Create('Impossível determinar o volume de imagens deste computador');
         end;
          {$IFDEF DEBUG}
         Self._FLocalBackup := ExpandFileName('..\Data\StationBackupPath');
@@ -205,7 +203,7 @@ begin
     Result := ExpandFileName(Self.ReadStringDefault('PrimaryBackupPath', Result));
 end;
 
-function TBioReplicatorConfig.GetPrimaryToTransmitPath : string;
+function TBioReplicatorConfig.GetPrimaryTransmittedPath : string;
     ///
     /// Leitura do local onde a estação primária armazena os arquivos para transmissão
     ///
@@ -213,7 +211,7 @@ begin
 {$IFDEF DEBUG}
     Result := ExpandFileName('..\Data\PrimaryTransmitted');
 {$ELSE}
-    Result := 'D:\Aplic\TransBio\Files\Bio';
+	 Result := 'I:\TransBio\Files\Trans';
 {$ENDIF}
     Result := ExpandFileName(Self.ReadStringDefault('PrimaryTransmittedPath', Result));
 end;
@@ -232,24 +230,24 @@ begin
     Result := ExpandFileName(Self.ReadStringDefault('StationRemoteTransPath', Result));
 end;
 
-function TBioReplicatorConfig.GetServiceAccountName : string;
+function TBioReplicatorConfig.GetNetAccessUsername : string;
     ///
     /// Leitura da conta de acesso ao compartilhamento remoto do computador primário
     ///
 var
     domain : string;
 begin
-    Result := Self.ReadStringDefault(IE_SHARE_USERNAME, Result);
-    if (Result = EmptyStr) then begin
-        domain := GetDomainFromComputerName(EmptyStr);
-        if (domain <> EmptyStr) then begin
-            Result := domain + '\' + DV_SERVICE_SHARE_USERNAME;
+	 Result := Self.ReadStringDefault(IE_NET_USERNAME, Result);
+	 if (Result = EmptyStr) then begin
+		 domain := GetDomainFromComputerName(EmptyStr);
+		 if (domain <> EmptyStr) then begin
+			 Result := DV_SERVICE_NET_USERNAME + '@' + domain ;
         end;
-        Self.WriteString(IE_SHARE_USERNAME, Result);
+        Self.WriteString(IE_NET_USERNAME, Result);
     end;
 end;
 
-function TBioReplicatorConfig.GetServiceAccountPassword : string;
+function TBioReplicatorConfig.GetNetAccountPassword : string;
     /// Retorna a senha para a conta usada para levantar os serviços
     ///
     /// Revision - 20120510 - roger
@@ -260,7 +258,7 @@ var
 begin
     cp := TCypher.Create(APP_SERVICE_KEY);
     try
-		 Result := cp.Decode(Self.CypherServiceAccountPwd);
+        Result := cp.Decode(Self.CypherNetAccessPassword);
     finally
         cp.Free;
     end;

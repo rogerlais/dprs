@@ -9,7 +9,8 @@ uses
   SvcMgr,
   svclBiometricFiles in 'svclBiometricFiles.pas' {BioFilesService: TService},
   svclTransBio in 'svclTransBio.pas',
-  svclConfig in 'svclConfig.pas';
+  svclConfig in 'svclConfig.pas',
+  svclUtils in 'svclUtils.pas';
 
 {$R *.RES}
 

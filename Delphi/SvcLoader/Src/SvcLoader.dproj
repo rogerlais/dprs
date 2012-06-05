@@ -3,7 +3,7 @@
 			<ProjectGuid>{3ACEC0AB-990B-4AE8-9C77-8ABA2145FACE}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>SvcLoader.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -55,6 +55,7 @@
 			</DCCReference>
 			<DCCReference Include="svclTransBio.pas"/>
 			<DCCReference Include="svclConfig.pas"/>
+			<DCCReference Include="svclUtils.pas"/>
 			<None Include="ModelSupport_SvcLoader\default.txaPackage"/>
 			<None Include="ModelSupport_SvcLoader\default.txvpck"/>
 			<None Include="ModelSupport_SvcLoader\Use Case Diagram1.txvuse"/>
@@ -92,10 +93,10 @@
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
-						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MajorVer">2</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">2012</VersionInfo>
-						<VersionInfo Name="Build">18</VersionInfo>
+						<VersionInfo Name="Build">20</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -107,13 +108,13 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">TRE-PB/COSUP/SESOP</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">SESOP Service Loader</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.0.2012.18</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">2.0.2012.20</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName">SESOP Service Loader</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName">SESOP Service Loader</VersionInfoKeys>
-						<VersionInfoKeys Name="ProductVersion">1.0.2010.17</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">2.0.2012.20</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>

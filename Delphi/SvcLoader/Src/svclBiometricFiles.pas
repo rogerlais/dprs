@@ -1,5 +1,5 @@
 {$IFDEF svclBiometricFiles}
-    {$DEFINE DEBUG_UNIT}
+	 {$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I SvcLoader.inc}
 
@@ -8,25 +8,25 @@ unit svclBiometricFiles;
 interface
 
 uses
-    Windows, Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, svclTransBio, ExtCtrls;
+	 Windows, Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, svclTransBio, ExtCtrls;
 
 type
-    TBioFilesService = class(TService)
-        tmrCycleEvent : TTimer;
-        procedure ServiceStart(Sender : TService; var Started : boolean);
-        procedure ServiceCreate(Sender : TObject);
-        procedure ServiceAfterInstall(Sender : TService);
-        procedure ServiceStop(Sender : TService; var Stopped : boolean);
-        procedure tmrCycleEventTimer(Sender : TObject);
-        procedure ServiceBeforeInstall(Sender : TService);
-    private
-        { Private declarations }
-        FSvcThread : TTransBioThread;
-    public
-        function GetServiceController : TServiceController; override;
-        procedure TimeCycleEvent();
-        { Public declarations }
-    end;
+	 TBioFilesService = class(TService)
+		 tmrCycleEvent : TTimer;
+		 procedure ServiceStart(Sender : TService; var Started : boolean);
+		 procedure ServiceCreate(Sender : TObject);
+		 procedure ServiceAfterInstall(Sender : TService);
+		 procedure ServiceStop(Sender : TService; var Stopped : boolean);
+		 procedure tmrCycleEventTimer(Sender : TObject);
+		 procedure ServiceBeforeInstall(Sender : TService);
+	 private
+		 { Private declarations }
+		 FSvcThread : TTransBioThread;
+	 public
+		 function GetServiceController : TServiceController; override;
+		 procedure TimeCycleEvent();
+		 { Public declarations }
+	 end;
 
 var
     BioFilesService : TBioFilesService;
@@ -34,7 +34,7 @@ var
 implementation
 
 uses
-    AppLog, WinReg32, FileHnd, svclConfig;
+    AppLog, WinReg32, FileHnd, svclConfig, svclUtils, WinnetHnd, APIHnd;
 
 {$R *.DFM}
 
@@ -63,57 +63,70 @@ begin
 end;
 
 procedure TBioFilesService.ServiceBeforeInstall(Sender : TService);
-///  <summary>
-///    Ajusta os parametros do serviço antes de sua instalação. Dentre as ações está levantar o serviço como o último da lista de
-/// serviços
-///  </summary>
-///  <remarks>
-///
-///  </remarks>
+ ///  <summary>
+ ///    Ajusta os parametros do serviço antes de sua instalação. Dentre as ações está levantar o serviço como o último da lista de
+ /// serviços
+ ///  </summary>
+ ///  <remarks>
+ ///
+ ///  </remarks>
 var
-	 reg : TRegistryNT;
-	 lst : TStringList;
+    reg : TRegistryNT;
+    lst : TStringList;
 begin
-	 //Ajusta as credenciais para instalação do serviço
-	 { TODO -oroger -cURGENTE : Rever pois apenas system deu ok. Desta forma não ajustar os valores abaixo }
-	 //Self.Password := GlobalConfig.ServiceAccountPassword;
-	 //Self.ServiceStartName := GlobalConfig.ServiceAccountName;
-
-
-
-	 TLogFile.Log(Format('Registrando o registro do serviço com as credenciais:'#13'Conta: %s'#13'Senha: %s',
-        [Self.ServiceStartName, Self.Password]), lmtInformation);
-    reg := TRegistryNT.Create;
+	 reg := TRegistryNT.Create;
     lst := TStringList.Create;
     try
         reg.ReadFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst);
         if lst.IndexOf(Self.Name) < 0 then begin
-			lst.Add(APP_SERVICE_NAME);
-			lst.Add('SESOP TransBio Replicator');
-           TLogFile.Log('Alterando ordem de inicializalçao dos serviços no registro local');
-           reg.WriteFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst, True );
+            lst.Add(APP_SERVICE_NAME);
+            lst.Add('SESOP TransBio Replicator');
+            TLogFile.Log('Alterando ordem de inicializaçao dos serviços no registro local', lmtInformation);
+            reg.WriteFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst, True);
         end;
     finally
         reg.Free;
         lst.Free;
     end;
+    TLogFile.Log('Serviço registrado com SUCESSO no computador local', lmtInformation);
 end;
 
 procedure TBioFilesService.ServiceCreate(Sender : TObject);
+var
+    x, ret : Integer;
 begin
+	{TODO -oroger -curgente : ajustar nivel de depuração}
+	//TLogFile.GetDefaultLogFile.DebugLevel := DBGLEVEL_ULTIMATE;
+
+	 /// <remarks>
+	 /// Alterado para sempre usar a conta system, ou seja Self.ServiceStartName não atribuido
+	 /// </remarks>
 	 //Dados para a execução dos threads de serviço
-	 Self.Password := GlobalConfig.ServiceAccountPassword;
-	 Self.ServiceStartName := GlobalConfig.ServiceAccountName;
+    //Self.Password := GlobalConfig.NetAccountPassword;
+    //Self.ServiceStartName := GlobalConfig.NetAccessUserName;
 
-	 {TODO -oroger -cdsg : Ajustar o StartName e o Password de acordo com a configuração ou linha de comando}
-	 Self.FSvcThread := TTransBioThread.Create(True);  //Criar thread de operação primário
-	 Self.FSvcThread.Name := 'SESOP TransBio Replicator';  //Nome de exibição do thread primário
+    Self.FSvcThread      := TTransBioThread.Create(True);  //Criar thread de operação primário
+    Self.FSvcThread.Name := 'SESOP TransBio Replicator';  //Nome de exibição do thread primário
 
-    TLogFile.Log(Format('Iniciando o registro do serviço com as credenciais:'#13'Conta: %s'#13'Senha: %s',
-		 [Self.ServiceStartName, GlobalConfig.CypherServiceAccountPwd ]), lmtInformation );
+	 x := 0;
+	 ret:=ERROR_SUCCESS;
+	 while x < 10 do begin
+		Inc(x); 
+		 ret :=
+			 Self.FSvcThread.InitNetUserAccess(GlobalConfig.NetAccessUserName, GlobalConfig.NetAccesstPassword);
+		 if (ret <> ERROR_SUCCESS) then begin
+			 TLogFile.Log(Format('Erro de autenticação de conta %s.'#13 + 'Tentativa %d de %d',
+				 [Globalconfig.NetAccessUserName, x, 10]));
+			 Sleep( 30000 ); //30 segundos de espera
 
-	 //Self.DoStart();
-
+		 end else begin
+			 System.Break;
+		 end;
+	 end;
+	 if (x >= 10) then begin
+		 raise ESVCLException.Create('Erro fatal autenticando a conta de replicação dos arquivos biométricos'#13 +
+			 SysErrorMessage(ret));
+	 end;
 end;
 
 procedure TBioFilesService.ServiceStart(Sender : TService; var Started : boolean);
