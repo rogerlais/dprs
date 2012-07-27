@@ -15,12 +15,12 @@ type
     TFUMainWindow = class(TForm)
         lstFoundFiles : TListBox;
         btnSearch :     TBitBtn;
-		 procedure btnSearchClick(Sender : TObject);
-    procedure FormCreate(Sender: TObject);
-	 private
-		 { Private declarations }
-	 public
-		 { Public declarations }
+        procedure btnSearchClick(Sender : TObject);
+        procedure FormCreate(Sender : TObject);
+    private
+        { Private declarations }
+    public
+        { Public declarations }
     end;
 
 var
@@ -29,22 +29,22 @@ var
 implementation
 
 uses
-	 fuMainDataModule, FileHnd, AppLog;
+    fuMainDataModule, FileHnd, AppLog;
 
 {$R *.dfm}
 
 procedure TFUMainWindow.btnSearchClick(Sender : TObject);
 begin
-	DMMainController.CheckUpdate( Self.lstFoundFiles.Items );
+    DMMainController.CheckUpdate(Self.lstFoundFiles.Items);
 end;
 
-procedure TFUMainWindow.FormCreate(Sender: TObject);
+procedure TFUMainWindow.FormCreate(Sender : TObject);
 begin
-	{$IFDEF DEBUG}
-	Self.Caption := 'Atualizador de Sistemas Administrativos - **** DEBUG *** V: ' + TFileHnd.VersionInfo( ParamStr( 0 ));
-	{$ELSE}
-	Self.Caption := 'Atualizador de Sistemas Administrativos - V: ' + TFileHnd.VersionInfo( ParamStr( 0 ));
-	{$ENDIF}
+    {$IFDEF DEBUG}
+    Self.Caption := 'Atualizador de Sistemas Administrativos - **** DEBUG *** V: ' + TFileHnd.VersionInfo(ParamStr(0));
+    {$ELSE}
+    Self.Caption := 'Atualizador de Sistemas Administrativos - V: ' + TFileHnd.VersionInfo(ParamStr(0));
+    {$ENDIF}
 end;
 
 end.
