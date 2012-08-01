@@ -1,0 +1,19 @@
+
+1 - Buscar pelas entradas 
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet  \Control\Print\Monitors\Standard TCP/IP Port\Ports e 
+HKEY_LOCAL_MACHINE\SYSTEM\ControlSet00<1 a 3>\Control\Print\Printers
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\<nome da impressora>\Port
+Caso a entrada seja um ip usar a tabela de conversão
+
+2 - Repetir o acima para HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Print\Printers
+
+3 - Buscar pelas entradas
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\<nome da impressora>\DsSpooler\PortName(MULTI_SZ), caso uma das linhas pertença a tabela de conversão efetuá-la
+
+4 - Repetir o acima para HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Print\Printers\<nome da impressora>\DsSpooler\PortName(MULTI_SZ)
+
+5 - Varrer hives em 
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports e 
+HKEY_LOCAL_MACHINE\SYSTEM\ControlSet00<1 a 3>\Control\Print\Monitors\Standard TCP/IP Port\Ports e em caso de alguma sub-hive possuir o padrão IP_<ipAddress> realizar a conversão desta hive para o mesmo padrão, bem como alterar os valores de HostName, HWAddress e IPAddress caso sejam Ips dentro da tabela de conversão
+
+6 - 
