@@ -1,19 +1,43 @@
+[1. Definições]
+1.1 - Padrão de busca como "10.12." ou "IP_10.12." para realizar a conversão
 
-1 - Buscar pelas entradas 
-HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet  \Control\Print\Monitors\Standard TCP/IP Port\Ports e 
-HKEY_LOCAL_MACHINE\SYSTEM\ControlSet00<1 a 3>\Control\Print\Printers
+1.2 - Hives para busca recursiva
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Print\Monitors\
+HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Print\Printers\
+HKEY_LOCAL_MACHINE\SYSTEM\ControlSet002\Control\Print\Printers\
+HKEY_LOCAL_MACHINE\SYSTEM\ControlSet003\Control\Print\Printers\
+HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Print\Printers\<nome da impressora>\DsSpooler\PortName(MULTI_SZ)
+e trocar as entradas MULTI_SZ(a linha) onde houver necessidade de conversão, buscar hives com padrão IP_<ipAddress> e também realizar a conversão
+
+HKEY_LOCAL_MACHINE\SOFTWARE\SSScan\
+HKEY_LOCAL_MACHINE\SOFTWARE\Samsung\
+Exemplo
+HKEY_LOCAL_MACHINE\SOFTWARE\Samsung\Samsung SCX-483x 5x3x Series\Install\Setup\FoundPrinter_SetIP
+
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\
 HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\<nome da impressora>\Port
-Caso a entrada seja um ip usar a tabela de conversão
 
-2 - Repetir o acima para HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Print\Printers
-
-3 - Buscar pelas entradas
 HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\<nome da impressora>\DsSpooler\PortName(MULTI_SZ), caso uma das linhas pertença a tabela de conversão efetuá-la
+HKEY_CURRENT_USER\Software\Samsung
+HKEY_CURRENT_USER\Software\SSScan
 
-4 - Repetir o acima para HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Print\Printers\<nome da impressora>\DsSpooler\PortName(MULTI_SZ)
+1.3 - NOME DA ENTRADA contendo valor a converter = "InstParam", assim a busca é interna na cadeia
 
-5 - Varrer hives em 
-HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports e 
-HKEY_LOCAL_MACHINE\SYSTEM\ControlSet00<1 a 3>\Control\Print\Monitors\Standard TCP/IP Port\Ports e em caso de alguma sub-hive possuir o padrão IP_<ipAddress> realizar a conversão desta hive para o mesmo padrão, bem como alterar os valores de HostName, HWAddress e IPAddress caso sejam Ips dentro da tabela de conversão
 
-6 - 
+Exemplos:
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\IP_10.12.0.43
+HKEY_LOCAL_MACHINE\SYSTEM\ControlSet002\Control\Print\Monitors\Samsung Network PC Fax Port\Ports\Samsung Network PC Fax Port
+
+
+[2. Arquivo de configuração de digitalização]
+
+2.1 - Entrada para o caminho do arquivo de configuração(C:\Arquivos de programas\Samsung\NetworkScan\NSConfig.nsc)
+HKEY_LOCAL_MACHINE\SOFTWARE\Classes\TypeLib\{21FA1A1E-3D93-40D6-B62D-780902A09AE0}\1.0\HELPDIR\@
+	Usar o valor padrão: C:\Arquivos de programas\Samsung\NetworkScan\NSConfig.nsc
+
+2.2 - Arquivo binário com os dados de digitalização para modelo 4720
+
+2.3 - Abrir arquivo de configuração buscar por sequencia 0C0Ah e caso com os 2 bytes antecessores constituirem ip na tabela de conversão realizar a troca do valor
+Exemplo:
+36000C0Ah = 54 00 12 10 = IP(10.12.0.54)
+

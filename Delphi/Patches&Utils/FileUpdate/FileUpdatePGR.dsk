@@ -457,11 +457,6 @@ Dockable=1
 StayOnTop=0
 SplitPos=132
 
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Name,
-ExpandedItems=
-
 [ModelViewTool]
 PercentageSizes=1
 Create=1
