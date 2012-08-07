@@ -77,7 +77,6 @@ var
 begin
 	 autoMode := False;
 	 for x := 0 to ParamCount do begin
-	 	TLogFile.Log(ParamStr(x));
 		 if SameText(ParamStr(X), '/auto') then begin
 			 autoMode := True;
 			 Break;
@@ -163,15 +162,15 @@ end;
 
 procedure TdtmdMain.SendNotification;
 const
-    //Modelo = VVer - Versão <1.0.2010.2> - <ZPB080STD01> - 201009242359 - Pendente';
-    SUBJECT_TEMPLATE = 'VVer - Versão: %s - %s - %s - %s';
+	 //Modelo = VVer - Versão <1.0.2012.2> - <ZPB080STD01> - 201209242359 - Pendente';
+	 SUBJECT_TEMPLATE = 'VVer - Versão: %s - %s - %s - %s';
 begin
 	mailMsgNotify.AttachmentEncoding := 'UUE';
 	mailMsgNotify.Encoding := meDefault;
 	mailMsgNotify.ConvertPreamble := True;
 	mailMsgNotify.From.Address := GlobalInfo.SenderAddress;
-	mailMsgNotify.From.Name := Application.Title; //'VVer - Verificador de sistemas 2010 - T1';
-	mailMsgNotify.From.Text := Format( ' %s <%s>', [ Application.Title, GlobalInfo.SenderAddress ] ); // 'VVer - Verificador de sistemas 2010 - T1 <sesop@tre-pb.gov.br>';
+	mailMsgNotify.From.Name := Application.Title; //'VVer - Verificador de sistemas 2012 - T1';
+	mailMsgNotify.From.Text := Format( ' %s <%s>', [ Application.Title, GlobalInfo.SenderAddress ] ); // 'VVer - Verificador de sistemas 2012 - T1 <sesop@tre-pb.gov.br>';
 	mailMsgNotify.From.Domain := Str_Pas.GetDelimitedSubStr( '@', GlobalInfo.SenderAddress, 1 );
 	mailMsgNotify.From.User := Str_Pas.GetDelimitedSubStr( '@', GlobalInfo.SenderAddress, 0 );
 	mailMsgNotify.Sender.Address := GlobalInfo.SenderAddress;
@@ -185,8 +184,8 @@ begin
 	 FromList = <
 	   item
 		 Address = 'sesop@tre-pb.gov.br'
-		 Name = 'VVer - Verificador de sistemas 2010 - T1'
-		 Text = 'VVer - Verificador de sistemas 2010 - T1 <sesop@tre-pb.gov.br>'
+		 Name = 'VVer - Verificador de sistemas 2012 - T1'
+		 Text = 'VVer - Verificador de sistemas 2012 - T1 <sesop@tre-pb.gov.br>'
 		 Domain = 'tre-pb.gov.br'
 		 User = 'sesop'
 	   end>

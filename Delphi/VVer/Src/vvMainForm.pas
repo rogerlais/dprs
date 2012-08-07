@@ -1,5 +1,5 @@
 {$IFDEF vvMainForm}
-	 {$DEFINE DEBUG_UNIT}
+     {$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I VVer.inc}
 {$TYPEINFO OFF}
@@ -27,7 +27,8 @@ type
         procedure btnNotifSESOPClick(Sender : TObject);
         procedure FormShow(Sender : TObject);
         procedure FormCreate(Sender : TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+        procedure FormCloseQuery(Sender : TObject; var CanClose : boolean);
+        procedure grdListDblClick(Sender : TObject);
     private
         { Private declarations }
     public
@@ -40,7 +41,7 @@ var
 implementation
 
 uses
-    WinNetHnd, FileHnd, vvMainDataModule, AppLog;
+    WinNetHnd, FileHnd, vvMainDataModule, AppLog, ShellAPI;
 
 {$R *.dfm}
 
@@ -51,34 +52,35 @@ const
 
 procedure TForm1.btnNotifSESOPClick(Sender : TObject);
 begin
-	 Self.btnNotifSESOP.Enabled := False;
-	 dtmdMain.SendNotification();
-	 if Sender <> nil then begin
-		 MessageDlg('Notificação enviada com sucesso!!', mtInformation, [mbOK], 0);
-	 end;
+    Self.btnNotifSESOP.Enabled := False;
+    dtmdMain.SendNotification();
+    if Sender <> nil then begin
+        MessageDlg('Notificação enviada com sucesso!!', mtInformation, [mbOK], 0);
+    end;
 end;
 
 procedure TForm1.btnOKClick(Sender : TObject);
 begin
-	 Self.Close;
+    Self.Close;
 end;
 
-procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TForm1.FormCloseQuery(Sender : TObject; var CanClose : boolean);
 begin
-	if Self.btnNotifSESOP.Enabled and GlobalInfo.EnsureNotification then begin //para o caso da notificação ser desejada, mas não enviada
-   	Self.btnNotifSESOPClick( nil ); //Passa Sender nulo para não informar do sucesso do envio
-	end;
+    if Self.btnNotifSESOP.Enabled and GlobalInfo.EnsureNotification then begin
+        //para o caso da notificação ser desejada, mas não enviada
+        Self.btnNotifSESOPClick(nil); //Passa Sender nulo para não informar do sucesso do envio
+    end;
 end;
 
 procedure TForm1.FormCreate(Sender : TObject);
 begin
-	Application.Title:='VVer - Verificador de sistemas 2010 - T2';
-	Self.lblMainLabel.Caption:='SESOP - Verificador de Versões de Sistemas 2010 - T2';
-	{$IFDEF DEBUG}
-	Self.Caption := 'Verificador de Versões 2010-T2 *** Depuração ***  - ' + dtmdMain.fvVersion.FileVersion;
-	{$ELSE}
-	Self.Caption := 'Verificador de Versões 2010-T2 Versão: ' + dtmdMain.fvVersion.FileVersion;
-	{$ENDIF}
+    Application.Title := 'VVer - Verificador de sistemas 2012 - T1';
+    Self.lblMainLabel.Caption := 'SESOP - Verificador de Versões de Sistemas 2012 - T1';
+    {$IFDEF DEBUG}
+    Self.Caption      := 'Verificador de Versões 2012-T1 *** Depuração ***  - ' + dtmdMain.fvVersion.FileVersion;
+    {$ELSE}
+    Self.Caption      := 'Verificador de Versões 2012-T1 Versão: ' + dtmdMain.fvVersion.FileVersion;
+    {$ENDIF}
 end;
 
 procedure TForm1.FormShow(Sender : TObject);
@@ -93,16 +95,16 @@ begin
         Application.ProcessMessages;
         try
             try
-				 dtmdMain.InitInfoVersions();
-				 Self.lblProfile.Caption:=GlobalInfo.ProfileName;
-			 except
-				 on E : Exception do begin
-					 AppFatalError('Erro carregando informações de controle de versões'#13#10 + E.Message);
-					 Exit;
-				 end;
-			 end;
+                dtmdMain.InitInfoVersions();
+                Self.lblProfile.Caption := GlobalInfo.ProfileName;
+            except
+                on E : Exception do begin
+                    AppFatalError('Erro carregando informações de controle de versões'#13#10 + E.Message);
+                    Exit;
+                end;
+            end;
 
-			 Self.grdList.RowCount  := GlobalInfo.ProfileInfo.Count + 1;
+            Self.grdList.RowCount  := GlobalInfo.ProfileInfo.Count + 1;
             Self.grdList.ColCount  := 3;
             Self.grdList.FixedRows := 1;
             Self.grdList.Cells[COL_DESC, 0] := 'Descrição';
@@ -125,6 +127,19 @@ begin
     end;
 end;
 
+
+procedure TForm1.grdListDblClick(Sender : TObject);
+var
+    prg : TProgItem;
+begin
+    { TODO -oroger -cdsg : Dispara navegador com a url carregada para download }
+    prg := TProgItem(Self.grdList.Objects[0, Self.grdList.Row]);
+    if Assigned(prg) then begin //pular linhas de cabecalho
+        if ((not prg.isUpdated) and (prg.DownloadURL <> EmptyStr)) then begin
+            ShellAPI.ShellExecute(self.WindowHandle, 'open', PChar(prg.DownloadURL), nil, nil, SW_SHOWNORMAL);
+        end;
+    end;
+end;
 
 procedure TForm1.grdListDrawCellGetProperties(Sender : TObject; ACol, ARow : Integer; Rect : TRect; State : TGridDrawState);
 var

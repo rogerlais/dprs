@@ -1,7 +1,7 @@
-[Versão 1.0.2010.12 - 28/10/2010 - Roger]
-1 - Inserida configuração para garantir envio de notificação ao final do aplicativo
-        1.1 - Acesso via entrada Boolean:VVer\EnsureNotification(Padrão 0/Falso) no startup
-
+[ Change Requests - 07/08/2012 - Roger ]
+Requisitante: Lauricio
+1 - Funcionalidades
+        1.1 - Para as entradas desatualizadas, no momento que o usuário der um duplo clique, um link com o local do download do aplicativo será aberto pelo navegador padrão
 
 [ Change Requests - 15/10/2010 - Roger ]
 Requisitante: Lauricio
@@ -13,4 +13,8 @@ Requisitante: Lauricio
         1.4 - Cada perfil baixa o arquivo de versões compatível por seu nome
 2 - Requisitos
         2.1 - Endereço de email para envio configurável
+
+[Versão 1.0.2010.12 - 28/10/2010 - Roger]
+1 - Inserida configuração para garantir envio de notificação ao final do aplicativo
+        1.1 - Acesso via entrada Boolean:VVer\EnsureNotification(Padrão 0/Falso) no startup
 

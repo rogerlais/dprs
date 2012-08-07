@@ -15,6 +15,12 @@
 			<Projects Include="..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="..\..\..\Pcks\INetLib\Src\INetLibD14.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\..\Pcks\ShellLib\Src\ShellLibD14.dproj">
+				<Dependencies/>
+			</Projects>
 			<Projects Include="Src\VVer.dproj">
 				<Dependencies/>
 			</Projects>
@@ -62,6 +68,24 @@
 		<Target Name="WinSysLibD14:Make">
 			<MSBuild Targets="Make" Projects="..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj"/>
 		</Target>
+		<Target Name="INetLibD14">
+			<MSBuild Projects="..\..\..\Pcks\INetLib\Src\INetLibD14.dproj"/>
+		</Target>
+		<Target Name="INetLibD14:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\INetLib\Src\INetLibD14.dproj"/>
+		</Target>
+		<Target Name="INetLibD14:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\Pcks\INetLib\Src\INetLibD14.dproj"/>
+		</Target>
+		<Target Name="ShellLibD14">
+			<MSBuild Projects="..\..\..\Pcks\ShellLib\Src\ShellLibD14.dproj"/>
+		</Target>
+		<Target Name="ShellLibD14:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\ShellLib\Src\ShellLibD14.dproj"/>
+		</Target>
+		<Target Name="ShellLibD14:Make">
+			<MSBuild Targets="Make" Projects="..\..\..\Pcks\ShellLib\Src\ShellLibD14.dproj"/>
+		</Target>
 		<Target Name="VVer">
 			<MSBuild Projects="Src\VVer.dproj"/>
 		</Target>
@@ -72,13 +96,13 @@
 			<MSBuild Targets="Make" Projects="Src\VVer.dproj"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="XPLibD14;StFLibD14;TRELib;WinSysLibD14;VVer"/>
+			<CallTarget Targets="XPLibD14;StFLibD14;TRELib;WinSysLibD14;INetLibD14;ShellLibD14;VVer"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="XPLibD14:Clean;StFLibD14:Clean;TRELib:Clean;WinSysLibD14:Clean;VVer:Clean"/>
+			<CallTarget Targets="XPLibD14:Clean;StFLibD14:Clean;TRELib:Clean;WinSysLibD14:Clean;INetLibD14:Clean;ShellLibD14:Clean;VVer:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="XPLibD14:Make;StFLibD14:Make;TRELib:Make;WinSysLibD14:Make;VVer:Make"/>
+			<CallTarget Targets="XPLibD14:Make;StFLibD14:Make;TRELib:Make;WinSysLibD14:Make;INetLibD14:Make;ShellLibD14:Make;VVer:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

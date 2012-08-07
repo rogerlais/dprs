@@ -93,6 +93,8 @@ object Form1: TForm1
     RowCount = 2
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goRowSelect, goFixedRowClick]
     TabOrder = 2
+    OnClick = grdListDblClick
+    OnDblClick = grdListDblClick
     OnDrawCellGetProperties = grdListDrawCellGetProperties
     ColWidths = (
       288

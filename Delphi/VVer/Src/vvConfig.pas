@@ -25,25 +25,27 @@ type
         FVerKeyEx :       string;
         _CurrentVersion : string;
         _CurrentVersionEX : string;
+    FDownloadURL: string;
         function GetCurrentVersion : string;
         function GetExpectedVerEx : string;
         function GetIsUpdated : boolean;
         function GetCurrentVersionEx : string;
         function ReadVersionEntry(const Entry : string) : string;
         function GetCurrentVersionDisplay : string;
-    public
-        constructor Create(const ADesc, AHive, AVerKey, AVerKeyEx, AExpectedVer, AExpectedVerEx : string);
-        property Desc : string read FDesc;
-        property Hive : string read FHive;
-        property VerKey : string read FVerKey;
-        property VerKeyEx : string read FVerKeyEx;
-        property ExpectedVer : string read FExpectedVer;
-        property ExpectedVerEx : string read GetExpectedVerEx;
-        property CurrentVersion : string read GetCurrentVersion;
-        property CurrentVersionDisplay : string read GetCurrentVersionDisplay;
-        property CurrentVersionEx : string read GetCurrentVersionEx;
-        property isUpdated : boolean read GetIsUpdated;
-        property UpdateStatus : TVVUpdateStatus read FUpdateStatus;
+	 public
+		 constructor Create(const ADesc, AHive, AVerKey, AVerKeyEx, AExpectedVer, AExpectedVerEx, ADownloadURL : string);
+		 property Desc : string read FDesc;
+		 property Hive : string read FHive;
+		 property VerKey : string read FVerKey;
+		 property VerKeyEx : string read FVerKeyEx;
+		 property ExpectedVer : string read FExpectedVer;
+		 property ExpectedVerEx : string read GetExpectedVerEx;
+		 property CurrentVersion : string read GetCurrentVersion;
+		 property CurrentVersionDisplay : string read GetCurrentVersionDisplay;
+		 property CurrentVersionEx : string read GetCurrentVersionEx;
+		 property isUpdated : boolean read GetIsUpdated;
+		 property UpdateStatus : TVVUpdateStatus read FUpdateStatus;
+		 property DownloadURL : string read FDownloadURL;
     end;
 
     TVVProgInfo = class(TBaseStartSettings)
@@ -227,15 +229,16 @@ end;
 
 { TProgItem }
 
-constructor TProgItem.Create(const ADesc, AHive, AVerKey, AVerKeyEx, AExpectedVer, AExpectedVerEx : string);
+constructor TProgItem.Create(const ADesc, AHive, AVerKey, AVerKeyEx, AExpectedVer, AExpectedVerEx, ADownloadURL : string);
 begin
-    Self.FUpdateStatus := usUnknow;
-    Self.FVerKey   := AVerKey;
-    Self.FExpectedVerEx := AExpectedVerEx;
-    Self.FExpectedVer := AExpectedVer;
-    Self.FHive     := AHive;
-    Self.FDesc     := ADesc;
-    Self.FVerKeyEx := AVerKeyEx;
+	 Self.FUpdateStatus := usUnknow;
+	 Self.FVerKey   := AVerKey;
+	 Self.FExpectedVerEx := AExpectedVerEx;
+	 Self.FExpectedVer := AExpectedVer;
+	 Self.FHive     := AHive;
+	 Self.FDesc     := ADesc;
+	 Self.FVerKeyEx := AVerKeyEx;
+	 Self.FDownloadURL:=ADownloadURL;
 end;
 
 function TProgItem.GetCurrentVersion : string;
@@ -316,29 +319,31 @@ constructor TVVProgInfo.Create(const Filename, AKeyPrefix : string);
 var
     progs : TStringList;
     x :     Integer;
-    Desc, Hive, VerKey, VerKeyEx, ExpectedVer, ExpectedVerEx : string;
-    prg :   TProgItem;
+	 Desc, Hive, VerKey, VerKeyEx, ExpectedVer, ExpectedVerEx, DURL : string;
+	 prg :   TProgItem;
 begin
-    inherited;
-    Self.FProgList := TObjectList.Create;
-    Self.FProgList.OwnsObjects := True;
-    progs := TStringList.Create;
-    try
-        Self.FIni.ReadSections(progs);
-        for x := 0 to progs.Count - 1 do begin
-            //Descrição e nome da seção(não pode começar com "@" )
-            Desc     := progs.Strings[x];
-            //nome da chave para acesso aos atributos
-            Hive     := Self.FIni.ReadString(Desc, 'hive', '');
-            //Entrada da versão simples
-            VerKey   := Self.FIni.ReadString(Desc, 'Entry1', '');
-            //Entrada da versão detalhada
-            VerKeyEx := Self.FIni.ReadString(Desc, 'Entry2', '');
-            //Entrada do valor esperado para a versão simples
-            ExpectedVer := Self.FIni.ReadString(Desc, 'Expected1', '');
-            //Entrada do valor esperado para a versão detalhada
-            ExpectedVerEx := Self.FIni.ReadString(Desc, 'Expected2', '');
-            prg      := TProgItem.Create(Desc, Hive, VerKey, VerKeyEx, ExpectedVer, ExpectedVerEx);
+	 inherited;
+	 Self.FProgList := TObjectList.Create;
+	 Self.FProgList.OwnsObjects := True;
+	 progs := TStringList.Create;
+	 try
+		 Self.FIni.ReadSections(progs);
+		 for x := 0 to progs.Count - 1 do begin
+			 //Descrição e nome da seção(não pode começar com "@" )
+			 Desc     := progs.Strings[x];
+			 //nome da chave para acesso aos atributos
+			 Hive     := Self.FIni.ReadString(Desc, 'hive', '');
+			 //Entrada da versão simples
+			 VerKey   := Self.FIni.ReadString(Desc, 'Entry1', '');
+			 //Entrada da versão detalhada
+			 VerKeyEx := Self.FIni.ReadString(Desc, 'Entry2', '');
+			 //Entrada do valor esperado para a versão simples
+			 ExpectedVer := Self.FIni.ReadString(Desc, 'Expected1', '');
+			 //Entrada do valor esperado para a versão detalhada
+			 ExpectedVerEx := Self.FIni.ReadString(Desc, 'Expected2', '');
+			 //Caminho do download para atualizar/instalar
+			 DURL:=Self.FIni.ReadString( Desc, 'URL', '');
+			 prg      := TProgItem.Create(Desc, Hive, VerKey, VerKeyEx, ExpectedVer, ExpectedVerEx, DURL );
             Self.FProgList.Add(prg);
         end;
     finally
