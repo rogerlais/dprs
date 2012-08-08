@@ -4,8 +4,8 @@ object Form1: TForm1
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsDialog
   Caption = 'Verificador de Vers'#245'es 2010 T1'
-  ClientHeight = 333
-  ClientWidth = 509
+  ClientHeight = 350
+  ClientWidth = 563
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -42,40 +42,17 @@ object Form1: TForm1
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
+  DesignSize = (
+    563
+    350)
   PixelsPerInch = 96
   TextHeight = 13
-  object lblMainLabel: TLabel
-    Left = 8
-    Top = 10
-    Width = 258
-    Height = 13
-    Caption = 'SESOP - Verificador de Vers'#245'es de Sistemas 2010 - T1'
-  end
-  object lblProfLabel: TLabel
-    Left = 9
-    Top = 29
-    Width = 34
-    Height = 13
-    Caption = 'Perfil : '
-  end
-  object lblProfile: TLabel
-    Left = 55
-    Top = 29
-    Width = 40
-    Height = 13
-    Caption = '----------'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clRed
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-  end
   object btnOK: TBitBtn
-    Left = 87
-    Top = 275
+    Left = 104
+    Top = 287
     Width = 161
     Height = 51
+    Anchors = []
     Caption = '&Fechar'
     DoubleBuffered = True
     Kind = bkOK
@@ -83,29 +60,32 @@ object Form1: TForm1
     TabOrder = 0
     OnClick = btnOKClick
   end
-  object grdList: TEnhStringGrid
-    Left = 9
-    Top = 52
-    Width = 489
-    Height = 217
-    ColCount = 3
-    FixedCols = 0
-    RowCount = 2
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goRowSelect, goFixedRowClick]
+  object grdList: TListView
+    Left = 8
+    Top = 57
+    Width = 551
+    Height = 221
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Columns = <>
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 2
+    ViewStyle = vsReport
+    OnAdvancedCustomDrawItem = grdListAdvancedCustomDrawItem
     OnClick = grdListDblClick
+    OnCustomDrawItem = grdListCustomDrawItem
     OnDblClick = grdListDblClick
-    OnDrawCellGetProperties = grdListDrawCellGetProperties
-    ColWidths = (
-      288
-      102
-      88)
   end
   object btnNotifSESOP: TBitBtn
-    Left = 254
-    Top = 273
+    Left = 287
+    Top = 285
     Width = 161
     Height = 52
+    Anchors = []
     Caption = '&Informar'
     Default = True
     DoubleBuffered = True
@@ -413,5 +393,40 @@ object Form1: TForm1
     Caption = '....'
     TabOrder = 3
     Visible = False
+  end
+  object pnlTop: TPanel
+    Left = 0
+    Top = 0
+    Width = 563
+    Height = 51
+    Align = alTop
+    TabOrder = 4
+    object lblMainLabel: TLabel
+      Left = 8
+      Top = 10
+      Width = 258
+      Height = 13
+      Caption = 'SESOP - Verificador de Vers'#245'es de Sistemas 2010 - T1'
+    end
+    object lblProfLabel: TLabel
+      Left = 9
+      Top = 29
+      Width = 34
+      Height = 13
+      Caption = 'Perfil : '
+    end
+    object lblProfile: TLabel
+      Left = 55
+      Top = 29
+      Width = 40
+      Height = 13
+      Caption = '----------'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
   end
 end

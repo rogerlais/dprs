@@ -1,5 +1,5 @@
 {$IFDEF vvConfig}
-	 {$DEFINE DEBUG_UNIT}
+     {$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I VVer.inc}
 {$TYPEINFO OFF}
@@ -25,27 +25,27 @@ type
         FVerKeyEx :       string;
         _CurrentVersion : string;
         _CurrentVersionEX : string;
-    FDownloadURL: string;
+        FDownloadURL :    string;
         function GetCurrentVersion : string;
         function GetExpectedVerEx : string;
         function GetIsUpdated : boolean;
         function GetCurrentVersionEx : string;
         function ReadVersionEntry(const Entry : string) : string;
         function GetCurrentVersionDisplay : string;
-	 public
-		 constructor Create(const ADesc, AHive, AVerKey, AVerKeyEx, AExpectedVer, AExpectedVerEx, ADownloadURL : string);
-		 property Desc : string read FDesc;
-		 property Hive : string read FHive;
-		 property VerKey : string read FVerKey;
-		 property VerKeyEx : string read FVerKeyEx;
-		 property ExpectedVer : string read FExpectedVer;
-		 property ExpectedVerEx : string read GetExpectedVerEx;
-		 property CurrentVersion : string read GetCurrentVersion;
-		 property CurrentVersionDisplay : string read GetCurrentVersionDisplay;
-		 property CurrentVersionEx : string read GetCurrentVersionEx;
-		 property isUpdated : boolean read GetIsUpdated;
-		 property UpdateStatus : TVVUpdateStatus read FUpdateStatus;
-		 property DownloadURL : string read FDownloadURL;
+    public
+        constructor Create(const ADesc, AHive, AVerKey, AVerKeyEx, AExpectedVer, AExpectedVerEx, ADownloadURL : string);
+        property Desc : string read FDesc;
+        property Hive : string read FHive;
+        property VerKey : string read FVerKey;
+        property VerKeyEx : string read FVerKeyEx;
+        property ExpectedVer : string read FExpectedVer;
+        property ExpectedVerEx : string read GetExpectedVerEx;
+        property CurrentVersion : string read GetCurrentVersion;
+        property CurrentVersionDisplay : string read GetCurrentVersionDisplay;
+        property CurrentVersionEx : string read GetCurrentVersionEx;
+        property isUpdated : boolean read GetIsUpdated;
+        property UpdateStatus : TVVUpdateStatus read FUpdateStatus;
+        property DownloadURL : string read FDownloadURL;
     end;
 
     TVVProgInfo = class(TBaseStartSettings)
@@ -68,21 +68,21 @@ type
         function GetInfoText : string;
         function GetAutoMode : boolean;
         function GetNotificationList : string;
-		 function GetSenderAddress: string;
-		 function GetSenderDescription: string;
-    function GetEnsureNotification: boolean;
-	 public
-		 constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
-		 destructor Destroy; override;
-		 property GlobalStatus : string read GetGlobalStatus;
-		 property InfoText : string read GetInfoText;
-		 property ProfileInfo : TVVProgInfo read FProfileInfo;
-		 property AutoMode : boolean read GetAutoMode;
-		 property ProfileName : string read FProfileName;
-		 property NotificationList : string read GetNotificationList;
-		 property SenderAddress : string read GetSenderAddress;
-		 property SenderDescription : string read GetSenderDescription;
-		 property EnsureNotification : boolean read GetEnsureNotification;
+        function GetSenderAddress : string;
+        function GetSenderDescription : string;
+        function GetEnsureNotification : boolean;
+    public
+        constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
+        destructor Destroy; override;
+        property GlobalStatus : string read GetGlobalStatus;
+        property InfoText : string read GetInfoText;
+        property ProfileInfo : TVVProgInfo read FProfileInfo;
+        property AutoMode : boolean read GetAutoMode;
+        property ProfileName : string read FProfileName;
+        property NotificationList : string read GetNotificationList;
+        property SenderAddress : string read GetSenderAddress;
+        property SenderDescription : string read GetSenderDescription;
+        property EnsureNotification : boolean read GetEnsureNotification;
     end;
 
 procedure LoadGlobalInfo(const Filename : string);
@@ -104,33 +104,39 @@ end;
 
 constructor TVVConfig.Create(const FileName, AKeyPrefix : string);
 var
-    profileFilename, profileURL : string;
-    compId : Integer;
+    profileFilename, profileURL, TargetName : string;
+    compId, ZonId : Integer;
 begin
     inherited;
     //Identifica o perfil baseado no ordinal do nome do computador. Para id > 10 -> PCT, cc máquina zona
-	 {$IFDEF DEBUG}
-	 compId:=TTREUtils.GetComputerId( 'ZPB999PDC201' );
-	 {$ELSE}
-	 try
-	 compId := TTREUtils.GetComputerId(GetComputerName());
-	 except
-		on E: Exception do begin
-			compId:=-1;
-		end;
-	 end;
-	 {$ENDIF}
+      {$IFDEF DEBUG}
+    TargetName := 'ZPB999PDC201';
+      {$ELSE}
+    TargetName := GetComputerName();
+      {$ENDIF}
 
-	 if compId >= 10 then begin //Assume-se PCT
-		 Self.FProfileName := 'PCT';
-	 end else begin //Assume-se Maquina zona ou fora do padra
-		 if compId < 0 then begin
-			Self.FProfileName:='Outros';
+    try
+        compId := TTREUtils.GetComputerId(TargetName);
+        ZonId  := TTREUtils.GetComputerZone(TargetName);
+    except
+        on E : Exception do begin
+            compId := -1;
+        end;
+    end;
+
+    if zonId >= 200 then begin //Assume-se PCT
+        Self.FProfileName := 'NATU';
+    end else begin //Assume-se Maquina zona ou fora do padrao
+		 if (( compId <= 0) or ( compId > 10) ) then begin
+			 Self.FProfileName := 'Outros';
 		 end else begin
-			Self.FProfileName := 'ZE';
+		 	 Self.FProfileName := 'ZE';
 		 end;
     end;
-    profileURL      := Self.ReadString('Profiles\' + Self.ProfileName + '\VerInfo');
+	 profileURL      := Self.ReadString('Profiles\' + Self.ProfileName + '\VerInfo');
+	 if ( profileURL = EmptyStr ) then begin
+		raise Exception.CreateFmt('URL de configurações para o perfil "%s" não definida/carregada no arqquivo de configuração raiz', [ Self.ProfileName ] );
+	 end;
     profileFilename := dtmdMain.LoadURL(profileURL);
     //Buscar a entrada correta para a URL do perfil
     Self.FProfileInfo := TVVProgInfo.Create(profileFilename);
@@ -162,17 +168,17 @@ begin
     end;
 end;
 
-function TVVConfig.GetEnsureNotification: boolean;
+function TVVConfig.GetEnsureNotification : boolean;
 var
-  enDefault: TDefaultSettingValue;
+    enDefault : TDefaultSettingValue;
 begin
-	enDefault := TDefaultSettingValue.Create();
-	try
-		enDefault.AsBoolean:=False;
-		Result:=Self.ReadBoolean('EnsureNotification', enDefault );
-	finally
-		enDefault.Free;
-	end;
+    enDefault := TDefaultSettingValue.Create();
+    try
+        enDefault.AsBoolean := False;
+        Result := Self.ReadBoolean('EnsureNotification', enDefault);
+    finally
+        enDefault.Free;
+    end;
 end;
 
 function TVVConfig.GetGlobalStatus : string;
@@ -211,34 +217,34 @@ end;
 
 function TVVConfig.GetNotificationList : string;
 begin
-	{TODO -oroger -cfuture : manifestas a criar }
-	 Result := Self.ReadString('NotificationList');
+    {TODO -oroger -cfuture : manifestas a criar }
+    Result := Self.ReadString('NotificationList');
 end;
 
-function TVVConfig.GetSenderAddress: string;
+function TVVConfig.GetSenderAddress : string;
 begin
-	{TODO -oroger -cfuture : manifestas a criar }
-	Result:=Self.ReadStringDefault('SenderAddress', 'sesop@tre-pb.gov.br' );
+    {TODO -oroger -cfuture : manifestas a criar }
+    Result := Self.ReadStringDefault('SenderAddress', 'sesop@tre-pb.gov.br');
 end;
 
-function TVVConfig.GetSenderDescription: string;
+function TVVConfig.GetSenderDescription : string;
 begin
-	{TODO -oroger -cfuture : manifestas a criar }
-	Result:=Self.ReadStringDefault('SenderDescription', 'SESOP - Seção de Suporte Operacional' );
+    {TODO -oroger -cfuture : manifestas a criar }
+    Result := Self.ReadStringDefault('SenderDescription', 'SESOP - Seção de Suporte Operacional');
 end;
 
 { TProgItem }
 
 constructor TProgItem.Create(const ADesc, AHive, AVerKey, AVerKeyEx, AExpectedVer, AExpectedVerEx, ADownloadURL : string);
 begin
-	 Self.FUpdateStatus := usUnknow;
-	 Self.FVerKey   := AVerKey;
-	 Self.FExpectedVerEx := AExpectedVerEx;
-	 Self.FExpectedVer := AExpectedVer;
-	 Self.FHive     := AHive;
-	 Self.FDesc     := ADesc;
-	 Self.FVerKeyEx := AVerKeyEx;
-	 Self.FDownloadURL:=ADownloadURL;
+    Self.FUpdateStatus := usUnknow;
+    Self.FVerKey   := AVerKey;
+    Self.FExpectedVerEx := AExpectedVerEx;
+    Self.FExpectedVer := AExpectedVer;
+    Self.FHive     := AHive;
+    Self.FDesc     := ADesc;
+    Self.FVerKeyEx := AVerKeyEx;
+    Self.FDownloadURL := ADownloadURL;
 end;
 
 function TProgItem.GetCurrentVersion : string;
@@ -286,15 +292,15 @@ end;
 
 function TProgItem.GetIsUpdated : boolean;
 begin
-	 //Comparar o valor da versão atual com a esperada
-	 if Self.FUpdateStatus = usUnknow then begin
-		 if FileInfo.TVersionInfo.CompareTo( Self.CurrentVersion, Self.ExpectedVerEx   ) <= 0  then begin
-			 Self.FUpdateStatus := usOK;
-		 end else begin
-			 Self.FUpdateStatus := usOld;
-		 end;
-	 end;
-	 Result := (Self.UpdateStatus = usOK);
+    //Comparar o valor da versão atual com a esperada
+    if Self.FUpdateStatus = usUnknow then begin
+        if FileInfo.TVersionInfo.CompareTo(Self.CurrentVersion, Self.ExpectedVerEx) <= 0 then begin
+            Self.FUpdateStatus := usOK;
+        end else begin
+            Self.FUpdateStatus := usOld;
+        end;
+    end;
+    Result := (Self.UpdateStatus = usOK);
 end;
 
 function TProgItem.ReadVersionEntry(const Entry : string) : string;
@@ -319,31 +325,31 @@ constructor TVVProgInfo.Create(const Filename, AKeyPrefix : string);
 var
     progs : TStringList;
     x :     Integer;
-	 Desc, Hive, VerKey, VerKeyEx, ExpectedVer, ExpectedVerEx, DURL : string;
-	 prg :   TProgItem;
+    Desc, Hive, VerKey, VerKeyEx, ExpectedVer, ExpectedVerEx, DURL : string;
+    prg :   TProgItem;
 begin
-	 inherited;
-	 Self.FProgList := TObjectList.Create;
-	 Self.FProgList.OwnsObjects := True;
-	 progs := TStringList.Create;
-	 try
-		 Self.FIni.ReadSections(progs);
-		 for x := 0 to progs.Count - 1 do begin
-			 //Descrição e nome da seção(não pode começar com "@" )
-			 Desc     := progs.Strings[x];
-			 //nome da chave para acesso aos atributos
-			 Hive     := Self.FIni.ReadString(Desc, 'hive', '');
-			 //Entrada da versão simples
-			 VerKey   := Self.FIni.ReadString(Desc, 'Entry1', '');
-			 //Entrada da versão detalhada
-			 VerKeyEx := Self.FIni.ReadString(Desc, 'Entry2', '');
-			 //Entrada do valor esperado para a versão simples
-			 ExpectedVer := Self.FIni.ReadString(Desc, 'Expected1', '');
-			 //Entrada do valor esperado para a versão detalhada
-			 ExpectedVerEx := Self.FIni.ReadString(Desc, 'Expected2', '');
-			 //Caminho do download para atualizar/instalar
-			 DURL:=Self.FIni.ReadString( Desc, 'URL', '');
-			 prg      := TProgItem.Create(Desc, Hive, VerKey, VerKeyEx, ExpectedVer, ExpectedVerEx, DURL );
+    inherited;
+    Self.FProgList := TObjectList.Create;
+    Self.FProgList.OwnsObjects := True;
+    progs := TStringList.Create;
+    try
+        Self.FIni.ReadSections(progs);
+        for x := 0 to progs.Count - 1 do begin
+            //Descrição e nome da seção(não pode começar com "@" )
+            Desc     := progs.Strings[x];
+            //nome da chave para acesso aos atributos
+            Hive     := Self.FIni.ReadString(Desc, 'hive', '');
+            //Entrada da versão simples
+            VerKey   := Self.FIni.ReadString(Desc, 'Entry1', '');
+            //Entrada da versão detalhada
+            VerKeyEx := Self.FIni.ReadString(Desc, 'Entry2', '');
+            //Entrada do valor esperado para a versão simples
+            ExpectedVer := Self.FIni.ReadString(Desc, 'Expected1', '');
+            //Entrada do valor esperado para a versão detalhada
+            ExpectedVerEx := Self.FIni.ReadString(Desc, 'Expected2', '');
+            //Caminho do download para atualizar/instalar
+            DURL     := Self.FIni.ReadString(Desc, 'URL', '');
+            prg      := TProgItem.Create(Desc, Hive, VerKey, VerKeyEx, ExpectedVer, ExpectedVerEx, DURL);
             Self.FProgList.Add(prg);
         end;
     finally

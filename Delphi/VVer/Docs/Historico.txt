@@ -1,3 +1,8 @@
+[ Change Requests - 08/08/2012 - Roger ]
+Requisitante: Lauricio/George
+1 - Requisitos:
+        1.1 - Criado o perfil NATU definido para o caso do identificador da zona no nome do computador ser superior a 200
+
 [ Change Requests - 07/08/2012 - Roger ]
 Requisitante: Lauricio
 1 - Funcionalidades

@@ -11,24 +11,27 @@ interface
 uses
     Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
     Dialogs, StdCtrls, Grids, EnhGrids, Buttons, vvConfig, IdBaseComponent, IdComponent,
-    FileInfo, ExtCtrls;
+    FileInfo, ExtCtrls, ComCtrls;
 
 type
     TForm1 = class(TForm)
         btnOK :         TBitBtn;
-        grdList :       TEnhStringGrid;
-        lblMainLabel :  TLabel;
+        grdList :       TListView;
         btnNotifSESOP : TBitBtn;
         pnlLog :        TPanel;
+        pnlTop :        TPanel;
+        lblMainLabel :  TLabel;
         lblProfLabel :  TLabel;
         lblProfile :    TLabel;
         procedure btnOKClick(Sender : TObject);
-        procedure grdListDrawCellGetProperties(Sender : TObject; ACol, ARow : Integer; Rect : TRect; State : TGridDrawState);
         procedure btnNotifSESOPClick(Sender : TObject);
         procedure FormShow(Sender : TObject);
         procedure FormCreate(Sender : TObject);
         procedure FormCloseQuery(Sender : TObject; var CanClose : boolean);
         procedure grdListDblClick(Sender : TObject);
+        procedure grdListAdvancedCustomDrawItem(Sender : TCustomListView; Item : TListItem; State : TCustomDrawState;
+            Stage : TCustomDrawStage; var DefaultDraw : boolean);
+		 procedure grdListCustomDrawItem(Sender : TCustomListView; Item : TListItem; State : TCustomDrawState; var DefaultDraw : boolean);
     private
         { Private declarations }
     public
@@ -41,7 +44,7 @@ var
 implementation
 
 uses
-    WinNetHnd, FileHnd, vvMainDataModule, AppLog, ShellAPI;
+    WinNetHnd, FileHnd, vvMainDataModule, AppLog, ShellAPI, CommCtrl;
 
 {$R *.dfm}
 
@@ -85,8 +88,10 @@ end;
 
 procedure TForm1.FormShow(Sender : TObject);
 var
-    x : Integer;
-    p : TProgItem;
+    x :      Integer;
+    p :      TProgItem;
+    lstCol : TListColumn;
+    lstItem : TListItem;
 begin
     if not Self.pnlLog.Visible then begin //Visibilidade do painel indica carga de todos os parametros
 
@@ -104,22 +109,27 @@ begin
                 end;
             end;
 
-            Self.grdList.RowCount  := GlobalInfo.ProfileInfo.Count + 1;
-            Self.grdList.ColCount  := 3;
-            Self.grdList.FixedRows := 1;
-            Self.grdList.Cells[COL_DESC, 0] := 'Descrição';
-            Self.grdList.Cells[COL_VER, 0] := 'Versão Instalada';
-            Self.grdList.Cells[COL_EXPEC, 0] := 'Versão Esperada';
+            //;;Self.grdList.RowCount  := GlobalInfo.ProfileInfo.Count + 1;
+            //;;Self.grdList.ColCount  := 3;
+            //;Self.grdList.FixedRows := 1;
+            lstCol := Self.grdList.Columns.Add;
+            lstCol.Caption := 'Descrição';
+            lstCol.Width := ColumnHeaderWidth;
+            lstCol := Self.grdList.Columns.Add;
+            lstCol.Caption := 'Versão Instalada';
+            lstCol.Width := ColumnHeaderWidth;
+            lstCol := Self.grdList.Columns.Add;
+            lstCol.Caption := 'Versão Esperada';
+            lstCol.Width := ColumnHeaderWidth;
+
             for x := 1 to GlobalInfo.ProfileInfo.Count do begin
                 p := GlobalInfo.ProfileInfo.Programs[x - 1];
                 //Atribuição da exibição
-                Self.grdList.Cells[COL_DESC, x] := p.Desc;
-                Self.grdList.Cells[COL_VER, x] := p.CurrentVersionDisplay;
-                Self.grdList.Cells[COL_EXPEC, x] := p.ExpectedVerEx;
-                //Atibuição dos objetos
-                Self.grdList.Objects[COL_DESC, x] := p;
-                Self.grdList.Objects[COL_VER, x] := p;
-                Self.grdList.Objects[COL_EXPEC, x] := p;
+                lstItem := Self.grdList.Items.Add;
+                lstItem.Caption := p.Desc;
+                lstItem.SubItems.Add(p.CurrentVersionDisplay);
+                lstItem.SubItems.Add(p.ExpectedVerEx);
+                lstItem.Data := p;
             end;
         finally
             Self.pnlLog.Visible := False;
@@ -128,41 +138,87 @@ begin
 end;
 
 
+procedure TForm1.grdListAdvancedCustomDrawItem(Sender : TCustomListView; Item : TListItem; State : TCustomDrawState;
+    Stage : TCustomDrawStage; var DefaultDraw : boolean);
+var
+    prg : TProgItem;
+begin
+    prg := TProgItem(Item.Data);
+    if Assigned(prg) then begin //pular linhas de cabecalho
+        if prg.isUpdated then begin
+            if (item.Focused) { or (Self.grdList.RowCount = ARow) } then begin
+                //Self.grdList.Canvas.DrawFocusRect(Rect);
+                Self.grdList.Canvas.Brush.Color := clBlue;
+                DefaultDraw := True;
+            end else begin
+                Self.grdList.Canvas.Brush.Color := clGreen;
+                //Self.grdList.Canvas.FillRect(Rect);
+            end;
+        end else begin
+            if (Item.Focused) {or (Self.grdList.RowCount = ARow) } then begin
+                //Self.grdList.Canvas.DrawFocusRect(Rect);
+                Self.grdList.Canvas.Brush.Color := clBlue;
+                DefaultDraw := True;
+            end else begin
+                Self.grdList.Canvas.Brush.Color := clRed;
+                //Self.grdList.Canvas.FillRect(Rect);
+            end;
+        end;
+    end;
+end;
+
+{
+procedure TForm1.grdListAdvancedCustomDrawSubItem(Sender : TCustomListView; Item : TListItem; SubItem : Integer;
+	 State : TCustomDrawState; Stage : TCustomDrawStage; var DefaultDraw : boolean);
+var
+	 rt : TRect;
+begin
+	 if (Item.Focused) then begin
+		 Self.grdList.Canvas.Brush.Color := clBlue;
+		 ListView_GetSubItemRect(Sender.Handle, Item.Index, SubItem, 0, @rt);
+		 Self.grdList.Canvas.FillRect(rt);
+	 end else begin
+		 DefaultDraw := True;
+	 end;
+end;
+}
+
+procedure TForm1.grdListCustomDrawItem(Sender : TCustomListView; Item : TListItem; State : TCustomDrawState;
+	 var DefaultDraw : boolean);
+var
+	r : TRect;
+begin
+	 if ( ( Item.Selected ) or (cdsFocused in state) or (cdsSelected in state) ) and not( cdsHot in State )then begin
+		 //Self.grdList.Canvas.Brush.Color := clActiveCaption;
+		 //Self.grdList.Canvas.Font.Color  := clBlack;
+
+		 //**r:=Item.DisplayRect( drSelectBounds );
+		 //**Self.grdList.Canvas.FillRect( r );
+		 //Self.grdList.Canvas.Pen.Width:=2;
+		 //Self.grdList.Canvas.Rectangle( r );
+		 //**DefaultDraw := True;
+//	 end else begin
+//		 Self.grdList.Canvas.Brush.Color := Color;
+//		 Self.grdList.Canvas.Font.Color  := Font.Color;
+	 end;
+	 //Self.grdList.Canvas.TextOut(Item.Left, Item.Top, Item.Caption);
+
+end;
+
 procedure TForm1.grdListDblClick(Sender : TObject);
 var
     prg : TProgItem;
 begin
     { TODO -oroger -cdsg : Dispara navegador com a url carregada para download }
-    prg := TProgItem(Self.grdList.Objects[0, Self.grdList.Row]);
-    if Assigned(prg) then begin //pular linhas de cabecalho
-        if ((not prg.isUpdated) and (prg.DownloadURL <> EmptyStr)) then begin
-            ShellAPI.ShellExecute(self.WindowHandle, 'open', PChar(prg.DownloadURL), nil, nil, SW_SHOWNORMAL);
+    if (Assigned(Self.grdList.Selected)) then begin
+        prg := TProgItem(Self.grdList.Selected.Data);
+        if Assigned(prg) then begin //pular linhas de cabecalho
+            if ((not prg.isUpdated) and (prg.DownloadURL <> EmptyStr)) then begin
+                ShellAPI.ShellExecute(self.WindowHandle, 'open', PChar(prg.DownloadURL), nil, nil, SW_SHOWNORMAL);
+            end;
         end;
     end;
 end;
 
-procedure TForm1.grdListDrawCellGetProperties(Sender : TObject; ACol, ARow : Integer; Rect : TRect; State : TGridDrawState);
-var
-    prg : TProgItem;
-begin
-    prg := TProgItem(Self.grdList.Objects[ACol, ARow]);
-    if Assigned(prg) then begin //pular linhas de cabecalho
-        if prg.isUpdated then begin
-            if (gdFocused in State) or (Self.grdList.RowCount = ARow) then begin
-                Self.grdList.Canvas.DrawFocusRect(Rect);
-            end else begin
-                Self.grdList.Canvas.Brush.Color := clGreen;
-                Self.grdList.Canvas.FillRect(Rect);
-            end;
-        end else begin
-            if (gdFocused in State) or (Self.grdList.RowCount = ARow) then begin
-                Self.grdList.Canvas.DrawFocusRect(Rect);
-            end else begin
-                Self.grdList.Canvas.Brush.Color := clRed;
-                Self.grdList.Canvas.FillRect(Rect);
-            end;
-        end;
-    end;
-end;
 
 end.
