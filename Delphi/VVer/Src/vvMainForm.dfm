@@ -72,12 +72,12 @@ object Form1: TForm1
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    RowSelect = True
     ParentFont = False
     TabOrder = 2
     ViewStyle = vsReport
     OnAdvancedCustomDrawItem = grdListAdvancedCustomDrawItem
     OnClick = grdListDblClick
-    OnCustomDrawItem = grdListCustomDrawItem
     OnDblClick = grdListDblClick
   end
   object btnNotifSESOP: TBitBtn

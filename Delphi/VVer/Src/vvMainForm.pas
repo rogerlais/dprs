@@ -31,9 +31,6 @@ type
         procedure grdListDblClick(Sender : TObject);
         procedure grdListAdvancedCustomDrawItem(Sender : TCustomListView; Item : TListItem; State : TCustomDrawState;
             Stage : TCustomDrawStage; var DefaultDraw : boolean);
-		 procedure grdListCustomDrawItem(Sender : TCustomListView; Item : TListItem; State : TCustomDrawState; var DefaultDraw : boolean);
-    private
-        { Private declarations }
     public
         { Public declarations }
     end;
@@ -137,74 +134,6 @@ begin
     end;
 end;
 
-
-procedure TForm1.grdListAdvancedCustomDrawItem(Sender : TCustomListView; Item : TListItem; State : TCustomDrawState;
-    Stage : TCustomDrawStage; var DefaultDraw : boolean);
-var
-    prg : TProgItem;
-begin
-    prg := TProgItem(Item.Data);
-    if Assigned(prg) then begin //pular linhas de cabecalho
-        if prg.isUpdated then begin
-            if (item.Focused) { or (Self.grdList.RowCount = ARow) } then begin
-                //Self.grdList.Canvas.DrawFocusRect(Rect);
-                Self.grdList.Canvas.Brush.Color := clBlue;
-                DefaultDraw := True;
-            end else begin
-                Self.grdList.Canvas.Brush.Color := clGreen;
-                //Self.grdList.Canvas.FillRect(Rect);
-            end;
-        end else begin
-            if (Item.Focused) {or (Self.grdList.RowCount = ARow) } then begin
-                //Self.grdList.Canvas.DrawFocusRect(Rect);
-                Self.grdList.Canvas.Brush.Color := clBlue;
-                DefaultDraw := True;
-            end else begin
-                Self.grdList.Canvas.Brush.Color := clRed;
-                //Self.grdList.Canvas.FillRect(Rect);
-            end;
-        end;
-    end;
-end;
-
-{
-procedure TForm1.grdListAdvancedCustomDrawSubItem(Sender : TCustomListView; Item : TListItem; SubItem : Integer;
-	 State : TCustomDrawState; Stage : TCustomDrawStage; var DefaultDraw : boolean);
-var
-	 rt : TRect;
-begin
-	 if (Item.Focused) then begin
-		 Self.grdList.Canvas.Brush.Color := clBlue;
-		 ListView_GetSubItemRect(Sender.Handle, Item.Index, SubItem, 0, @rt);
-		 Self.grdList.Canvas.FillRect(rt);
-	 end else begin
-		 DefaultDraw := True;
-	 end;
-end;
-}
-
-procedure TForm1.grdListCustomDrawItem(Sender : TCustomListView; Item : TListItem; State : TCustomDrawState;
-	 var DefaultDraw : boolean);
-var
-	r : TRect;
-begin
-	 if ( ( Item.Selected ) or (cdsFocused in state) or (cdsSelected in state) ) and not( cdsHot in State )then begin
-		 //Self.grdList.Canvas.Brush.Color := clActiveCaption;
-		 //Self.grdList.Canvas.Font.Color  := clBlack;
-
-		 //**r:=Item.DisplayRect( drSelectBounds );
-		 //**Self.grdList.Canvas.FillRect( r );
-		 //Self.grdList.Canvas.Pen.Width:=2;
-		 //Self.grdList.Canvas.Rectangle( r );
-		 //**DefaultDraw := True;
-//	 end else begin
-//		 Self.grdList.Canvas.Brush.Color := Color;
-//		 Self.grdList.Canvas.Font.Color  := Font.Color;
-	 end;
-	 //Self.grdList.Canvas.TextOut(Item.Left, Item.Top, Item.Caption);
-
-end;
-
 procedure TForm1.grdListDblClick(Sender : TObject);
 var
     prg : TProgItem;
@@ -215,6 +144,24 @@ begin
         if Assigned(prg) then begin //pular linhas de cabecalho
             if ((not prg.isUpdated) and (prg.DownloadURL <> EmptyStr)) then begin
                 ShellAPI.ShellExecute(self.WindowHandle, 'open', PChar(prg.DownloadURL), nil, nil, SW_SHOWNORMAL);
+            end;
+        end;
+    end;
+end;
+
+procedure TForm1.grdListAdvancedCustomDrawItem(Sender : TCustomListView; Item : TListItem; State : TCustomDrawState;
+    Stage : TCustomDrawStage; var DefaultDraw : boolean);
+var
+	 prg : TProgItem;
+begin
+	 if (Item.Focused or Item.Selected) and (Stage in [cdPreErase, cdPostErase]) then begin
+		 Sender.Canvas.Brush.Color := clHighlight;
+		 Sender.Canvas.Font.Color := clYellow;
+	 end else begin
+        prg := TProgItem(Item.Data);
+        if Assigned(prg) then begin //pular linhas de cabecalho
+            if not prg.isUpdated then begin
+                Self.grdList.Canvas.Brush.Color := clRed;
             end;
         end;
     end;
