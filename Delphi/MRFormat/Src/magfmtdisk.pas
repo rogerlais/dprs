@@ -143,7 +143,7 @@ type
         CLUSTERSIZETOOSMALL, // 16
         UNKNOWN11,
         UNKNOWN12,
-        UNKNOWN13,
+		 UNKNOWN13,
         UNKNOWN14,
         UNKNOWN15,
         UNKNOWN16,
@@ -172,7 +172,7 @@ var
     progper, slen : Integer;
 begin
     Result  := True;
-    cancelflag := False;
+	 cancelflag := False;
     //    Obj := TObject (SendMessage (HInstance, WM_GETOBJ, 0, 0)) ;
     Obj     := MagFmtObj;
     progper := -1;
@@ -196,61 +196,61 @@ begin
             SetLength(xlatbuf, slen);   // 1.2 change OEM charset to ANSI
             OemToCharBuffA(PAnsiChar(toutput^.Output), PAnsiChar(xlatBuf), slen);
             info := Trim(string(xlatBuf));
-        end;
-        Done : begin
-            flag := ActionInfo;
-            TMagFmtChkDsk(Obj).fDoneOK := flag^;
-            if flag^ then begin
-                info := 'Format Disk: Finished OK';
-            end else begin
-                info := 'Format Disk: Unable to Finish';
-            end;
-        end;
-        DoneWithStructure : begin
-            info := 'Format Disk: Structure Created OK';
-        end;
-        InsufficientRights : begin
-            info := 'Format Disk: Insufficient Rights';
-        end;
-        UNKNOWN9 : begin
-            info := 'Format Disk: Quick Format Not Allowed';
-        end;
-        ClusterSizeTooSmall : begin
-            info := 'Format Disk: Cluster Size Too Small';
-        end; // 1.1
-        FSNotSupported : begin
-            info := 'Format Disk: FS Not Supported';
-        end; // 1.1
-        VolumeInUse : begin
-            info := 'Format Disk: Volume In-Use';
-        end; // 1.1
-        StructureProgress : begin
-            //    percent := ActionInfo ;  does not seem to be a result
-            //    if percent <> Nil then progper := percent^ ;
-        end;
-        else begin
-            info := 'Format Disk Callback: ' + IntToStr(Ord(Command));
-        end;
-    end;
-    if progper >= 0 then begin
-        cancelflag := TMagFmtChkDsk(Obj).doProgressEvent(progper);
-    end;
-    if info <> '' then begin
-        cancelflag := TMagFmtChkDsk(Obj).doInfoEvent(info);
-    end;
-    Result := not cancelflag;
+		 end;
+		 Done : begin
+			 flag := ActionInfo;
+			 TMagFmtChkDsk(Obj).fDoneOK := flag^;
+			 if flag^ then begin
+				 info := 'Formatação do disco: Concluída OK';
+			 end else begin
+				 info := 'Formatação do disco: Incapaz de finalizar!!!';
+			 end;
+		 end;
+		 DoneWithStructure : begin
+			 info := 'Formatação do disco: Estrutura Criada OK';
+		 end;
+		 InsufficientRights : begin
+			 info := 'Formatação do disco: Permissões insuficientes do usuário para continuar';
+		 end;
+		 UNKNOWN9 : begin
+			 info := 'Formatação do disco: Formatação rápida não permitida';
+		 end;
+		 ClusterSizeTooSmall : begin
+			 info := 'Formatação do disco: Tamanho do cluster muito pequeno para o valume';
+		 end; // 1.1
+		 FSNotSupported : begin
+			 info := 'Formatação do disco: Sistema de arquivos não suportado';
+		 end; // 1.1
+		 VolumeInUse : begin
+			 info := 'Formatação do disco: Volume em uso';
+		 end; // 1.1
+		 StructureProgress : begin
+			 //    percent := ActionInfo ;  does not seem to be a result
+			 //    if percent <> Nil then progper := percent^ ;
+		 end;
+		 else begin
+			 info := 'Formatação do disco Callback: ' + IntToStr(Ord(Command));
+		 end;
+	 end;
+	 if progper >= 0 then begin
+		 cancelflag := TMagFmtChkDsk(Obj).doProgressEvent(progper);
+	 end;
+	 if info <> '' then begin
+		 cancelflag := TMagFmtChkDsk(Obj).doInfoEvent(info);
+	 end;
+	 Result := not cancelflag;
 end;
 
 function ChkDskCallback(Command : TCallBackCommand; SubAction : DWORD; ActionInfo : Pointer) : boolean; stdcall;
 var
-    flag :    pboolean;
-    percent : pinteger;
-    toutput : PTextOutput;
-    Obj :     TObject;
-    info :    string;
-    progper, slen : Integer;
-    cancelflag : boolean;
-    xlatbuf : ansistring;
+	 flag :    pboolean;
+	 percent : pinteger;
+	 toutput : PTextOutput;
+	 Obj :     TObject;
+	 info :    string;
+	 progper, slen : Integer;
+	 cancelflag : boolean;
+	 xlatbuf : ansistring;
 begin
     Result := True;
     cancelflag := False;
@@ -259,134 +259,134 @@ begin
     //    Obj := TObject (SendMessage (HInstance, WM_GETOBJ, 0, 0)) ;
     Obj  := MagFmtObj;
     if not Assigned(TMagFmtChkDsk(Obj)) then begin
-        exit;
-    end;
-    case Command of
-        Progress : begin
-            percent := ActionInfo;
-            progper := percent^;
-        end;
-        Progress2 :   // 1.1 added for Vista
-        begin
-            //    percent := ActionInfo ;
-            //    progper := percent^ ;
-        end;
-        Output : begin
-            toutput := ActionInfo;
-            slen    := StrLen(toutput^.Output);
-            SetLength(xlatbuf, slen);   // 1.2 change OEM charset to ANSI
-            OemToCharBuffA(PAnsiChar(toutput^.Output), PAnsiChar(xlatBuf), slen);
-            info := Trim(string(xlatBuf));
-            if (Pos('found problems', info) > 0) or
-                (Pos('Correcting errors', info) > 0) or
-                (Pos('Errors found', info) > 0) or
-                (Pos('(fix) option', info) > 0) then begin
-                TMagFmtChkDsk(Obj).fFileSysProblem := True;
-                if TMagFmtChkDsk(Obj).fFirstErrorLine = '' then begin
-                    TMagFmtChkDsk(Obj).fFirstErrorLine := info;
-                end;
-            end;
-            if (Pos('free space marked as allocated', info) > 0) then begin
-                TMagFmtChkDsk(Obj).fFreeSpaceAlloc := True;
-                if TMagFmtChkDsk(Obj).fFirstErrorLine = '' then begin
-                    TMagFmtChkDsk(Obj).fFirstErrorLine := info;
-                end;
-            end;
-        end;
-        Done : begin
-            flag := ActionInfo;
-            TMagFmtChkDsk(Obj).fDoneOK := flag^;
-            if flag^ then begin
-                info := 'Check Disk: Finished OK';
-            end else begin
-                info := 'Check Disk: Unable to Finish';
-            end;
-        end;
-        FSNotSupported : begin
-            info := 'Check Disk: FS Not Supported';
-        end; // 1.1
-        VolumeInUse : begin
-            info := 'Check Disk: Volume In-Use';
-        end; // 1.1
-        InsufficientRights : begin
-            info := 'Check Disk: Insufficient Rights';
-        end; // 1.1
-        else begin
-            info := 'Check Disk Callback: ' + IntToStr(Ord(Command));
-        end;
-    end;
-    if progper >= 0 then begin
-        cancelflag := TMagFmtChkDsk(Obj).doProgressEvent(progper);
-    end;
-    if info <> '' then begin
-        cancelflag := TMagFmtChkDsk(Obj).doInfoEvent(info);
-    end;
-    Result := not cancelflag;
+		 exit;
+	 end;
+	 case Command of
+		 Progress : begin
+			 percent := ActionInfo;
+			 progper := percent^;
+		 end;
+		 Progress2 :   // 1.1 added for Vista
+		 begin
+			 //    percent := ActionInfo ;
+			 //    progper := percent^ ;
+		 end;
+		 Output : begin
+			 toutput := ActionInfo;
+			 slen    := StrLen(toutput^.Output);
+			 SetLength(xlatbuf, slen);   // 1.2 change OEM charset to ANSI
+			 OemToCharBuffA(PAnsiChar(toutput^.Output), PAnsiChar(xlatBuf), slen);
+			 info := Trim(string(xlatBuf));
+			 if (Pos('found problems', info) > 0) or //dont localize
+				 (Pos('Correcting errors', info) > 0) or //dont localize
+				 (Pos('Errors found', info) > 0) or //dont localize
+				 (Pos('(fix) option', info) > 0) then begin
+				 TMagFmtChkDsk(Obj).fFileSysProblem := True;
+				 if TMagFmtChkDsk(Obj).fFirstErrorLine = '' then begin
+					 TMagFmtChkDsk(Obj).fFirstErrorLine := info;
+				 end;
+			 end;
+			 if (Pos('free space marked as allocated', info) > 0) then begin //dont localize
+				 TMagFmtChkDsk(Obj).fFreeSpaceAlloc := True;
+				 if TMagFmtChkDsk(Obj).fFirstErrorLine = '' then begin
+					 TMagFmtChkDsk(Obj).fFirstErrorLine := info;
+				 end;
+			 end;
+		 end;
+		 Done : begin
+			 flag := ActionInfo;
+			 TMagFmtChkDsk(Obj).fDoneOK := flag^;
+			 if flag^ then begin
+				 info := 'Checando Disco: Concluído OK';
+			 end else begin
+				 info := 'Checando Disco: Incapaz de finalizar';
+			 end;
+		 end;
+		 FSNotSupported : begin
+			 info := 'Checando Disco: Sistema de arquivos não suportado';
+		 end; // 1.1
+		 VolumeInUse : begin
+			 info := 'Checando Disco: Volume em uso';
+		 end; // 1.1
+		 InsufficientRights : begin
+			 info := 'Checando Disco: Usuário sem permissão para realizar a operação';
+		 end; // 1.1
+		 else begin
+			 info := 'Checando Disco: Callback: ' + IntToStr(Ord(Command));
+		 end;
+	 end;
+	 if progper >= 0 then begin
+		 cancelflag := TMagFmtChkDsk(Obj).doProgressEvent(progper);
+	 end;
+	 if info <> '' then begin
+		 cancelflag := TMagFmtChkDsk(Obj).doInfoEvent(info);
+	 end;
+	 Result := not cancelflag;
 end;
 
 procedure TMagFmtChkDsk.WMGETOBJ(var msg : TMessage);
 begin
-    msg.Result := Integer(TMagFmtChkDsk);
+	 msg.Result := Integer(TMagFmtChkDsk);
 end;
 
 function TMagFmtChkDsk.doProgressEvent(const Percent : Integer) : boolean;
 begin
-    Result := False;
-    if Assigned(fProgressEvent) then begin
-        fProgressEvent(Percent, Result);
-    end;
+	 Result := False;
+	 if Assigned(fProgressEvent) then begin
+		 fProgressEvent(Percent, Result);
+	 end;
 end;
 
 function TMagFmtChkDsk.doInfoEvent(const Info : string) : boolean;
 begin
-    Result := False;
-    if Assigned(fInfoEvent) then begin
-        fInfoEvent(Info, Result);
-    end;
+	 Result := False;
+	 if Assigned(fInfoEvent) then begin
+		 fInfoEvent(Info, Result);
+	 end;
 end;
 
 
 function TMagFmtChkDsk.CheckDriveExists(const WDrive : WideString; CheckInUse : boolean; var WFormat : WideString) : boolean;
 var
-    FileSysName : array[0..MAX_PATH] of WChar;
-    VolumeName :  array[0..MAX_PATH] of WChar;
-    maxcomlen, flags : longword;
-    handle :      THandle;
-    voldev :      WideString;
+	 FileSysName : array[0..MAX_PATH] of WChar;
+	 VolumeName :  array[0..MAX_PATH] of WChar;
+	 maxcomlen, flags : longword;
+	 handle :      THandle;
+	 voldev :      WideString;
 begin
-    if (Length(WDrive) < 2) or (WDrive[2] <> ':') then begin
-        raise FmtChkException.Create('Invalid Drive Specification: ' + WDrive);
-        exit;
-    end;
+	 if (Length(WDrive) < 2) or (WDrive[2] <> ':') then begin
+		 raise FmtChkException.Create('Especificação da uniadde inválida: ' + WDrive);
+		 exit;
+	 end;
 
-    // see if volume exists, get file system (FAT32, NTFS)
-    if not GetVolumeInformationW(PWChar(WDrive), VolumeName, SizeOf(VolumeName) div 2,
-        nil, maxcomlen, flags, FileSysName, SizeOf(FileSysName) div 2) then begin
-        raise FmtChkException.Create('Drive Not Found: ' + WDrive);
-        exit;
-    end;
-    WFormat := FileSysName;
-    doInfoEvent(WDrive + ' Volume Label: ' + VolumeName + ', File System: ' + FileSysName);
+	 // see if volume exists, get file system (FAT32, NTFS)
+	 if not GetVolumeInformationW(PWChar(WDrive), VolumeName, SizeOf(VolumeName) div 2,
+		 nil, maxcomlen, flags, FileSysName, SizeOf(FileSysName) div 2) then begin
+		 raise FmtChkException.Create('Unidade não encontrada: ' + WDrive);
+		 exit;
+	 end;
+	 WFormat := FileSysName;
+	 doInfoEvent(WDrive + ' Volume Label: ' + VolumeName + ', Sistema de arquivos: ' + FileSysName);
 
-    // try and get exclusive access to volume
-    if CheckInUse then begin
-        voldev := '\\.\' + WDrive[1] + ':';
-        handle := CreateFileW(PWChar(voldev), Generic_Write, 0, nil, Open_Existing, 0, 0);
-        if handle = INVALID_HANDLE_VALUE then begin
-            raise FmtChkException.Create('Drive In Use: ' + WDrive);
-            exit;
-        end;
-        CloseHandle(handle);
-    end;
-    Result := True;
+	 // try and get exclusive access to volume
+	 if CheckInUse then begin
+		 voldev := '\\.\' + WDrive[1] + ':';
+		 handle := CreateFileW(PWChar(voldev), Generic_Write, 0, nil, Open_Existing, 0, 0);
+		 if handle = INVALID_HANDLE_VALUE then begin
+			 raise FmtChkException.Create('Unidade em Uso: ' + WDrive);
+			 exit;
+		 end;
+		 CloseHandle(handle);
+	 end;
+	 Result := True;
 end;
 
 function TMagFmtChkDsk.FormatDisk(const DrvRoot : string; MediaType : TMediaType; FileSystem : TFileSystem;
-    const DiskLabel : string;
-    QuickFormat : boolean; ClusterSize : Integer) : boolean;
+	 const DiskLabel : string;
+	 QuickFormat : boolean; ClusterSize : Integer) : boolean;
 var
-    wdrive, wformat, wfilesystem, wdisklabel : WideString;
-    mediaflags, newsize : DWORD;
+	 wdrive, wformat, wfilesystem, wdisklabel : WideString;
+	 mediaflags, newsize : DWORD;
 begin
     Result := False;
     if not LoadFmifs then begin
@@ -403,7 +403,7 @@ begin
 			 mediaflags := FMIFS_FLOPPY;
 		 end;
 		 mtRemovable : begin
-         	mediaflags:= FMIFS_REMOVABLE;
+			mediaflags:= FMIFS_REMOVABLE;
         end
 		 else begin
             Exit;
@@ -416,7 +416,7 @@ begin
         wfilesystem := 'FAT32';
     end else
     if FileSystem = fsNTFS then begin
-        wfilesystem := 'NTFS';
+		 wfilesystem := 'NTFS';
     end else begin
         exit;
     end;
@@ -428,34 +428,34 @@ begin
     end;
     fDoneOK := False;
     if DiskSize(Ord(WDrive[1]) - 64) > 100 then begin // don't check drive unless it exists
-        doInfoEvent(WDrive + ' Checking Existing Drive Format');
-        if not CheckDriveExists(wdrive, True, wformat) then begin
-            exit;
-        end;
-        if wformat <> wfilesystem then begin
-            QuickFormat := False;
-        end;
-    end else begin
-        if (Length(WDrive) < 2) or (WDrive[2] <> ':') then begin
-            raise FmtChkException.Create('Invalid Drive Specification: ' + WDrive);
-            exit;
-        end;
-        doInfoEvent(WDrive + ' Appears to be Unformatted or No Drive');
-        QuickFormat := False;
-    end;
-    MagFmtObj := Self;
-    fFirstErrorLine := '';
-    doInfoEvent(WDrive + ' Starting to Format Drive');
+		 doInfoEvent(WDrive + ' Checando formato existente na unidade');
+		 if not CheckDriveExists(wdrive, True, wformat) then begin
+			 exit;
+		 end;
+		 if wformat <> wfilesystem then begin
+			 QuickFormat := False;
+		 end;
+	 end else begin
+		 if (Length(WDrive) < 2) or (WDrive[2] <> ':') then begin
+			 raise FmtChkException.Create('Especificação da unidade inválida: ' + WDrive);
+			 exit;
+		 end;
+		 doInfoEvent(WDrive + ' Aparentemente não formatada ou sem unidade inserida');
+		 QuickFormat := False;
+	 end;
+	 MagFmtObj := Self;
+	 fFirstErrorLine := '';
+	 doInfoEvent(WDrive + ' Iniciando a formatação da unidade');
 	 FormatEx(PWchar(wdrive), mediaflags, PWchar(wfilesystem), PWchar(wdisklabel), QuickFormat, newsize, @FormatCallback);
 	 Result := fDoneOK;
-    if not Result then begin
-        exit;
-    end;
-    doInfoEvent(WDrive + ' Checking New Drive Format');
-    if not CheckDriveExists(wdrive, False, wformat) then begin
-        exit;
-    end;
-    doInfoEvent(WDrive + ' New Volume Space: ' + IntToStr(DiskFree(Ord(WDrive[1]) - 64)));
+	 if not Result then begin
+		 exit;
+	 end;
+	 doInfoEvent(WDrive + ' Checando novo formato da unidade');
+	 if not CheckDriveExists(wdrive, False, wformat) then begin
+		 exit;
+	 end;
+	 doInfoEvent(WDrive + ' Espaço do novo volume: ' + IntToStr(DiskFree(Ord(WDrive[1]) - 64)));
 end;
 
 function TMagFmtChkDsk.CheckDisk(const DrvRoot : string; CorrectErrors, Verbose, CheckOnlyIfDirty, ScanDrive : boolean) : boolean;
@@ -474,10 +474,10 @@ begin
     fDoneOK   := False;
     fFileSysProblem := False;
     fFreeSpaceAlloc := False;
-    fFirstErrorLine := '';
+	 fFirstErrorLine := '';
     Chkdsk(PWchar(wdrive), PWchar(wformat), CorrectErrors, Verbose, CheckOnlyIfDirty, ScanDrive, 0, 0, @ChkDskCallback);
     if fFileSysProblem then begin
-        Result := True;
+		 Result := True;
     end else begin // ignore stopped if got an error
         Result := fDoneOK;
     end;
@@ -485,7 +485,7 @@ end;
 
 function TMagFmtChkDsk.VolumeCompression(const DrvRoot : string; Enable : boolean) : boolean;
 var
-    wdrive, wformat : WideString;
+	 wdrive, wformat : WideString;
 begin
     Result := False;
     if not LoadFmifs then begin
@@ -503,10 +503,10 @@ end;
 
 function TMagFmtChkDsk.LoadFmifs : boolean;
 begin
-    Result := Assigned(Chkdsk);
+	 Result := Assigned(Chkdsk);
     if MagFmifs_Loaded then begin
         exit;
-    end;
+	 end;
     Result := False;
     if Win32Platform <> VER_PLATFORM_WIN32_NT then begin
         exit;
@@ -514,7 +514,7 @@ begin
 
     // open libraries - only come here once
     Result     := False;
-    MagFmifs_Loaded := True;
+	 MagFmifs_Loaded := True;
     MagFmifsib := LoadLibrary(fmifs);
     if MagFmifsib = 0 then begin
         exit;
@@ -532,7 +532,7 @@ initialization
     MagFmifs_Loaded := False;
 
 finalization
-    if MagFmifs_Loaded then begin
+	 if MagFmifs_Loaded then begin
         FreeLibrary(MagFmifsib);
     end;
 end.

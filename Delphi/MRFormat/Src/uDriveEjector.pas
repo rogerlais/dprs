@@ -28,7 +28,7 @@ unit uDriveEjector;
 interface
 
 uses
-	 Classes, Windows, Forms, SysUtils, ExtCtrls, JwaWindows, jclsysinfo, uProcessAndWindowUtils, uDiskEjectConst;
+    Classes, Windows, Forms, SysUtils, ExtCtrls, JwaWindows, jclsysinfo, uProcessAndWindowUtils, uDiskEjectConst;
 
 type
     TRemovableDrive = packed record
@@ -36,8 +36,8 @@ type
         VolumeLabel:      string;
         VendorId:         string;
         ProductID:        string;
-		 ProductRevision:  string;
-		 SerialNumber:     string;
+        ProductRevision:  string;
+        SerialNumber:     string;
         IsCardReader:     boolean;
         HasSiblings:      boolean;
         CardMediaPresent: boolean;
@@ -46,38 +46,39 @@ type
         SiblingIndexes:   array of Integer;
     end;
 
-	 TDriveEjector = class
-	 private
-		 PollTimer : TTimer;
-		 FOnCardMediaChanged : TNotifyEvent;
-		 FPollTimerInterval : cardinal;
-		 FPolling : boolean;
-		 FBusy :    boolean;
-		 FOnDrivesChanged : TNotifyEvent;
+    TDriveEjector = class
+    private
+        PollTimer : TTimer;
+        FOnCardMediaChanged : TNotifyEvent;
+        FPollTimerInterval : cardinal;
+        FPolling : boolean;
+        FBusy :    boolean;
+        FOnDrivesChanged : TNotifyEvent;
+        FOnDeviceUnplugged : TNotifyEvent;
 
-		 function GetDrivesCount : Integer;
-		 function GetBusy : boolean;
-		 function GetDrivesDevInstByDeviceNumber(DeviceNumber : Integer; DriveType : UINT; szDosDeviceName : PChar) : DEVINST;
-		 function EjectDevice(MountPoint : string; var EjectErrorCode : Integer; ShowEjectMessage : boolean = False) : boolean;
-		 function EjectCard(MountPoint : string; var EjectErrorCode : Integer) : boolean;
-		 function GetParentDriveDevInst(MountPoint : string; var ParentInstNum : Integer) : boolean;
-		 function GetNoDevicesWithSameParentInst(ParentDevInst : Integer) : Integer;
-		 function GetNoDevicesWithSameProductId(ProductId : string) : Integer;
-		 function CheckIfDriveHasMedia(MountPoint : string) : boolean;
-		 function GetCardPolling : boolean;
-		 procedure SetCardPolling(Value : boolean);
-		 function GetCardPollingInterval : cardinal;
-		 procedure SetCardPollingInterval(Value : cardinal);
-		 procedure FindRemovableDrives;
-		 procedure ScanDrive(GUIDVolumeName : string);
+        function GetDrivesCount : Integer;
+        function GetBusy : boolean;
+        function GetDrivesDevInstByDeviceNumber(DeviceNumber : Integer; DriveType : UINT; szDosDeviceName : PChar) : DEVINST;
+        function EjectDevice(MountPoint : string; var EjectErrorCode : Integer; ShowEjectMessage : boolean = False) : boolean;
+        function EjectCard(MountPoint : string; var EjectErrorCode : Integer) : boolean;
+        function GetParentDriveDevInst(MountPoint : string; var ParentInstNum : Integer) : boolean;
+        function GetNoDevicesWithSameParentInst(ParentDevInst : Integer) : Integer;
+        function GetNoDevicesWithSameProductId(ProductId : string) : Integer;
+        function CheckIfDriveHasMedia(MountPoint : string) : boolean;
+        function GetCardPolling : boolean;
+        procedure SetCardPolling(Value : boolean);
+        function GetCardPollingInterval : cardinal;
+        procedure SetCardPollingInterval(Value : cardinal);
+        procedure FindRemovableDrives;
+        procedure ScanDrive(GUIDVolumeName : string);
 
-		 procedure CheckForCardReaders;
-		 procedure CheckForSiblings;
-		 procedure OnTimer(Sender : TObject);
+        procedure CheckForCardReaders;
+        procedure CheckForSiblings;
+        procedure OnTimer(Sender : TObject);
         procedure SetBusy(const Value : boolean);
-		 procedure DeleteFromDrivesArray(const Index : cardinal);
-		 function ReadVolumeSerial(const Drive : PChar) : string;
-	 public
+        procedure DeleteFromDrivesArray(const Index : cardinal);
+        function ReadVolumeSerial(const Drive : PChar) : string;
+    public
         RemovableDrives : array of TRemovableDrive;
         constructor Create;
         destructor Destroy; override;
@@ -89,6 +90,7 @@ type
         procedure SetDriveAsCardReader(Index : Integer; CardReader : boolean);
         property DrivesCount : Integer read GetDrivesCount;
         property OnCardMediaChanged : TNotifyEvent read FOnCardMediaChanged write FOnCardMediaChanged;
+        property OnDeviceUnplugged : TNotifyEvent read FOnDeviceUnplugged write FOnDeviceUnplugged;
         property CardPollingInterval : cardinal read GetCardPollingInterval write SetCardPollingInterval;
         property CardPolling : boolean read GetCardPolling write SetCardPolling;
         property Busy : boolean read GetBusy write SetBusy;
@@ -97,7 +99,7 @@ type
 
     TEventsThread = class(TThread)
     private
-		 FEjector : TDriveEjector;
+        FEjector : TDriveEjector;
     protected
         procedure Execute; override;
     public
@@ -107,12 +109,13 @@ type
 implementation
 
 var
-	 GlobalPrevWndProc :    TFNWndProc = nil;
-	 GlobalChangeMessageCount : Integer = 0;
-	 GlobalCriticalSection : TCriticalSection;
-	 GlobalCollectEventsThread :    TEventsThread;
-	 GetVolumePathNamesForVolumeNameW : function(VolumeName, VolumePathNames : PWideChar;
-	 BufferLength : longword; ReturnLength : PLongWord) : longbool; stdcall;
+    GlobalPrevWndProc :     TFNWndProc = nil;
+    GlobalChangeMessageCount : Integer = 0;
+    GlobalUnplugMessageCount : Integer = 0;
+    GlobalCriticalSection : TCriticalSection;
+    GlobalCollectEventsThread : TEventsThread;
+    GetVolumePathNamesForVolumeNameW : function(VolumeName, VolumePathNames : PWideChar;
+    BufferLength : longword; ReturnLength : PLongWord) : longbool; stdcall;
 
 
  {--------------------------Windows 2000 workaround-----------------------------}
@@ -147,7 +150,7 @@ var
     end;
 
 begin
-	 ResultS := '';
+    ResultS := '';
     SetLength(LogicalDriveStrings, GetLogicalDriveStringsW(0, nil));
     GetLogicalDriveStringsW(255, @LogicalDriveStrings[1]);
     LogicalDriveStrings := Trim(LogicalDriveStrings);
@@ -172,7 +175,7 @@ begin
         if ReturnLength <> nil then begin
             ReturnLength^ := Length(ResultS);
         end;
-		 Result := True;
+        Result := True;
     end else begin
         if (BufferLength = 0) and (VolumePathNames = nil) then begin
             if ReturnLength <> nil then begin
@@ -195,25 +198,30 @@ end;
 {------------------------Hook events in dummy window--------------------------}
 function UsbWndProc(hWnd : HWND; Msg : UINT; wParam, lParam : longint) : longint; stdcall;
 begin
-	 Result := CallWindowProc(GlobalPrevWndProc, hWnd, Msg, wParam, lParam);
+    {TODO -oroger -cLIB : Usar RegisterDeviceNotification para filtrar mensagem de interesse em janela criada para esse fim}
+    Result := CallWindowProc(GlobalPrevWndProc, hWnd, Msg, wParam, lParam);
 
-    if (Msg = WM_DEVICECHANGE) and
-		 (
-		   ( (wParam = DBT_DEVICEARRIVAL) and
-			  (PDevBroadcastHeader(lParam).dbcd_devicetype = DBT_DEVTYP_VOLUME)
-		   )
-		   or
-		   (wParam = DBT_DEVICEREMOVECOMPLETE)
-		 )
-		   then
-	 begin
-		 EnterCriticalSection(GlobalCriticalSection);
-		 Inc(GlobalChangeMessageCount);
-		 LeaveCriticalSection(GlobalCriticalSection);
-		 if GlobalCollectEventsThread.Suspended then begin
-			 GlobalCollectEventsThread.Resume;
-		 end;
-	 end;
+    if (Msg = WM_DEVICECHANGE) then begin
+        if (((wParam = DBT_DEVICEARRIVAL) and (PDevBroadcastHeader(lParam).dbcd_devicetype = DBT_DEVTYP_VOLUME)
+            ) or (wParam = DBT_DEVICEREMOVECOMPLETE)
+            ) then begin
+            EnterCriticalSection(GlobalCriticalSection);
+            Inc(GlobalChangeMessageCount);
+            LeaveCriticalSection(GlobalCriticalSection);
+        end else begin
+            if (wParam = DBT_DEVNODES_CHANGED) then begin   //Fisicamente removido e outros que naum da pra filtrar nada :( - droga
+				 EnterCriticalSection(GlobalCriticalSection);
+				 Inc(GlobalUnplugMessageCount);
+                LeaveCriticalSection(GlobalCriticalSection);
+            end;
+        end;
+
+        //Libera Thread para tratar dos eventos percebidos
+        if GlobalCollectEventsThread.Suspended then begin
+            GlobalCollectEventsThread.Resume;
+        end;
+
+    end;
 end;
 
 {-----------------------------------------------------------------------------}
@@ -221,28 +229,47 @@ end;
 //Event thread
 constructor TEventsThread.Create(Ejector : TDriveEjector);
 begin
-	 FEjector := Ejector;
-	 inherited Create(False);
+    FEjector := Ejector;
+    inherited Create(False);
 end;
 
 procedure TEventsThread.Execute;
 begin
-	 while ( not Terminated ) do begin
-		 if Self.Terminated then begin
-			 break;
-		 end;
+    while (not Terminated) do begin
+        try
+            if Self.Terminated then begin
+                break;
+            end;
 
-		 if (GlobalChangeMessageCount > 0) and (not FEjector.Busy) then begin
-			 Sleep(500);
-			 //gives extra time for devices with multi volumes/partitions - sometimes theres only 1 message but it takes a moment for windows to mount both partitions
-			 EnterCriticalSection(GlobalCriticalSection);
-			 GlobalChangeMessageCount := 0; //set it back to 0 because we're about to scan
-			 LeaveCriticalSection(GlobalCriticalSection);
-			 FEjector.RescanAllDrives;
-			 //messagebeep(0);
-		 end else begin
-			 Self.Suspend;
-		 end;
+            if ((GlobalChangeMessageCount + GlobalUnplugMessageCount) > 0) and //QQ evento inc contador
+                (not FEjector.Busy) then begin
+                Sleep(500);
+                //gives extra time for devices with multi volumes/partitions - sometimes theres only 1 message but it takes a moment for windows to mount both partitions
+                if (GlobalChangeMessageCount > 0) then begin
+                    EnterCriticalSection(GlobalCriticalSection);
+                    GlobalChangeMessageCount := 0; //set it back to 0 because we're about to scan
+                    LeaveCriticalSection(GlobalCriticalSection);
+                    FEjector.RescanAllDrives;
+                end;
+
+				 if (GlobalUnplugMessageCount >= 0 ) then begin
+                    EnterCriticalSection(GlobalCriticalSection);
+                    GlobalUnplugMessageCount := 0; //set it back to 0 because we're about to notify
+                    LeaveCriticalSection(GlobalCriticalSection);
+                    if (Assigned(FEjector.OnDeviceUnplugged)) then begin
+                        FEjector.OnDeviceUnplugged(FEjector);
+                    end;
+                end;
+
+                //messagebeep(0);
+            end else begin
+                Self.Suspend;
+            end;
+        except
+            on E : Exception do begin
+                {TODO -oroger -cdsg : O que fazer????}
+            end;
+        end;
     end;
 end;
 
@@ -254,21 +281,21 @@ begin
     LoadConfigManagerApi;
 
     PollTimer := TTimer.Create(nil);
-	 fPolling  := False;
-	 PollTimer.OnTimer := OnTimer;
-	 fPollTimerInterval := 5000;
+    fPolling  := False;
+    PollTimer.OnTimer := OnTimer;
+    fPollTimerInterval := 5000;
     PollTimer.Interval := fPollTimerInterval;
 
-	 {TODO -oroger -cbug : tentar criar janela a parte para evitar hook para a da aplicacao, ver exemplo em procedure TJvDeviceChanged.WndProc(var Msg: TMessage); }
+    {TODO -oroger -cbug : tentar criar janela a parte para evitar hook para a da aplicacao, ver exemplo em procedure TJvDeviceChanged.WndProc(var Msg: TMessage); }
     //Setup dummy window to catch messages
-	 if not Assigned(GlobalPrevWndProc) then begin
-		 GlobalPrevWndProc := TFNWndProc(GetWindowLong(Application.Handle, GWL_WNDPROC));
-		 SetWindowLong(Application.Handle, GWL_WNDPROC, longint(@UsbWndProc));
+    if not Assigned(GlobalPrevWndProc) then begin
+        GlobalPrevWndProc := TFNWndProc(GetWindowLong(Application.Handle, GWL_WNDPROC));
+        SetWindowLong(Application.Handle, GWL_WNDPROC, longint(@UsbWndProc));
     end;
 
     InitializeCriticalSection(GlobalCriticalSection);
 
-	 fBusy := False;
+    fBusy := False;
     //Create a thread to keep polling fChangeMessageCount
     GlobalCollectEventsThread := TEventsThread.Create(self);
 
@@ -280,7 +307,7 @@ destructor TDriveEjector.Destroy;
 begin
     GlobalCollectEventsThread.Terminate;
     if GlobalCollectEventsThread.Suspended then begin
-		 GlobalCollectEventsThread.Resume;
+        GlobalCollectEventsThread.Resume;
     end;
     GlobalCollectEventsThread.Free;
 
@@ -302,14 +329,14 @@ begin
     ALength := Length(RemovableDrives);
     Assert(ALength > 0);
     Assert(Index < ALength);
-	 Finalize(RemovableDrives[Index]);
+    Finalize(RemovableDrives[Index]);
     TailElements := ALength - Index;
 
-	 if TailElements > 0 then begin
+    if TailElements > 0 then begin
         Move(RemovableDrives[Index + 1], RemovableDrives[Index], SizeOf(TRemovableDrive) * TailElements);
     end;
 
-	 Initialize(RemovableDrives[ALength - 1]);
+    Initialize(RemovableDrives[ALength - 1]);
     SetLength(RemovableDrives, ALength - 1);
 end;
 
@@ -437,16 +464,16 @@ begin
             exit;
         end;
 
-		 if (DeviceDescriptor.STORAGE_BUS_TYPE = JwaWindows.BusTypeUsb {JwaWinIoctl}) or
-			 (DeviceDescriptor.STORAGE_BUS_TYPE = JwaWindows.BusType1394) then  //7 is USB, 4 is firewire
-		 begin
-			 SetLength(RemovableDrives, length(RemovableDrives) + 1);
-		 end else begin  //enlarge the array for another item
-			 exit;
-		 end;
+        if (DeviceDescriptor.STORAGE_BUS_TYPE = JwaWindows.BusTypeUsb {JwaWinIoctl}) or
+            (DeviceDescriptor.STORAGE_BUS_TYPE = JwaWindows.BusType1394) then  //7 is USB, 4 is firewire
+        begin
+            SetLength(RemovableDrives, length(RemovableDrives) + 1);
+        end else begin  //enlarge the array for another item
+            exit;
+        end;
 
 
-		 //Error handling needed here  - use SysErrorMessage  to return string of error
+        //Error handling needed here  - use SysErrorMessage  to return string of error
         Status := GetVolumeInformation(PChar(GUIDVolumeName), VolumeName, MAX_PATH, nil, MaxCompLen, FSFlags, nil, 0);
         if not Status then begin
             VolumeName := '';
@@ -470,7 +497,7 @@ begin
         DriveMountPoint := trim(copy(DriveBuf, 0, ReturnLength));
 
         //Drive Letter
-		 RemovableDrives[high(RemovableDrives)].DriveMountPoint := DriveMountPoint;
+        RemovableDrives[high(RemovableDrives)].DriveMountPoint := DriveMountPoint;
 
         //Volume Name
         RemovableDrives[high(RemovableDrives)].VolumeLabel := VolumeName;
@@ -490,11 +517,11 @@ begin
         //Product Revision
         if DeviceDescriptor.ProductRevisionOffset <> 0 then begin
             PCh := @PCharArray(@DeviceDescriptor)^[DeviceDescriptor.ProductRevisionOffset];
-			 RemovableDrives[high(RemovableDrives)].ProductRevision := Trim(string(PCh));
+            RemovableDrives[high(RemovableDrives)].ProductRevision := Trim(string(PCh));
         end;
 
-		 //Volume Serial
-		 RemovableDrives[high(RemovableDrives)].SerialNumber := Self.ReadVolumeSerial( PChar( DriveMountPoint ) );
+        //Volume Serial
+        RemovableDrives[high(RemovableDrives)].SerialNumber := Self.ReadVolumeSerial(PChar(DriveMountPoint));
 
 
         //Is Card Reader   //This is checked and changed later
@@ -567,35 +594,35 @@ begin
     if fBusy then begin
         while fBusy do begin
             SwitchToThread();  //libera o controle para o thread liberar os recursos presos
-		 end;
-	 end;
-	 Result := Length(RemovableDrives);
+        end;
+    end;
+    Result := Length(RemovableDrives);
 end;
 
-function TDriveEjector.ReadVolumeSerial(const Drive: PChar): string;
+function TDriveEjector.ReadVolumeSerial(const Drive : PChar) : string;
 var
-	 VolumeSerialNumber : DWORD;
-	 MaximumComponentLength : DWORD;
-	 FileSystemFlags : DWORD;
-	 SerialNumber :    string;
+    VolumeSerialNumber : DWORD;
+    MaximumComponentLength : DWORD;
+    FileSystemFlags : DWORD;
+    SerialNumber :    string;
 begin
-	 Result := '';
+    Result := '';
 
-	 GetVolumeInformation(
-		 Drive,
-		 nil,
-		 0,
-		 @VolumeSerialNumber,
-		 MaximumComponentLength,
-		 FileSystemFlags,
-		 nil,
-		 0);
-	 SerialNumber :=
-		 IntToHex(HiWord(VolumeSerialNumber), 4) +
-		 ' - ' +
-		 IntToHex(LoWord(VolumeSerialNumber), 4);
+    GetVolumeInformation(
+        Drive,
+        nil,
+        0,
+        @VolumeSerialNumber,
+        MaximumComponentLength,
+        FileSystemFlags,
+        nil,
+        0);
+    SerialNumber :=
+        IntToHex(HiWord(VolumeSerialNumber), 4) +
+        ' - ' +
+        IntToHex(LoWord(VolumeSerialNumber), 4);
 
-	 Result := SerialNumber;
+    Result := SerialNumber;
 end;
 
 //This version returns an error code on failure
@@ -650,7 +677,7 @@ begin
 
 
         //CHECK - stop card style eject if device isnt a card
-        if ( not RemovableDrives[DriveIndex].IsCardReader ) then begin
+        if (not RemovableDrives[DriveIndex].IsCardReader) then begin
             CardEject := False;
         end;
 
@@ -707,7 +734,7 @@ begin
   begin
     if GetNoDevicesWithSameParentInst(RemovableDrives[i].ParentDevInst) > 0 then
       if GetNoDevicesWithSameProductID(RemovableDrives[i].ProductId) > 0 then //Hard drive partitions
-		 RemovableDrives[i].HasSiblings := true
+         RemovableDrives[i].HasSiblings := true
       else
         RemovableDrives[i].HasSiblings := false;
   end;}
@@ -774,7 +801,7 @@ begin
             exit;
         end;
 
-        if ( not DeviceIoControl(DriveHandle, IOCTL_STORAGE_CHECK_VERIFY2, nil, 0, nil, 0, @Returned, nil) ) then begin
+        if (not DeviceIoControl(DriveHandle, IOCTL_STORAGE_CHECK_VERIFY2, nil, 0, nil, 0, @Returned, nil)) then begin
             EjectErrorCode := REMOVE_ERROR_NO_CARD_MEDIA;
             exit; //No card in reader
         end;
@@ -963,10 +990,10 @@ begin
     ZeroMemory(@spdd, SizeOf(spdd));
     spdid.cbSize := SizeOf(spdid);
 
-	 DoLoop := True;
-	 while (DoLoop) do begin
+    DoLoop := True;
+    while (DoLoop) do begin
         FunctionResult := SetupDiEnumDeviceInterfaces(myhDevInfo, nil, myGUID, dwIndex, spdid);
-        if ( not FunctionResult ) then begin
+        if (not FunctionResult) then begin
             break;
         end;
 
@@ -984,7 +1011,7 @@ begin
                 if FunctionResult then begin
                     //Open the disk or cdrom or floppy
                     hDrive := INVALID_HANDLE_VALUE;
-					 try
+                    try
                         hDrive := CreateFile(pspdidd.DevicePath, 0, FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
                         if (hDrive <> INVALID_HANDLE_VALUE) then begin
                             //Get its device number
@@ -1120,8 +1147,8 @@ begin
     //sysutils.Beep;
     if GetDrivesCount = 0 then begin
         exit;
-	 end;
-	 if ( not Self.FPolling ) then begin
+    end;
+    if (not Self.FPolling) then begin
         Exit;
     end;
 
@@ -1129,17 +1156,17 @@ begin
     for I := 0 to GetDrivesCount - 1 do begin
         if RemovableDrives[i].IsCardReader then begin
             if CheckIfDriveHasMedia(RemovableDrives[i].DriveMountPoint) then begin
-				 if ( not RemovableDrives[i].CardMediaPresent ) then begin //Has changed - generate event
+                if (not RemovableDrives[i].CardMediaPresent) then begin //Has changed - generate event
                     RemovableDrives[i].CardMediaPresent := True;
-					 if assigned(FOnCardMediaChanged) then begin
-						 FOnCardMediaChanged(nil);
+                    if assigned(FOnCardMediaChanged) then begin
+                        FOnCardMediaChanged(nil);
                     end;
                 end;
             end else begin
-				 if RemovableDrives[i].CardMediaPresent then begin  //Has changed - generate event
-					 RemovableDrives[i].CardMediaPresent := False;
-					 if assigned(FOnCardMediaChanged) then begin
-						 FOnCardMediaChanged(nil);
+                if RemovableDrives[i].CardMediaPresent then begin  //Has changed - generate event
+                    RemovableDrives[i].CardMediaPresent := False;
+                    if assigned(FOnCardMediaChanged) then begin
+                        FOnCardMediaChanged(nil);
                     end;
                 end;
             end;
@@ -1152,7 +1179,7 @@ initialization
     //Windows 2000 workaround
     GetVolumePathNamesForVolumeNameW := GetProcAddress(GetModuleHandle('kernel32.dll'), 'GetVolumePathNamesForVolumeNameW');
     if @GetVolumePathNamesForVolumeNameW = nil then begin
-		 GetVolumePathNamesForVolumeNameW := @_GetVolumePathNamesForVolumeNameW;
+        GetVolumePathNamesForVolumeNameW := @_GetVolumePathNamesForVolumeNameW;
     end;
 
 end.

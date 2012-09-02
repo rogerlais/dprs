@@ -3,7 +3,7 @@
 			<ProjectGuid>{65D5256F-4D62-45CA-9398-34826C84E30E}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>MRFormat.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -82,6 +82,7 @@
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+						<Parameters Name="RunParams">/auto</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
@@ -89,7 +90,7 @@
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">2012</VersionInfo>
-						<VersionInfo Name="Build">1</VersionInfo>
+						<VersionInfo Name="Build">12</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -101,13 +102,13 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">TRE-PB</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">Formatador de Mídia de Resultado</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.0.2012.1</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.0.2012.12</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName">MR Formatter</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName">MR Formatter</VersionInfoKeys>
-						<VersionInfoKeys Name="ProductVersion">1.0.2012.1</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.0.2012.12</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
 					</VersionInfoKeys>
 					<Excluded_Packages>
