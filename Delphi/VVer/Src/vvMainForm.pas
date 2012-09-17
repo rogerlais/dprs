@@ -158,10 +158,13 @@ begin
 		 Sender.Canvas.Brush.Color := clHighlight;
 		 Sender.Canvas.Font.Color := clYellow;
 	 end else begin
-        prg := TProgItem(Item.Data);
-        if Assigned(prg) then begin //pular linhas de cabecalho
-            if not prg.isUpdated then begin
-                Self.grdList.Canvas.Brush.Color := clRed;
+		 prg := TProgItem(Item.Data);
+		 if Assigned(prg) then begin //pular linhas de cabecalho
+			 if not prg.isUpdated then begin
+				 Self.grdList.Canvas.Brush.Color := clRed;
+				 Self.grdList.Canvas.Font.Color:= clWhite;
+			 end else begin
+				Self.grdList.Canvas.Brush.Color := clGreen;
             end;
         end;
     end;

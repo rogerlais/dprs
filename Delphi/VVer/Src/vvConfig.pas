@@ -119,9 +119,9 @@ begin
         compId := TTREUtils.GetComputerId(TargetName);
         ZonId  := TTREUtils.GetComputerZone(TargetName);
     except
-        on E : Exception do begin
-            compId := -1;
-        end;
+		 on E : Exception do begin
+			raise Exception.CreateFmt('"%s" não representa um nome de computador válido.', [ TargetName ] );
+		 end;
     end;
 
     if zonId >= 200 then begin //Assume-se PCT

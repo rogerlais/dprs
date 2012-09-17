@@ -3,9 +3,8 @@ unit mrfMainForm;
 interface
 
 uses
-    Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-    Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls, uDiskEjectConst, uDriveEjector, magfmtdisk,
-    mrfConfiguration, Generics.Collections;
+	 Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls,
+	 uDiskEjectConst, uDriveEjector, magfmtdisk, mrfConfiguration, Generics.Collections;
 
 type
 

@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
-  BorderStyle = bsDialog
+  BorderStyle = bsSingle
   Caption = 'Verificador de Vers'#245'es 2010 T1'
   ClientHeight = 350
   ClientWidth = 563
@@ -72,6 +72,8 @@ object Form1: TForm1
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    GridLines = True
+    ReadOnly = True
     RowSelect = True
     ParentFont = False
     TabOrder = 2

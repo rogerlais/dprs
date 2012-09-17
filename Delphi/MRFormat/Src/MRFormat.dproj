@@ -57,6 +57,9 @@
 			<DCCReference Include="uDiskEjectConst.pas"/>
 			<DCCReference Include="mrfConfiguration.pas"/>
 			<DCCReference Include="uProcessAndWindowUtils.pas"/>
+			<DCCReference Include="mrfConfigForm.pas">
+				<Form>Form1</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
