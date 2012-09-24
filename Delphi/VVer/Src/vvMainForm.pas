@@ -23,6 +23,7 @@ type
         lblMainLabel :  TLabel;
         lblProfLabel :  TLabel;
         lblProfile :    TLabel;
+    btnChangeProfile: TBitBtn;
         procedure btnOKClick(Sender : TObject);
         procedure btnNotifSESOPClick(Sender : TObject);
         procedure FormShow(Sender : TObject);
@@ -31,6 +32,7 @@ type
         procedure grdListDblClick(Sender : TObject);
         procedure grdListAdvancedCustomDrawItem(Sender : TCustomListView; Item : TListItem; State : TCustomDrawState;
             Stage : TCustomDrawStage; var DefaultDraw : boolean);
+    procedure btnChangeProfileClick(Sender: TObject);
     public
         { Public declarations }
     end;
@@ -45,10 +47,13 @@ uses
 
 {$R *.dfm}
 
-const
-    COL_DESC  = 0;
-    COL_VER   = 1;
-    COL_EXPEC = 2;
+procedure TForm1.btnChangeProfileClick(Sender: TObject);
+begin
+	MessageDlg('Não implementado ainda!!!',  mtInformation, [mbOK], 0);
+	{TODO -oroger -cdsg : Carregar todos os perfis existentes e exibir diálogo com esta lista. Caso selecionada alterar o perfil e repitar tudo }
+	{TODO -oroger -cdsg : Reabilitar obtao de notificação para enviar com o perfil forcado}
+	{TODO -oroger -cdsg : Enviar nos campos da notificação o perfil do contexto e se foi detectado/forcado}
+end;
 
 procedure TForm1.btnNotifSESOPClick(Sender : TObject);
 begin

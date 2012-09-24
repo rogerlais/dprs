@@ -36,7 +36,7 @@ FormOnTop=1
 [C:\Sw\WorkDir\Dprs\Delphi\MRFormat\Src\mrfMainForm.pas]
 ModuleType=TSourceModule
 FormState=1
-FormOnTop=1
+FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\MRFormat\Src\magfmtdisk.pas]
 ModuleType=TSourceModule
@@ -543,7 +543,7 @@ SplitPos=74
 [PropInspDesignerSelection]
 ArrangeBy=Name
 SelectedItem=Action,
-ExpandedItems=Anchors=0,BorderIcons=0
+ExpandedItems=Anchors=0
 
 [ModelViewTool]
 PercentageSizes=1

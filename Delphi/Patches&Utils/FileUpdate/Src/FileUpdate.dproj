@@ -3,7 +3,7 @@
 			<ProjectGuid>{4F22916E-FD56-4107-8B6B-3454805F7504}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>FileUpdate.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -38,6 +38,7 @@
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_DebugDCUs>true</DCC_DebugDCUs>
 			<DCC_DependencyCheckOutputName>..\Debug\FileUpdate.exe</DCC_DependencyCheckOutputName>
 			<DCC_Define>DEBUG;DEBUG_ALL;$(DCC_Define)</DCC_Define>
 			<DCC_BplOutput>..\Debug</DCC_BplOutput>
@@ -58,6 +59,9 @@
 			</DCCReference>
 			<DCCReference Include="fuCustomLog.pas"/>
 			<DCCReference Include="fuUserSwitcher.pas"/>
+			<DCCReference Include="fuFileOperation.pas"/>
+			<DCCReference Include="fuConfiguration.pas"/>
+			<DCCReference Include="..\..\..\..\..\Pcks\StfLib\Src\AppSettings.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

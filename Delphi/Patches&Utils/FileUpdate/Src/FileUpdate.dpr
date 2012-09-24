@@ -11,7 +11,10 @@ uses
   fuMainDataModule in 'fuMainDataModule.pas' {DMMainController: TDataModule},
   fuMainForm in 'fuMainForm.pas' {FUMainWindow},
   fuCustomLog in 'fuCustomLog.pas',
-  fuUserSwitcher in 'fuUserSwitcher.pas';
+  fuUserSwitcher in 'fuUserSwitcher.pas',
+  fuFileOperation in 'fuFileOperation.pas',
+  fuConfiguration in 'fuConfiguration.pas',
+  AppSettings in '..\..\..\..\..\Pcks\StfLib\Src\AppSettings.pas';
 
 {$R *.RES}
 
