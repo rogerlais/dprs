@@ -1,3 +1,8 @@
+{$IFDEF fuFileOperation}
+		  {$DEFINE DEBUG_UNIT}
+{$ENDIF}
+{$I FileUpdate.inc}
+
 unit fuFileOperation;
 
 interface
@@ -13,7 +18,8 @@ type
         fuoDelete = 4,         //Apaga caso existe, requesito de sucesso = arquivo não mais existe
         fuoDateUpdate = 8,     //Sobrescreve apenas se data atual inferior a fonte
         fuoVersionUpdate = 16, //Sobrescreve apenas se versão inferior(não havendo versão usa a data)
-        fuoForceUpdate = 32    //Copia e requer sucesso na sobrescrita
+		 fuoForceUpdate = 32,    //Copia e requer sucesso na sobrescrita
+		 fuoLink = 64 		    //Cria atalho de source em dest
         );
 
     TFUSearchPoint = class

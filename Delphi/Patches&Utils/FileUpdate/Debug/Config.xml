@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data FUpadate="1.0">
+	<Operations>
+		<HE>
+			<Source>".\hr.exe"</Source>
+			<Operation>2</Operation>
+			<SearchPoint>
+				<Filemask>"he.exe"/Filemask<>
+				<Recursive>True</Recursive>
+				<LocalPath>"C:\"</LocalPath>
+			</SearchPoint>
+			<SearchPoint>
+				<Filemask>"he.exe"/Filemask<>
+				<Recursive>True</Recursive>
+				<LocalPath>"D:\"</LocalPath>
+			</SearchPoint>
+		</HE>
+	</Operations>
+</data>
+

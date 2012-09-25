@@ -17,7 +17,7 @@ type
         procedure DataModuleCreate(Sender : TObject);
     private
         { Private declarations }
-		 FTmpList :       TStrings;
+        FTmpList :       TStrings;
         FSRHUpdated :    boolean;
         FAcessoUpdated : boolean;
         FAtualizadorUpdated : boolean;
@@ -58,7 +58,7 @@ implementation
 
 uses
     FileHnd, Windows, ShlObj, ActiveX, ComObj, ShellFilesHnd, AppLog, WinReg32, fuMainForm, WinNetHnd,
-    WinHnd, StrHnd, IOUtils, fuCustomLog, ShellAPI
+    WinHnd, StrHnd, IOUtils, fuCustomLog, ShellAPI, fuConfiguration
     {JediWinAPI, Jwawindows};
 
 const
@@ -107,16 +107,18 @@ procedure TDMMainController.RunUpdates(List : TStrings);
 var
     LnkPath : string;
 begin
+    GlobalConfig.ReadOperations;
     Self.FTmpList.BeginUpdate;
-    try
-         {$IFNDEF DEBUG}
-        TLogFile.LogDebug('Buscando na unidade C:\', DBGLEVEL_NONE);
-        Self.FileSearcher.RootDirectory := 'C:\';
-        Self.FileSearcher.Search;
-         {$ENDIF}
-        TLogFile.LogDebug('Buscando na unidade D:\', DBGLEVEL_NONE);
+	 try
+
+		 {$IFNDEF DEBUG} //dispensa C:\ na depuração
+		 TLogFile.LogDebug('Buscando na unidade C:\', DBGLEVEL_NONE);
+		 Self.FileSearcher.RootDirectory := 'C:\';
+		 Self.FileSearcher.Search;
+		 {$ENDIF}
+		 TLogFile.LogDebug('Buscando na unidade D:\', DBGLEVEL_NONE);
 		 Self.FileSearcher.RootDirectory := 'D:\';
-        Self.FileSearcher.Search;
+		 Self.FileSearcher.Search;
 		 Self.FixMissingFiles;
 
         LnkPath := ShellFilesHnd.TShellHnd.GetAllUsersDesktop();
@@ -158,9 +160,9 @@ end;
 
 procedure TDMMainController.CheckUpdate(List : TStrings);
 begin
-	 if (not Self.IsPatchApplied) then begin
+    if (not Self.IsPatchApplied) then begin
         TLogFile.LogDebug('Iniciando a aplicação da atualização SRH+Acesso', DBGLEVEL_NONE);
-		 Self.RunUpdates(List);
+        Self.RunUpdates(List);
         TLogFile.LogDebug('Finalizada aplicação da atualização SRH+Acesso', DBGLEVEL_NONE);
         Self.IsPatchApplied := True;
     end;
@@ -183,26 +185,26 @@ var
     dbg : Integer;
 begin
 
-	 //Ajusta o nivel de depuração do aplicativo
-	 for x := 1 to ParamCount do begin
-		 if (TStrHnd.startsWith(UpperCase(ParamStr(x)), DEBUG_TOKEN)) then begin
-			 vl := Copy(ParamStr(x), Length(DEBUG_TOKEN) + 2, 30);
-			 try
-				 TryStrToInt(vl, dbg);
-			 except
-				 dbg := 0;
-			 end;
-			 TLogFile.GetDefaultLogFile.DebugLevel := dbg;
-		 end;
-	 end;
+    //Ajusta o nivel de depuração do aplicativo
+    for x := 1 to ParamCount do begin
+        if (TStrHnd.startsWith(UpperCase(ParamStr(x)), DEBUG_TOKEN)) then begin
+            vl := Copy(ParamStr(x), Length(DEBUG_TOKEN) + 2, 30);
+            try
+                TryStrToInt(vl, dbg);
+            except
+                dbg := 0;
+            end;
+            TLogFile.GetDefaultLogFile.DebugLevel := dbg;
+        end;
+    end;
 
-	 //Carrega a lista de operações a ser feita
+    //Carrega a lista de operações a ser feita
 
 
     //Identifica se trabalho sera no modo automatico
-	 for x := 1 to ParamCount do begin
-		 if (UpperCase(ParamStr(x)) = '/AUTO') then begin
-			 Self.CheckUpdate(Self.FTmpList);
+    for x := 1 to ParamCount do begin
+        if (UpperCase(ParamStr(x)) = '/AUTO') then begin
+            Self.CheckUpdate(Self.FTmpList);
             Exit;
         end;
     end;
