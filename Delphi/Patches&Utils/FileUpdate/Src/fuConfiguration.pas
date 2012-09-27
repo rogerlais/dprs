@@ -66,10 +66,12 @@ var
 begin
 	 lst := TStringList.Create;
 	 try
-	 	--carregar e criar as constantes de carga
 		 Self.ListSubKeys('Operations', lst); //todas do raiz de configuração
-		 fo:=TFUFileOperation.Create( 'teste' );
-		 Self.FFileOperations.Add( fo );
+		 for x := 0 to lst.Count - 1 do begin
+			fo:=TFUFileOperation.Create( lst.Strings[ x ] );
+           fo.SourcePath:=Self.ReadStringDefault( lst.Strings[ x ] + '\SourcePath', 'D:\' );
+			Self.FFileOperations.Add( fo );
+		 end;
 	 finally
 		 lst.Free;
 	 end;

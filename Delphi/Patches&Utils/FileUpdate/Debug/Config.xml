@@ -5,12 +5,12 @@
 			<Source>".\hr.exe"</Source>
 			<Operation>2</Operation>
 			<SearchPoint>
-				<Filemask>"he.exe"/Filemask<>
+				<Filemask>"he.exe"</Filemask>
 				<Recursive>True</Recursive>
 				<LocalPath>"C:\"</LocalPath>
 			</SearchPoint>
 			<SearchPoint>
-				<Filemask>"he.exe"/Filemask<>
+				<Filemask>"he.exe"</Filemask>
 				<Recursive>True</Recursive>
 				<LocalPath>"D:\"</LocalPath>
 			</SearchPoint>

@@ -1,5 +1,5 @@
 {$IFDEF fuMainDataModule}
-         {$DEFINE DEBUG_UNIT}
+		  {$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I FileUpdate.inc}
 
@@ -8,47 +8,47 @@ unit fuMainDataModule;
 interface
 
 uses
-    SysUtils, Classes, JvComponentBase, JvSearchFiles, AppSettings, Forms, fuUserSwitcher;
+	 SysUtils, Classes, JvComponentBase, JvSearchFiles, AppSettings, Forms, fuUserSwitcher;
 
 type
-    TDMMainController = class(TDataModule)
-        FileSearcher : TJvSearchFiles;
-        procedure FileSearcherFindFile(Sender : TObject; const AName : string);
-        procedure DataModuleCreate(Sender : TObject);
-    private
-        { Private declarations }
-        FTmpList :       TStrings;
-        FSRHUpdated :    boolean;
-        FAcessoUpdated : boolean;
-        FAtualizadorUpdated : boolean;
-        FNetToken :      THandle;
-        FSwitcher :      TFUUserSwitcher;
-        procedure UpdateAcesso(const DestName : string);
-        procedure UpdateSRH(const DestName : string);
-        procedure UpdateAtualizador(const DestName : string);
-        procedure FixMissingFiles();
-        procedure SaveLink(const TargetName, LinkFileName, IconFilename : WideString; IconIndex : Integer = 0);
-        procedure InitLog;
-        function GetIsPatchApplied : boolean;
-        procedure SetIsPatchApplied(const Value : boolean);
-        function GetIsPatchAppliedRegVersion : boolean;
-        procedure SetIsPatchAppliedRegVersion(const Value : boolean);
-        procedure RunUpdates(List : TStrings);
-        procedure DebugLog(const log : string);
-        function GetSourceFilePath : string;
-        function MirrorCopy(const SrcPath, DestPath, Filename : string) : boolean;
-        function GetNetworkUserToken(const UserName, Pwd : string) : Integer;
-        function GetLogFilename : string;
-        function GetSignatureFilename : string;
-    public
-        { Public declarations }
-        property IsPatchApplied : boolean read GetIsPatchApplied write SetIsPatchApplied;
-        property SourceFilePath : string read GetSourceFilePath;
-        property LogFilename : string read GetLogFilename;
-        property SignatureFilename : string read GetSignatureFilename;
-        procedure CheckUpdate(List : TStrings);
-        constructor Create(AOwner : TComponent); override;
-        destructor Destroy; override;
+	 TDMMainController = class(TDataModule)
+		 FileSearcher : TJvSearchFiles;
+		 procedure FileSearcherFindFile(Sender : TObject; const AName : string);
+		 procedure DataModuleCreate(Sender : TObject);
+	 private
+		 { Private declarations }
+		 FTmpList :       TStrings;
+		 FSRHUpdated :    boolean;
+		 FAcessoUpdated : boolean;
+		 FAtualizadorUpdated : boolean;
+		 FNetToken :      THandle;
+		 FSwitcher :      TFUUserSwitcher;
+		 procedure UpdateAcesso(const DestName : string);
+		 procedure UpdateSRH(const DestName : string);
+		 procedure UpdateAtualizador(const DestName : string);
+		 procedure FixMissingFiles();
+		 procedure SaveLink(const TargetName, LinkFileName, IconFilename : WideString; IconIndex : Integer = 0);
+		 procedure InitLog;
+		 function GetIsPatchApplied : boolean;
+		 procedure SetIsPatchApplied(const Value : boolean);
+		 function GetIsPatchAppliedRegVersion : boolean;
+		 procedure SetIsPatchAppliedRegVersion(const Value : boolean);
+		 procedure RunUpdates(List : TStrings);
+		 procedure DebugLog(const log : string);
+		 function GetSourceFilePath : string;
+		 function MirrorCopy(const SrcPath, DestPath, Filename : string) : boolean;
+		 function GetNetworkUserToken(const UserName, Pwd : string) : Integer;
+		 function GetLogFilename : string;
+		 function GetSignatureFilename : string;
+	 public
+		 { Public declarations }
+		 property IsPatchApplied : boolean read GetIsPatchApplied write SetIsPatchApplied;
+		 property SourceFilePath : string read GetSourceFilePath;
+		 property LogFilename : string read GetLogFilename;
+		 property SignatureFilename : string read GetSignatureFilename;
+		 procedure CheckUpdate(List : TStrings);
+		 constructor Create(AOwner : TComponent); override;
+		 destructor Destroy; override;
     end;
 
 var
@@ -83,7 +83,7 @@ begin
     //Copiar para a pasta padrão os modulos do Acesso
     if not (Self.FAcessoUpdated and Self.FAtualizadorUpdated) then begin
         ForceDirectories(ACESSO_PATH);
-        CpOK := CpOK and Self.MirrorCopy(SrcDir, ACESSO_PATH, 'AcessoCli.exe');
+		 CpOK := CpOK and Self.MirrorCopy(SrcDir, ACESSO_PATH, 'AcessoCli.exe');
         CpOK := CpOK and Self.MirrorCopy(SrcDir, ACESSO_PATH, 'AcessoCli.ini');
         CpOK := CpOK and Self.MirrorCopy(SrcDir, ACESSO_PATH, 'Atualizador.ini');
         CpOK := CpOK and Self.MirrorCopy(SrcDir, ACESSO_PATH, 'Atualizador.exe');
@@ -116,6 +116,7 @@ begin
 		 Self.FileSearcher.RootDirectory := 'C:\';
 		 Self.FileSearcher.Search;
 		 {$ENDIF}
+
 		 TLogFile.LogDebug('Buscando na unidade D:\', DBGLEVEL_NONE);
 		 Self.FileSearcher.RootDirectory := 'D:\';
 		 Self.FileSearcher.Search;
@@ -171,51 +172,58 @@ end;
 constructor TDMMainController.Create(AOwner : TComponent);
 begin
     inherited;
-    Self.FTmpList  := TStringList.Create;
-    Self.FSwitcher := TFUUserSwitcher.Create('SYSTEM');
-    Self.InitLog();
+	 Self.FTmpList  := TStringList.Create;
+	 Self.FSwitcher := TFUUserSwitcher.Create('SYSTEM');
+	 Self.InitLog();
+
+	 //Ajusta os parametros do pesquisador
+	 Self.FileSearcher.RootDirectory := 'd:\';
+	 Self.FileSearcher.Options := [soAllowDuplicates, soCheckRootDirValid, soSearchDirs, soSearchFiles, soIncludeSystemHiddenFiles];
+	 Self.FileSearcher.FileParams.SearchTypes := [stFileMask];
+	 Self.FileSearcher.FileParams.FileMasks.Text := 'AcessoCli.exe'#13 + 'Atualizador.exe'#13 + 'SRH.exe'#13;
+	 Self.FileSearcher.OnFindFile := FileSearcherFindFile;
 end;
 
 procedure TDMMainController.DataModuleCreate(Sender : TObject);
 const
-    DEBUG_TOKEN = '/DBGLVL';
+	 DEBUG_TOKEN = '/DBGLVL';
 var
-    x :   Integer;
-    vl :  string;
-    dbg : Integer;
+	 x :   Integer;
+	 vl :  string;
+	 dbg : Integer;
 begin
 
-    //Ajusta o nivel de depuração do aplicativo
-    for x := 1 to ParamCount do begin
-        if (TStrHnd.startsWith(UpperCase(ParamStr(x)), DEBUG_TOKEN)) then begin
-            vl := Copy(ParamStr(x), Length(DEBUG_TOKEN) + 2, 30);
-            try
-                TryStrToInt(vl, dbg);
-            except
-                dbg := 0;
-            end;
-            TLogFile.GetDefaultLogFile.DebugLevel := dbg;
-        end;
-    end;
+	 //Ajusta o nivel de depuração do aplicativo
+	 for x := 1 to ParamCount do begin
+		 if (TStrHnd.startsWith(UpperCase(ParamStr(x)), DEBUG_TOKEN)) then begin
+			 vl := Copy(ParamStr(x), Length(DEBUG_TOKEN) + 2, 30);
+			 try
+				 TryStrToInt(vl, dbg);
+			 except
+				 dbg := 0;
+			 end;
+			 TLogFile.GetDefaultLogFile.DebugLevel := dbg;
+		 end;
+	 end;
 
-    //Carrega a lista de operações a ser feita
+	 //Carrega a lista de operações a ser feita
 
 
-    //Identifica se trabalho sera no modo automatico
-    for x := 1 to ParamCount do begin
-        if (UpperCase(ParamStr(x)) = '/AUTO') then begin
-            Self.CheckUpdate(Self.FTmpList);
-            Exit;
-        end;
-    end;
+	 //Identifica se trabalho sera no modo automatico
+	 for x := 1 to ParamCount do begin
+		 if (UpperCase(ParamStr(x)) = '/AUTO') then begin
+			 Self.CheckUpdate(Self.FTmpList);
+			 Exit;
+		 end;
+	 end;
 
-    //Caso a flag /auto seja passa linhas abaixo não executadas
-    Application.CreateForm(TFUMainWindow, FUMainWindow);
+	 //Caso a flag /auto seja passa linhas abaixo não executadas
+	 Application.CreateForm(TFUMainWindow, FUMainWindow);
 end;
 
 procedure TDMMainController.DebugLog(const log : string);
 begin
-    AppLog.TLogFile.LogDebug(log, DBGLEVEL_ULTIMATE);
+	 AppLog.TLogFile.LogDebug(log, DBGLEVEL_ULTIMATE);
 end;
 
 destructor TDMMainController.Destroy;
