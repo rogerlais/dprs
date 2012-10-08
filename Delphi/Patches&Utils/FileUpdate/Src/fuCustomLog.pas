@@ -13,35 +13,39 @@ uses
 
 type
 	 TFULog = class(TLogFile)
-	 private
-		 FSwitcher : TFUUserSwitcher;
 	 protected
 		 procedure StreamDispose; override;
 		 procedure StreamNeeded; override;
 	 public
-		 constructor Create(const AFileName : string; Lock : boolean; AUserSwitcher : TFUUserSwitcher ); overload;
+		 constructor Create(const AFileName : string; Lock : boolean ); overload;
+		 destructor Destroy; override;
 	 end;
 
 implementation
 
 { TFULog }
 
-constructor TFULog.Create(const AFileName : string; Lock : boolean; AUserSwitcher : TFUUserSwitcher );
+constructor TFULog.Create(const AFileName : string; Lock : boolean );
 begin
-    inherited Create(AFileName, Lock);
-    Self.FSwitcher := AUserSwitcher;
+	 inherited Create(AFileName, Lock);
+end;
+
+destructor TFULog.Destroy;
+begin
+	//Self.FParentSwitcher não deve ser destruido aqui, refere-se ao controlador da instancia
+	inherited;
 end;
 
 procedure TFULog.StreamDispose;
 begin
 	 inherited;
-	 Self.FSwitcher.RevertToPrevious();
+	 GlobalSwitcher.RevertToPrevious();
 end;
 
 procedure TFULog.StreamNeeded;
 begin
-	Self.FSwitcher.SwitchTo( APP_NET_USER );
-	 inherited;
+	GlobalSwitcher.SwitchTo( APP_NET_USER );
+	inherited;
 end;
 
 end.

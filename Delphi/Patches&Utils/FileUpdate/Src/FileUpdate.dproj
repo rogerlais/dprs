@@ -3,7 +3,7 @@
 			<ProjectGuid>{4F22916E-FD56-4107-8B6B-3454805F7504}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>FileUpdate.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -20,6 +20,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_Define>HORAS_EXTRAS;$(DCC_Define)</DCC_Define>
 			<DCC_UsePackage>vclx;vcl;vclimg;dbrtl;Rave77VCL;bdertl;rtl;vclactnband;xmlrtl;vcldb;vcldbx;vcltouch;dsnap;dsnapcon;TeeUI;TeeDB;Tee;vclib;ibxpress;adortl;IndyCore;IndySystem;IndyProtocols;inet;intrawebdb_100_140;Intraweb_100_140;VclSmp;vclie;websnap;webdsnap;inetdb;inetdbbde;inetdbxpress;soaprtl;vclribbon;dbexpress;DbxCommonDriver;DataSnapIndy10ServerTransport;DataSnapProviderClient;DbxClientDriver;DataSnapServer;DBXInterBaseDriver;DBXMySQLDriver;dbxcds;DBXFirebirdDriver;DBXSybaseASEDriver;DBXSybaseASADriver;DBXOracleDriver;DBXMSSQLDriver;DBXInformixDriver;DBXDb2Driver;QR5RunD2010;Jcl;JclVcl;JvCoreD14R;JvSystemD14R;JvStdCtrlsD14R;JvAppFrmD14R;JvBandsD14R;JvDBD14R;JvDlgsD14R;JvBDED14R;JvCmpD14R;JvCryptD14R;JvCtrlsD14R;JvCustomD14R;JvDockingD14R;JvDotNetCtrlsD14R;JvEDID14R;JvGlobusD14R;JvHMID14R;JvInterpreterD14R;JvJansD14R;JvManagedThreadsD14R;JvMMD14R;JvNetD14R;JvPageCompsD14R;JvPluginD14R;JvPrintPreviewD14R;JvRuntimeDesignD14R;JvTimeFrameworkD14R;JvValidatorsD14R;JvWizardD14R;JvXPCtrlsD14R;OPLibD14;GDBLibD14;FXLibD14;XPLibD14;WinSysLibD14;StFLibD14;WinNetLibD14;BDELibD14;INetLibD14;ECLibD14;WMILib;ZComponent;ZDbc;ZPlain;ZCore;ZParseSql;GeneralLibD14;HTMLEditor;TRELib</DCC_UsePackage>
 			<DCC_DependencyCheckOutputName>FileUpdate.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
@@ -58,9 +59,6 @@
 			</DCCReference>
 			<DCCReference Include="fuCustomLog.pas"/>
 			<DCCReference Include="fuUserSwitcher.pas"/>
-			<DCCReference Include="fuFileOperation.pas"/>
-			<DCCReference Include="fuConfiguration.pas"/>
-			<DCCReference Include="..\..\..\..\..\Pcks\StfLib\Src\AppSettings.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

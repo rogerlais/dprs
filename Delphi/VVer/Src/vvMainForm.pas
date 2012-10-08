@@ -53,6 +53,7 @@ begin
 	{TODO -oroger -cdsg : Carregar todos os perfis existentes e exibir diálogo com esta lista. Caso selecionada alterar o perfil e repitar tudo }
 	{TODO -oroger -cdsg : Reabilitar obtao de notificação para enviar com o perfil forcado}
 	{TODO -oroger -cdsg : Enviar nos campos da notificação o perfil do contexto e se foi detectado/forcado}
+	{TODO -oroger -cdsg : Caso seja requerida a notificação, carregar este atributo e notificar no momento da carga do aplicativo, de modo que a mensagem tenha outras tentativas de reenvio }
 end;
 
 procedure TForm1.btnNotifSESOPClick(Sender : TObject);

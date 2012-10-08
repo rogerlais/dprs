@@ -17,8 +17,9 @@ type
         function GetFileOperations : TFUFileOperations;
     public
         property FileOperations : TFUFileOperations read GetFileOperations;
-        class function CreateFromFile(const Filename, RootNodeName : string) : TFUConfig; reintroduce;
-        procedure ReadOperations;
+		 class function CreateFromFile(const Filename, RootNodeName : string) : TFUConfig; reintroduce;
+		 destructor Destroy; override;
+		 procedure ReadOperations;
     end;
 
 var
@@ -51,6 +52,12 @@ begin
     Result.FFileOperations := TFUFileOperations.Create(True);
 end;
 
+destructor TFUConfig.Destroy;
+begin
+	Self.FFileOperations.Free;
+	inherited;
+end;
+
 function TFUConfig.GetFileOperations : TFUFileOperations;
 begin
 	Result:=Self.FFileOperations;
@@ -79,12 +86,12 @@ end;
 
 initialization
     begin
-        InitGlobalConfig;
+        //InitGlobalConfig;
     end;
 
 finalization
     begin
-        FreeAndNil(GlobalConfig);
+       //FreeAndNil(GlobalConfig);
     end;
 
 end.

@@ -1,70 +1,65 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.dfm',0,1,1,1,1,0,0,,
-File_1=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas',0,1,1,1,1,0,0,,
-File_2=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainForm.pas',0,1,1,27,38,0,0,,
-File_3=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuCustomLog.pas',0,1,28,1,39,0,0,,
-File_4=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuUserSwitcher.pas',0,1,117,1,138,0,0,,
-File_5=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\XML\XMLDoc.pas',0,1,498,24,512,0,0,,{1
-File_6=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\xml\msxmldom.pas',0,1,1,6,13,0,0,,
-File_7=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\System.pas',0,1,16838,1,16852,0,0,,
-File_8=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\FileHnd.pas',0,1,80,1,97,0,0,,{1
-File_9=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\StrHnd.pas',0,1,845,24,859,0,0,,
-File_10=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\XML\XMLIntf.pas',0,1,191,1,180,0,0,,
-File_11=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\XML\xmldom.pas',0,1,463,14,478,0,0,,
-File_12=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\WindowsAPIs.INC',0,1,493,1,514,0,0,,
-File_13=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\Variants.pas',0,1,4296,1,4321,0,0,,
-File_14=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\common\Classes.pas',0,1,5184,3,5192,0,0,,{1
+File_0=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\win\Windows.pas',0,1,31137,1,31150,0,0,,{1,19248,1}
+File_1=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\AppLog.pas',0,1,16,35,14,0,0,,
+File_2=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\System.pas',0,1,13675,1,13689,0,0,,
+File_3=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\common\Classes.pas',0,1,5517,1,5537,0,0,,{1
+File_4=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\SysUtils.pas',0,1,6701,1,6718,0,0,,{4
+File_5=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Forms.pas',0,1,1744,1,1788,0,0,,
+File_6=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\vcl\ExtDlgs.pas',0,1,146,31,241,0,0,,
+File_7=TSourceModule,'C:\Sw\WorkDir\Pcks\ShellLib\Src\ShellFilesHnd.pas',0,1,350,47,354,0,0,,
+File_8=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\Protocols\IdHTTP.pas',0,1,657,1,674,0,0,,
+File_9=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.dfm',0,1,1,1,1,0,0,,
+File_10=TSourceModule,'C:\Sw\WorkDir\Pcks\StfLib\Src\AppSettings.pas',0,1,2776,1,2790,0,0,,{2
+File_11=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\StrHnd.pas',0,1,378,26,388,0,0,,
+File_12=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuFileOperation.pas',0,1,1,34,81,0,0,,
+File_13=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\common\Contnrs.pas',0,1,247,1,261,0,0,,
+File_14=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Controls.pas',0,1,13471,1,13485,0,0,,
 
 [Modules]
-Module0=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuConfiguration.pas
-Module1=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas
-Module2=C:\Sw\WorkDir\Pcks\StfLib\Src\AppSettings.pas
-Module3=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuFileOperation.pas
-Module4=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\FileUpdate.dproj
-Module5=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Debug\Config.xml
-Module6=default.htm
-Count=7
+Module0=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuUserSwitcher.pas
+Module1=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuCustomLog.pas
+Module2=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas
+Module3=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Debug\Config.xml
+Module4=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuConfiguration.pas
+Module5=default.htm
+Count=6
 EditWindowCount=1
 
-[C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuConfiguration.pas]
+[C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuUserSwitcher.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuCustomLog.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas]
 ModuleType=TSourceModule
-FormState=0
+FormState=1
 FormOnTop=0
-
-[C:\Sw\WorkDir\Pcks\StfLib\Src\AppSettings.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuFileOperation.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\FileUpdate.dproj]
-ModuleType=TBaseProject
 
 [C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Debug\Config.xml]
 ModuleType=TSourceModule
+
+[C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuConfiguration.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
 
 [default.htm]
 ModuleType=TURLModule
 
 [EditWindow0]
-ViewCount=7
-CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuConfiguration.pas
+ViewCount=6
+CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuUserSwitcher.pas
 View0=0
 View1=1
 View2=2
 View3=3
 View4=4
 View5=5
-View6=6
 PercentageSizes=1
 Create=1
 Visible=1
@@ -81,15 +76,15 @@ ClientHeight=8544
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
-LeftPanelSize=2250
+LeftPanelSize=1175
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800010100000000300F00000000000001CA0800000000000001000000008208000009000000446F636B53697465330100000000FF1A00001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=00000800010100000000F10D0000000000000197040000000000000100000000F009000009000000446F636B53697465330100000000C81800001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=1319
 RightPanelClients=DockSite2,DockSite4
-RightPanelData=00000800010100000000300F00000000000001270500000000000001000000004612000009000000446F636B53697465320100000000FF1A000009000000446F636B5369746534FFFFFFFF
-BottomPanelSize=1600
-BottomPanelClients=DockSite1,MessageView
-BottomPanelData=0000080001020000000072450000000000000240060000000000000100000000B922000009000000446F636B53697465310100000000724500000F0000004D65737361676556696577466F726DFFFFFFFF
+RightPanelData=00000800010100000000F10D00000000000001270500000000000001000000004612000009000000446F636B53697465320100000000C818000009000000446F636B5369746534FFFFFFFF
+BottomPanelSize=2167
+BottomPanelClients=DockSite1,DockSite5
+BottomPanelData=0000080001020000000072450000000000000277080000000000000100000000B922000009000000446F636B536974653101000000007245000009000000446F636B5369746535FFFFFFFF
 BottomMiddlePanelSize=0
 BottomMiddlePanelClients=DockSite0
 BottomMiddelPanelData=0000080001000100000009000000446F636B53697465302C1900000000000000791B000000000000FFFFFFFF
@@ -100,75 +95,62 @@ WelcomePageURL=bds:/default.htm
 
 [View1]
 CustomEditViewType=TEditView
+Module=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas
+CursorX=96
+CursorY=68
+TopLine=58
+LeftCol=14
+Elisions=
+Bookmarks=
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas
+
+[View2]
+CustomEditViewType=TEditView
+Module=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuCustomLog.pas
+CursorX=1
+CursorY=47
+TopLine=33
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuCustomLog.pas
+
+[View3]
+CustomEditViewType=TEditView
+Module=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuUserSwitcher.pas
+CursorX=119
+CursorY=164
+TopLine=151
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuUserSwitcher.pas
+
+[View4]
+CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuConfiguration.pas
-CursorX=93
-CursorY=72
-TopLine=52
+CursorX=6
+CursorY=6
+TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuConfiguration.pas
 
-[View2]
-CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\FileUpdate.dpr
-CursorX=1
-CursorY=22
-TopLine=1
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\FileUpdate.dpr
-
-[View3]
-CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuFileOperation.pas
-CursorX=30
-CursorY=22
-TopLine=1
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuFileOperation.pas
-
-[View4]
+[View5]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Debug\Config.xml
-CursorX=46
-CursorY=13
+CursorX=84
+CursorY=11
 TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Debug\Config.xml
 
-[View5]
-CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Pcks\StfLib\Src\AppSettings.pas
-CursorX=1
-CursorY=2435
-TopLine=2408
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\Sw\WorkDir\Pcks\StfLib\Src\AppSettings.pas
-
-[View6]
-CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas
-CursorX=1
-CursorY=180
-TopLine=164
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas
-
 [Watches]
-Count=3
-Watch0='Source',256,0,18,1,0,'Watches',1
-Watch1='Dest',256,0,18,1,0,'Watches',1
-Watch2='IDoc.DocumentElement',256,0,18,1,0,'Watches',1
+Count=1
+Watch0='Self',256,0,18,1,0,'Watches',1
 
 [WatchWindow]
 WatchColumnWidth=120
@@ -181,26 +163,22 @@ State=0
 Left=0
 Top=0
 Width=10000
-Height=1067
+Height=1633
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=10000
-ClientHeight=1067
+ClientHeight=1633
 TBDockHeight=211
 LRDockWidth=13600
 Dockable=1
 StayOnTop=0
 
 [Breakpoints]
-Count=8
-Breakpoint0='C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas',235,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint1='C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas',80,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint2='C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas',234,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint3='C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas',109,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint4='C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas',265,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint5='c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\XML\XMLDoc.pas',2511,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint6='c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\XML\msxmldom.pas',1284,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint7='C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuConfiguration.pas',67,'',0,1,'',1,0,0,'',1,'','','',0,''
+Count=4
+Breakpoint0='C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas',90,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint1='C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas',484,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint2='C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuCustomLog.pas',47,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint3='C:\Sw\WorkDir\Dprs\Delphi\Patches&Utils\FileUpdate\Src\fuMainDataModule.pas',145,'',0,1,'',1,0,0,'',1,'','','',0,''
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -250,15 +228,15 @@ Create=1
 Visible=1
 Docked=1
 State=0
-Left=800
-Top=23
+Left=0
+Top=0
 Width=5000
-Height=1344
+Height=1633
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=5000
-ClientHeight=1344
-TBDockHeight=1344
+ClientHeight=1633
+TBDockHeight=1633
 LRDockWidth=2769
 Dockable=1
 StayOnTop=0
@@ -272,11 +250,11 @@ State=0
 Left=0
 Top=0
 Width=1319
-Height=1978
+Height=1411
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1319
-ClientHeight=1978
+ClientHeight=1411
 TBDockHeight=7156
 LRDockWidth=2000
 Dockable=1
@@ -312,12 +290,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=10000
-Height=1067
+Width=4975
+Height=1633
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=10000
-ClientHeight=1067
+ClientWidth=4975
+ClientHeight=1633
 TBDockHeight=411
 LRDockWidth=4950
 Dockable=1
@@ -332,11 +310,11 @@ State=0
 Left=0
 Top=0
 Width=10000
-Height=1067
+Height=1633
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=10000
-ClientHeight=1067
+ClientHeight=1633
 TBDockHeight=211
 LRDockWidth=7406
 Dockable=1
@@ -355,11 +333,11 @@ State=0
 Left=0
 Top=0
 Width=10000
-Height=1067
+Height=1633
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=10000
-ClientHeight=1067
+ClientHeight=1633
 TBDockHeight=1533
 LRDockWidth=3481
 Dockable=1
@@ -374,11 +352,11 @@ State=0
 Left=0
 Top=0
 Width=10000
-Height=1067
+Height=1633
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=10000
-ClientHeight=1067
+ClientHeight=1633
 TBDockHeight=2056
 LRDockWidth=3481
 Dockable=1
@@ -412,11 +390,11 @@ State=0
 Left=0
 Top=0
 Width=2338
-Height=1322
+Height=1122
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2338
-ClientHeight=1322
+ClientHeight=1122
 TBDockHeight=2311
 LRDockWidth=2825
 Dockable=1
@@ -431,11 +409,11 @@ State=0
 Left=0
 Top=0
 Width=2338
-Height=1200
+Height=1122
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2338
-ClientHeight=1200
+ClientHeight=1122
 TBDockHeight=3200
 LRDockWidth=2825
 Dockable=1
@@ -449,12 +427,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2338
-Height=1200
+Width=5000
+Height=1633
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2338
-ClientHeight=1200
+ClientWidth=5000
+ClientHeight=1633
 TBDockHeight=1156
 LRDockWidth=3675
 Dockable=1
@@ -494,18 +472,18 @@ Visible=1
 Docked=1
 State=0
 Left=0
-Top=219
-Width=2250
-Height=4478
+Top=252
+Width=1175
+Height=3544
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2250
-ClientHeight=4478
+ClientWidth=1175
+ClientHeight=3544
 TBDockHeight=6333
-LRDockWidth=2250
+LRDockWidth=1175
 Dockable=1
 StayOnTop=0
-SplitPos=166
+SplitPos=69
 
 [ModelViewTool]
 PercentageSizes=1
@@ -532,7 +510,7 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-101
+Left=-94
 Top=-154
 Width=1844
 Height=3144
@@ -553,12 +531,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4975
-Height=1067
+Width=10000
+Height=1389
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4975
-ClientHeight=1067
+ClientWidth=10000
+ClientHeight=1389
 TBDockHeight=1544
 LRDockWidth=8744
 Dockable=1
@@ -579,12 +557,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2250
-Height=1878
+Width=1175
+Height=2244
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2250
-ClientHeight=1878
+ClientWidth=1175
+ClientHeight=2244
 TBDockHeight=3678
 LRDockWidth=1894
 Dockable=1
@@ -610,7 +588,7 @@ Dockable=1
 StayOnTop=0
 
 [DockHosts]
-DockHostCount=5
+DockHostCount=6
 
 [DockSite0]
 HostDockSite=DockBottomCenterPanel
@@ -623,18 +601,18 @@ State=0
 Left=0
 Top=0
 Width=2338
-Height=1478
+Height=1400
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2338
-ClientHeight=1478
-TBDockHeight=1478
+ClientHeight=1400
+TBDockHeight=1400
 LRDockWidth=2338
 Dockable=1
 StayOnTop=0
 TabPosition=1
-ActiveTabID=RefactoringForm
-TabDockClients=RefactoringForm,FindReferencsForm,ToDo List
+ActiveTabID=FindReferencsForm
+TabDockClients=RefactoringForm,FindReferencsForm
 
 [DockSite1]
 HostDockSite=DockBottomPanel
@@ -647,17 +625,17 @@ State=0
 Left=0
 Top=23
 Width=4975
-Height=1344
+Height=1911
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=4975
-ClientHeight=1344
-TBDockHeight=1344
+ClientHeight=1911
+TBDockHeight=1911
 LRDockWidth=3825
 Dockable=1
 StayOnTop=0
 TabPosition=1
-ActiveTabID=BreakpointWindow
+ActiveTabID=DebugLogView
 TabDockClients=DebugLogView,BreakpointWindow,ThreadStatusWindow,CallStackWindow,WatchWindow,LocalVarsWindow
 
 [DockSite2]
@@ -694,14 +672,14 @@ Docked=1
 State=0
 Left=0
 Top=23
-Width=2250
-Height=1878
+Width=1175
+Height=2244
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2250
-ClientHeight=1878
+ClientWidth=1175
+ClientHeight=2244
 TBDockHeight=6333
-LRDockWidth=2250
+LRDockWidth=1175
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -719,11 +697,11 @@ State=0
 Left=0
 Top=444
 Width=1319
-Height=1978
+Height=1411
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1319
-ClientHeight=1978
+ClientHeight=1411
 TBDockHeight=6333
 LRDockWidth=1319
 Dockable=1
@@ -731,6 +709,30 @@ StayOnTop=0
 TabPosition=1
 ActiveTabID=ToolForm
 TabDockClients=ToolForm,TemplateView
+
+[DockSite5]
+HostDockSite=DockBottomPanel
+DockSiteType=1
+PercentageSizes=1
+Create=1
+Visible=1
+Docked=1
+State=0
+Left=800
+Top=23
+Width=5000
+Height=1911
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=5000
+ClientHeight=1911
+TBDockHeight=1911
+LRDockWidth=2756
+Dockable=1
+StayOnTop=0
+TabPosition=1
+ActiveTabID=MessageView
+TabDockClients=MessageView,ToDo List
 
 [ActiveProject]
 ActiveProject=4

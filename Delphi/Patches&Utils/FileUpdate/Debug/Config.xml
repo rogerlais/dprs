@@ -2,7 +2,7 @@
 <data FUpadate="1.0">
 	<Operations>
 		<HE>
-			<Source>".\hr.exe"</Source>
+			<SourcePath>".\hr.exe"</SourcePath>
 			<Operation>2</Operation>
 			<SearchPoint>
 				<Filemask>"he.exe"</Filemask>

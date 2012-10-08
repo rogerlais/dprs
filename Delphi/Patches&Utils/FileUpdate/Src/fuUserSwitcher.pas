@@ -11,8 +11,13 @@ uses
     Windows, SysUtils, AppLog, WinNetHnd, Contnrs;
 
 const
-    APP_NET_USER = 'download@tre-pb.gov.br';
-    APP_NET_PWD  = 'pinico123';
+	 APP_NET_USER = 'download@tre-pb.gov.br';
+	 APP_NET_PWD  = 'pinico123';
+	 {$IFDEF DEBUG }
+	 APP_SYS_USER = 'ROGER';
+	 {$ELSE}
+	 APP_SYS_USER = 'SYSTEM';
+	 {$ENDIF}
 
 type
     TUserData = class
@@ -24,17 +29,17 @@ type
         property Username : string read FUsername write FUsername;
         property Password : string read FPassword write FPassword;
         constructor Create(const AUsername, APwd : string);
-        destructor Destroy; override;
-    end;
+		 destructor Destroy; override;
+	 end;
 
-    TFUUserSwitcher = class
-    private
-        FPrimaryUsername : string;
-        FLocalStack :      TStack;
-        FUserList :        TObjectList;
-        function GetUserData(const UserName : string) : TUserData;
-    public
-        constructor Create(const APrimaryUsername : string);
+	 TFUUserSwitcher = class
+	 private
+		 FPrimaryUsername : string;
+		 FLocalStack :      TStack;
+		 FUserList :        TObjectList;
+		 function GetUserData(const UserName : string) : TUserData;
+	 public
+		 constructor Create(const APrimaryUsername : string);
         destructor Destroy; override;
         procedure SwitchTo(const UserName : string);
         procedure RevertToPrevious;
@@ -50,6 +55,15 @@ implementation
 uses
     WinHnd, APIHnd;
 
+
+procedure InitSwitcher();
+begin
+	//Inicia o switcher global e adciona as contas a serem usadas
+    GlobalSwitcher := TFUUserSwitcher.Create('SYSTEM');
+    GlobalSwitcher.AddUserCrendentials(APP_NET_USER, APP_NET_PWD);
+    GlobalSwitcher.SwitchTo(APP_NET_USER);
+end;
+
 { TFUUserSwitcher }
 
 procedure TFUUserSwitcher.AddUserCrendentials(const AUsername, Pwd : string);
@@ -62,14 +76,15 @@ end;
 
 constructor TFUUserSwitcher.Create(const APrimaryUsername : string);
 begin
+    inherited Create;
     Self.FPrimaryUsername := APrimaryUsername;
-    Self.FLocalStack := TStack.Create;
-    Self.FUserList := TObjectList.Create;
+	 Self.FLocalStack := TStack.Create;
+	 Self.FUserList := TObjectList.Create;
 end;
 
 destructor TFUUserSwitcher.Destroy;
 begin
-    {TODO -oroger -cdsg : Voltar para a conta primaria}
+	 {TODO -oroger -cdsg : Voltar para a conta primaria}
     Self.FUserList.Clear;
     Self.FUserList.Free;
     Self.FLocalStack.Free;
@@ -93,13 +108,12 @@ end;
 
 procedure TFUUserSwitcher.SwitchTo(const UserName : string);
 var
-    ud : TUserData;
+	 ud : TUserData;
 begin
-    ud := Self.GetUserData(UserName);
-    if (Assigned(ud)) then begin
-        if (ud.FUserToken <> 0) then begin
-            if ImpersonateLoggedOnUser(ud.FUserToken) then begin
-                {TODO -oroger -cdsg : Incrementar a pilha}
+	 ud := Self.GetUserData(UserName);
+	 if (Assigned(ud)) then begin
+		 if (ud.FUserToken <> 0) then begin
+			 if ImpersonateLoggedOnUser(ud.FUserToken) then begin  //Incrementar a pilha
                 Self.FLocalStack.Push(ud);
             end else begin
                 raise Exception.Create('Acesso a rede falhou' + SysErrorMessage(GetLastError()));
@@ -117,9 +131,9 @@ procedure TFUUserSwitcher.RevertToPrevious();
 var
     curUser, prevUser : TUserData;
 begin
-    if (Self.FLocalStack.Count > 1) then begin
-        curUser  := Self.FLocalStack.Pop();
-        prevUser := Self.FLocalStack.Peek();
+	 if (Self.FLocalStack.Count > 1) then begin
+		 curUser  := Self.FLocalStack.Pop();
+		 prevUser := Self.FLocalStack.Peek();
         if (not SameText(curUser.Username, prevUser.username)) then begin
             {TODO -oroger -cdsg : alterar o usuário sem incrementar a lista}
             if not ImpersonateLoggedOnUser(prevUser.FUserToken) then begin
@@ -155,7 +169,18 @@ end;
 destructor TUserData.Destroy;
 begin
     {TODO -oroger -cdsg : liberar o token do usuário}
+    CloseHandle(Self.FUserToken);
     inherited;
 end;
+
+initialization
+    begin
+        InitSwitcher();
+    end;
+
+finalization
+    begin
+		 FreeAndNil(GlobalSwitcher);
+    end;
 
 end.
