@@ -49,17 +49,20 @@ begin
 end;
 
 procedure TBioFilesService.ServiceAfterInstall(Sender : TService);
+/// <summary>
+///  Registra as informações de função deste serviço
+/// </summary>
 var
-    Reg : TRegistryNT;
+	 Reg : TRegistryNT;
 begin
-    Reg := TRegistryNT.Create();
-    try
-        Reg.WriteFullString(
-            TFileHnd.ConcatPath(['HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services', Self.Name, 'Description']),
-            'Replica os arquivos de dados biométricos para máquina primária, possibilitando o transporte centralizado.', True);
-    finally
-        Reg.Free;
-    end;
+	 Reg := TRegistryNT.Create();
+	 try
+		 Reg.WriteFullString(
+			 TFileHnd.ConcatPath(['HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services', Self.Name, 'Description']),
+			 'Replica os arquivos de dados biométricos para máquina primária, possibilitando o transporte centralizado.', True);
+	 finally
+		 Reg.Free;
+	 end;
 end;
 
 procedure TBioFilesService.ServiceBeforeInstall(Sender : TService);
@@ -88,16 +91,13 @@ begin
         reg.Free;
         lst.Free;
     end;
-    TLogFile.Log('Serviço registrado com SUCESSO no computador local', lmtInformation);
+	 TLogFile.Log('Ordem de carga do serviço alterada com SUCESSO no computador local', lmtInformation);
 end;
 
 procedure TBioFilesService.ServiceCreate(Sender : TObject);
 var
     x, ret : Integer;
 begin
-	{TODO -oroger -curgente : ajustar nivel de depuração}
-	//TLogFile.GetDefaultLogFile.DebugLevel := DBGLEVEL_ULTIMATE;
-
 	 /// <remarks>
 	 /// Alterado para sempre usar a conta system, ou seja Self.ServiceStartName não atribuido
 	 /// </remarks>
@@ -115,11 +115,10 @@ begin
 		 ret :=
 			 Self.FSvcThread.InitNetUserAccess(GlobalConfig.NetAccessUserName, GlobalConfig.NetAccesstPassword);
 		 if (ret <> ERROR_SUCCESS) then begin
-			 TLogFile.Log(Format('Erro de autenticação de conta %s.'#13 + 'Tentativa %d de %d',
-				 [Globalconfig.NetAccessUserName, x, 10]));
+			 TLogFile.Log(Format('Erro de autenticação de conta %s.'#13 + 'Tentativa %d de %d'#13'Erro code = %d',
+				 [Globalconfig.NetAccessUserName, x, 10, ret]));
 			 Sleep( 30000 ); //30 segundos de espera
-
-		 end else begin
+		 end else begin  //Conseguiu acesso
 			 System.Break;
 		 end;
 	 end;
