@@ -23,19 +23,26 @@ var
 implementation
 
 uses
-    JwsclToken;
+    JwaWindows, JwsclToken;
 
 {$R *.dfm}
 
 procedure TForm2.btnReadPrivilegesClick(Sender : TObject);
 var
     PrivList : TJwPrivilegeSet;
+    priv : TJwPrivilege;
     I : Integer;
 begin
     PrivList := TJwPrivilegeSet.Create();
-    Self.lstPrivelege.AddItem(PrivList.GetText, nil);
-    for I := 0 to PrivList.Count - 1 do begin
-        Self.lstPrivelege.AddItem(PrivList.PrivByIdx[i].GetText, nil);
+    try
+        PrivList.Create_PPRIVILEGE_SET;
+        priv := PrivList.PrivByName[SE_IMPERSONATE_NAME];
+        Self.lstPrivelege.AddItem(PrivList.GetText, nil);
+		 for I := 0 to PrivList.Count - 1 do begin
+            Self.lstPrivelege.AddItem(PrivList.PrivByIdx[i].GetText, nil);
+        end;
+    finally
+        PrivList.Free;
     end;
 end;
 

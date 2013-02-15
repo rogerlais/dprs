@@ -60,8 +60,8 @@ end;
 
 procedure TForm1.btnRegisterClick(Sender : TObject);
 begin
-    MessageDlg(Format('conta = %s, senha=%s', [GlobalConfig.ServiceAccountName, GlobalConfig.ServiceAccountPassword]),
-        mtInformation, [mbOK], 0);
+	 MessageDlg(Format('conta = %s, senha=%s', [GlobalConfig.NetAccessUserName, GlobalConfig.CypherNetAccessPassword]),
+		 mtInformation, [mbOK], 0);
 end;
 
 procedure TForm1.btnServiceLogonClick(Sender : TObject);
@@ -81,7 +81,7 @@ procedure TForm1.btnStartClick(Sender : TObject);
 var
     Started : boolean;
 begin
-    Started := False;
+	 Started := False;
     BioFilesService.ServiceStart(BioFilesService, Started);
     Self.tmrServiceThread.Enabled := True;
 end;

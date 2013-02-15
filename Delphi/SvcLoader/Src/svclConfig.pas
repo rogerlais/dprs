@@ -30,7 +30,10 @@ type
         function GetPrimaryBackupPath : string;
         function GetPrimaryTransmittedPath : string;
         function GetDebugLevel : Integer;
-        function GetCypherNetAccessPassword : string;
+		 function GetEncryptNetAccessPassword : string;
+		 function GetEncryptServicePassword : string;
+		 function GetServicePassword : string;
+        function GetServiceUsername : string;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
         //Atributos privativos da estação
@@ -43,9 +46,12 @@ type
         property PrimaryTransmittedPath : string read GetPrimaryTransmittedPath;
         //Atributos do servico
         property NetAccesstPassword : string read GetNetAccountPassword;
-        property CypherNetAccessPassword : string read GetCypherNetAccessPassword;
+        property EncryptNetAccessPassword : string read GetEncryptNetAccessPassword;
         property NetAccessUserName : string read GetNetAccessUsername;
         property CycleInterval : Integer read GetCycleInterval;
+        property ServiceUsername : string read GetServiceUsername;
+        property ServicePassword : string read GetServicePassword;
+        property EncryptServicePassword : string read GetEncryptServicePassword;
         //Atributos da sessão
         property isPrimaryComputer : boolean read GetIsPrimaryComputer;
         property DebugLevel : Integer read GetDebugLevel;
@@ -56,8 +62,8 @@ const
     APP_SERVICE_NAME = 'BioFilesService';
     APP_SERVICE_KEY  = 'BioSvc';
 
-	 APP_SUPORTE_DEFAULT_PWD = '$!$adm!n';
-    //APP_SUPORTE_DEFAULT_PWD = '12345678';
+    APP_SUPORTE_DEFAULT_PWD = '$!$adm!n';
+//APP_SUPORTE_DEFAULT_PWD = '12345678';
 
 var
     GlobalConfig : TBioReplicatorConfig;
@@ -68,8 +74,10 @@ uses
     FileHnd, TREUtils, TREConsts, WinDisks, TREUsers, WinNetHnd, CryptIni, WNetExHnd, svclUtils, StrHnd;
 
 const
-    IE_NET_ACCESS_PASSWORD = 'EncodedSvcPwd';
-    IE_NET_USERNAME = 'ShareAccountName';
+    IE_NET_ACCESS_PASSWORD = 'NetAccessPwd';
+    IE_NET_USERNAME     = 'NetAccessUsername';
+    IE_SERVICE_USERNAME = 'LocalServiceUsername';
+    IE_ENCRYPT_SERVICE_PASSWORD = 'LocalEncodedSvcPwd';
 
     DV_SERVICE_NET_USERNAME = 'suporte';
 
@@ -100,7 +108,7 @@ begin
     end;
 end;
 
-function TBioReplicatorConfig.GetCypherNetAccessPassword : string;
+function TBioReplicatorConfig.GetEncryptNetAccessPassword : string;
 var
     Cypher : TCypher;
 begin
@@ -114,6 +122,20 @@ begin
     finally
         Cypher.Free;
     end;
+end;
+
+function TBioReplicatorConfig.GetEncryptServicePassword : string;
+var
+    cp : TCypher;
+begin
+	---chk
+	 cp := TCypher.Create(APP_SERVICE_KEY);
+    try
+        Result := cp.Encode(APP_SUPORTE_DEFAULT_PWD);
+    finally
+        cp.Free;
+	 end;
+	 Result := Self.ReadStringDefault(IE_ENCRYPT_SERVICE_PASSWORD, Result);
 end;
 
 function TBioReplicatorConfig.GetDebugLevel : Integer;
@@ -140,6 +162,16 @@ begin
         end;
     end;
     Result := boolean(Self._FIsPrimaryComputer);
+end;
+
+function TBioReplicatorConfig.GetServicePassword : string;
+begin
+---chk
+end;
+
+function TBioReplicatorConfig.GetServiceUsername : string;
+begin
+---chk
 end;
 
 function TBioReplicatorConfig.GetStationBackupPath : string;
@@ -211,7 +243,7 @@ begin
 {$IFDEF DEBUG}
     Result := ExpandFileName('..\Data\PrimaryTransmitted');
 {$ELSE}
-	 Result := 'I:\TransBio\Files\Trans';
+    Result := 'I:\TransBio\Files\Trans';
 {$ENDIF}
     Result := ExpandFileName(Self.ReadStringDefault('PrimaryTransmittedPath', Result));
 end;
@@ -237,11 +269,11 @@ function TBioReplicatorConfig.GetNetAccessUsername : string;
 var
     domain : string;
 begin
-	 Result := Self.ReadStringDefault(IE_NET_USERNAME, Result);
-	 if (Result = EmptyStr) then begin
-		 domain := GetDomainFromComputerName(EmptyStr);
-		 if (domain <> EmptyStr) then begin
-			 Result := DV_SERVICE_NET_USERNAME + '@' + domain ;
+    Result := Self.ReadStringDefault(IE_NET_USERNAME, Result);
+    if (Result = EmptyStr) then begin
+        domain := GetDomainFromComputerName(EmptyStr);
+        if (domain <> EmptyStr) then begin
+            Result := DV_SERVICE_NET_USERNAME + '@' + domain;
         end;
         Self.WriteString(IE_NET_USERNAME, Result);
     end;
@@ -258,7 +290,7 @@ var
 begin
     cp := TCypher.Create(APP_SERVICE_KEY);
     try
-        Result := cp.Decode(Self.CypherNetAccessPassword);
+        Result := cp.Decode(Self.EncryptNetAccessPassword);
     finally
         cp.Free;
     end;
