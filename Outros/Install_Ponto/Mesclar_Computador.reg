@@ -1,0 +1,13 @@
+REGEDIT4
+
+;***Author: Roger
+;***Version 20130227
+
+;Define a conta para longo automático. Cuidado com a opção AutoRestartShell
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon]
+"AutoRestartShell"=dword:00000001
+"DefaultUserName"="ponto"
+"AltDefaultUserName"="ponto"
+"ForceAutoLogon"="1"
+"AutoAdminLogon"="1"
+"DefaultPassword"="12345678"
