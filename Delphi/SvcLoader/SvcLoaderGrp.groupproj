@@ -33,6 +33,9 @@
 			<Projects Include="Demos\PrivilegeTest\Src\PrivilegeTest.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj">
+				<Dependencies/>
+			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -131,14 +134,23 @@
 		<Target Name="PrivilegeTest:Make">
 			<MSBuild Targets="Make" Projects="Demos\PrivilegeTest\Src\PrivilegeTest.dproj"/>
 		</Target>
+		<Target Name="DemoTCPFileTransfer">
+			<MSBuild Projects="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj"/>
+		</Target>
+		<Target Name="DemoTCPFileTransfer:Clean">
+			<MSBuild Targets="Clean" Projects="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj"/>
+		</Target>
+		<Target Name="DemoTCPFileTransfer:Make">
+			<MSBuild Targets="Make" Projects="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="SvcMDL;XPLibD14;WinSysLibD14;StFLibD14;MigraTools;WinNetLibD14;TRELib;SvcLoader;SvcLoaderInteractiveDebugger;PrivilegeTest"/>
+			<CallTarget Targets="SvcMDL;XPLibD14;WinSysLibD14;StFLibD14;MigraTools;WinNetLibD14;TRELib;SvcLoader;SvcLoaderInteractiveDebugger;PrivilegeTest;DemoTCPFileTransfer"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="SvcMDL:Clean;XPLibD14:Clean;WinSysLibD14:Clean;StFLibD14:Clean;MigraTools:Clean;WinNetLibD14:Clean;TRELib:Clean;SvcLoader:Clean;SvcLoaderInteractiveDebugger:Clean;PrivilegeTest:Clean"/>
+			<CallTarget Targets="SvcMDL:Clean;XPLibD14:Clean;WinSysLibD14:Clean;StFLibD14:Clean;MigraTools:Clean;WinNetLibD14:Clean;TRELib:Clean;SvcLoader:Clean;SvcLoaderInteractiveDebugger:Clean;PrivilegeTest:Clean;DemoTCPFileTransfer:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="SvcMDL:Make;XPLibD14:Make;WinSysLibD14:Make;StFLibD14:Make;MigraTools:Make;WinNetLibD14:Make;TRELib:Make;SvcLoader:Make;SvcLoaderInteractiveDebugger:Make;PrivilegeTest:Make"/>
+			<CallTarget Targets="SvcMDL:Make;XPLibD14:Make;WinSysLibD14:Make;StFLibD14:Make;MigraTools:Make;WinNetLibD14:Make;TRELib:Make;SvcLoader:Make;SvcLoaderInteractiveDebugger:Make;PrivilegeTest:Make;DemoTCPFileTransfer:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

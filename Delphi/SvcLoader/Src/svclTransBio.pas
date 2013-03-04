@@ -172,7 +172,7 @@ function TTransBioThread.InitNetUserAccess(const AUsername, APassword : string) 
 var
     User, Pass : PChar;
 begin
-	 TLogFile.LogDebug(Format('Usando conta: %s para acesso à rede com a senha: "%s"', [AUsername, GlobalConfig.CypherNetAccessPassword]), DBGLEVEL_DETAILED);
+	 TLogFile.LogDebug(Format('Usando conta: %s para acesso à rede com a senha: "%s"', [AUsername, GlobalConfig.EncryptNetAccessPassword ]), DBGLEVEL_DETAILED);
 
     User   := PChar(AUserName);
     Pass   := PChar(APassword);

@@ -16,19 +16,36 @@ File_13=TSourceModule,'C:\Sw\WorkDir\Pcks\TRE\Src\TREUsers.pas',0,1,73,35,90,0,0
 File_14=TSourceModule,'C:\Sw\WorkDir\Pcks\WinNetLib\Src\WNetExHnd.pas',0,1,43,35,43,0,0,,{1
 
 [Modules]
-Module0=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
-Module1=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj
-Module2=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
+Module0=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
+Module1=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas
+Module2=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
 Module3=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
-Module4=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas
-Module5=C:\Sw\WorkDir\Pcks\StfLib\Src\AppSettings.pas
-Module6=C:\Sw\WorkDir\Pcks\TRE\Src\TREConsts.pas
-Module7=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20
-Module8=default.htm
-Count=9
+Module4=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj
+Module5=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
+Module6=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas
+Module7=C:\Sw\WorkDir\Pcks\StfLib\Src\AppSettings.pas
+Module8=C:\Sw\WorkDir\Pcks\TRE\Src\TREConsts.pas
+Module9=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20
+Module10=default.htm
+Count=11
 EditWindowCount=1
 
+[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=1
+
+[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=1
+
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
@@ -39,11 +56,6 @@ ModuleType=TBaseProject
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas]
 ModuleType=TSourceModule
 FormState=1
-FormOnTop=0
-
-[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas]
-ModuleType=TSourceModule
-FormState=0
 FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas]
@@ -68,8 +80,8 @@ ModuleType=TTogetherDocModule
 ModuleType=TURLModule
 
 [EditWindow0]
-ViewCount=9
-CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
+ViewCount=11
+CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
 View0=0
 View1=1
 View2=2
@@ -79,6 +91,8 @@ View5=5
 View6=6
 View7=7
 View8=8
+View9=9
+View10=10
 PercentageSizes=1
 Create=1
 Visible=1
@@ -95,18 +109,18 @@ ClientHeight=8787
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
-LeftPanelSize=1177
+LeftPanelSize=1995
 LeftPanelClients=PropertyInspector,DockSite2
-LeftPanelData=00000800010100000000D00E0000000000000199040000000000000100000000F209000009000000446F636B53697465320100000000551A00001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=00000800010100000000D00E00000000000001CB070000000000000100000000F209000009000000446F636B53697465320100000000551A00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=1318
 RightPanelClients=DockSite1,DockSite3
 RightPanelData=00000800010100000000D00E00000000000001260500000000000001000000004412000009000000446F636B53697465310100000000551A000009000000446F636B5369746533FFFFFFFF
 BottomPanelSize=2019
 BottomPanelClients=DockSite4,DockSite5
 BottomPanelData=00000800010200000000724500000000000002E3070000000000000100000000B922000009000000446F636B536974653501000000007245000009000000446F636B5369746534FFFFFFFF
-BottomMiddlePanelSize=1481
+BottomMiddlePanelSize=0
 BottomMiddlePanelClients=DockSite0
-BottomMiddelPanelData=000008000100000000002C19000000000000007D1B00000000000001000000002C19000009000000446F636B5369746530FFFFFFFF
+BottomMiddelPanelData=0000080001000100000009000000446F636B53697465302C19000000000000007D1B00000000000001000000002C19000009000000446F636B5369746530FFFFFFFF
 
 [View0]
 CustomEditViewType=TWelcomePageView
@@ -119,15 +133,37 @@ Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.tx
 [View2]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
-CursorX=7
-CursorY=174
-TopLine=172
+CursorX=1
+CursorY=149
+TopLine=137
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
 
 [View3]
+CustomEditViewType=TEditView
+Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas
+CursorX=1
+CursorY=1
+TopLine=1
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=Borland.FormDesignerView
+
+[View4]
+CustomEditViewType=TEditView
+Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
+CursorX=1
+CursorY=1
+TopLine=1
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=Borland.FormDesignerView
+
+[View5]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Pcks\TRE\Src\TREConsts.pas
 CursorX=4
@@ -138,18 +174,18 @@ Elisions=
 Bookmarks=
 EditViewName=C:\Sw\WorkDir\Pcks\TRE\Src\TREConsts.pas
 
-[View4]
+[View6]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
-CursorX=62
-CursorY=177
+CursorX=137
+CursorY=174
 TopLine=156
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
 
-[View5]
+[View7]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
 CursorX=53
@@ -160,7 +196,7 @@ Elisions=
 Bookmarks=
 EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
 
-[View6]
+[View8]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Pcks\StfLib\Src\AppSettings.pas
 CursorX=1
@@ -171,7 +207,7 @@ Elisions=
 Bookmarks={2,2146,1}
 EditViewName=C:\Sw\WorkDir\Pcks\StfLib\Src\AppSettings.pas
 
-[View7]
+[View9]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas
 CursorX=1
@@ -182,7 +218,7 @@ Elisions=
 Bookmarks=
 EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas
 
-[View8]
+[View10]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\SvcLoaderInteractiveDebugger.dpr
 CursorX=1
@@ -237,9 +273,9 @@ Create=1
 Visible=1
 Docked=0
 State=2
-Left=0
-Top=296
-Width=6667
+Left=146
+Top=278
+Width=8932
 Height=8519
 MaxLeft=-5
 MaxTop=-9
@@ -456,12 +492,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=7474
-Height=1102
+Width=2339
+Height=1167
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=7474
-ClientHeight=1102
+ClientWidth=2339
+ClientHeight=1167
 TBDockHeight=3204
 LRDockWidth=2823
 Dockable=1
@@ -521,17 +557,22 @@ Docked=1
 State=0
 Left=0
 Top=298
-Width=1177
+Width=1995
 Height=3981
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1177
+ClientWidth=1995
 ClientHeight=3981
 TBDockHeight=9065
-LRDockWidth=1177
+LRDockWidth=1995
 Dockable=1
 StayOnTop=0
-SplitPos=69
+SplitPos=113
+
+[PropInspDesignerSelection]
+ArrangeBy=Name
+SelectedItem=ReuseSocket,
+ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,Font=0,Margins=0,Bindings=1
 
 [ModelViewTool]
 PercentageSizes=1
@@ -605,11 +646,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1177
+Width=1995
 Height=2296
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1177
+ClientWidth=1995
 ClientHeight=2296
 TBDockHeight=3676
 LRDockWidth=1896
@@ -643,7 +684,7 @@ HostDockSite=DockBottomCenterPanel
 DockSiteType=1
 PercentageSizes=1
 Create=1
-Visible=1
+Visible=0
 Docked=1
 State=0
 Left=0
@@ -696,14 +737,14 @@ Docked=1
 State=0
 Left=0
 Top=23
-Width=1177
+Width=1995
 Height=2296
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1177
+ClientWidth=1995
 ClientHeight=2296
 TBDockHeight=9065
-LRDockWidth=1177
+LRDockWidth=1995
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -783,5 +824,5 @@ ActiveTabID=LocalVarsWindow
 TabDockClients=LocalVarsWindow,WatchWindow,CallStackWindow,ThreadStatusWindow,BreakpointWindow,DebugLogView
 
 [ActiveProject]
-ActiveProject=10
+ActiveProject=11
 

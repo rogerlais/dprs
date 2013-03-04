@@ -75,9 +75,9 @@ uses
 
 const
     IE_NET_ACCESS_PASSWORD = 'NetAccessPwd';
-    IE_NET_USERNAME     = 'NetAccessUsername';
-    IE_SERVICE_USERNAME = 'LocalServiceUsername';
-    IE_ENCRYPT_SERVICE_PASSWORD = 'LocalEncodedSvcPwd';
+	 IE_NET_USERNAME     = 'NetAccessUsername';
+	 IE_LOCAL_USERNAME = 'LocalServiceUsername';
+    IE_ENCRYPT_LOCAL_PASSWORD = 'LocalEncodedSvcPwd';
 
     DV_SERVICE_NET_USERNAME = 'suporte';
 
@@ -128,14 +128,15 @@ function TBioReplicatorConfig.GetEncryptServicePassword : string;
 var
     cp : TCypher;
 begin
-	---chk
+	//Gera o valor criptografado padrão
 	 cp := TCypher.Create(APP_SERVICE_KEY);
-    try
-        Result := cp.Encode(APP_SUPORTE_DEFAULT_PWD);
-    finally
-        cp.Free;
+	 try
+		 Result := cp.Encode(APP_SUPORTE_DEFAULT_PWD);
+	 finally
+		 cp.Free;
 	 end;
-	 Result := Self.ReadStringDefault(IE_ENCRYPT_SERVICE_PASSWORD, Result);
+	 //Recupera valor, usndo o ecriptografado em falha
+	 Result := Self.ReadStringDefault(IE_ENCRYPT_LOCAL_PASSWORD, Result);
 end;
 
 function TBioReplicatorConfig.GetDebugLevel : Integer;
@@ -145,7 +146,6 @@ end;
 
 function TBioReplicatorConfig.GetIsPrimaryComputer : boolean;
 var
-    pc :  string;
     ret : boolean;
 begin
     if Self._FIsPrimaryComputer < 0 then begin  //Deve ser calculado nesta pessagem
@@ -165,13 +165,20 @@ begin
 end;
 
 function TBioReplicatorConfig.GetServicePassword : string;
+var
+	cr : TCypher;
 begin
----chk
+	cr:=TCypher.Create( APP_SERVICE_KEY );
+	try
+		Result:=cr.Decode( Self.EncryptServicePassword );
+	finally
+		cr.Free;
+	end;
 end;
 
 function TBioReplicatorConfig.GetServiceUsername : string;
 begin
----chk
+	Result:=Self.ReadStringDefault( IE_NET_USERNAME )
 end;
 
 function TBioReplicatorConfig.GetStationBackupPath : string;
