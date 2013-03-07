@@ -65,4 +65,10 @@ object Form3: TForm3
     TabOrder = 3
     OnClick = btnStartStopClick
   end
+  object tmrCycle: TTimer
+    Enabled = False
+    OnTimer = tmrCycleTimer
+    Left = 264
+    Top = 136
+  end
 end

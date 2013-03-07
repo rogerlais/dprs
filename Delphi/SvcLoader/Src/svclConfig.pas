@@ -30,10 +30,11 @@ type
         function GetPrimaryBackupPath : string;
         function GetPrimaryTransmittedPath : string;
         function GetDebugLevel : Integer;
-		 function GetEncryptNetAccessPassword : string;
-		 function GetEncryptServicePassword : string;
-		 function GetServicePassword : string;
+        function GetEncryptNetAccessPassword : string;
+        function GetEncryptServicePassword : string;
+        function GetServicePassword : string;
         function GetServiceUsername : string;
+        function GetNetServicePort : Integer;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
         //Atributos privativos da estação
@@ -52,6 +53,7 @@ type
         property ServiceUsername : string read GetServiceUsername;
         property ServicePassword : string read GetServicePassword;
         property EncryptServicePassword : string read GetEncryptServicePassword;
+        property NetServicePort : Integer read GetNetServicePort;
         //Atributos da sessão
         property isPrimaryComputer : boolean read GetIsPrimaryComputer;
         property DebugLevel : Integer read GetDebugLevel;
@@ -75,8 +77,8 @@ uses
 
 const
     IE_NET_ACCESS_PASSWORD = 'NetAccessPwd';
-	 IE_NET_USERNAME     = 'NetAccessUsername';
-	 IE_LOCAL_USERNAME = 'LocalServiceUsername';
+    IE_NET_USERNAME   = 'NetAccessUsername';
+    IE_LOCAL_USERNAME = 'LocalServiceUsername';
     IE_ENCRYPT_LOCAL_PASSWORD = 'LocalEncodedSvcPwd';
 
     DV_SERVICE_NET_USERNAME = 'suporte';
@@ -128,15 +130,15 @@ function TBioReplicatorConfig.GetEncryptServicePassword : string;
 var
     cp : TCypher;
 begin
-	//Gera o valor criptografado padrão
-	 cp := TCypher.Create(APP_SERVICE_KEY);
-	 try
-		 Result := cp.Encode(APP_SUPORTE_DEFAULT_PWD);
-	 finally
-		 cp.Free;
-	 end;
-	 //Recupera valor, usndo o ecriptografado em falha
-	 Result := Self.ReadStringDefault(IE_ENCRYPT_LOCAL_PASSWORD, Result);
+    //Gera o valor criptografado padrão
+    cp := TCypher.Create(APP_SERVICE_KEY);
+    try
+        Result := cp.Encode(APP_SUPORTE_DEFAULT_PWD);
+    finally
+        cp.Free;
+    end;
+    //Recupera valor, usndo o ecriptografado em falha
+    Result := Self.ReadStringDefault(IE_ENCRYPT_LOCAL_PASSWORD, Result);
 end;
 
 function TBioReplicatorConfig.GetDebugLevel : Integer;
@@ -166,19 +168,19 @@ end;
 
 function TBioReplicatorConfig.GetServicePassword : string;
 var
-	cr : TCypher;
+    cr : TCypher;
 begin
-	cr:=TCypher.Create( APP_SERVICE_KEY );
-	try
-		Result:=cr.Decode( Self.EncryptServicePassword );
-	finally
-		cr.Free;
-	end;
+    cr := TCypher.Create(APP_SERVICE_KEY);
+    try
+        Result := cr.Decode(Self.EncryptServicePassword);
+    finally
+        cr.Free;
+    end;
 end;
 
 function TBioReplicatorConfig.GetServiceUsername : string;
 begin
-	Result:=Self.ReadStringDefault( IE_NET_USERNAME )
+    Result := Self.ReadStringDefault(IE_NET_USERNAME);
 end;
 
 function TBioReplicatorConfig.GetStationBackupPath : string;
@@ -193,7 +195,7 @@ begin
         ImgVolume := EmptyStr;
         for x := 'P' downto 'E' do begin
             CurrentLabel := GetVolumeLabel(x);
-            if SameText(CurrentLabel, 'IMG') then begin
+            if (SameText(CurrentLabel, 'IMG')) then begin
                 ImgVolume := X;
                 Break;
             end;
@@ -301,6 +303,11 @@ begin
     finally
         cp.Free;
     end;
+end;
+
+function TBioReplicatorConfig.GetNetServicePort : Integer;
+begin
+    Result := Self.ReadIntegerDefault('ServerPort', 12013);
 end;
 
 initialization

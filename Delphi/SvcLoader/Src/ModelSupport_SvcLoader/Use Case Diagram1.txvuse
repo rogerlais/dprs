@@ -5,7 +5,7 @@
     <property name="$name" value="Use Case Diagram1" />
     <reference referencedUin="design:node:::pzvcrecj1cfbqmrhi_n">
       <property name="$shortcutReference" value="true" />
-      <property name="bounds" value="540,40,438,554" />
+      <property name="bounds" value="540,20,540,640" />
       <property name="location_set_by_user" value="True" />
       <property name="bounds_setted_by_user" value="True" />
     </reference>
@@ -22,6 +22,17 @@
         </reference>
         <reference referencedUin="label:$associationRoleSupplierInplace:design:link:::jgjershdve5jxegjt_l:dubeso07mgl_n">
           <property name="bounds" value="178,599,12,16" />
+        </reference>
+      </reference>
+      <reference referencedUin="design:link:::auyx7fqi7vbwh4d4h_l:dubeso07mgl_n">
+        <property name="sourceAnchor" value="76,559" />
+        <property name="targetAnchor" value="253,452" />
+        <property name="bendpoints" value="" />
+        <reference referencedUin="label:$associationRoleClientInplace:design:link:::auyx7fqi7vbwh4d4h_l:dubeso07mgl_n">
+          <property name="bounds" value="85,557,12,16" />
+        </reference>
+        <reference referencedUin="label:$associationRoleSupplierInplace:design:link:::auyx7fqi7vbwh4d4h_l:dubeso07mgl_n">
+          <property name="bounds" value="241,461,12,16" />
         </reference>
       </reference>
     </reference>
@@ -75,6 +86,11 @@
         <property name="location_set_by_user" value="True" />
         <reference referencedUin="design:node:::onpivhngaxp_n:prvchtvy7sg_n:z80r5p9js5snam80l_n" />
         <reference referencedUin="design:link:::p8byq1r77f_l:prvchtvy7sg_n:z80r5p9js5snam80l_n" />
+      </reference>
+      <reference referencedUin="design:node:::shyvfqi7vbo088lj_n:z80r5p9js5snam80l_n">
+        <property name="bounds" value="0,0,198,32" />
+        <reference referencedUin="design:node:::g461rfqi7vbbs9pko_n:shyvfqi7vbo088lj_n:z80r5p9js5snam80l_n" />
+        <reference referencedUin="design:link:::ptcr7fqi7vbuky0ll_l:shyvfqi7vbo088lj_n:z80r5p9js5snam80l_n" />
       </reference>
     </reference>
     <reference referencedUin="design:node:::2wrnkfcldph0pvyas_n">
