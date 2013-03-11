@@ -4,6 +4,7 @@ object DMTCPTransfer: TDMTCPTransfer
   Height = 150
   Width = 215
   object tcpsrvr: TIdTCPServer
+    OnStatus = tcpsrvrStatus
     Bindings = <>
     DefaultPort = 2013
     OnExecute = tcpsrvrExecute

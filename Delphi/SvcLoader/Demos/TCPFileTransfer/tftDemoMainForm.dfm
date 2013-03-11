@@ -2,8 +2,8 @@ object Form3: TForm3
   Left = 0
   Top = 0
   Caption = 'Form3'
-  ClientHeight = 243
-  ClientWidth = 401
+  ClientHeight = 413
+  ClientWidth = 396
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,6 +12,9 @@ object Form3: TForm3
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
+  DesignSize = (
+    396
+    413)
   PixelsPerInch = 96
   TextHeight = 13
   object lblInputDir: TLabel
@@ -64,6 +67,14 @@ object Form3: TForm3
     ParentDoubleBuffered = False
     TabOrder = 3
     OnClick = btnStartStopClick
+  end
+  object memoLog: TMemo
+    Left = 24
+    Top = 254
+    Width = 341
+    Height = 151
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    TabOrder = 4
   end
   object tmrCycle: TTimer
     Enabled = False

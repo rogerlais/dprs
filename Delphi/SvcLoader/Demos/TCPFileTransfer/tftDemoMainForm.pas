@@ -4,7 +4,7 @@ interface
 
 uses
     Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-    Dialogs, StdCtrls, Buttons, Mask, JvExMask, JvToolEdit, ExtCtrls;
+    Dialogs, StdCtrls, Buttons, Mask, JvExMask, JvToolEdit, ExtCtrls, AppLog;
 
 type
     TForm3 = class(TForm)
@@ -15,6 +15,7 @@ type
         lblOutDir :       TLabel;
         btnStartStop :    TBitBtn;
         tmrCycle :        TTimer;
+        memoLog :         TMemo;
         procedure btnStartStopClick(Sender : TObject);
         procedure FormCreate(Sender : TObject);
         procedure tmrCycleTimer(Sender : TObject);
@@ -22,7 +23,9 @@ type
         { Private declarations }
         FStarted : boolean;
         procedure StartTCPTransfer();
+        procedure StopTCPTransfer();
         procedure SetServiceStarted(startCmd : boolean);
+        procedure DoCopyLogMessage(Sender : TObject; var Text : string; MessageType : TLogMessageType; var Canceled : boolean);
     public
         { Public declarations }
     end;
@@ -48,18 +51,28 @@ begin
 end;
 
 
+procedure TForm3.DoCopyLogMessage(Sender : TObject; var Text : string; MessageType : TLogMessageType; var Canceled : boolean);
+begin
+    Self.memoLog.Lines.Add(Text);
+    Canceled := False;
+end;
+
 procedure TForm3.FormCreate(Sender : TObject);
 begin
     Self.chkServerSwitch.Checked := GlobalConfig.isPrimaryComputer;
     Self.edtDir.Directory := GlobalConfig.StationSourcePath;
     Self.edtDirOutput.Directory := GlobalConfig.PrimaryTransmittedPath;
+    TLogFile.GetDefaultLogFile.OnMessageReceived := Self.DoCopyLogMessage;
+     {$IFDEF DEBUG}
+    TLogFile.GetDefaultLogFile.DebugLevel := DBGLEVEL_ULTIMATE;
+     {$ENDIF}
 end;
 
 procedure TForm3.SetServiceStarted(startCmd : boolean);
 begin
     if (not startCmd) then begin //Parar serviço         
         Self.btnStartStop.Caption := 'Parando...';
-        Self.StartTCPTransfer();
+        Self.StopTCPTransfer();
         Self.tmrCycle.Enabled     := False;
         Self.btnStartStop.Caption := '&Iniciar';
         Self.chkServerSwitch.Enabled := True;
@@ -78,10 +91,21 @@ procedure TForm3.StartTCPTransfer;
 begin
     if (Self.chkServerSwitch.Checked) then begin
         //Operaçao como servidor
-        DMTCPTransfer.SetupServer();
+        DMTCPTransfer.StartServer();
     end else begin
         //Operação como cliente
-        DMTCPTransfer.SetupClient;
+        DMTCPTransfer.StartClient;
+    end;
+end;
+
+procedure TForm3.StopTCPTransfer;
+begin
+    if (Self.chkServerSwitch.Checked) then begin
+        //Operaçao como servidor
+        DMTCPTransfer.StopServer();
+    end else begin
+        //Operação como cliente
+        DMTCPTransfer.StopClient;
     end;
 end;
 
@@ -92,15 +116,19 @@ var
     tf : TTransferFile;
 begin
     if (Self.FStarted) then begin
-        FileEnum := TDirectory.FileSystemEntries(Self.edtDir.Directory, '*.bio', True);
-        for f in FileEnum do begin
-            if (f.Name <> '.') and (f.Name <> '..') then begin
-                tf := TTransferFile.Create();
-                try
-                    tf.Filename := f.FullName;
-                    DMTCPTransfer.SendFile(tf);
-                finally
-                    tf.Free;
+        if (Self.chkServerSwitch.Checked) then begin // Modo Servidor ativo
+            {TODO -oroger -cdsg : Organizar os arquivoss recebidos }
+        end else begin
+            //Modo cliente
+            FileEnum := TDirectory.FileSystemEntries(Self.edtDir.Directory, '*.bio', True);
+            for f in FileEnum do begin
+                if (f.Name <> '.') and (f.Name <> '..') then begin
+                    tf := TTransferFile.CreateOutput(f.FullName);
+                    try
+                        DMTCPTransfer.SendFile(tf);
+                    finally
+                        tf.Free;
+                    end;
                 end;
             end;
         end;
