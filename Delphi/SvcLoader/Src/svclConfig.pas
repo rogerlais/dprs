@@ -34,7 +34,8 @@ type
         function GetEncryptServicePassword : string;
         function GetServicePassword : string;
         function GetServiceUsername : string;
-        function GetNetServicePort : Integer;
+		 function GetNetServicePort : Integer;
+    function GetPrimaryComputerName: string;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
         //Atributos privativos da estação
@@ -54,9 +55,10 @@ type
         property ServicePassword : string read GetServicePassword;
         property EncryptServicePassword : string read GetEncryptServicePassword;
         property NetServicePort : Integer read GetNetServicePort;
-        //Atributos da sessão
+		 //Atributos da sessão
         property isPrimaryComputer : boolean read GetIsPrimaryComputer;
-        property DebugLevel : Integer read GetDebugLevel;
+		 property DebugLevel : Integer read GetDebugLevel;
+		 property PrimaryComputerName : string read GetPrimaryComputerName;
     end;
 
 
@@ -68,25 +70,26 @@ const
 //APP_SUPORTE_DEFAULT_PWD = '12345678';
 
 var
-    GlobalConfig : TBioReplicatorConfig;
+	 GlobalConfig : TBioReplicatorConfig;
 
 implementation
 
 uses
-    FileHnd, TREUtils, TREConsts, WinDisks, TREUsers, WinNetHnd, CryptIni, WNetExHnd, svclUtils, StrHnd;
+	 FileHnd, TREUtils, TREConsts, WinDisks, TREUsers, WinNetHnd, CryptIni, WNetExHnd, svclUtils, StrHnd;
 
 const
-    IE_NET_ACCESS_PASSWORD = 'NetAccessPwd';
-    IE_NET_USERNAME   = 'NetAccessUsername';
-    IE_LOCAL_USERNAME = 'LocalServiceUsername';
-    IE_ENCRYPT_LOCAL_PASSWORD = 'LocalEncodedSvcPwd';
+	 IE_NET_ACCESS_PASSWORD = 'NetAccessPwd';
+	 IE_NET_USERNAME   = 'NetAccessUsername';
+	 IE_LOCAL_USERNAME = 'LocalServiceUsername';
+	 IE_ENCRYPT_LOCAL_PASSWORD = 'LocalEncodedSvcPwd';
+	 IE_CYCLE_INTERVAL = 'CycleInterval';
 
-    DV_SERVICE_NET_USERNAME = 'suporte';
+	 DV_SERVICE_NET_USERNAME = 'suporte';
 
 procedure InitConfiguration();
 begin
-    //Instancia de configuração com o mesmo nome do runtime + .ini
-    GlobalConfig := TBioReplicatorConfig.Create(RemoveFileExtension(ParamStr(0)) + '.ini', APP_SERVICE_NAME);
+	 //Instancia de configuração com o mesmo nome do runtime + .ini
+	 GlobalConfig := TBioReplicatorConfig.Create(RemoveFileExtension(ParamStr(0)) + '.ini', APP_SERVICE_NAME);
 end;
 
 { TBioReplicatorConfig }
@@ -104,57 +107,57 @@ begin
     dv := TDefaultSettingValue.Create;
     try
         dv.AsInteger := 60000;
-        Result := Self.ReadInteger('CycleInterval', dv);
-    finally
-        dv.Free;
-    end;
+		 Result := Self.ReadInteger(IE_CYCLE_INTERVAL, dv);
+	 finally
+		 dv.Free;
+	 end;
 end;
 
 function TBioReplicatorConfig.GetEncryptNetAccessPassword : string;
 var
-    Cypher : TCypher;
+	 Cypher : TCypher;
 begin
-    Cypher := TCypher.Create(APP_SERVICE_KEY);
-    try
-        Result := GlobalConfig.ReadStringDefault(IE_NET_ACCESS_PASSWORD, EmptyStr);
-        if Result = EmptyStr then begin
-            Result := Cypher.Encode(APP_SUPORTE_DEFAULT_PWD);
-            GlobalConfig.WriteString(IE_NET_ACCESS_PASSWORD, Result);
-        end;
-    finally
-        Cypher.Free;
-    end;
+	 Cypher := TCypher.Create(APP_SERVICE_KEY);
+	 try
+		 Result := GlobalConfig.ReadStringDefault(IE_NET_ACCESS_PASSWORD, EmptyStr);
+		 if Result = EmptyStr then begin
+			 Result := Cypher.Encode(APP_SUPORTE_DEFAULT_PWD);
+			 GlobalConfig.WriteString(IE_NET_ACCESS_PASSWORD, Result);
+		 end;
+	 finally
+		 Cypher.Free;
+	 end;
 end;
 
 function TBioReplicatorConfig.GetEncryptServicePassword : string;
 var
-    cp : TCypher;
+	 cp : TCypher;
 begin
-    //Gera o valor criptografado padrão
-    cp := TCypher.Create(APP_SERVICE_KEY);
-    try
-        Result := cp.Encode(APP_SUPORTE_DEFAULT_PWD);
-    finally
-        cp.Free;
-    end;
-    //Recupera valor, usndo o ecriptografado em falha
-    Result := Self.ReadStringDefault(IE_ENCRYPT_LOCAL_PASSWORD, Result);
+	 //Gera o valor criptografado padrão
+	 cp := TCypher.Create(APP_SERVICE_KEY);
+	 try
+		 Result := cp.Encode(APP_SUPORTE_DEFAULT_PWD);
+	 finally
+		 cp.Free;
+	 end;
+	 //Recupera valor, usndo o ecriptografado em falha
+	 Result := Self.ReadStringDefault(IE_ENCRYPT_LOCAL_PASSWORD, Result);
 end;
 
 function TBioReplicatorConfig.GetDebugLevel : Integer;
 begin
-    Result := Self.ReadIntegerDefault('DebugLevel', 0);
+	 Result := Self.ReadIntegerDefault('DebugLevel', 0);
 end;
 
 function TBioReplicatorConfig.GetIsPrimaryComputer : boolean;
 var
-    ret : boolean;
+	 ret : boolean;
 begin
-    if Self._FIsPrimaryComputer < 0 then begin  //Deve ser calculado nesta pessagem
-        //Verificas PDC(assumidos como primarios e unicos sempre)
-        ret := Pos('PDC01', UpperCase(GetComputerName())) > 0;
-        if (not ret) then begin //Checa STD01 assumida como sempre primaria em STDs
-            ret := TStrHnd.endsWith(UpperCase(GetComputerName), 'STD01');
+	 if Self._FIsPrimaryComputer < 0 then begin  //Deve ser calculado nesta pessagem
+		 //Verificas PDC(assumidos como primarios e unicos sempre)
+		 ret := Pos('PDC01', UpperCase(GetComputerName())) > 0;
+		 if (not ret) then begin //Checa STD01 assumida como sempre primaria em STDs
+			 ret := TStrHnd.endsWith(UpperCase(GetComputerName), 'STD01');
         end;
         ret := Self.ReadBooleanDefault('IsPrimaryComputer', ret);
         if (ret) then begin
@@ -242,6 +245,14 @@ begin
     Result := 'I:\BioFiles\Backup';
 {$ENDIF}
     Result := ExpandFileName(Self.ReadStringDefault('PrimaryBackupPath', Result));
+end;
+
+function TBioReplicatorConfig.GetPrimaryComputerName: string;
+var
+	defName : string;
+begin
+	defName:=TTREUtils.GetZonePrimaryComputer( WinNetHnd.GetComputerName() );
+	Result:=Self.ReadStringDefault( )
 end;
 
 function TBioReplicatorConfig.GetPrimaryTransmittedPath : string;
