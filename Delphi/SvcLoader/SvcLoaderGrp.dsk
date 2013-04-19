@@ -17,8 +17,8 @@ File_14=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\sourc
 
 [Modules]
 Module0=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
-Module1=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj
-Module2=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
+Module1=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
+Module2=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj
 Module3=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas
 Module4=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas
 Module5=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
@@ -34,13 +34,13 @@ ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj]
-ModuleType=TBaseProject
-
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas]
 ModuleType=TSourceModule
 FormState=1
 FormOnTop=0
+
+[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj]
+ModuleType=TBaseProject
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas]
 ModuleType=TSourceModule
@@ -179,12 +179,12 @@ EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\SvcLoaderInteractiveDebugge
 [View7]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
-CursorX=54
-CursorY=161
-TopLine=128
+CursorX=5
+CursorY=90
+TopLine=73
 LeftCol=1
 Elisions=
-Bookmarks={1,255,36}{2,86,1}
+Bookmarks={1,258,36}{2,86,1}
 EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
 
 [View8]
@@ -201,9 +201,9 @@ EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMa
 [View9]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
-CursorX=31
-CursorY=80
-TopLine=61
+CursorX=42
+CursorY=73
+TopLine=54
 LeftCol=1
 Elisions=
 Bookmarks=

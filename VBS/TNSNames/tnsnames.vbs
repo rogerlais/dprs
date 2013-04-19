@@ -44,13 +44,14 @@
 	        Set objFSO = CreateObject("Scripting.FileSystemObject")
 			
 			'Chamada mais segura para atualizar os arquivos
-			call UpdateFile( objFSO, "\\pbdc00\netlogon\tnsnames\", strValue & "\network\admin\", "tnsnames.ora" )
-			call UpdateFile( objFSO, "\\pbdc00\netlogon\tnsnames\", strValue & "\network\admin\", "sqlnet.ora" )
+			'Passamos a usar tre-pb.gov.br para usar o DC disponivel ao inves de usar um especifico
+			call UpdateFile( objFSO, "\\tre-pb.gov.br\netlogon\tnsnames\", strValue & "\network\admin\", "tnsnames.ora" )
+			call UpdateFile( objFSO, "\\tre-pb.gov.br\netlogon\tnsnames\", strValue & "\network\admin\", "sqlnet.ora" )
 			
-	        '---objFSO.CopyFile "\\pbdc00\netlogon\tnsnames\tnsnames.ora" , strValue & "\network\admin\" , OverwriteExisting
-	        'Wscript.Echo "copiando de " & "\\pbdc00\netlogon\tnsnames\tnsnames.ora\" & " para " & strValue & "\network\admin\"
-	        '---objFSO.CopyFile "\\pbdc00\netlogon\tnsnames\sqlnet.ora" , strValue & "\network\admin\" , OverwriteExisting
-	        'Wscript.Echo "copiando de " & "\\pbdc00\netlogon\tnsnames\sqlnet.ora\" & " para " & strValue & "\network\admin\"
+	        '---objFSO.CopyFile "\\tre-pb.gov.br\netlogon\tnsnames\tnsnames.ora" , strValue & "\network\admin\" , OverwriteExisting
+	        'Wscript.Echo "copiando de " & "\\tre-pb.gov.br\netlogon\tnsnames\tnsnames.ora\" & " para " & strValue & "\network\admin\"
+	        '---objFSO.CopyFile "\\tre-pb.gov.br\netlogon\tnsnames\sqlnet.ora" , strValue & "\network\admin\" , OverwriteExisting
+	        'Wscript.Echo "copiando de " & "\\tre-pb.gov.br\netlogon\tnsnames\sqlnet.ora\" & " para " & strValue & "\network\admin\"
 	End If
 
 
