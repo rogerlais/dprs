@@ -57,6 +57,7 @@
 			</DCCReference>
 			<DCCReference Include="..\..\Src\svclConfig.pas"/>
 			<DCCReference Include="..\..\Src\svclUtils.pas"/>
+			<DCCReference Include="..\..\..\..\..\Pcks\XPLib\Src\FileHnd.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

@@ -35,7 +35,7 @@ type
         function GetServicePassword : string;
         function GetServiceUsername : string;
 		 function GetNetServicePort : Integer;
-    function GetPrimaryComputerName: string;
+    	 function GetPrimaryComputerName: string;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
         //Atributos privativos da estação
@@ -83,8 +83,10 @@ const
 	 IE_LOCAL_USERNAME = 'LocalServiceUsername';
 	 IE_ENCRYPT_LOCAL_PASSWORD = 'LocalEncodedSvcPwd';
 	 IE_CYCLE_INTERVAL = 'CycleInterval';
+	 IE_PRIMARY_COMPUTER = 'PrimaryComputer';  //Nome do computador primario
 
 	 DV_SERVICE_NET_USERNAME = 'suporte';
+	 DV_NET_TCP_PORT = 12013;
 
 	 {TODO -oroger -cdsg : Checar na inicialização do serviço as configurações locais para o ELO e Transbio de modo
 	 a garantir o funcionamento correto/esperado}
@@ -100,7 +102,7 @@ end;
 constructor TBioReplicatorConfig.Create(const FileName, AKeyPrefix : string);
 begin
     inherited Create(FileName, AKeyPrefix);
-    Self._FIsPrimaryComputer := -1;
+    Self._FIsPrimaryComputer := -1; //Indica que ainda não se sabe
 end;
 
 function TBioReplicatorConfig.GetCycleInterval : Integer;
@@ -164,9 +166,9 @@ begin
         end;
         ret := Self.ReadBooleanDefault('IsPrimaryComputer', ret);
         if (ret) then begin
-            Self._FIsPrimaryComputer := 1;
-        end else begin
-            Self._FIsPrimaryComputer := 0;
+            Self._FIsPrimaryComputer := 1;  //É computador primário
+		 end else begin
+			 Self._FIsPrimaryComputer := 0; //não é computador primario
         end;
     end;
     Result := boolean(Self._FIsPrimaryComputer);
@@ -254,8 +256,12 @@ function TBioReplicatorConfig.GetPrimaryComputerName: string;
 var
 	defName : string;
 begin
+	{$IFDEF DEBUG}
+	defName:=WinNetHnd.GetComputerName();
+	{$ELSE}
 	defName:=TTREUtils.GetZonePrimaryComputer( WinNetHnd.GetComputerName() );
-	Result:=Self.ReadStringDefault( )
+	{$ENDIF}
+	Result:=Self.ReadStringDefault( IE_PRIMARY_COMPUTER, defName );
 end;
 
 function TBioReplicatorConfig.GetPrimaryTransmittedPath : string;
@@ -321,7 +327,7 @@ end;
 
 function TBioReplicatorConfig.GetNetServicePort : Integer;
 begin
-    Result := Self.ReadIntegerDefault('ServerPort', 12013);
+	 Result := Self.ReadIntegerDefault('ServerPort', DV_NET_TCP_PORT );
 end;
 
 initialization

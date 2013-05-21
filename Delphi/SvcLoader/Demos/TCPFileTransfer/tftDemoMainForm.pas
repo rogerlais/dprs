@@ -114,21 +114,33 @@ var
     FileEnum : IEnumerable<TFileSystemEntry>;
     f :  TFileSystemEntry;
     tf : TTransferFile;
+    lastClientState : boolean;
 begin
     if (Self.FStarted) then begin
         if (Self.chkServerSwitch.Checked) then begin // Modo Servidor ativo
-            {TODO -oroger -cdsg : Organizar os arquivoss recebidos }
+            {TODO -oroger -cdsg : Organizar os arquivos recebidos }
         end else begin
             //Modo cliente
+            {TODO -oroger -cdsg : Abrir o socket para envio}
             FileEnum := TDirectory.FileSystemEntries(Self.edtDir.Directory, '*.bio', True);
-            for f in FileEnum do begin
-                if (f.Name <> '.') and (f.Name <> '..') then begin
-                    tf := TTransferFile.CreateOutput(f.FullName);
-                    try
-                        DMTCPTransfer.SendFile(tf);
-                    finally
-                        tf.Free;
+            lastClientState := DMTCPTransfer.tcpclnt.Connected;
+            try
+                if (not DMTCPTransfer.tcpclnt.Connected) then begin
+                    DMTCPTransfer.tcpclnt.Connect;
+                end;
+                for f in FileEnum do begin
+                    if (f.Name <> '.') and (f.Name <> '..') then begin
+                        tf := TTransferFile.CreateOutput(f.FullName);
+                        try
+                            DMTCPTransfer.SendFile(tf);
+                        finally
+                            tf.Free;
+                        end;
                     end;
+                end;
+            finally
+                if (not lastClientState) then begin
+                    DMTCPTransfer.tcpclnt.Disconnect;
                 end;
             end;
         end;

@@ -5,7 +5,8 @@ uses
   tftDemoMainForm in 'tftDemoMainForm.pas' {Form3},
   svclTCPTransfer in '..\..\Src\svclTCPTransfer.pas' {DMTCPTransfer: TDataModule},
   svclConfig in '..\..\Src\svclConfig.pas',
-  svclUtils in '..\..\Src\svclUtils.pas';
+  svclUtils in '..\..\Src\svclUtils.pas',
+  FileHnd in '..\..\..\..\..\Pcks\XPLib\Src\FileHnd.pas';
 
 {$R *.res}
 
