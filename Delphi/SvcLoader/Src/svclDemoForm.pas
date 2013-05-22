@@ -60,7 +60,7 @@ end;
 
 procedure TForm1.btnRegisterClick(Sender : TObject);
 begin
-	 MessageDlg(Format('conta = %s, senha=%s', [GlobalConfig.NetAccessUserName, GlobalConfig.CypherNetAccessPassword]),
+	 MessageDlg(Format('conta = %s, senha=%s', [GlobalConfig.NetAccessUserName, GlobalConfig.NetAccesstPassword]),
 		 mtInformation, [mbOK], 0);
 end;
 

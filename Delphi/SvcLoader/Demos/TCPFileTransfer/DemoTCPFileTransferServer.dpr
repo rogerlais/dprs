@@ -1,4 +1,4 @@
-program DemoTCPFileTransfer;
+program DemoTCPFileTransferServer;
 
 uses
   Forms,

@@ -56,6 +56,7 @@
 			<DCCReference Include="svclTransBio.pas"/>
 			<DCCReference Include="svclConfig.pas"/>
 			<DCCReference Include="svclUtils.pas"/>
+			<DCCReference Include="svclTCPTransfer.pas"/>
 			<None Include="ModelSupport_SvcLoader\default.txaPackage"/>
 			<None Include="ModelSupport_SvcLoader\default.txvpck"/>
 			<None Include="ModelSupport_SvcLoader\Use Case Diagram1.txvuse"/>
@@ -64,6 +65,7 @@
 			<None Include="ModelSupport_SvcLoader\SvcLoader\default.txvpck"/>
 			<None Include="SvcLoader.todo"/>
 			<None Include="ModelSupport_SvcLoader\svclConfig\default.txaPackage"/>
+			<None Include="ModelSupport_SvcLoader\svclUtils\default.txaPackage"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

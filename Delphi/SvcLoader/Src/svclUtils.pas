@@ -1,5 +1,5 @@
 {$IFDEF svclUtils}
-	 {$DEFINE DEBUG_UNIT}
+     {$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I SvcLoader.inc}
 
@@ -9,15 +9,48 @@ interface
 
 
 uses
-	 AppLog, JwaWindows; // todas as units ao lado são agrupadas na JwaWindows JwaWinNT, JwaWinType, JwaNtStatus, JwaNtSecApi, JwaLmCons;
+    Classes, SysUtils, AppLog, JwaWindows;
+// todas as units ao lado são agrupadas na JwaWindows JwaWinNT, JwaWinType, JwaNtStatus, JwaNtSecApi, JwaLmCons;
 
 type
-	ESVCLException = class(  ELoggedException );
+    ESVCLException = class(ELoggedException);
 
 function LogonAsServiceToAccount(AAccountName : string) : DWORD;
 function AddPrivilegeToAccount(AAccountName, APrivilege : string) : DWORD;
 
+function MD5(const fileName : string) : string; overload;
+function MD5(const strm : TStream) : string; overload;
+
+
 implementation
+
+uses IdHashMessageDigest, idHash;
+
+
+function MD5(const fileName : string) : string;
+var
+    fs : TFileStream;
+begin
+    fs := TFileStream.Create(fileName, fmOpenRead or fmShareDenyWrite);
+    try
+        Result := MD5(fs);
+    finally
+        fs.Free;
+    end;
+end;
+
+function MD5(const strm : TStream) : string;
+var
+	 idmd5 : TIdHashMessageDigest5;
+begin
+	 strm.Seek( 0, soBeginning );
+	 idmd5 := TIdHashMessageDigest5.Create;
+	 try
+		 Result := idmd5.HashStreamAsHex(strm);
+    finally
+        idmd5.Free;
+    end;
+end;
 
 function AddPrivilegeToAccount(AAccountName, APrivilege : string) : DWORD;
 var
@@ -75,7 +108,7 @@ end;
 
 function LogonAsServiceToAccount(AAccountName : string) : DWORD;
 begin
-	 Result := AddPrivilegeToAccount(AAccountName {or any account/group name}, SE_SERVICE_LOGON_NAME);
+    Result := AddPrivilegeToAccount(AAccountName {or any account/group name}, SE_SERVICE_LOGON_NAME);
 end;
 
 end.

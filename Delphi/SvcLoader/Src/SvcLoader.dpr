@@ -10,7 +10,8 @@ uses
   svclBiometricFiles in 'svclBiometricFiles.pas' {BioFilesService: TService},
   svclTransBio in 'svclTransBio.pas',
   svclConfig in 'svclConfig.pas',
-  svclUtils in 'svclUtils.pas';
+  svclUtils in 'svclUtils.pas',
+  svclTCPTransfer in 'svclTCPTransfer.pas';
 
 {$R *.RES}
 

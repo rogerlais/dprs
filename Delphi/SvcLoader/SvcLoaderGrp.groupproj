@@ -30,6 +30,9 @@
 			<Projects Include="Demos\PrivilegeTest\Src\PrivilegeTest.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="Demos\TCPFileTransfer\DemoTCPFileTransferServer.dproj">
+				<Dependencies/>
+			</Projects>
 			<Projects Include="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj">
 				<Dependencies/>
 			</Projects>
@@ -122,6 +125,15 @@
 		<Target Name="PrivilegeTest:Make">
 			<MSBuild Targets="Make" Projects="Demos\PrivilegeTest\Src\PrivilegeTest.dproj"/>
 		</Target>
+		<Target Name="DemoTCPFileTransferServer">
+			<MSBuild Projects="Demos\TCPFileTransfer\DemoTCPFileTransferServer.dproj"/>
+		</Target>
+		<Target Name="DemoTCPFileTransferServer:Clean">
+			<MSBuild Targets="Clean" Projects="Demos\TCPFileTransfer\DemoTCPFileTransferServer.dproj"/>
+		</Target>
+		<Target Name="DemoTCPFileTransferServer:Make">
+			<MSBuild Targets="Make" Projects="Demos\TCPFileTransfer\DemoTCPFileTransferServer.dproj"/>
+		</Target>
 		<Target Name="DemoTCPFileTransfer">
 			<MSBuild Projects="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj"/>
 		</Target>
@@ -132,13 +144,13 @@
 			<MSBuild Targets="Make" Projects="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="SvcMDL;XPLibD14;WinSysLibD14;StFLibD14;TRELib;WinNetLibD14;SvcLoader;SvcLoaderInteractiveDebugger;PrivilegeTest;DemoTCPFileTransfer"/>
+			<CallTarget Targets="SvcMDL;XPLibD14;WinSysLibD14;StFLibD14;TRELib;WinNetLibD14;SvcLoader;SvcLoaderInteractiveDebugger;PrivilegeTest;DemoTCPFileTransferServer;DemoTCPFileTransfer"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="SvcMDL:Clean;XPLibD14:Clean;WinSysLibD14:Clean;StFLibD14:Clean;TRELib:Clean;WinNetLibD14:Clean;SvcLoader:Clean;SvcLoaderInteractiveDebugger:Clean;PrivilegeTest:Clean;DemoTCPFileTransfer:Clean"/>
+			<CallTarget Targets="SvcMDL:Clean;XPLibD14:Clean;WinSysLibD14:Clean;StFLibD14:Clean;TRELib:Clean;WinNetLibD14:Clean;SvcLoader:Clean;SvcLoaderInteractiveDebugger:Clean;PrivilegeTest:Clean;DemoTCPFileTransferServer:Clean;DemoTCPFileTransfer:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="SvcMDL:Make;XPLibD14:Make;WinSysLibD14:Make;StFLibD14:Make;TRELib:Make;WinNetLibD14:Make;SvcLoader:Make;SvcLoaderInteractiveDebugger:Make;PrivilegeTest:Make;DemoTCPFileTransfer:Make"/>
+			<CallTarget Targets="SvcMDL:Make;XPLibD14:Make;WinSysLibD14:Make;StFLibD14:Make;TRELib:Make;WinNetLibD14:Make;SvcLoader:Make;SvcLoaderInteractiveDebugger:Make;PrivilegeTest:Make;DemoTCPFileTransferServer:Make;DemoTCPFileTransfer:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>
