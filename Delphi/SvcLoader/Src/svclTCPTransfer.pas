@@ -4,35 +4,35 @@ interface
 
 uses
     SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
-	 IdTCPServer, AppLog, XPFileEnumerator;
+    IdTCPServer, AppLog, XPFileEnumerator, IdGlobal;
 
 const
-    TOKEN_DELIMITER = #13#10;
+    TOKEN_DELIMITER           = #13#10;
     STR_END_SESSION_SIGNATURE = '=end_session';
     STR_BEGIN_SESSION_SIGNATURE = '=start_session';
 
 
 type
-	 TTransferFile = class
-	 private
-		 FAccesTime :    TDateTime;
-		 FModifiedTime : TDateTime;
-		 FCreatedTime :  TDateTime;
-		 FFilename :     string;
-		 FIsInputFile :  boolean;
-		 procedure SetFilename(const Value : string);
-		 procedure InvalidWriteOperation(const AttrName : string);
-		 function GetSize : int64;
-		 function GetHash : string;
-	 public
-		 property Filename : string read FFilename write SetFilename;
-		 property IsInputFile : boolean read FIsInputFile;
-		 property AccesTime : TDateTime read FAccesTime;
-		 property ModifiedTime : TDateTime read FModifiedTime;
-		 property CreatedTime : TDateTime read FCreatedTime;
-		 property Size : int64 read GetSize;
-		 property Hash : string read GetHash;
-		 constructor CreateOutput(const Filename : string);
+    TTransferFile = class
+    private
+        FAccesTime :    TDateTime;
+        FModifiedTime : TDateTime;
+        FCreatedTime :  TDateTime;
+        FFilename :     string;
+        FIsInputFile :  boolean;
+        procedure SetFilename(const Value : string);
+        procedure InvalidWriteOperation(const AttrName : string);
+        function GetSize : int64;
+        function GetHash : string;
+    public
+        property Filename : string read FFilename write SetFilename;
+        property IsInputFile : boolean read FIsInputFile;
+        property AccesTime : TDateTime read FAccesTime;
+        property ModifiedTime : TDateTime read FModifiedTime;
+        property CreatedTime : TDateTime read FCreatedTime;
+        property Size : int64 read GetSize;
+        property Hash : string read GetHash;
+        constructor CreateOutput(const Filename : string);
         constructor Create();
     end;
 
@@ -69,8 +69,8 @@ uses
 procedure TDMTCPTransfer.DataModuleDestroy(Sender : TObject);
 begin
     //Fecha clientes e servidor
-    Self.tcpclnt.Disconnect;
-    Self.tcpsrvr.Active := False;
+	 Self.StopClient;
+	 Self.StopServer;
 end;
 
 procedure TDMTCPTransfer.SendFile(AFile : TTransferFile);
@@ -106,34 +106,57 @@ begin
 end;
 
 procedure TDMTCPTransfer.StartClient;
+ ///<summary>
+ ///Ajusta o container para funcionar apenas como cliente(envio de arquivos apenas)
+ ///</summary>
+ ///<remarks>
+ ///
+ ///</remarks>
 begin
-    {TODO -oroger -cdsg : Ajusta o container para funcionar apenas como cliente(envio de arquivos apenas) }
     Self.tcpclnt.ConnectTimeout := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
-    Self.tcpclnt.Host := GlobalConfig.PrimaryComputerName;
-    Self.tcpclnt.Port := GlobalConfig.NetServicePort;
+    Self.tcpclnt.Host      := GlobalConfig.PrimaryComputerName;
+    Self.tcpclnt.Port      := GlobalConfig.NetServicePort;
+    Self.tcpclnt.OnDisconnected := tcpclntDisconnected;
+    Self.tcpclnt.OnConnected := tcpclntConnected;
+    Self.tcpclnt.ConnectTimeout := 0;
+    Self.tcpclnt.IPVersion := Id_IPv4;
+    Self.tcpclnt.ReadTimeout := -1;
     TLogFile.LogDebug(Format('Falando na porta: %d', [GlobalConfig.NetServicePort]), DBGLEVEL_DETAILED);
 end;
 
 
 procedure TDMTCPTransfer.StartServer;
+///<summary>
+///Ajusta o container para funcionar apenas como servidor(recebimento de arquivos apenas)
+///</summary>
+///<remarks>
+///
+///</remarks>
 begin
-    {TODO -oroger -cdsg : Ajusta o container para funcionar apenas como servidor(recebimento de arquivos apenas) }
-    Self.tcpsrvr.TerminateWaitTime := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
-    Self.tcpsrvr.DefaultPort := GlobalConfig.NetServicePort;
-    Self.tcpsrvr.Active      := True;
-    Self.tcpsrvr.StartListening;
-    TLogFile.LogDebug(Format('Escutando na porta: %d', [GlobalConfig.NetServicePort]), DBGLEVEL_DETAILED);
+	 Self.tcpsrvr.OnStatus    := tcpsrvrStatus;
+	 Self.tcpsrvr.DefaultPort := GlobalConfig.NetServicePort;
+	 Self.tcpsrvr.OnExecute   := tcpsrvrExecute;
+	 Self.tcpsrvr.TerminateWaitTime := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
+	 Self.tcpsrvr.Active      := True;
+	 Self.tcpsrvr.StartListening;
+	 TLogFile.LogDebug(Format('Escutando na porta: %d', [GlobalConfig.NetServicePort]), DBGLEVEL_DETAILED);
 end;
 
 procedure TDMTCPTransfer.StopClient;
+///<summary>
+///Atividade opcional, pois o processamento por sessão é rápido
+///</summary>
+///<remarks>
+///
+///</remarks>
 begin
-    {TODO -oroger -cdsg : Atividade opcional, pois o processamento por sessão é rápido}
+	 Self.tcpclnt.Disconnect;
 end;
 
 procedure TDMTCPTransfer.StopServer;
 begin
-    Self.tcpsrvr.StopListening;
-    Self.tcpsrvr.Active := False;
+	 Self.tcpsrvr.StopListening;
+	 Self.tcpsrvr.Active := False;
     TLogFile.LogDebug('Servidor interrompido!', DBGLEVEL_DETAILED);
 end;
 
@@ -162,17 +185,20 @@ var
     nFileSize : int64;
 begin
     TLogFile.LogDebug(Format('Cliente conectado: %s', [AContext.Connection.Socket.Binding.PeerIP]), DBGLEVEL_DETAILED);
-    AContext.Connection.IOHandler.AfterAccept;
+    AContext.Connection.IOHandler.AfterAccept; //processamento pos conexao com sucesso
     try
         retSignature := AContext.Connection.IOHandler.ReadLn(); //Aguarda a assinatura do cliente para iniciar operação
         if (not TStrHnd.endsWith(retSignature, STR_BEGIN_SESSION_SIGNATURE)) then begin
             //Cancela a sessão por falha de protocolo
-			 TLogFile.LogDebug(
-			 	Format('Falha de protocolo, cadeia recebida=%s', [retSignature]), DBGLEVEL_ALERT_ONLY );
+            TLogFile.LogDebug(
+                Format('Falha de protocolo, cadeia recebida=%s', [retSignature]), DBGLEVEL_ALERT_ONLY);
         end;
 
-        repeat
-            {TODO -oroger -cdsg : Linha incial de dados deve conter os atributos do arquivo(fullname, createdDate, accessDate, modifiedDate, Size ) }
+		 repeat
+		 	{TODO -oroger -curgente : testar se a leitura não puder ser completa, qual comportamento das leituras neste momento }
+			 {TODO -oroger -cdsg : Linha incial de dados deve conter os atributos do arquivo(fullname, createdDate, accessDate, modifiedDate, Size ) }
+			 //No inicio da operação, captura as cadeias. Caso a linha possua o token de final de sessão desconecta(o servidor espera uma nova sessão)
+			 //Se a cadeia possui o token de inicio de transferecia pega demais dados
             retSignature := AContext.Connection.IOHandler.ReadLn();
             if (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)) then begin
                 System.Continue;
@@ -211,10 +237,9 @@ begin
         until (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)); // assinatura de fim de sessão
     finally
         //Finaliza a sessão
-        AContext.Connection.Disconnect;
+		 AContext.Connection.Disconnect;
         TLogFile.LogDebug('Cliente desconectado', DBGLEVEL_DETAILED);
-    end;
-
+	 end;
 end;
 
 procedure TDMTCPTransfer.tcpsrvrStatus(ASender : TObject; const AStatus : TIdStatus; const AStatusText : string);

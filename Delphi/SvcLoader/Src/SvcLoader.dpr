@@ -11,7 +11,8 @@ uses
   svclTransBio in 'svclTransBio.pas',
   svclConfig in 'svclConfig.pas',
   svclUtils in 'svclUtils.pas',
-  svclTCPTransfer in 'svclTCPTransfer.pas';
+  svclTCPTransfer in 'svclTCPTransfer.pas',
+  svclEditConfigForm in 'svclEditConfigForm.pas' {EditConfigForm};
 
 {$R *.RES}
 
@@ -32,7 +33,8 @@ begin
   //
   Application.DelayInitialize := True;
   if not Application.DelayInitialize or Application.Installing then
-    Application.Initialize;
+	 Application.Initialize;
   Application.CreateForm(TBioFilesService, BioFilesService);
+  Application.CreateForm(TEditConfigForm, EditConfigForm);
   Application.Run;
 end.

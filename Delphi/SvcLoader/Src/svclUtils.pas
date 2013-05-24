@@ -19,7 +19,7 @@ function LogonAsServiceToAccount(AAccountName : string) : DWORD;
 function AddPrivilegeToAccount(AAccountName, APrivilege : string) : DWORD;
 
 function MD5(const fileName : string) : string; overload;
-function MD5(const strm : TStream) : string; overload;
+function MD5(const strm : TStream) : string; overload;   {TODO -oroger -clib : deslocar ambas para biblioteca comum}
 
 
 implementation

@@ -22,7 +22,7 @@ type
     private
         { Private declarations }
         FStarted : boolean;
-        procedure StartTCPTransfer();
+        procedure SetupTCPTransfer();
         procedure StopTCPTransfer();
         procedure SetServiceStarted(startCmd : boolean);
         procedure DoCopyLogMessage(Sender : TObject; var Text : string; MessageType : TLogMessageType; var Canceled : boolean);
@@ -79,7 +79,7 @@ begin
     end else begin
         //Iniciar serviço
         Self.btnStartStop.Caption := 'Iniciando...';
-        Self.StartTCPTransfer();
+        Self.SetupTCPTransfer();
         Self.tmrCycle.Enabled     := True;
         Self.btnStartStop.Caption := '&Parar';
         Self.chkServerSwitch.Enabled := False;
@@ -87,7 +87,7 @@ begin
     Self.FStarted := startCmd;
 end;
 
-procedure TForm3.StartTCPTransfer;
+procedure TForm3.SetupTCPTransfer;
 begin
     if (Self.chkServerSwitch.Checked) then begin
         //Operaçao como servidor
@@ -141,7 +141,7 @@ begin
 				 end;
 			 finally
 			 	 DMTCPTransfer.tcpclnt.IOHandler.WriteLn( GetComputerName() + STR_END_SESSION_SIGNATURE ); //Envia msg de fim de sessão
-				 DMTCPTransfer.tcpclnt.Disconnect;
+				 DMTCPTransfer.StopClient;
             end;
         end;
     end;

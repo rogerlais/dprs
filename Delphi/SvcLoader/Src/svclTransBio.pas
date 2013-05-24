@@ -13,9 +13,9 @@ uses
 type
     TTransBioThread = class(TXPNamedThread)
     private
-        FStream :    TFileStream;
         FUserToken : THandle;
-        procedure DoCycle;
+        procedure DoClientCycle;
+        procedure DoServerCycle;
         procedure ReplicDataFiles2PrimaryMachine(const Filename : string);
         procedure CreatePrimaryBackup(const DirName : string);
         procedure CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
@@ -83,29 +83,31 @@ end;
 
 destructor TTransBioThread.Destroy;
 begin
-	 //Liberar o Token usado pela conta alternativa
-	 CloseHandle( Self.FUserToken );
-	 Self.FUserToken := 0;
+    //Liberar o Token usado pela conta alternativa
+    CloseHandle(Self.FUserToken);
+    Self.FUserToken := 0;
     inherited;
 end;
 
-procedure TTransBioThread.DoCycle;
+procedure TTransBioThread.DoClientCycle;
 ///Inicia novo ciclo de operação
 var
     FileEnt : IEnumerable<TFileSystemEntry>;
     f : TFileSystemEntry;
 begin
-    if GlobalConfig.isPrimaryComputer then begin
-        //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
-        Self.CreatePrimaryBackup(GlobalConfig.PrimaryTransmittedPath);
-    end else begin
-        //FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
-        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
-        //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
-        for f in FileEnt do begin
-            Self.ReplicDataFiles2PrimaryMachine(f.FullName);
-        end;
+    //FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
+    FileEnt := TDirectory.FileSystemEntries(GlobalConfig.StationSourcePath, BIOMETRIC_FILE_MASK, False);
+    //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
+    for f in FileEnt do begin
+        Self.ReplicDataFiles2PrimaryMachine(f.FullName);
     end;
+end;
+
+procedure TTransBioThread.DoServerCycle;
+///Inicia novo ciclo de operação do servidor
+begin
+    //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
+    Self.CreatePrimaryBackup(GlobalConfig.PrimaryTransmittedPath);
 end;
 
 procedure TTransBioThread.ReplicDataFiles2PrimaryMachine(const Filename : string);
@@ -133,38 +135,49 @@ begin
 end;
 
 procedure TTransBioThread.Execute;
+ ///<summary>
+ ///Rotina primaria do caso de uso do servico.
+ ///Nele temos 2 cenarios:
+ /// 1 - Maquina secundária:
+ ///     a) Enumera todos os arquivos da pasta de origem
+ ///    b) Repassa todo os arquivos para a maquina primária
+ ///    c) Realiza seu backup local
+ /// 2 - Máquina primária:
+ ///     a) Move todos os da pasta de recepção remota para a pasta de transmissão
+ ///     b) Move todos os arquivos da pasta transmitidos para a de backup global
+ ///     c) Reorganiza todos os arquivos do backup global
+ ///</summary>
+ ///<remarks>
+ ///
+ ///</remarks>
 var
     ErrCnt : Integer;
 begin
     inherited;
     //Repetir os ciclos de acordo com a temporização configurada
     //O Thread primário pode enviar notificação da cancelamento que deve ser verificada ao inicio de cada ciclo
-    try
-        ErrCnt := 0;
-        while Self.IsAlive do begin
-            try
-                Self.DoCycle;
-                ErrCnt := 0;
-            except
-                on E : Exception do begin
-                    //Registrar o erro e testar o contador de erros
-                    Inc(ErrCnt);
-                    if ErrCnt > 10 then begin
-                        {TODO -oroger -cdsg : Interrromper servico e notificar agente monitorador}
-                        TLogFile.Log(Format('Quantidade de erros consecutivos(%d) ultrapassou o limite.', [ErrCnt]), lmtError);
-                    end;
+    ErrCnt := 0;
+    while Self.IsAlive do begin
+        try
+            if (GlobalConfig.isPrimaryComputer) then begin
+                Self.DoServerCycle;
+            end else begin
+                Self.DoClientCycle;
+            end;
+            ErrCnt := 0; //Reseta contador de erros do ciclo
+        except
+            on E : Exception do begin
+                //Registrar o erro e testar o contador de erros
+                Inc(ErrCnt);
+                if ErrCnt > 10 then begin
+                    {TODO -oroger -cdsg : Interrromper servico e notificar agente monitorador}
+                    TLogFile.Log(Format('Quantidade de erros consecutivos(%d) ultrapassou o limite.', [ErrCnt]), lmtError);
                 end;
             end;
-            //Suspende este thread até a liberação pelo thread do serviço
-               {$IFDEF DEBUG}
-            //SwitchToThread();
-            Self.Suspended := True;
-              {$ELSE}
-            Self.Suspended := True;
-             {$ENDIF}
         end;
-    finally
-        Self.FStream.Destroy;
+        //Suspende este thread até a liberação pelo thread do serviço
+        //SwitchToThread();
+        Self.Suspended := True;
     end;
 end;
 
@@ -172,7 +185,8 @@ function TTransBioThread.InitNetUserAccess(const AUsername, APassword : string) 
 var
     User, Pass : PChar;
 begin
-	 TLogFile.LogDebug(Format('Usando conta: %s para acesso à rede com a senha: "%s"', [AUsername, GlobalConfig.EncryptNetAccessPassword ]), DBGLEVEL_DETAILED);
+    TLogFile.LogDebug(Format('Usando conta: %s para acesso à rede com a senha: "%s"',
+        [AUsername, GlobalConfig.EncryptNetAccessPassword]), DBGLEVEL_DETAILED);
 
     User   := PChar(AUserName);
     Pass   := PChar(APassword);
