@@ -20,8 +20,6 @@ object EditConfigForm: TEditConfigForm
     Height = 64
     Align = alBottom
     TabOrder = 0
-    ExplicitTop = 344
-    ExplicitWidth = 641
     DesignSize = (
       690
       64)
@@ -46,6 +44,57 @@ object EditConfigForm: TEditConfigForm
       Kind = bkOK
       ParentDoubleBuffered = False
       TabOrder = 1
+    end
+  end
+  object pnlTop: TPanel
+    Left = 0
+    Top = 0
+    Width = 690
+    Height = 41
+    Align = alTop
+    TabOrder = 1
+    ExplicitLeft = 256
+    ExplicitTop = 224
+    ExplicitWidth = 185
+    object chkServerMode: TCheckBox
+      Left = 16
+      Top = 13
+      Width = 281
+      Height = 17
+      Caption = 'Funcionar como m'#225'quina  &prim'#225'ria/servidor'
+      TabOrder = 0
+    end
+  end
+  object tbcConfig: TTabControl
+    Left = 0
+    Top = 41
+    Width = 690
+    Height = 355
+    Align = alClient
+    TabOrder = 2
+    Tabs.Strings = (
+      '&Esta'#231#227'o'
+      '&Servidor')
+    TabIndex = 0
+    ExplicitLeft = 24
+    ExplicitTop = 72
+    ExplicitWidth = 289
+    ExplicitHeight = 193
+    object lblSourceFilePath: TLabel
+      Left = 16
+      Top = 45
+      Width = 163
+      Height = 13
+      Caption = 'Origem arquivos para transmiss'#227'o'
+    end
+    object edtDirSourceFilePath: TJvDirectoryEdit
+      Left = 16
+      Top = 64
+      Width = 393
+      Height = 21
+      DialogKind = dkWin32
+      TabOrder = 0
+      Text = 'edtDirSourceFilePath'
     end
   end
 end

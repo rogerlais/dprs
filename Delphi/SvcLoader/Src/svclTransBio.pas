@@ -20,9 +20,10 @@ type
         procedure CreatePrimaryBackup(const DirName : string);
         procedure CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
         procedure StoreTransmitted(SrcFile : TFileSystemEntry);
-        procedure NetAccess(link : boolean);
-    public
-        procedure Execute(); override;
+		 procedure NetAccess(link : boolean);
+		 procedure ForceEloConfiguration();
+	 public
+		 procedure Execute(); override;
         function InitNetUserAccess(const AUsername, APassword : string) : Integer;
         destructor Destroy; override;
     end;
@@ -153,9 +154,14 @@ procedure TTransBioThread.Execute;
 var
     ErrCnt : Integer;
 begin
-    inherited;
-    //Repetir os ciclos de acordo com a temporização configurada
-    //O Thread primário pode enviar notificação da cancelamento que deve ser verificada ao inicio de cada ciclo
+	 inherited;
+
+	 //Checar na inicialização do serviço as configurações locais para o ELO e Transbio de modo a garantir o funcionamento correto/esperado
+	 Self.ForceEloConfiguration();
+
+
+	 //Repetir os ciclos de acordo com a temporização configurada
+	 //O Thread primário pode enviar notificação da cancelamento que deve ser verificada ao inicio de cada ciclo
     ErrCnt := 0;
     while Self.IsAlive do begin
         try
@@ -179,6 +185,12 @@ begin
         //SwitchToThread();
         Self.Suspended := True;
     end;
+end;
+
+procedure TTransBioThread.ForceEloConfiguration;
+///Checar na inicialização do serviço as configurações locais para o ELO e Transbio de modo a garantir o funcionamento correto/esperado
+begin
+{TODO -oroger -cdsg : Checar na inicialização do serviço as configurações locais para o ELO e Transbio de modo a garantir o funcionamento correto/esperado }
 end;
 
 function TTransBioThread.InitNetUserAccess(const AUsername, APassword : string) : Integer;

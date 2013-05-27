@@ -88,9 +88,6 @@ const
 	 DV_SERVICE_NET_USERNAME = 'suporte';
 	 DV_NET_TCP_PORT = 12013;
 
-	 {TODO -oroger -cdsg : Checar na inicialização do serviço as configurações locais para o ELO e Transbio de modo
-	 a garantir o funcionamento correto/esperado}
-
 procedure InitConfiguration();
 begin
 	 //Instancia de configuração com o mesmo nome do runtime + .ini
