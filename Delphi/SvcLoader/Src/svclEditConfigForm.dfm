@@ -53,9 +53,6 @@ object EditConfigForm: TEditConfigForm
     Height = 41
     Align = alTop
     TabOrder = 1
-    ExplicitLeft = 256
-    ExplicitTop = 224
-    ExplicitWidth = 185
     object chkServerMode: TCheckBox
       Left = 16
       Top = 13
@@ -76,25 +73,21 @@ object EditConfigForm: TEditConfigForm
       '&Esta'#231#227'o'
       '&Servidor')
     TabIndex = 0
-    ExplicitLeft = 24
-    ExplicitTop = 72
-    ExplicitWidth = 289
-    ExplicitHeight = 193
     object lblSourceFilePath: TLabel
       Left = 16
       Top = 45
-      Width = 163
+      Width = 164
       Height = 13
-      Caption = 'Origem arquivos para transmiss'#227'o'
+      Caption = 'Caminho de captura dos arquivos:'
     end
-    object edtDirSourceFilePath: TJvDirectoryEdit
+    object edtDirCapturePath: TJvDirectoryEdit
       Left = 16
       Top = 64
       Width = 393
       Height = 21
       DialogKind = dkWin32
       TabOrder = 0
-      Text = 'edtDirSourceFilePath'
+      Text = 'edtDirCapturePath'
     end
   end
 end

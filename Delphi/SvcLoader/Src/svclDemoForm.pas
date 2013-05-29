@@ -23,7 +23,7 @@ type
         procedure btnStartClick(Sender : TObject);
         procedure btnCloseClick(Sender : TObject);
         procedure tmrServiceThreadTimer(Sender : TObject);
-        procedure btnRegisterClick(Sender : TObject);
+		 procedure btnRegisterClick(Sender : TObject);
 		 procedure btnServiceLogonClick(Sender : TObject);
 
 		 procedure btnGetDomainClick(Sender : TObject);
@@ -52,7 +52,7 @@ procedure TForm1.btnGetDomainClick(Sender : TObject);
 var
     ret : string;
 begin
-    ret := WinNetHnd.GetComputerName();
+	 ret := WinNetHnd.GetComputerName();
 	 InputQuery('Nome da estação', 'Estação:', ret);
 	 ret := WNetExHnd.GetDomainFromComputerName(ret);
 	 MessageDlg(ret, mtInformation, [mbOK], 0);
@@ -60,15 +60,14 @@ end;
 
 procedure TForm1.btnRegisterClick(Sender : TObject);
 begin
-	 MessageDlg(Format('conta = %s, senha=%s', [GlobalConfig.NetAccessUserName, GlobalConfig.NetAccesstPassword]),
-		 mtInformation, [mbOK], 0);
+	 MessageDlg(Format('conta = %s, senha=%s', [EmptyStr, EmptyStr]), mtInformation, [mbOK], 0);
 end;
 
 procedure TForm1.btnServiceLogonClick(Sender : TObject);
 var
     lStatus : DWORD;
 begin
-    //lStatus := AddPrivilegeToAccount('Administrators'{or any account/group name}, 'SeServiceLogonRight');
+	 //lStatus := AddPrivilegeToAccount('Administrators'{or any account/group name}, 'SeServiceLogonRight');
     lStatus := AddPrivilegeToAccount('TRE-PB\Roger'{or any account/group name}, SE_SERVICE_LOGON_NAME);
     if lStatus = ERROR_SUCCESS then begin
         Caption := 'OK';

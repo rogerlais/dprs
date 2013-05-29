@@ -14,7 +14,7 @@ type
 	 pnlTop: TPanel;
 	 chkServerMode: TCheckBox;
 	 tbcConfig: TTabControl;
-    edtDirSourceFilePath: TJvDirectoryEdit;
+    edtDirCapturePath: TJvDirectoryEdit;
     lblSourceFilePath: TLabel;
   private
 	 { Private declarations }
@@ -55,11 +55,11 @@ begin
 	{TODO -oroger -cdsg : Carrega as configurações para os controles}
 
 
-	GlobalConfig.StationSourcePath;
+	 Self.edtDirCapturePath.Text:=GlobalConfig.PathServiceCapture;
+
 
 {
 		 //Atributos privativos da estação
-
 		 property StationLocalTransPath : string read GetStationLocalTransPath;
 		 property StationBackupPath : string read GetStationBackupPath;
 		 property StationRemoteTransPath : string read GetStationRemoteTransPath;
@@ -87,7 +87,6 @@ end;
 procedure TEditConfigForm.SaveConfig;
 begin
 	{TODO -oroger -cdsg : Salva as configurações dos controles para o arquivo}
-	svclConfig.GlobalConfig.
 end;
 
 end.

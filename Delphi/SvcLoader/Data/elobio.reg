@@ -1,0 +1,26 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\ELO\Config]
+@=""
+"Impressora Titulo"="TITULO"
+"Impressora RAE"="RAE"
+"Impressora Outros"="RAE"
+"DirListas"="d:\\aplic\\elo\\bin\\list\\"
+"DirTransfBio"="D:\\aplic\\transbio\\files\\bio\\"
+"offLine"=dword:00000000
+"digitaDataRequerimento"=dword:00000000
+"digitaOperador"=dword:00000000
+"associacaoLogradouro"=dword:00000001
+"raeGrafico"=dword:00000000
+"raePreImpresso"=dword:00000000
+"imprimeBrasao"=dword:00000000
+"visualizaRae"=dword:00000001
+"visualizaCertidao"=dword:00000001
+"confirmaImpressaoRae"=dword:00000000
+"confirmaImpressaoCertidao"=dword:00000000
+"telaInicial"=dword:00000001
+"juizEleitoral"=""
+"retornoAutomatico"=dword:00000001
+"intervaloPing"=dword:00000005
+"HashArquivoLog"=dword:00000000
+

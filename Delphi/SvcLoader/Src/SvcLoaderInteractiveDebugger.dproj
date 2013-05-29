@@ -58,6 +58,7 @@
 			</DCCReference>
 			<DCCReference Include="svclConfig.pas"/>
 			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREUtils.pas"/>
+			<DCCReference Include="svclTCPTransfer.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

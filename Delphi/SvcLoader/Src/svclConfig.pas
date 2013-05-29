@@ -14,51 +14,80 @@ const
     BIOMETRIC_FILE_EXTENSION = '.bio';
     BIOMETRIC_FILE_MASK      = '*' + BIOMETRIC_FILE_EXTENSION;
 
+
 type
-    TBioReplicatorConfig = class(AppSettings.TBaseStartSettings)
+    TELOTransbioConfig = class(AppSettings.TBaseStartSettings)
     private
+		 function GetPathCapture : string;
+		 function GetPathError : string;
+		 function GetPathRetrans : string;
+		 function GetPathTransmitted : string;
+		 procedure SetPathCapture(const Value : string);
+		 procedure SetPathError(const Value : string);
+		 procedure SetPathRetrans(const Value : string);
+		 procedure SetPathTransmitted(const Value : string);
+		 function GetEloTransfBio : string;
+		 procedure SetEloTransfBio(const Value : string);
+	 public
+		 property PathCapture : string read GetPathCapture write SetPathCapture;
+		 property PathTransmitted : string read GetPathTransmitted write SetPathTransmitted;
+		 property PathError : string read GetPathError write SetPathError;
+		 property PathRetrans : string read GetPathRetrans write SetPathRetrans;
+		 property EloTransfBio : string read GetEloTransfBio write SetEloTransfBio;
+	 end;
+
+
+	 TBioReplicatorConfig = class(AppSettings.TBaseStartSettings)
+	 private
+		 _FIsPrimaryComputer : Integer;
         _FLocalBackup :       string;
-        _FIsPrimaryComputer : Integer;
-        function GetStationSourcePath : string;
-        function GetStationRemoteTransPath : string;
-        function GetStationLocalTransPath : string;
-        function GetStationBackupPath : string;
-        function GetNetAccountPassword : string;
-        function GetNetAccessUsername : string;
-        function GetCycleInterval : Integer;
-        function GetIsPrimaryComputer : boolean;
-        function GetPrimaryBackupPath : string;
-        function GetPrimaryTransmittedPath : string;
-        function GetDebugLevel : Integer;
-        function GetEncryptNetAccessPassword : string;
-        function GetEncryptServicePassword : string;
-        function GetServicePassword : string;
-        function GetServiceUsername : string;
+        FTransbioConfig :     TELOTransbioConfig;
+        function GetBioServiceGeneratorPath : string;
+		 function GetCycleInterval : Integer;
+		 function GetDebugLevel : Integer;
+		 function GetEncryptNetAccessPassword : string;
+		 function GetEncryptServicePassword : string;
+		 function GetisPrimaryComputer : boolean;
 		 function GetNetServicePort : Integer;
-    	 function GetPrimaryComputerName: string;
+		 function GetPathLocalBackup : string;
+		 function GetPathPrimaryBackup : string;
+		 function GetPathPrimaryTransmitted : string;
+		 function GetPathRemoteTrans : string;
+		 function GetPathServiceCapture : string;
+		 function GetPrimaryComputerName : string;
+		 function GetServicePassword : string;
+		 function GetServiceUsername : string;
+		 function GetPathELOTransbioError : string;
+		 procedure SetPathELOTransbioError(const Value : string);
+		 function GetPathELOTransbioTrans : string;
+		 procedure SetPathELOTransbioTrans(const Value : string);
+		 function GetPathELOTransbioBioSource : string;
+		 function GetPathELOTransbioReTrans : string;
+		 procedure SetPathELOTransbioBioSource(const Value : string);
+        procedure SetPathELOTransbioReTrans(const Value : string);
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
-        //Atributos privativos da estação
-        property StationSourcePath : string read GetStationSourcePath;
-        property StationLocalTransPath : string read GetStationLocalTransPath;
-        property StationBackupPath : string read GetStationBackupPath;
-        property StationRemoteTransPath : string read GetStationRemoteTransPath;
-        //Atributos privativos do computador primario
-        property PrimaryBackupPath : string read GetPrimaryBackupPath;
-        property PrimaryTransmittedPath : string read GetPrimaryTransmittedPath;
-        //Atributos do servico
-        property NetAccesstPassword : string read GetNetAccountPassword;
-        property EncryptNetAccessPassword : string read GetEncryptNetAccessPassword;
-        property NetAccessUserName : string read GetNetAccessUsername;
-        property CycleInterval : Integer read GetCycleInterval;
-        property ServiceUsername : string read GetServiceUsername;
-        property ServicePassword : string read GetServicePassword;
-        property EncryptServicePassword : string read GetEncryptServicePassword;
-        property NetServicePort : Integer read GetNetServicePort;
-		 //Atributos da sessão
-        property isPrimaryComputer : boolean read GetIsPrimaryComputer;
+		 destructor Destroy; override;
+		 property CycleInterval : Integer read GetCycleInterval;
 		 property DebugLevel : Integer read GetDebugLevel;
-		 property PrimaryComputerName : string read GetPrimaryComputerName;
+		 property EncryptNetAccessPassword : string read GetEncryptNetAccessPassword;
+		 property EncryptServicePassword : string read GetEncryptServicePassword;
+        property isPrimaryComputer : boolean read GetisPrimaryComputer;
+        property NetServicePort : Integer read GetNetServicePort;
+        property PathELOBioService : string read GetBioServiceGeneratorPath;
+        property PathELOTransbioError : string read GetPathELOTransbioError write SetPathELOTransbioError;
+        property PathELOTransbioTrans : string read GetPathELOTransbioTrans write SetPathELOTransbioTrans;
+        property PathELOTransbioReTrans : string read GetPathELOTransbioReTrans write SetPathELOTransbioReTrans;
+        property PathELOTransbioBioSource : string read GetPathELOTransbioBioSource write SetPathELOTransbioBioSource;
+        property PathLocalBackup : string read GetPathLocalBackup;
+        property PathPrimaryBackup : string read GetPathPrimaryBackup;
+        property PathPrimaryTransmitted : string read GetPathPrimaryTransmitted;
+        property PathRemoteTrans : string read GetPathRemoteTrans;
+        property PathServiceCapture : string read GetPathServiceCapture;
+        property PrimaryComputerName : string read GetPrimaryComputerName;
+        property ServicePassword : string read GetServicePassword;
+        property ServiceUsername : string read GetServiceUsername;
+        property TransbioConfig : TELOTransbioConfig read FTransbioConfig;
     end;
 
 
@@ -66,8 +95,7 @@ const
     APP_SERVICE_NAME = 'BioFilesService';
     APP_SERVICE_KEY  = 'BioSvc';
 
-    APP_SUPORTE_DEFAULT_PWD = '$!$adm!n';
-//APP_SUPORTE_DEFAULT_PWD = '12345678';
+	 APP_SUPORTE_DEFAULT_PWD = '$!$adm!n';
 
 var
 	 GlobalConfig : TBioReplicatorConfig;
@@ -75,31 +103,80 @@ var
 implementation
 
 uses
-	 FileHnd, TREUtils, TREConsts, WinDisks, TREUsers, WinNetHnd, CryptIni, WNetExHnd, svclUtils, StrHnd;
+	 FileHnd, TREUtils, TREConsts, WinDisks, TREUsers, WinNetHnd, CryptIni, WNetExHnd, svclUtils, StrHnd, WinReg32;
 
 const
 	 IE_NET_ACCESS_PASSWORD = 'NetAccessPwd';
-	 IE_NET_USERNAME   = 'NetAccessUsername';
-	 IE_LOCAL_USERNAME = 'LocalServiceUsername';
+	 IE_NET_USERNAME     = 'NetAccessUsername';
+	 IE_LOCAL_USERNAME   = 'LocalServiceUsername';
 	 IE_ENCRYPT_LOCAL_PASSWORD = 'LocalEncodedSvcPwd';
-	 IE_CYCLE_INTERVAL = 'CycleInterval';
+	 IE_CYCLE_INTERVAL   = 'CycleInterval';
 	 IE_PRIMARY_COMPUTER = 'PrimaryComputer';  //Nome do computador primario
+	 IE_STATION_LOCAL_CAPTURE_PATH = 'StationLocalCapturePath';
+	 IE_STATION_BIOSERVICE_OUT_PATH = 'BioserviceOutPath';
+	 IE_STATION_BACKUP_PATH = 'PrimaryBackupPath';
+	 IE_DEBUG_LEVEL      = 'DebugLevel';
+	 IE_IS_PRIMARY_COMPUTER = 'IsPrimaryComputer'; //Forca este computador ser ou naum o computador primario
 
 	 DV_SERVICE_NET_USERNAME = 'suporte';
-	 DV_NET_TCP_PORT = 12013;
+	 DV_NET_TCP_PORT  = 12013;
+	 DV_CYCLEINTERVAL = 60000;
+
+	 IMG_VOLUME_LABEL = 'IMG';
+
+	 TRANSBIO_PATH_CONFIG      = 'D:\Aplic\TransBio\Bin\TransBioELO.ini';
+	 TRANSBIO_ROOT_NODE_CONFIG = '';
+	 ELO_TRANSFER_TRANSBIO_PATH = 'HKEY_LOCAL_MACHINE\SOFTWARE\ELO\Config\DirTransfBio';
+
+
+	IE_TRANSBIO_PATH_CAPTURE = 'Arquivo\caminho';
+	DV_TRANSBIO_PATH_CAPTURE = 'D:\aplic\transbio\files\bio\';
+	IE_TRANSBIO_PATH_TRANSMITTED = 'Arquivo\caminhoTrans';
+	DV_TRANSBIO_PATH_TRANSMITTED= 'D:\aplic\transbio\files\trans\';
+	IE_TRANSBIO_PATH_ERROR = 'Arquivo\caminhoErro';
+	DV_TRANSBIO_PATH_ERROR = 'D:\aplic\transbio\files\erro\';
+	IE_TRANSBIO_PATH_RETRANS = 'Arquivo\caminhoRetry';
+	DV_TRANSBIO_PATH_RETRANS = 'D:\aplic\transbio\files\Retrans\';
+
 
 procedure InitConfiguration();
 begin
 	 //Instancia de configuração com o mesmo nome do runtime + .ini
-	 GlobalConfig := TBioReplicatorConfig.Create(RemoveFileExtension(ParamStr(0)) + '.ini', APP_SERVICE_NAME);
+	 GlobalConfig := TBioReplicatorConfig.Create(RemoveFileExtension(ParamStr(0)) + APP_SETTINGS_EXTENSION_FILE_INI,
+		 APP_SERVICE_NAME);
 end;
 
 { TBioReplicatorConfig }
 
-constructor TBioReplicatorConfig.Create(const FileName, AKeyPrefix : string);
+{
+******************************************************* TBioReplicatorConfig *******************************************************
+}
+constructor TBioReplicatorConfig.Create(const FileName : string; const AKeyPrefix : string = '');
 begin
-    inherited Create(FileName, AKeyPrefix);
-    Self._FIsPrimaryComputer := -1; //Indica que ainda não se sabe
+	 inherited Create(FileName, AKeyPrefix);
+	 Self._FIsPrimaryComputer := -1; //Indica que ainda não se sabe
+	 if (FileExists(TRANSBIO_PATH_CONFIG)) then begin
+		 Self.FTransbioConfig := TELOTransbioConfig.Create(TRANSBIO_PATH_CONFIG, TRANSBIO_ROOT_NODE_CONFIG);
+    end else begin
+        Self.FTransbioConfig := TELOTransbioConfig.Create('null', TRANSBIO_ROOT_NODE_CONFIG);
+        {TODO -oroger -cdsg : testar comportamento}
+    end;
+end;
+
+destructor TBioReplicatorConfig.Destroy;
+begin
+    Self.FTransbioConfig.Free;
+    inherited;
+end;
+
+function TBioReplicatorConfig.GetBioServiceGeneratorPath : string;
+begin
+{$IFDEF DEBUG}
+    Result := ExpandFileName('..\Data\BioserviceOutPath');
+{$ELSE}
+    Result := 'D:\Aplic\biometria\bioservice\bio';
+{$ENDIF}
+    Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_BIOSERVICE_OUT_PATH, Result));
 end;
 
 function TBioReplicatorConfig.GetCycleInterval : Integer;
@@ -108,67 +185,192 @@ var
 begin
     dv := TDefaultSettingValue.Create;
     try
-        dv.AsInteger := 60000;
-		 Result := Self.ReadInteger(IE_CYCLE_INTERVAL, dv);
-	 finally
-		 dv.Free;
-	 end;
-end;
-
-function TBioReplicatorConfig.GetEncryptNetAccessPassword : string;
-var
-	 Cypher : TCypher;
-begin
-	 Cypher := TCypher.Create(APP_SERVICE_KEY);
-	 try
-		 Result := GlobalConfig.ReadStringDefault(IE_NET_ACCESS_PASSWORD, EmptyStr);
-		 if Result = EmptyStr then begin
-			 Result := Cypher.Encode(APP_SUPORTE_DEFAULT_PWD);
-			 GlobalConfig.WriteString(IE_NET_ACCESS_PASSWORD, Result);
-		 end;
-	 finally
-		 Cypher.Free;
-	 end;
-end;
-
-function TBioReplicatorConfig.GetEncryptServicePassword : string;
-var
-	 cp : TCypher;
-begin
-	 //Gera o valor criptografado padrão
-	 cp := TCypher.Create(APP_SERVICE_KEY);
-	 try
-		 Result := cp.Encode(APP_SUPORTE_DEFAULT_PWD);
-	 finally
-		 cp.Free;
-	 end;
-	 //Recupera valor, usndo o ecriptografado em falha
-	 Result := Self.ReadStringDefault(IE_ENCRYPT_LOCAL_PASSWORD, Result);
+        dv.AsInteger := DV_CYCLEINTERVAL;
+        Result := Self.ReadInteger(IE_CYCLE_INTERVAL, dv);
+    finally
+        dv.Free;
+    end;
 end;
 
 function TBioReplicatorConfig.GetDebugLevel : Integer;
 begin
-	 Result := Self.ReadIntegerDefault('DebugLevel', 0);
+    Result := Self.ReadIntegerDefault(IE_DEBUG_LEVEL, 0);
 end;
 
-function TBioReplicatorConfig.GetIsPrimaryComputer : boolean;
+function TBioReplicatorConfig.GetEncryptNetAccessPassword : string;
 var
-	 ret : boolean;
+    Cypher : TCypher;
 begin
-	 if Self._FIsPrimaryComputer < 0 then begin  //Deve ser calculado nesta pessagem
-		 //Verificas PDC(assumidos como primarios e unicos sempre)
-		 ret := Pos('PDC01', UpperCase(GetComputerName())) > 0;
-		 if (not ret) then begin //Checa STD01 assumida como sempre primaria em STDs
-			 ret := TStrHnd.endsWith(UpperCase(GetComputerName), 'STD01');
+    Cypher := TCypher.Create(APP_SERVICE_KEY);
+    try
+        Result := GlobalConfig.ReadStringDefault(IE_NET_ACCESS_PASSWORD, EmptyStr);
+        if Result = EmptyStr then begin
+            Result := Cypher.Encode(APP_SUPORTE_DEFAULT_PWD);
+            GlobalConfig.WriteString(IE_NET_ACCESS_PASSWORD, Result);
         end;
-        ret := Self.ReadBooleanDefault('IsPrimaryComputer', ret);
+    finally
+        Cypher.Free;
+    end;
+end;
+
+function TBioReplicatorConfig.GetEncryptServicePassword : string;
+var
+    cp : TCypher;
+begin
+    //Gera o valor criptografado padrão
+    cp := TCypher.Create(APP_SERVICE_KEY);
+    try
+        Result := cp.Encode(APP_SUPORTE_DEFAULT_PWD);
+    finally
+        cp.Free;
+    end;
+    //Recupera valor, usndo o ecriptografado em falha
+    Result := Self.ReadStringDefault(IE_ENCRYPT_LOCAL_PASSWORD, Result);
+end;
+
+function TBioReplicatorConfig.GetisPrimaryComputer : boolean;
+var
+    ret : boolean;
+begin
+    if Self._FIsPrimaryComputer < 0 then begin  //Deve ser calculado nesta pessagem
+        //Verificas PDC(assumidos como primarios e unicos sempre)
+        ret := Pos('PDC01', UpperCase(GetComputerName())) > 0;
+        if (not ret) then begin //Checa STD01 assumida como sempre primaria em STDs
+            ret := TStrHnd.endsWith(UpperCase(GetComputerName), 'STD01');
+        end;
+        ret := Self.ReadBooleanDefault(IE_IS_PRIMARY_COMPUTER, ret);
         if (ret) then begin
             Self._FIsPrimaryComputer := 1;  //É computador primário
-		 end else begin
-			 Self._FIsPrimaryComputer := 0; //não é computador primario
+        end else begin
+            Self._FIsPrimaryComputer := 0; //não é computador primario
         end;
     end;
     Result := boolean(Self._FIsPrimaryComputer);
+end;
+
+function TBioReplicatorConfig.GetNetServicePort : Integer;
+begin
+    Result := Self.ReadIntegerDefault('ServerPort', DV_NET_TCP_PORT);
+end;
+
+function TBioReplicatorConfig.GetPathELOTransbioBioSource : string;
+begin
+    {TODO -oroger -cdsg : Ajustar acesso deste atributo}
+end;
+
+function TBioReplicatorConfig.GetPathELOTransbioError : string;
+begin
+    {TODO -oroger -cdsg : Ajustar acesso deste atributo}
+end;
+
+function TBioReplicatorConfig.GetPathELOTransbioReTrans : string;
+begin
+    {TODO -oroger -cdsg : Ajustar acesso deste atributo}
+end;
+
+function TBioReplicatorConfig.GetPathELOTransbioTrans : string;
+begin
+    {TODO -oroger -cdsg : Ajustar acesso deste atributo}
+end;
+
+function TBioReplicatorConfig.GetPathLocalBackup : string;
+const
+    LOCAL_ENTRY = IE_STATION_BACKUP_PATH;
+var
+    CurrentLabel, ImgVolume : string;
+    x : char;
+begin
+    Self._FLocalBackup := ExpandFileName(Self.ReadStringDefault(LOCAL_ENTRY, EmptyStr));
+    if Self._FLocalBackup = EmptyStr then begin
+        ImgVolume := EmptyStr;
+        for x := 'P' downto 'E' do begin
+            CurrentLabel := GetVolumeLabel(x);
+            if (SameText(CurrentLabel, IMG_VOLUME_LABEL)) then begin
+                ImgVolume := X;
+                Break;
+            end;
+        end;
+        if ImgVolume = EmptyStr then begin
+            raise ESVCLException.Create('Impossível determinar o volume de imagens deste computador');
+        end;
+      {$IFDEF DEBUG}
+        Self._FLocalBackup := ExpandFileName('..\Data\StationBackupPath');
+         {$ELSE}
+        Self._FLocalBackup := ImgVolume + ':\BioFiles\Backup'; //Unidade de imagens adcionada a caminho fixo
+         {$ENDIF}
+        Self.WriteString(LOCAL_ENTRY, Self._FLocalBackup);
+    end;
+    Result := Self._FLocalBackup;
+end;
+
+function TBioReplicatorConfig.GetPathPrimaryBackup : string;
+begin
+{$IFDEF DEBUG}
+    Result := '..\Data\PrimaryBackup';
+{$ELSE}
+    Result := 'I:\BioFiles\Backup';
+{$ENDIF}
+    Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_BACKUP_PATH, Result));
+end;
+
+function TBioReplicatorConfig.GetPathPrimaryTransmitted : string;
+    ///
+    /// Leitura do local onde a estação primária armazena os arquivos para transmissão
+    ///
+begin
+{$IFDEF DEBUG}
+    Result := ExpandFileName('..\Data\PrimaryTransmitted');
+{$ELSE}
+    Result := 'I:\TransBio\Files\Trans';
+{$ENDIF}
+    Result := ExpandFileName(Self.ReadStringDefault('PrimaryTransmittedPath', Result));
+end;
+
+function TBioReplicatorConfig.GetPathRemoteTrans : string;
+var
+    host : string;
+begin
+    {TODO -oroger -cdsg : atributo a ser removido por desnecessidade}
+{$IFDEF DEBUG}
+    host   := TTREUtils.GetZonePrimaryComputer('ZPB080STD99');
+    Result := ExpandFileName('..\Data\StationRemoteTransPath');
+{$ELSE}
+    host   := TTREUtils.GetZonePrimaryComputer(WinNetHnd.GetComputerName());
+    Result := '\\' + host + '\Transbio$\Files\Bio'; //Lembrar do compartilhamento oculto
+{$ENDIF}
+    Result := ExpandFileName(Self.ReadStringDefault('StationRemoteTransPath', Result));
+end;
+
+function TBioReplicatorConfig.GetPathServiceCapture : string;
+    ///<summary>
+    ///Caminho de captura dos arquivos(a ser realizada localmente), depende de como o serviço Transbio seja configurado neste computador
+    /// Possíveis locais:
+    /// 1 - Local onde o ELO salva os arquivos
+    /// 2 - Local onde o Transbio Salva os arquivos transmitidos
+    /// 3 - Pasta do Bioservice(Local onde existe uma cópia para o caso do ELO não salver em outro local)
+    ///</summary>
+    ///<remarks>
+    ///
+    ///</remarks>
+begin
+{$IFDEF DEBUG}
+    Result := ExpandFileName('..\Data\StationLocalCapturePath');
+{$ELSE}
+    Result := 'D:\Aplic\TransBio\Files\Bio';
+{$ENDIF}
+    Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_LOCAL_CAPTURE_PATH, Result));
+end;
+
+function TBioReplicatorConfig.GetPrimaryComputerName : string;
+var
+    defName : string;
+begin
+  {$IFDEF DEBUG}
+    defName := WinNetHnd.GetComputerName();
+  {$ELSE}
+    defName := TTREUtils.GetZonePrimaryComputer(WinNetHnd.GetComputerName());
+  {$ENDIF}
+    Result  := Self.ReadStringDefault(IE_PRIMARY_COMPUTER, defName);
 end;
 
 function TBioReplicatorConfig.GetServicePassword : string;
@@ -188,143 +390,102 @@ begin
     Result := Self.ReadStringDefault(IE_NET_USERNAME);
 end;
 
-function TBioReplicatorConfig.GetStationBackupPath : string;
-const
-    LOCAL_ENTRY = 'StationBackupPath';
+procedure TBioReplicatorConfig.SetPathELOTransbioBioSource(const Value : string);
+begin
+	 {TODO -oroger -cdsg : Ajustar acesso deste atributo}
+end;
+
+procedure TBioReplicatorConfig.SetPathELOTransbioError(const Value : string);
+begin
+	 {TODO -oroger -cdsg : Ajustar acesso deste atributo}
+end;
+
+procedure TBioReplicatorConfig.SetPathELOTransbioReTrans(const Value : string);
+begin
+	 {TODO -oroger -cdsg : Ajustar acesso deste atributo}
+end;
+
+procedure TBioReplicatorConfig.SetPathELOTransbioTrans(const Value : string);
+begin
+	 {TODO -oroger -cdsg : Ajustar acesso deste atributo}
+end;
+
+{ TTransbioConfig }
+
+function TELOTransbioConfig.GetEloTransfBio : string;
 var
-    CurrentLabel, ImgVolume : string;
-    x : char;
+	 reg : TRegistryNT;
 begin
-    Self._FLocalBackup := ExpandFileName(Self.ReadStringDefault(LOCAL_ENTRY, EmptyStr));
-    if Self._FLocalBackup = EmptyStr then begin
-        ImgVolume := EmptyStr;
-        for x := 'P' downto 'E' do begin
-            CurrentLabel := GetVolumeLabel(x);
-            if (SameText(CurrentLabel, 'IMG')) then begin
-                ImgVolume := X;
-                Break;
-            end;
-        end;
-        if ImgVolume = EmptyStr then begin
-            raise ESVCLException.Create('Impossível determinar o volume de imagens deste computador');
-        end;
-         {$IFDEF DEBUG}
-        Self._FLocalBackup := ExpandFileName('..\Data\StationBackupPath');
-         {$ELSE}
-        Self._FLocalBackup := ImgVolume + ':\BioFiles\Backup'; //Unidade de imagens adcionada a caminho fixo
-         {$ENDIF}
-        Self.WriteString(LOCAL_ENTRY, Self._FLocalBackup);
-    end;
-    Result := Self._FLocalBackup;
+	 {TODO -oroger -cdsg : leitura atributo}
+	 reg := TRegistryNT.Create;
+	 try
+		 if (not reg.ReadFullString(ELO_TRANSFER_TRANSBIO_PATH, Result)) then begin
+			 Result := EmptyStr;
+		 end;
+	 finally
+		 reg.Free;
+	 end;
 end;
 
-function TBioReplicatorConfig.GetStationSourcePath : string;
+function TELOTransbioConfig.GetPathCapture : string;
 begin
-{$IFDEF DEBUG}
-    Result := ExpandFileName('..\Data\StationSourcePath');
-{$ELSE}
-    Result := 'D:\Aplic\biometria\bioservice\bio';
-{$ENDIF}
-    Result := ExpandFileName(Self.ReadStringDefault('StationSourcePath', Result));
+	 {TODO -oroger -cdsg : Leitura atributo}
+	Result := Self.ReadStringDefault(IE_TRANSBIO_PATH_CAPTURE, DV_TRANSBIO_PATH_CAPTURE );
 end;
 
-function TBioReplicatorConfig.GetStationLocalTransPath : string;
-    //Caminho de transferência dos arquivos(a ser realizada localmente)
+function TELOTransbioConfig.GetPathError : string;
 begin
-{$IFDEF DEBUG}
-    Result := ExpandFileName('..\Data\StationLocalTransPath');
-{$ELSE}
-    Result := 'D:\Aplic\TransBio\Files\Bio';
-{$ENDIF}
-    Result := ExpandFileName(Self.ReadStringDefault('StationLocalTransPath', Result));
+	 {TODO -oroger -cdsg : Leitura atributo}
+	 Result := Self.ReadStringDefault(IE_TRANSBIO_PATH_ERROR , DV_TRANSBIO_PATH_ERROR );
 end;
 
-function TBioReplicatorConfig.GetPrimaryBackupPath : string;
+function TELOTransbioConfig.GetPathRetrans : string;
 begin
-{$IFDEF DEBUG}
-    Result := '..\Data\PrimaryBackup';
-{$ELSE}
-    Result := 'I:\BioFiles\Backup';
-{$ENDIF}
-    Result := ExpandFileName(Self.ReadStringDefault('PrimaryBackupPath', Result));
+	{TODO -oroger -cdsg : Leitura atributo}
+	Result := Self.ReadStringDefault(IE_TRANSBIO_PATH_TRANSMITTED , DV_TRANSBIO_PATH_TRANSMITTED );
 end;
 
-function TBioReplicatorConfig.GetPrimaryComputerName: string;
+function TELOTransbioConfig.GetPathTransmitted : string;
+begin
+	 {TODO -oroger -cdsg : Leitura atributo}
+	Result := Self.ReadStringDefault( IE_TRANSBIO_PATH_RETRANS, DV_TRANSBIO_PATH_RETRANS );
+end;
+
+procedure TELOTransbioConfig.SetEloTransfBio(const Value : string);
 var
-	defName : string;
+	 reg : TRegistryNT;
 begin
-	{$IFDEF DEBUG}
-	defName:=WinNetHnd.GetComputerName();
-	{$ELSE}
-	defName:=TTREUtils.GetZonePrimaryComputer( WinNetHnd.GetComputerName() );
-	{$ENDIF}
-	Result:=Self.ReadStringDefault( IE_PRIMARY_COMPUTER, defName );
+	 {TODO -oroger -cdsg : escrita atributo}
+	 reg := TRegistryNT.Create;
+	 try
+		 reg.WriteFullString(ELO_TRANSFER_TRANSBIO_PATH, Value, True);
+	 finally
+		 reg.Free;
+	 end;
 end;
 
-function TBioReplicatorConfig.GetPrimaryTransmittedPath : string;
-    ///
-    /// Leitura do local onde a estação primária armazena os arquivos para transmissão
-    ///
+procedure TELOTransbioConfig.SetPathCapture(const Value : string);
 begin
-{$IFDEF DEBUG}
-    Result := ExpandFileName('..\Data\PrimaryTransmitted');
-{$ELSE}
-    Result := 'I:\TransBio\Files\Trans';
-{$ENDIF}
-    Result := ExpandFileName(Self.ReadStringDefault('PrimaryTransmittedPath', Result));
+	 {TODO -oroger -cdsg : Leitura atributo}
+	Self.WriteString(IE_TRANSBIO_PATH_CAPTURE, Value );
 end;
 
-function TBioReplicatorConfig.GetStationRemoteTransPath : string;
-var
-    host : string;
+procedure TELOTransbioConfig.SetPathError(const Value : string);
 begin
-{$IFDEF DEBUG}
-    host   := TTREUtils.GetZonePrimaryComputer('ZPB080STD99');
-    Result := ExpandFileName('..\Data\StationRemoteTransPath');
-{$ELSE}
-    host   := TTREUtils.GetZonePrimaryComputer(WinNetHnd.GetComputerName());
-    Result := '\\' + host + '\Transbio$\Files\Bio'; //Lembrar do compartilhamento oculto
-{$ENDIF}
-    Result := ExpandFileName(Self.ReadStringDefault('StationRemoteTransPath', Result));
+	 {TODO -oroger -cdsg : Leitura atributo}
+	Self.WriteString(IE_TRANSBIO_PATH_ERROR, Value );
 end;
 
-function TBioReplicatorConfig.GetNetAccessUsername : string;
-    ///
-    /// Leitura da conta de acesso ao compartilhamento remoto do computador primário
-    ///
-var
-    domain : string;
+procedure TELOTransbioConfig.SetPathRetrans(const Value : string);
 begin
-    Result := Self.ReadStringDefault(IE_NET_USERNAME, Result);
-    if (Result = EmptyStr) then begin
-        domain := GetDomainFromComputerName(EmptyStr);
-        if (domain <> EmptyStr) then begin
-            Result := DV_SERVICE_NET_USERNAME + '@' + domain;
-        end;
-        Self.WriteString(IE_NET_USERNAME, Result);
-    end;
+	 {TODO -oroger -cdsg : Leitura atributo}
+	 Self.WriteString(IE_TRANSBIO_PATH_RETRANS, Value );
 end;
 
-function TBioReplicatorConfig.GetNetAccountPassword : string;
-    /// Retorna a senha para a conta usada para levantar os serviços
-    ///
-    /// Revision - 20120510 - roger
-    /// Para 2012 as senhas de suporte são estáticas e constantes
-    /// Assim serão salvas de forma criptografada no arquivo de inicialização
-var
-    cp : TCypher;
+procedure TELOTransbioConfig.SetPathTransmitted(const Value : string);
 begin
-    cp := TCypher.Create(APP_SERVICE_KEY);
-    try
-        Result := cp.Decode(Self.EncryptNetAccessPassword);
-    finally
-        cp.Free;
-    end;
-end;
-
-function TBioReplicatorConfig.GetNetServicePort : Integer;
-begin
-	 Result := Self.ReadIntegerDefault('ServerPort', DV_NET_TCP_PORT );
+	 {TODO -oroger -cdsg : Leitura atributo}
+	Self.WriteString(IE_TRANSBIO_PATH_TRANSMITTED, Value );
 end;
 
 initialization

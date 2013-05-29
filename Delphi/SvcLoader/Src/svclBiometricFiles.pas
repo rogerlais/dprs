@@ -95,37 +95,9 @@ begin
 end;
 
 procedure TBioFilesService.ServiceCreate(Sender : TObject);
-var
-    x, ret : Integer;
 begin
-	 /// <remarks>
-	 /// Alterado para sempre usar a conta system, ou seja Self.ServiceStartName não atribuido
-	 /// </remarks>
-	 //Dados para a execução dos threads de serviço
-    //Self.Password := GlobalConfig.NetAccountPassword;
-    //Self.ServiceStartName := GlobalConfig.NetAccessUserName;
-
-    Self.FSvcThread      := TTransBioThread.Create(True);  //Criar thread de operação primário
-    Self.FSvcThread.Name := 'SESOP TransBio Replicator';  //Nome de exibição do thread primário
-
-	 x := 0;
-	 ret:=ERROR_SUCCESS;
-	 while x < 10 do begin
-		Inc(x); 
-		 ret :=
-			 Self.FSvcThread.InitNetUserAccess(GlobalConfig.NetAccessUserName, GlobalConfig.NetAccesstPassword);
-		 if (ret <> ERROR_SUCCESS) then begin
-			 TLogFile.Log(Format('Erro de autenticação de conta %s.'#13 + 'Tentativa %d de %d'#13'Erro code = %d',
-				 [Globalconfig.NetAccessUserName, x, 10, ret]));
-			 Sleep( 30000 ); //30 segundos de espera
-		 end else begin  //Conseguiu acesso
-			 System.Break;
-		 end;
-	 end;
-	 if (x >= 10) then begin
-		 raise ESVCLException.Create('Erro fatal autenticando a conta de replicação dos arquivos biométricos'#13 +
-			 SysErrorMessage(ret));
-	 end;
+	 Self.FSvcThread      := TTransBioThread.Create(True);  //Criar thread de operação primário
+	 Self.FSvcThread.Name := 'SESOP TransBio Replicator';  //Nome de exibição do thread primário
 end;
 
 procedure TBioFilesService.ServiceStart(Sender : TService; var Started : boolean);
