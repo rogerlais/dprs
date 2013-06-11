@@ -15,6 +15,7 @@ object BioFilesService: TBioFilesService
   Height = 150
   Width = 215
   object tmrCycleEvent: TTimer
+    Enabled = False
     Interval = 60000
     OnTimer = tmrCycleEventTimer
     Left = 64

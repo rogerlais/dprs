@@ -21,13 +21,14 @@ type
         procedure StoreTransmitted(SrcFile : TFileSystemEntry);
         procedure ForceEloConfiguration();
     public
+        PathELOTransbioConfigFile : string;
         procedure Execute(); override;
     end;
 
 implementation
 
 uses
-    svclConfig, FileHnd, AppLog, svclUtils, svclTCPTransfer, WinNetHnd;
+    svclConfig, FileHnd, AppLog, svclUtils, svclTCPTransfer, WinNetHnd, WinReg32, AppSettings;
 
 { TTransBioThread }
 procedure TTransBioThread.CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
@@ -190,8 +191,29 @@ end;
 
 procedure TTransBioThread.ForceEloConfiguration;
 ///Checar na inicialização do serviço as configurações locais para o ELO e Transbio de modo a garantir o funcionamento correto/esperado
+var
+	 EloReg :  TRegistryNT;
 begin
-    {TODO -oroger -cdsg : Checar na inicialização do serviço as configurações locais para o ELO e Transbio de modo a garantir o funcionamento correto/esperado }
+	 //Configurações do ELO
+	 EloReg := TRegistryNT.Create;
+	 try
+		 EloReg.WriteFullString('HKEY_LOCAL_MACHINE\SOFTWARE\ELO\Config\DirTransfBio', GlobalConfig.PathELOTransbioBioSource, True);
+	 finally
+		 EloReg.Free;
+	 end;
+
+
+	 {TODO -oroger -cdsg : Implementar metodo da classe de configuração de mdoo  a importa toda subchave pelo nome ao inves de chamadas HC abaixo}
+
+	 //**** Configurações do TransBio *****
+	 //Caminhos TransBio
+	 GlobalConfig.TransbioConfig.PathCapture:=GlobalConfig.PathELOTransbioBioSource;
+	 GlobalConfig.TransbioConfig.PathTransmitted:=GlobalConfig.PathELOTransbioTrans;
+	 GlobalConfig.TransbioConfig.PathError:=GlobalConfig.PathELOTransbioError;
+	 GlobalConfig.TransbioConfig.PathRetrans:=GlobalConfig.PathELOTransbioReTrans;
+
+	 GlobalConfig.TransbioConfig.
+
 end;
 
 procedure TTransBioThread.StoreTransmitted(SrcFile : TFileSystemEntry);

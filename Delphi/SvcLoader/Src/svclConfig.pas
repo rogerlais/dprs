@@ -65,6 +65,7 @@ type
 		 function GetPathELOTransbioReTrans : string;
 		 procedure SetPathELOTransbioBioSource(const Value : string);
         procedure SetPathELOTransbioReTrans(const Value : string);
+    function GetPathELOTransbioConfigFile: string;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
 		 destructor Destroy; override;
@@ -78,7 +79,8 @@ type
         property PathELOTransbioError : string read GetPathELOTransbioError write SetPathELOTransbioError;
         property PathELOTransbioTrans : string read GetPathELOTransbioTrans write SetPathELOTransbioTrans;
         property PathELOTransbioReTrans : string read GetPathELOTransbioReTrans write SetPathELOTransbioReTrans;
-        property PathELOTransbioBioSource : string read GetPathELOTransbioBioSource write SetPathELOTransbioBioSource;
+		 property PathELOTransbioBioSource : string read GetPathELOTransbioBioSource write SetPathELOTransbioBioSource;
+		 property PathELOTransbioConfigFile : string read GetPathELOTransbioConfigFile;
         property PathLocalBackup : string read GetPathLocalBackup;
         property PathPrimaryBackup : string read GetPathPrimaryBackup;
         property PathPrimaryTransmitted : string read GetPathPrimaryTransmitted;
@@ -93,7 +95,9 @@ type
 
 const
     APP_SERVICE_NAME = 'BioFilesService';
-    APP_SERVICE_KEY  = 'BioSvc';
+	 APP_SERVICE_KEY  = 'BioSvc';
+	 APP_SERVICE_DISPLAYNAME = 'SESOP TransBio Replicator';
+	 APP_SERVICE_GROUP = 'SESOPSvcGroup';
 
 	 APP_SUPORTE_DEFAULT_PWD = '$!$adm!n';
 
@@ -157,10 +161,7 @@ begin
 	 Self._FIsPrimaryComputer := -1; //Indica que ainda não se sabe
 	 if (FileExists(TRANSBIO_PATH_CONFIG)) then begin
 		 Self.FTransbioConfig := TELOTransbioConfig.Create(TRANSBIO_PATH_CONFIG, TRANSBIO_ROOT_NODE_CONFIG);
-    end else begin
-        Self.FTransbioConfig := TELOTransbioConfig.Create('null', TRANSBIO_ROOT_NODE_CONFIG);
-        {TODO -oroger -cdsg : testar comportamento}
-    end;
+	 end;
 end;
 
 destructor TBioReplicatorConfig.Destroy;
@@ -256,6 +257,11 @@ end;
 function TBioReplicatorConfig.GetPathELOTransbioBioSource : string;
 begin
     {TODO -oroger -cdsg : Ajustar acesso deste atributo}
+end;
+
+function TBioReplicatorConfig.GetPathELOTransbioConfigFile: string;
+begin
+	{TODO -oroger -cdsg : Leirutra do caminho do arquivo configuração Transbio}
 end;
 
 function TBioReplicatorConfig.GetPathELOTransbioError : string;
@@ -356,7 +362,7 @@ begin
 {$IFDEF DEBUG}
     Result := ExpandFileName('..\Data\StationLocalCapturePath');
 {$ELSE}
-    Result := 'D:\Aplic\TransBio\Files\Bio';
+    Result := DV_TRANSBIO_PATH_CAPTURE;
 {$ENDIF}
     Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_LOCAL_CAPTURE_PATH, Result));
 end;

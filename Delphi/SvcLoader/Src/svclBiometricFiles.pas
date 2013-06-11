@@ -34,7 +34,7 @@ var
 implementation
 
 uses
-    AppLog, WinReg32, FileHnd, svclConfig, svclUtils, WinnetHnd, APIHnd;
+	 AppLog, WinReg32, FileHnd, svclConfig, svclUtils, WinnetHnd, APIHnd, svclEditConfigForm;
 
 {$R *.DFM}
 
@@ -77,52 +77,60 @@ var
     reg : TRegistryNT;
     lst : TStringList;
 begin
+
+	TEditConfigForm.EditConfig; //Chama janela de configuração para exibição
+
 	 reg := TRegistryNT.Create;
-    lst := TStringList.Create;
-    try
-        reg.ReadFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst);
-        if lst.IndexOf(Self.Name) < 0 then begin
-            lst.Add(APP_SERVICE_NAME);
-            lst.Add('SESOP TransBio Replicator');
-            TLogFile.Log('Alterando ordem de inicializaçao dos serviços no registro local', lmtInformation);
-            reg.WriteFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst, True);
-        end;
-    finally
-        reg.Free;
-        lst.Free;
-    end;
+	 lst := TStringList.Create;
+	 try
+		 reg.ReadFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst);
+		 if(  ( lst.IndexOf(APP_SERVICE_GROUP ) < 0 ) )then begin
+			 lst.Add(APP_SERVICE_GROUP);
+			 TLogFile.Log('Alterando ordem de inicializaçao dos serviços no registro local', lmtInformation);
+			 if ( not IsDebuggerPresent()) then begin
+				reg.WriteFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst, True);
+			 end;
+		 end;
+	 finally
+		 reg.Free;
+		 lst.Free;
+	 end;
 	 TLogFile.Log('Ordem de carga do serviço alterada com SUCESSO no computador local', lmtInformation);
 end;
 
 procedure TBioFilesService.ServiceCreate(Sender : TObject);
 begin
+	 Self.DisplayName := APP_SERVICE_DISPLAYNAME;
+	 Self.LoadGroup:= APP_SERVICE_GROUP;
+	 Self.TagID:=100;
 	 Self.FSvcThread      := TTransBioThread.Create(True);  //Criar thread de operação primário
-	 Self.FSvcThread.Name := 'SESOP TransBio Replicator';  //Nome de exibição do thread primário
+	 Self.FSvcThread.Name := APP_SERVICE_DISPLAYNAME;  //Nome de exibição do thread primário
 end;
 
 procedure TBioFilesService.ServiceStart(Sender : TService; var Started : boolean);
 begin
-    //Rotina de inicio do servico, cria o thread da operação e o inicia
-    Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
-    Self.FSvcThread.Start;
-    Sleep(300);
-    Self.FSvcThread.Suspended := False;
-    Started := True;
+	 //Rotina de inicio do servico, cria o thread da operação e o inicia
+	 Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
+	 Self.tmrCycleEvent.Enabled:=True;
+	 Self.FSvcThread.Start;
+	 Sleep(300);
+	 Self.FSvcThread.Suspended := False;
+	 Started := True;
 end;
 
 procedure TBioFilesService.ServiceStop(Sender : TService; var Stopped : boolean);
 begin
-    Self.FSvcThread.Suspended := True;
+	 Self.FSvcThread.Suspended := True;
 end;
 
 procedure TBioFilesService.TimeCycleEvent;
 begin
-    Self.FSvcThread.Suspended := False;
+	 Self.FSvcThread.Suspended := False;
 end;
 
 procedure TBioFilesService.tmrCycleEventTimer(Sender : TObject);
 begin
-    Self.TimeCycleEvent();
+	 Self.TimeCycleEvent();
 end;
 
 end.
