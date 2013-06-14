@@ -7,7 +7,8 @@ uses
   svclBiometricFiles in 'svclBiometricFiles.pas' {BioFilesService: TService},
   svclConfig in 'svclConfig.pas',
   TREUtils in '..\..\..\..\Pcks\TRE\Src\TREUtils.pas',
-  svclTCPTransfer in 'svclTCPTransfer.pas';
+  svclTCPTransfer in 'svclTCPTransfer.pas',
+  AppSettings in '..\..\..\..\Pcks\StfLib\Src\AppSettings.pas';
 
 {$R *.res}
 

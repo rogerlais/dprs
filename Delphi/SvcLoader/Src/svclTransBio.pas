@@ -98,7 +98,7 @@ procedure TTransBioThread.DoServerCycle;
 ///Inicia novo ciclo de operação do servidor
 begin
     //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
-    Self.CreatePrimaryBackup(GlobalConfig.PathPrimaryTransmitted);
+    Self.CreatePrimaryBackup(GlobalConfig.PathServerBackup);
 end;
 
 procedure TTransBioThread.ReplicDataFiles2PrimaryMachine(const Filename : string);
@@ -207,13 +207,9 @@ begin
 
 	 //**** Configurações do TransBio *****
 	 //Caminhos TransBio
-	 GlobalConfig.TransbioConfig.PathCapture:=GlobalConfig.PathELOTransbioBioSource;
-	 GlobalConfig.TransbioConfig.PathTransmitted:=GlobalConfig.PathELOTransbioTrans;
-	 GlobalConfig.TransbioConfig.PathError:=GlobalConfig.PathELOTransbioError;
-	 GlobalConfig.TransbioConfig.PathRetrans:=GlobalConfig.PathELOTransbioReTrans;
-
-	 GlobalConfig.TransbioConfig.
-
+	 if ( Assigned( GlobalConfig.TransbioConfig )  ) then begin
+		GlobalConfig.TransbioConfig.Import( GlobalConfig, 'TransBio', '', True );
+	 end;
 end;
 
 procedure TTransBioThread.StoreTransmitted(SrcFile : TFileSystemEntry);
@@ -229,7 +225,7 @@ begin
     sy := Copy(FullDateStr, 1, 4);
     sm := Copy(FullDateStr, 5, 2);
     sd := Copy(FullDateStr, 7, 2);
-    DestPath := TFileHnd.ConcatPath([GlobalConfig.PathPrimaryBackup, sy, sm, sd]);
+    DestPath := TFileHnd.ConcatPath([GlobalConfig.PathClientBackup, sy, sm, sd]);
     ForceDirectories(DestPath);
     if (not MoveFile(PChar(SrcFile.FullName), PChar(DestPath + '\' + SrcFile.Name))) then begin
         TLogFile.Log('Erro movendo arquivo para o repositório definitivo no computador primário'#13 +
