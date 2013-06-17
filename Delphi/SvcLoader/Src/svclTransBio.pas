@@ -28,7 +28,7 @@ type
 implementation
 
 uses
-    svclConfig, FileHnd, AppLog, svclUtils, svclTCPTransfer, WinNetHnd, WinReg32, AppSettings;
+    svclConfig, FileHnd, AppLog, svclUtils, svclTCPTransfer, WinNetHnd, WinReg32, AppSettings, JclSysInfo;
 
 { TTransBioThread }
 procedure TTransBioThread.CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
@@ -157,9 +157,15 @@ var
 begin
     inherited;
 
-    //Checar na inicialização do serviço as configurações locais para o ELO e Transbio de modo a garantir o funcionamento correto/esperado
-    Self.ForceEloConfiguration();
+    try
+        //Checar na inicialização do serviço as configurações locais para o ELO e Transbio de modo a garantir o funcionamento correto/esperado
+        Self.ForceEloConfiguration();
+    except
+        on E : Exception do begin
+            {TODO -oroger -cdsg : Registrar o erro e continuar com o processo}
 
+        end;
+    end;
 
     //Repetir os ciclos de acordo com a temporização configurada
     //O Thread primário pode enviar notificação da cancelamento que deve ser verificada ao inicio de cada ciclo
@@ -191,25 +197,36 @@ end;
 
 procedure TTransBioThread.ForceEloConfiguration;
 ///Checar na inicialização do serviço as configurações locais para o ELO e Transbio de modo a garantir o funcionamento correto/esperado
+/// Requisitos: Veraão anterior ao Windows Vista
 var
-	 EloReg :  TRegistryNT;
+    EloReg : TRegistryNT;
 begin
-	 //Configurações do ELO
-	 EloReg := TRegistryNT.Create;
-	 try
-		 EloReg.WriteFullString('HKEY_LOCAL_MACHINE\SOFTWARE\ELO\Config\DirTransfBio', GlobalConfig.PathELOTransbioBioSource, True);
-	 finally
-		 EloReg.Free;
-	 end;
+    if (not IsDebuggerPresent) then begin    {TODO -oroger -cdsg : negar o teste ao lado}
+        if (JclSysInfo.GetWindowsVersion() > wvWinXP) then begin
+            raise Exception.Create('Versão do windows não suportada(Requer elevação)');
+        end;
 
+        //Configurações do ELO
+        EloReg := TRegistryNT.Create;
+        try
+            try
+                EloReg.WriteFullString('HKEY_LOCAL_MACHINE\SOFTWARE\ELO\Config\DirTransfBio',
+                    GlobalConfig.PathELOTransbioBioSource, True);
+            finally
+                EloReg.Free;
+            end;
+        except
+            on E : Exception do begin
+                {TODO -oroger -cdsg : Registrar a flaha e continuar com a operação}
+            end;
+        end;
 
-	 {TODO -oroger -cdsg : Implementar metodo da classe de configuração de mdoo  a importa toda subchave pelo nome ao inves de chamadas HC abaixo}
-
-	 //**** Configurações do TransBio *****
-	 //Caminhos TransBio
-	 if ( Assigned( GlobalConfig.TransbioConfig )  ) then begin
-		GlobalConfig.TransbioConfig.Import( GlobalConfig, 'TransBio', '', True );
-	 end;
+    end;
+    //**** Configurações do TransBio *****
+    //Caminhos TransBio
+    if (Assigned(GlobalConfig.TransbioConfig)) then begin
+        GlobalConfig.TransbioConfig.Import(GlobalConfig, 'TransBio', '', True);
+    end;
 end;
 
 procedure TTransBioThread.StoreTransmitted(SrcFile : TFileSystemEntry);

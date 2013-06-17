@@ -36,7 +36,7 @@ var
 implementation
 
 uses
-	 svclTCPTransfer, svclConfig, XPFileEnumerator, FileHnd, WinNetHnd;
+    svclTCPTransfer, svclConfig, XPFileEnumerator, FileHnd, WinNetHnd;
 
 {$R *.dfm}
 
@@ -60,7 +60,7 @@ end;
 procedure TForm3.FormCreate(Sender : TObject);
 begin
     Self.chkServerSwitch.Checked := GlobalConfig.isPrimaryComputer;
-	 Self.edtDir.Directory := GlobalConfig.PathELOBioService;
+    Self.edtDir.Directory := GlobalConfig.PathELOBioService;
     Self.edtDirOutput.Directory := GlobalConfig.PathELOTransbioTrans;
     TLogFile.GetDefaultLogFile.OnMessageReceived := Self.DoCopyLogMessage;
      {$IFDEF DEBUG}
@@ -115,33 +115,33 @@ var
     f :  TFileSystemEntry;
     tf : TTransferFile;
 begin
-	 if (Self.FStarted) then begin
-		 if (Self.chkServerSwitch.Checked) then begin // Modo Servidor ativo
-			 {TODO -oroger -cdsg : Organizar os arquivos recebidos }
-		 end else begin
-			 //Modo cliente
-			 if (TFileHnd.FirstOccurrence(Self.edtDir.Directory, '*.bio') = EmptyStr) then begin
-				 Exit; //Nada a enviar sair do loop
-			 end;
+    if (Self.FStarted) then begin
+        if (Self.chkServerSwitch.Checked) then begin // Modo Servidor ativo
+            {TODO -oroger -cdsg : Organizar os arquivos recebidos }
+        end else begin
+            //Modo cliente
+            if (TFileHnd.FirstOccurrence(Self.edtDir.Directory, '*.bio') = EmptyStr) then begin
+                Exit; //Nada a enviar sair do loop
+            end;
 
-			 //Abrir o socket para envio
-			 DMTCPTransfer.tcpclnt.Connect;  {TODO -oroger -cdsg : proteger chamada com tratamento correto}
-			 DMTCPTransfer.tcpclnt.IOHandler.WriteLn( GetComputerName() + STR_BEGIN_SESSION_SIGNATURE );
-			 FileEnum := TDirectory.FileSystemEntries(Self.edtDir.Directory, '*.bio', True);
-			 try
-				 for f in FileEnum do begin
-					 if (f.Name <> '.') and (f.Name <> '..') then begin
-						 tf := TTransferFile.CreateOutput(f.FullName);
-						 try
-							 DMTCPTransfer.SendFile(tf);
-						 finally
-							 tf.Free;
-						 end;
-					 end;
-				 end;
-			 finally
-			 	 DMTCPTransfer.tcpclnt.IOHandler.WriteLn( GetComputerName() + STR_END_SESSION_SIGNATURE ); //Envia msg de fim de sessão
-				 DMTCPTransfer.StopClient;
+            //Abrir o socket para envio
+            DMTCPTransfer.tcpclnt.Connect;  {TODO -oroger -cdsg : proteger chamada com tratamento correto}
+            DMTCPTransfer.tcpclnt.IOHandler.WriteLn(GetComputerName() + STR_BEGIN_SESSION_SIGNATURE);
+            FileEnum := TDirectory.FileSystemEntries(Self.edtDir.Directory, '*.bio', True);
+            try
+                for f in FileEnum do begin
+                    if (f.Name <> '.') and (f.Name <> '..') then begin
+                        tf := TTransferFile.CreateOutput(f.FullName);
+                        try
+                            DMTCPTransfer.SendFile(tf);
+                        finally
+                            tf.Free;
+                        end;
+                    end;
+                end;
+            finally
+                DMTCPTransfer.tcpclnt.IOHandler.WriteLn(GetComputerName() + STR_END_SESSION_SIGNATURE); //Envia msg de fim de sessão
+                DMTCPTransfer.StopClient;
             end;
         end;
     end;

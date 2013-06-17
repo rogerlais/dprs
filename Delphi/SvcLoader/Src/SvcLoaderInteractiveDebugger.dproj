@@ -57,9 +57,7 @@
 				<DesignClass>TService</DesignClass>
 			</DCCReference>
 			<DCCReference Include="svclConfig.pas"/>
-			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREUtils.pas"/>
 			<DCCReference Include="svclTCPTransfer.pas"/>
-			<DCCReference Include="..\..\..\..\Pcks\StfLib\Src\AppSettings.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
