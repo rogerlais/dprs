@@ -65,6 +65,10 @@ type
         procedure SetPathELOTransbioBioSource(const Value : string);
         procedure SetPathELOTransbioReTrans(const Value : string);
         function GetPathELOTransbioConfigFile : string;
+        function GetNotificationSender : string;
+        procedure SetNotificationSender(const Value : string);
+        function GetNotificationList: string;
+        procedure SetNotificationList(const Value: string);
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
         destructor Destroy; override;
@@ -88,6 +92,8 @@ type
         property ServicePassword : string read GetServicePassword;
         property ServiceUsername : string read GetServiceUsername;
         property TransbioConfig : TELOTransbioConfig read FTransbioConfig;
+        property NotificationSender : string read GetNotificationSender write SetNotificationSender;
+        property NotificationList : string read GetNotificationList write SetNotificationList;
     end;
 
 
@@ -96,6 +102,7 @@ const
     APP_SERVICE_KEY         = 'BioSvc';
     APP_SERVICE_DISPLAYNAME = 'SESOP TransBio Replicator';
     APP_SERVICE_GROUP       = 'SESOPSvcGroup';
+    APP_NOTIFICATION_DESCRIPTION = 'SESOP-Serviço de replicação de arquivos biométricos';
 
     APP_SUPORTE_DEFAULT_PWD = '$!$adm!n';
 
@@ -113,37 +120,41 @@ const
     IE_LOCAL_USERNAME   = 'LocalServiceUsername';
     IE_ENCRYPT_LOCAL_PASSWORD = 'LocalEncodedSvcPwd';
     IE_CYCLE_INTERVAL   = 'CycleInterval';
+    IE_NOTIFICATION_SENDER = 'NotificationSender';
+    DV_NOTIFICATION_SENDER = 'bioreplic@tre-pb.jus.br';
+    IE_NOTIFICATION_LIST = 'NotificationList';
+    DV_NOTIFICATION_LIST = 'bioreplic@tre-pb.jus.br;null@tre0pb.jus.br'; {TODO -oroger -cdsg : Definir valor padrao para a lista de notificação}
     IE_PRIMARY_COMPUTER = 'PrimaryComputer';  //Nome do computador primario
     IE_STATION_LOCAL_CAPTURE_PATH = 'StationLocalCapturePath';
-	 IE_STATION_BIOSERVICE_OUT_PATH = 'BioserviceOutPath';
-	 IE_STATION_BACKUP_PATH = 'PrimaryBackupPath';
-	 IE_SERVER_PATH_BACKUP = 'ServerBackupPath';
-	 DV_SERVER_PATH_BACKUP = 'I:\TransBio\Files\Trans';
+    IE_STATION_BIOSERVICE_OUT_PATH = 'BioserviceOutPath';
+    IE_STATION_BACKUP_PATH = 'PrimaryBackupPath';
+    IE_SERVER_PATH_BACKUP = 'ServerBackupPath';
+    DV_SERVER_PATH_BACKUP = 'I:\TransBio\Files\Trans';
 
-	 IE_DEBUG_LEVEL      = 'DebugLevel';
-	 IE_IS_PRIMARY_COMPUTER = 'IsPrimaryComputer'; //Forca este computador ser ou naum o computador primario
+    IE_DEBUG_LEVEL = 'DebugLevel';
+    IE_IS_PRIMARY_COMPUTER = 'IsPrimaryComputer'; //Forca este computador ser ou naum o computador primario
 
-	 DV_SERVICE_NET_USERNAME = 'suporte';
-	 DV_NET_TCP_PORT  = 12013;
-	 DV_CYCLEINTERVAL = 60000;
+    DV_SERVICE_NET_USERNAME = 'suporte';
+    DV_NET_TCP_PORT  = 12013;
+    DV_CYCLEINTERVAL = 60000;
 
-	 IMG_VOLUME_LABEL = 'IMG';
+    IMG_VOLUME_LABEL = 'IMG';
 
-	 TRANSBIO_PATH_CONFIG      = 'D:\Aplic\TransBio\Bin\TransBioELO.ini';
-	 TRANSBIO_ROOT_NODE_CONFIG = '';
-	 ELO_TRANSFER_TRANSBIO_PATH = 'HKEY_LOCAL_MACHINE\SOFTWARE\ELO\Config\DirTransfBio';
+    TRANSBIO_PATH_CONFIG      = 'D:\Aplic\TransBio\Bin\TransBioELO.ini';
+    TRANSBIO_ROOT_NODE_CONFIG = '';
+    ELO_TRANSFER_TRANSBIO_PATH = 'HKEY_LOCAL_MACHINE\SOFTWARE\ELO\Config\DirTransfBio';
 
 
-	 IE_TRANSBIO_PATH_CAPTURE = 'Arquivo\caminho';
-	 DV_TRANSBIO_PATH_CAPTURE = 'D:\aplic\transbio\files\bio\';
-	 IE_TRANSBIO_PATH_TRANSMITTED = 'Arquivo\caminhoTrans';
-	 DV_TRANSBIO_PATH_TRANSMITTED = 'D:\aplic\transbio\files\trans\';
-	 IE_TRANSBIO_PATH_ERROR   = 'Arquivo\caminhoErro';
-	 DV_TRANSBIO_PATH_ERROR   = 'D:\aplic\transbio\files\erro\';
-	 IE_TRANSBIO_PATH_RETRANS = 'Arquivo\caminhoRetry';
-	 DV_TRANSBIO_PATH_RETRANS = 'D:\aplic\transbio\files\Retrans\';
-	 DV_TRANSBIO_PATH_BIOSERVICE = 'D:\Aplic\biometria\bioservice\bio';
-	 DV_CLIENT_PATH_BACKUP = 'I:\BioFiles\Backup';
+    IE_TRANSBIO_PATH_CAPTURE = 'Arquivo\caminho';
+    DV_TRANSBIO_PATH_CAPTURE = 'D:\aplic\transbio\files\bio\';
+    IE_TRANSBIO_PATH_TRANSMITTED = 'Arquivo\caminhoTrans';
+    DV_TRANSBIO_PATH_TRANSMITTED = 'D:\aplic\transbio\files\trans\';
+    IE_TRANSBIO_PATH_ERROR = 'Arquivo\caminhoErro';
+    DV_TRANSBIO_PATH_ERROR = 'D:\aplic\transbio\files\erro\';
+    IE_TRANSBIO_PATH_RETRANS = 'Arquivo\caminhoRetry';
+    DV_TRANSBIO_PATH_RETRANS = 'D:\aplic\transbio\files\Retrans\';
+    DV_TRANSBIO_PATH_BIOSERVICE = 'D:\Aplic\biometria\bioservice\bio';
+    DV_CLIENT_PATH_BACKUP = 'I:\BioFiles\Backup';
 
 
 procedure InitConfiguration();
@@ -160,19 +171,19 @@ end;
 }
 constructor TBioReplicatorConfig.Create(const FileName : string; const AKeyPrefix : string = '');
 var
-	TBConfigFilename : string;
+    TBConfigFilename : string;
 begin
-	 inherited Create(FileName, AKeyPrefix);
-	 Self._FIsPrimaryComputer := -1; //Indica que ainda não se sabe
-	 {$IFDEF  DEBUG}
-	 TBConfigFilename:=ExpandFileName( '..\Data\TransBioELO.ini' );
-	 {$ELSE}
+    inherited Create(FileName, AKeyPrefix);
+    Self._FIsPrimaryComputer := -1; //Indica que ainda não se sabe
+     {$IFDEF  DEBUG}
+    TBConfigFilename := ExpandFileName('..\Data\TransBioELO.ini');
+     {$ELSE}
 	 TBConfigFilename:=TRANSBIO_PATH_CONFIG;
 	 {$ENDIF}
-	 if (FileExists(TBConfigFilename)) then begin
-		 Self.FTransbioConfig := TELOTransbioConfig.Create(TBConfigFilename, TRANSBIO_ROOT_NODE_CONFIG);
-	 end else begin
-		 FreeAndNil(Self.FTransbioConfig);
+    if (FileExists(TBConfigFilename)) then begin
+        Self.FTransbioConfig := TELOTransbioConfig.Create(TBConfigFilename, TRANSBIO_ROOT_NODE_CONFIG);
+    end else begin
+        FreeAndNil(Self.FTransbioConfig);
     end;
 end;
 
@@ -223,7 +234,7 @@ begin
         end;
     finally
         Cypher.Free;
-	 end;
+    end;
 end;
 
 function TBioReplicatorConfig.GetEncryptServicePassword : string;
@@ -266,6 +277,16 @@ begin
     Result := Self.ReadIntegerDefault('ServerPort', DV_NET_TCP_PORT);
 end;
 
+function TBioReplicatorConfig.GetNotificationList: string;
+begin
+     Result:=Self.ReadStringDefault( IE_NOTIFICATION_LIST, DV_NOTIFICATION_LIST);
+end;
+
+function TBioReplicatorConfig.GetNotificationSender : string;
+begin
+    Result := Self.ReadStringDefault(IE_NOTIFICATION_SENDER, DV_NOTIFICATION_SENDER);
+end;
+
 function TBioReplicatorConfig.GetPathELOTransbioBioSource : string;
 begin
     {TODO -oroger -cdsg : Ajustar acesso deste atributo}
@@ -295,7 +316,7 @@ function TBioReplicatorConfig.GetPathLocalBackup : string;
 const
     LOCAL_ENTRY = IE_STATION_BACKUP_PATH;
 var
-	 CurrentLabel, ImgVolume : string;
+    CurrentLabel, ImgVolume : string;
     x : char;
 begin
     Self._FLocalBackup := ExpandFileName(Self.ReadStringDefault(LOCAL_ENTRY, EmptyStr));
@@ -328,48 +349,48 @@ begin
 {$ELSE}
 	 Result := DV_CLIENT_PATH_BACKUP;
 {$ENDIF}
-	 Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_BACKUP_PATH, Result));
+    Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_BACKUP_PATH, Result));
 end;
 
 function TBioReplicatorConfig.GetPathServerBackup : string;
-	 ///
-	 /// Leitura do local onde a estação primária armazena os arquivos para transmissão
-	 ///
+    ///
+    /// Leitura do local onde a estação primária armazena os arquivos para transmissão
+    ///
 begin
 {$IFDEF DEBUG}
-	 Result := ExpandFileName('..\Data\ServerTransmitted');
+    Result := ExpandFileName('..\Data\ServerTransmitted');
 {$ELSE}
 	 Result := DV_SERVER_PATH_BACKUP;
 {$ENDIF}
-	 Result := ExpandFileName(Self.ReadStringDefault(IE_SERVER_PATH_BACKUP, Result));
+    Result := ExpandFileName(Self.ReadStringDefault(IE_SERVER_PATH_BACKUP, Result));
 end;
 
 function TBioReplicatorConfig.GetPathServiceCapture : string;
-	 ///<summary>
-	 ///Caminho de captura dos arquivos(a ser realizada localmente), depende de como o serviço Transbio seja configurado neste computador
-	 /// Possíveis locais:
-	 /// 1 - Local onde o ELO salva os arquivos
-	 /// 2 - Local onde o Transbio Salva os arquivos transmitidos
-	 /// 3 - Pasta do Bioservice(Local onde existe uma cópia para o caso do ELO não salver em outro local)
-	 ///</summary>
-	 ///<remarks>
-	 ///
-	 ///</remarks>
+    ///<summary>
+    ///Caminho de captura dos arquivos(a ser realizada localmente), depende de como o serviço Transbio seja configurado neste computador
+    /// Possíveis locais:
+    /// 1 - Local onde o ELO salva os arquivos
+    /// 2 - Local onde o Transbio Salva os arquivos transmitidos
+    /// 3 - Pasta do Bioservice(Local onde existe uma cópia para o caso do ELO não salver em outro local)
+    ///</summary>
+    ///<remarks>
+    ///
+    ///</remarks>
 begin
 {$IFDEF DEBUG}
-	 Result := ExpandFileName('..\Data\StationLocalCapturePath');
+    Result := ExpandFileName('..\Data\StationLocalCapturePath');
 {$ELSE}
 	 Result := DV_TRANSBIO_PATH_CAPTURE;
 {$ENDIF}
-	 Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_LOCAL_CAPTURE_PATH, Result));
+    Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_LOCAL_CAPTURE_PATH, Result));
 end;
 
 function TBioReplicatorConfig.GetPrimaryComputerName : string;
 var
-	 defName : string;
+    defName : string;
 begin
   {$IFDEF DEBUG}
-	 defName := WinNetHnd.GetComputerName();
+    defName := WinNetHnd.GetComputerName();
   {$ELSE}
     defName := TTREUtils.GetZonePrimaryComputer(WinNetHnd.GetComputerName());
   {$ENDIF}
@@ -391,6 +412,16 @@ end;
 function TBioReplicatorConfig.GetServiceUsername : string;
 begin
     Result := Self.ReadStringDefault(IE_NET_USERNAME);
+end;
+
+procedure TBioReplicatorConfig.SetNotificationList(const Value: string);
+begin
+     Self.WriteString( IE_NOTIFICATION_LIST, Value );
+end;
+
+procedure TBioReplicatorConfig.SetNotificationSender(const Value : string);
+begin
+    Self.WriteString(IE_NOTIFICATION_SENDER, Value);
 end;
 
 procedure TBioReplicatorConfig.SetPathELOTransbioBioSource(const Value : string);

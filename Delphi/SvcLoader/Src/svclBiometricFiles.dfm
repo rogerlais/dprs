@@ -39,6 +39,10 @@ object BioFilesService: TBioFilesService
     ReplyTo = <>
     ConvertPreamble = True
     Left = 225
-    Top = 52
+    Top = 44
+  end
+  object fvInfo: TFileVersionInfo
+    Left = 288
+    Top = 40
   end
 end

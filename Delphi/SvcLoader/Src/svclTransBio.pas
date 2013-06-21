@@ -217,7 +217,7 @@ begin
             end;
         except
             on E : Exception do begin
-                {TODO -oroger -cdsg : Registrar a flaha e continuar com a operação}
+                {TODO -oroger -cdsg : Registrar a falha e continuar com a operação}
             end;
         end;
 

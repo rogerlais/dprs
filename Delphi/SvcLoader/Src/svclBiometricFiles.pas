@@ -9,13 +9,14 @@ interface
 
 uses
     Windows, Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, svclTransBio, ExtCtrls, IdMessage, IdBaseComponent,
-    IdComponent, IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient, IdSMTPBase, IdSMTP;
+    IdComponent, IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient, IdSMTPBase, IdSMTP, FileInfo;
 
 type
     TBioFilesService = class(TService)
         tmrCycleEvent : TTimer;
         smtpSender :    TIdSMTP;
         mailMsgNotify : TIdMessage;
+        fvInfo :        TFileVersionInfo;
         procedure ServiceStart(Sender : TService; var Started : boolean);
         procedure ServiceCreate(Sender : TObject);
         procedure ServiceAfterInstall(Sender : TService);
@@ -25,10 +26,12 @@ type
     private
         { Private declarations }
         FSvcThread : TTransBioThread;
+        procedure AddDestinations;
+        procedure CheckLogs();
     public
         function GetServiceController : TServiceController; override;
         procedure TimeCycleEvent();
-        procedure SendMailNotification(const Text : string);
+        procedure SendMailNotification(const NotificationText : string);
         { Public declarations }
     end;
 
@@ -38,13 +41,60 @@ var
 implementation
 
 uses
-    AppLog, WinReg32, FileHnd, svclConfig, svclUtils, WinnetHnd, APIHnd, svclEditConfigForm;
+    AppLog, WinReg32, FileHnd, svclConfig, svclUtils, WinnetHnd, APIHnd, svclEditConfigForm, Str_Pas, IdEMailAddress;
 
 {$R *.DFM}
+
+const
+    SUBJECT_TEMPLATE = 'BioFilesService - Versão: %s - %s - %s';
 
 procedure ServiceController(CtrlCode : DWord); stdcall;
 begin
     BioFilesService.Controller(CtrlCode);
+end;
+
+procedure InitServiceLog();
+var
+    LogFileName : string;
+begin
+    {TODO -oroger -cdsg : Altera o nome do log a ser gerado para esta iniciação do serviço de modo a ser unico por dia de levantameto}
+    LogFileName := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'Logs', APP_SERVICE_NAME + '_'
+        + FormatDateTime('YYYYMMDD', Now())]) + '.log';
+    try
+        AppLog.TLogFile.GetDefaultLogFile.FileName := LogFileName;
+    except
+        on E : Exception do begin
+            AppLog.AppFatalError('Erro fatal iniciando aplicativo'#13#10 + E.Message, 10);
+        end;
+    end;
+end;
+
+
+procedure TBioFilesService.AddDestinations;
+var
+    dst : TIdEMailAddressItem;
+    lst : TStringList;
+    x :   Integer;
+begin
+    lst := TStringList.Create;
+    try
+        lst.Delimiter     := ',';
+        lst.DelimitedText := GlobalConfig.NotificationList;
+        for x := 0 to lst.Count - 1 do begin
+            dst      := Self.mailMsgNotify.Recipients.Add();
+            dst.Address := lst.Strings[x];
+            dst.Name := 'SESOP - Verificador de Sistemas eleitorais';
+        end;
+    finally
+        lst.Free;
+    end;
+end;
+
+procedure TBioFilesService.CheckLogs;
+begin
+    {TODO -oroger -cdsg : Buscar por logs posteriores a data de registro, enviando todos aqueles que possuirem erros.
+    A cada envio com sucesso avancar a data de registro para a data do respectivo arquivo
+    de log e buscar pelo mais antigo até chegar ao log atual}
 end;
 
 function TBioFilesService.GetServiceController : TServiceController;
@@ -52,28 +102,28 @@ begin
     Result := ServiceController;
 end;
 
-procedure TBioFilesService.SendMailNotification(const Text : string);
+procedure TBioFilesService.SendMailNotification(const NotificationText : string);
 begin
     mailMsgNotify.AttachmentEncoding := 'UUE';
     mailMsgNotify.Encoding      := meDefault;
     mailMsgNotify.ConvertPreamble := True;
-    mailMsgNotify.From.Address  := GlobalInfo.SenderAddress;
-    mailMsgNotify.From.Name     := Application.Title; //'VVer - Verificador de sistemas 2012 - T1';
-    mailMsgNotify.From.Text     := Format(' %s <%s>', [Application.Title, GlobalInfo.SenderAddress]);
-    // 'VVer - Verificador de sistemas 2012 - T1 <sesop@tre-pb.gov.br>';
-    mailMsgNotify.From.Domain   := Str_Pas.GetDelimitedSubStr('@', GlobalInfo.SenderAddress, 1);
-    mailMsgNotify.From.User     := Str_Pas.GetDelimitedSubStr('@', GlobalInfo.SenderAddress, 0);
-    mailMsgNotify.Sender.Address := GlobalInfo.SenderAddress;
-    mailMsgNotify.Sender.Name   := GlobalInfo.SenderDescription;
-    mailMsgNotify.Sender.Text   := Format('"%s" <%s>', [GlobalInfo.SenderDescription, GlobalInfo.SenderAddress]);
+    mailMsgNotify.From.Address  := GlobalConfig.NotificationSender;
+    mailMsgNotify.From.Name     := Application.Title;
+    mailMsgNotify.From.Text     := Format(' %s <%s>', [Application.Title, GlobalConfig.NotificationSender]);
+    mailMsgNotify.From.Domain   := Str_Pas.GetDelimitedSubStr('@', GlobalConfig.NotificationSender, 1);
+    mailMsgNotify.From.User     := Str_Pas.GetDelimitedSubStr('@', GlobalConfig.NotificationSender, 0);
+    mailMsgNotify.Sender.Address := GlobalConfig.NotificationSender;
+    mailMsgNotify.Sender.Name   := APP_NOTIFICATION_DESCRIPTION;
+    mailMsgNotify.Sender.Text   := Format('"%s" <%s>', [APP_NOTIFICATION_DESCRIPTION, GlobalConfig.NotificationSender]);
     mailMsgNotify.Sender.Domain := mailMsgNotify.From.Domain;
     mailMsgNotify.Sender.User   := mailMsgNotify.From.User;
 
     //Coletar informações de destino de mensagem com possibilidade de macros no mesmo arquivo de configuração
     Self.AddDestinations();
-    Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvVersion.FileVersion, WinNetHnd.GetComputerName(),
-        FormatDateTime('yyyyMMDDhhmm', Now()), GlobalInfo.GlobalStatus]);
-    Self.mailMsgNotify.Body.Text := GlobalInfo.InfoText;
+
+    Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvInfo.FileVersion, WinNetHnd.GetComputerName(),
+        FormatDateTime('yyyyMMDDhhmm', Now())]);
+    Self.mailMsgNotify.Body.Text := NotificationText;
     Self.smtpSender.Connect;
     Self.smtpSender.Send(Self.mailMsgNotify);
     Self.smtpSender.Disconnect(True);
@@ -140,6 +190,7 @@ end;
 
 procedure TBioFilesService.ServiceStart(Sender : TService; var Started : boolean);
 begin
+     Self.CheckLogs();
     //Rotina de inicio do servico, cria o thread da operação e o inicia
     Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
     Self.tmrCycleEvent.Enabled  := True;
@@ -163,5 +214,10 @@ procedure TBioFilesService.tmrCycleEventTimer(Sender : TObject);
 begin
     Self.TimeCycleEvent();
 end;
+
+initialization
+    begin
+        InitServiceLog();
+    end;
 
 end.

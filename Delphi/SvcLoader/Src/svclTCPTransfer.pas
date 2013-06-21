@@ -132,7 +132,7 @@ begin
     finally
         Self.FClientSessionList.Leave;
     end;
-	 //Envia a abertura de sessão para o servidor
+    //Envia a abertura de sessão para o servidor
     Self.tcpclnt.IOHandler.WriteLn(SessionName + STR_END_SESSION_SIGNATURE); //Envia msg de fim de sessão
 end;
 
@@ -253,14 +253,21 @@ begin
     try
         if (Self.FClientSessionList.IndexOf(SessionName) <> -1) then begin
             raise ESVCLException.Create('Sessão iniciada previamente neste módulo');
-		 end;
-		 //Envia a abertura de sessão para o servidor
-		 Self.tcpclnt.Connect;  {TODO -oroger -cdsg : proteger chamada com tratamento correto}
-		 Self.tcpclnt.IOHandler.WriteLn(SessionName + STR_BEGIN_SESSION_SIGNATURE);
-		 Self.FClientSessionList.Add(SessionName);
-	 finally
-		 Self.FClientSessionList.Leave;
-	 end;
+        end;
+        //Envia a abertura de sessão para o servidor
+        try
+            Self.tcpclnt.Connect;
+        except
+            on E : Exception do begin
+               {TODO -oroger -cdsg : proteger chamada com tratamento correto}
+               raise E;
+            end;
+        end;
+        Self.tcpclnt.IOHandler.WriteLn(SessionName + STR_BEGIN_SESSION_SIGNATURE);
+        Self.FClientSessionList.Add(SessionName);
+    finally
+        Self.FClientSessionList.Leave;
+    end;
 end;
 
 procedure TDMTCPTransfer.StopClient;
