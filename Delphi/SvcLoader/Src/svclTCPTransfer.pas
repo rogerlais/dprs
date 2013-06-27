@@ -259,7 +259,7 @@ begin
             Self.tcpclnt.Connect;
         except
             on E : Exception do begin
-               {TODO -oroger -cdsg : proteger chamada com tratamento correto}
+               TLogFile.Log( 'Falha de comunicação com o servidor de recebimento de arquivos'#13#10 + E.Message, lmtError );
                raise E;
             end;
         end;

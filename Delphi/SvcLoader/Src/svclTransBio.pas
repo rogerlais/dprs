@@ -13,6 +13,7 @@ uses
 type
     TTransBioThread = class(TXPNamedThread)
     private
+        FCycleErrorCount : Integer;
         procedure DoClientCycle;
         procedure DoServerCycle;
         procedure ReplicDataFiles2PrimaryMachine(const Filename : string);
@@ -21,7 +22,6 @@ type
         procedure StoreTransmitted(SrcFile : TFileSystemEntry);
         procedure ForceEloConfiguration();
     public
-        PathELOTransbioConfigFile : string;
         procedure Execute(); override;
     end;
 
@@ -153,7 +153,21 @@ procedure TTransBioThread.Execute;
  ///
  ///</remarks>
 var
-    ErrCnt : Integer;
+    ErrorMessage : string;
+
+    procedure LSRReportError(EComm : Exception);
+    begin
+        //Registrar o erro e testar o contador de erros
+        Inc(Self.FCycleErrorCount);
+        ErrorMessage := Format('Quantidade de erros consecutivos(%d) ultrapassou o limite.'#13#10 +
+            'Último erro registrado = "%s"', [Self.FCycleErrorCount, EComm.Message]);
+        if (Integer(Self.FCycleErrorCount) > 10) then begin
+            {TODO -oroger -cdsg : Interrromper servico e notificar agente monitorador}
+            TLogFile.Log(ErrorMessage, lmtError);
+            Self.FCycleErrorCount := 0; //reseta contador global
+        end;
+    end;
+
 begin
     inherited;
 
@@ -161,15 +175,14 @@ begin
         //Checar na inicialização do serviço as configurações locais para o ELO e Transbio de modo a garantir o funcionamento correto/esperado
         Self.ForceEloConfiguration();
     except
-        on E : Exception do begin
+        on EElo : Exception do begin
             {TODO -oroger -cdsg : Registrar o erro e continuar com o processo}
-
         end;
     end;
 
     //Repetir os ciclos de acordo com a temporização configurada
     //O Thread primário pode enviar notificação da cancelamento que deve ser verificada ao inicio de cada ciclo
-    ErrCnt := 0;
+    Self.FCycleErrorCount := 0;
     while Self.IsAlive do begin
         try
             if (GlobalConfig.isPrimaryComputer) then begin
@@ -177,16 +190,10 @@ begin
             end else begin
                 Self.DoClientCycle;
             end;
-            ErrCnt := 0; //Reseta contador de erros do ciclo
+            Self.FCycleErrorCount := 0; //Reseta contador de erros do ciclo
         except
-            on E : Exception do begin
-                //Registrar o erro e testar o contador de erros
-                Inc(ErrCnt);
-                if ErrCnt > 10 then begin
-                    {TODO -oroger -cdsg : Interrromper servico e notificar agente monitorador}
-                    TLogFile.Log(Format('Quantidade de erros consecutivos(%d) ultrapassou o limite.'#13#10 +
-                        'Último erro registrado = "%s"', [ErrCnt, E.Message]), lmtError);
-                end;
+            on EComm : Exception do begin
+                LSRReportError( EComm );
             end;
         end;
         //Suspende este thread até a liberação pelo thread do serviço

@@ -135,6 +135,7 @@ const
     IE_IS_PRIMARY_COMPUTER = 'IsPrimaryComputer'; //Forca este computador ser ou naum o computador primario
 
     DV_SERVICE_NET_USERNAME = 'suporte';
+    IE_NET_TCP_PORT  = 'ServerPort';
     DV_NET_TCP_PORT  = 12013;
     DV_CYCLEINTERVAL = 60000;
 
@@ -274,7 +275,7 @@ end;
 
 function TBioReplicatorConfig.GetNetServicePort : Integer;
 begin
-    Result := Self.ReadIntegerDefault('ServerPort', DV_NET_TCP_PORT);
+    Result := Self.ReadIntegerDefault(IE_NET_TCP_PORT, DV_NET_TCP_PORT);
 end;
 
 function TBioReplicatorConfig.GetNotificationList: string;
@@ -366,16 +367,16 @@ begin
 end;
 
 function TBioReplicatorConfig.GetPathServiceCapture : string;
-    ///<summary>
-    ///Caminho de captura dos arquivos(a ser realizada localmente), depende de como o serviço Transbio seja configurado neste computador
-    /// Possíveis locais:
-    /// 1 - Local onde o ELO salva os arquivos
-    /// 2 - Local onde o Transbio Salva os arquivos transmitidos
-    /// 3 - Pasta do Bioservice(Local onde existe uma cópia para o caso do ELO não salver em outro local)
-    ///</summary>
-    ///<remarks>
-    ///
-    ///</remarks>
+///<summary>
+///Caminho de captura dos arquivos(a ser realizada localmente), depende de como o serviço Transbio seja configurado neste computador
+/// Possíveis locais:
+/// 1 - Local onde o ELO salva os arquivos
+/// 2 - Local onde o Transbio Salva os arquivos transmitidos
+/// 3 - Pasta do Bioservice(Local onde existe uma cópia para o caso do ELO não salver em outro local)
+///</summary>
+///<remarks>
+///
+///</remarks>
 begin
 {$IFDEF DEBUG}
     Result := ExpandFileName('..\Data\StationLocalCapturePath');
