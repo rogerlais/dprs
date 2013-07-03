@@ -251,22 +251,22 @@ procedure TDMTCPTransfer.StartSession(const SessionName : string);
 begin
     Self.FClientSessionList.Enter;
     try
-        if (Self.FClientSessionList.IndexOf(SessionName) <> -1) then begin
-            raise ESVCLException.Create('Sessão iniciada previamente neste módulo');
-        end;
-        //Envia a abertura de sessão para o servidor
         try
-            Self.tcpclnt.Connect;
-        except
-            on E : Exception do begin
-               TLogFile.Log( 'Falha de comunicação com o servidor de recebimento de arquivos'#13#10 + E.Message, lmtError );
-               raise E;
+            if (Self.FClientSessionList.IndexOf(SessionName) <> -1) then begin
+                raise ESVCLException.Create('Sessão iniciada previamente neste módulo');
             end;
+            //Envia a abertura de sessão para o servidor
+            Self.tcpclnt.Connect;
+            Self.tcpclnt.IOHandler.WriteLn(SessionName + STR_BEGIN_SESSION_SIGNATURE);
+            Self.FClientSessionList.Add(SessionName);
+        finally
+            Self.FClientSessionList.Leave;
         end;
-        Self.tcpclnt.IOHandler.WriteLn(SessionName + STR_BEGIN_SESSION_SIGNATURE);
-        Self.FClientSessionList.Add(SessionName);
-    finally
-        Self.FClientSessionList.Leave;
+    except
+        on E : Exception do begin
+            TLogFile.Log('Falha de comunicação com o servidor de recebimento de arquivos'#13#10 + E.Message, lmtError);
+            raise;
+        end;
     end;
 end;
 

@@ -3,7 +3,7 @@
 			<ProjectGuid>{8810BD8B-17FA-4135-8064-7301B920E51E}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>DemoTCPFileTransferServer.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">

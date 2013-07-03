@@ -54,10 +54,10 @@ begin
 end;
 
 procedure InitServiceLog();
+///Altera o nome do log a ser gerado para esta iniciação do serviço de modo a ser unico por dia de levantameto
 var
     LogFileName : string;
 begin
-    {TODO -oroger -cdsg : Altera o nome do log a ser gerado para esta iniciação do serviço de modo a ser unico por dia de levantameto}
     LogFileName := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'Logs', APP_SERVICE_NAME + '_'
         + FormatDateTime('YYYYMMDD', Now())]) + '.log';
     try
