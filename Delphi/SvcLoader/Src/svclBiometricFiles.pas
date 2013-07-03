@@ -41,7 +41,8 @@ var
 implementation
 
 uses
-    AppLog, WinReg32, FileHnd, svclConfig, svclUtils, WinnetHnd, APIHnd, svclEditConfigForm, Str_Pas, IdEMailAddress;
+    AppLog, WinReg32, FileHnd, svclConfig, svclUtils, WinnetHnd, APIHnd, svclEditConfigForm, Str_Pas,
+    IdEMailAddress, XPFileEnumerator, StrHnd;
 
 {$R *.DFM}
 
@@ -58,7 +59,7 @@ procedure InitServiceLog();
 var
     LogFileName : string;
 begin
-    LogFileName := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'Logs', APP_SERVICE_NAME + '_'
+    LogFileName := TFileHnd.ConcatPath([GlobalConfig.PathServiceLog, APP_SERVICE_NAME + '_'
         + FormatDateTime('YYYYMMDD', Now())]) + '.log';
     try
         AppLog.TLogFile.GetDefaultLogFile.FileName := LogFileName;
@@ -78,7 +79,7 @@ var
 begin
     lst := TStringList.Create;
     try
-        lst.Delimiter     := ',';
+        lst.Delimiter     := ';';
         lst.DelimitedText := GlobalConfig.NotificationList;
         for x := 0 to lst.Count - 1 do begin
             dst      := Self.mailMsgNotify.Recipients.Add();
@@ -91,10 +92,49 @@ begin
 end;
 
 procedure TBioFilesService.CheckLogs;
+///<summary>
+///Buscar por logs posteriores a data de registro, enviando todos aqueles que possuirem erros.
+/// A cada envio com sucesso avancar a data de registro para a data do respectivo arquivo de log e buscar pelo mais antigo até chegar ao log atual
+///</summary>
+///<remarks>
+///
+///</remarks>
+var
+	 Files : IEnumerable<TFileSystemEntry>;
+	 f :     TFileSystemEntry;
+	 currLogName, sentPath : string;
+	 logText : TXPStringList;
+	 dummy : Integer;
 begin
-    {TODO -oroger -cdsg : Buscar por logs posteriores a data de registro, enviando todos aqueles que possuirem erros.
-    A cada envio com sucesso avancar a data de registro para a data do respectivo arquivo
-    de log e buscar pelo mais antigo até chegar ao log atual}
+	 currLogName := AppLog.TLogFile.GetDefaultLogFile.FileName;
+    Files := TDirectory.FileSystemEntries(GlobalConfig.PathServiceLog, '*.log', False);
+    for f in Files do begin
+        if (not Sametext(f.FullName, currLogName)) then begin //Pula o arquivo em uso no momento como saida de log
+            logText := TXPStringList.Create;
+            try
+                logText.LoadFromFile(f.FullName);
+                dummy := 1; //Sempre do inicio
+                if (logText.FindPos('erro:', dummy, dummy)) then begin
+                    try
+                        Self.SendMailNotification(logText.Text);
+                    except
+                        on E : Exception do begin  //Apenas logar a falha de envio e continuar com os demais arquivos
+                            TLogFile.Log('Envio de notificações de erro falhou:'#13#10 + E.Message, lmtError);
+                        end;
+                    end;
+                end;
+                //mover arquivo para a pasta de enviados applog
+                sentPath := GlobalConfig.PathServiceLog + '\Sent\';
+                ForceDirectories(sentPath);
+                sentPath := sentPath + F.Name;
+                if (not MoveFile(PWideChar(F.FullName), PWideChar((sentPath)))) then begin
+					 TLogFile.Log('Final do processamento de arquivo de log falhou:'#13#10 + SysErrorMessage(GetLastError()), lmtError);
+                end;
+            finally
+                logText.Free;
+            end;
+        end;
+    end;
 end;
 
 function TBioFilesService.GetServiceController : TServiceController;
@@ -190,7 +230,7 @@ end;
 
 procedure TBioFilesService.ServiceStart(Sender : TService; var Started : boolean);
 begin
-     Self.CheckLogs();
+    Self.CheckLogs();
     //Rotina de inicio do servico, cria o thread da operação e o inicia
     Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
     Self.tmrCycleEvent.Enabled  := True;

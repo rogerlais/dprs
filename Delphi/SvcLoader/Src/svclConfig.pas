@@ -69,6 +69,7 @@ type
         procedure SetNotificationSender(const Value : string);
         function GetNotificationList: string;
         procedure SetNotificationList(const Value: string);
+    function GetPathServiceLog: string;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
         destructor Destroy; override;
@@ -87,7 +88,8 @@ type
         property PathLocalBackup : string read GetPathLocalBackup;
         property PathClientBackup : string read GetPathClientBackup;
         property PathServerBackup : string read GetPathServerBackup;
-        property PathServiceCapture : string read GetPathServiceCapture;
+		 property PathServiceCapture : string read GetPathServiceCapture;
+		 property PathServiceLog : string read GetPathServiceLog;
         property PrimaryComputerName : string read GetPrimaryComputerName;
         property ServicePassword : string read GetServicePassword;
         property ServiceUsername : string read GetServiceUsername;
@@ -123,7 +125,7 @@ const
     IE_NOTIFICATION_SENDER = 'NotificationSender';
     DV_NOTIFICATION_SENDER = 'bioreplic@tre-pb.jus.br';
     IE_NOTIFICATION_LIST = 'NotificationList';
-    DV_NOTIFICATION_LIST = 'bioreplic@tre-pb.jus.br;null@tre0pb.jus.br'; {TODO -oroger -cdsg : Definir valor padrao para a lista de notificação}
+    DV_NOTIFICATION_LIST = 'bioreplic@tre-pb.jus.br;null@tre-pb.jus.br'; {TODO -oroger -creq : Definir valor padrao para a lista de notificação}
     IE_PRIMARY_COMPUTER = 'PrimaryComputer';  //Nome do computador primario
     IE_STATION_LOCAL_CAPTURE_PATH = 'StationLocalCapturePath';
     IE_STATION_BIOSERVICE_OUT_PATH = 'BioserviceOutPath';
@@ -384,6 +386,11 @@ begin
 	 Result := DV_TRANSBIO_PATH_CAPTURE;
 {$ENDIF}
     Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_LOCAL_CAPTURE_PATH, Result));
+end;
+
+function TBioReplicatorConfig.GetPathServiceLog: string;
+begin
+	Result:=TFileHnd.ConcatPath([ ExtractFilePath(ParamStr(0)), 'Logs']);
 end;
 
 function TBioReplicatorConfig.GetPrimaryComputerName : string;
