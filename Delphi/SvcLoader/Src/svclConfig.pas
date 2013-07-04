@@ -1,5 +1,5 @@
 {$IFDEF svclConfig}
-    {$DEFINE DEBUG_UNIT}
+	 {$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I SvcLoader.inc}
 
@@ -8,32 +8,38 @@ unit svclConfig;
 interface
 
 uses
-    Classes, Windows, SysUtils, AppSettings;
+	 Classes, Windows, SysUtils, AppSettings;
 
 const
-    BIOMETRIC_FILE_EXTENSION = '.bio';
-    BIOMETRIC_FILE_MASK      = '*' + BIOMETRIC_FILE_EXTENSION;
+	 BIOMETRIC_FILE_EXTENSION = '.bio';
+	 BIOMETRIC_FILE_MASK      = '*' + BIOMETRIC_FILE_EXTENSION;
+    TRANSBIO_PATH_CONFIG      = 'D:\Aplic\TransBio\Bin\TransBioELO.ini';
+    TRANSBIO_ROOT_NODE_CONFIG = '';
+	 ELO_TRANSFER_TRANSBIO_PATH = 'HKEY_LOCAL_MACHINE\SOFTWARE\ELO\Config\DirTransfBio';
 
 
 type
     TELOTransbioConfig = class(AppSettings.TBaseStartSettings)
     private
-        function GetPathCapture : string;
+        function GetPathBio : string;
         function GetPathError : string;
         function GetPathRetrans : string;
         function GetPathTransmitted : string;
-        procedure SetPathCapture(const Value : string);
+        procedure SetPathBio(const Value : string);
         procedure SetPathError(const Value : string);
         procedure SetPathRetrans(const Value : string);
         procedure SetPathTransmitted(const Value : string);
-        function GetEloTransfBio : string;
-        procedure SetEloTransfBio(const Value : string);
+        function GetElo2TransBio : string;
+        procedure SetElo2TransBio(const Value : string);
+        function GetPathBioServiceRepository : string;
+        procedure SetPathBioServiceRepository(const Value : string);
     public
-        property PathCapture : string read GetPathCapture write SetPathCapture;
+        property PathBioServiceRepository : string read GetPathBioServiceRepository write SetPathBioServiceRepository;
+        property PathBio : string read GetPathBio write SetPathBio;
         property PathTransmitted : string read GetPathTransmitted write SetPathTransmitted;
         property PathError : string read GetPathError write SetPathError;
         property PathRetrans : string read GetPathRetrans write SetPathRetrans;
-        property EloTransfBio : string read GetEloTransfBio write SetEloTransfBio;
+        property Elo2TransBio : string read GetElo2TransBio write SetElo2TransBio;
     end;
 
 
@@ -58,18 +64,14 @@ type
         function GetServiceUsername : string;
         function GetPathELOTransbioError : string;
         procedure SetPathELOTransbioError(const Value : string);
-        function GetPathELOTransbioTrans : string;
-        procedure SetPathELOTransbioTrans(const Value : string);
-        function GetPathELOTransbioBioSource : string;
         function GetPathELOTransbioReTrans : string;
-        procedure SetPathELOTransbioBioSource(const Value : string);
         procedure SetPathELOTransbioReTrans(const Value : string);
         function GetPathELOTransbioConfigFile : string;
         function GetNotificationSender : string;
         procedure SetNotificationSender(const Value : string);
-        function GetNotificationList: string;
-        procedure SetNotificationList(const Value: string);
-    function GetPathServiceLog: string;
+        function GetNotificationList : string;
+        procedure SetNotificationList(const Value : string);
+        function GetPathServiceLog : string;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
         destructor Destroy; override;
@@ -81,15 +83,13 @@ type
         property NetServicePort : Integer read GetNetServicePort;
         property PathELOBioService : string read GetBioServiceGeneratorPath;
         property PathELOTransbioError : string read GetPathELOTransbioError write SetPathELOTransbioError;
-        property PathELOTransbioTrans : string read GetPathELOTransbioTrans write SetPathELOTransbioTrans;
         property PathELOTransbioReTrans : string read GetPathELOTransbioReTrans write SetPathELOTransbioReTrans;
-        property PathELOTransbioBioSource : string read GetPathELOTransbioBioSource write SetPathELOTransbioBioSource;
         property PathELOTransbioConfigFile : string read GetPathELOTransbioConfigFile;
         property PathLocalBackup : string read GetPathLocalBackup;
         property PathClientBackup : string read GetPathClientBackup;
         property PathServerBackup : string read GetPathServerBackup;
-		 property PathServiceCapture : string read GetPathServiceCapture;
-		 property PathServiceLog : string read GetPathServiceLog;
+        property PathServiceCapture : string read GetPathServiceCapture;
+        property PathServiceLog : string read GetPathServiceLog;
         property PrimaryComputerName : string read GetPrimaryComputerName;
         property ServicePassword : string read GetServicePassword;
         property ServiceUsername : string read GetServiceUsername;
@@ -118,17 +118,18 @@ uses
 
 const
     IE_NET_ACCESS_PASSWORD = 'NetAccessPwd';
-    IE_NET_USERNAME     = 'NetAccessUsername';
-    IE_LOCAL_USERNAME   = 'LocalServiceUsername';
+    IE_NET_USERNAME      = 'NetAccessUsername';
+    IE_LOCAL_USERNAME    = 'LocalServiceUsername';
     IE_ENCRYPT_LOCAL_PASSWORD = 'LocalEncodedSvcPwd';
-    IE_CYCLE_INTERVAL   = 'CycleInterval';
+    IE_CYCLE_INTERVAL    = 'CycleInterval';
     IE_NOTIFICATION_SENDER = 'NotificationSender';
     DV_NOTIFICATION_SENDER = 'bioreplic@tre-pb.jus.br';
     IE_NOTIFICATION_LIST = 'NotificationList';
-    DV_NOTIFICATION_LIST = 'bioreplic@tre-pb.jus.br;null@tre-pb.jus.br'; {TODO -oroger -creq : Definir valor padrao para a lista de notificação}
-    IE_PRIMARY_COMPUTER = 'PrimaryComputer';  //Nome do computador primario
-    IE_STATION_LOCAL_CAPTURE_PATH = 'StationLocalCapturePath';
-    IE_STATION_BIOSERVICE_OUT_PATH = 'BioserviceOutPath';
+    DV_NOTIFICATION_LIST = 'bioreplic@tre-pb.jus.br;null@tre-pb.jus.br';
+    {TODO -oroger -creq : Definir valor padrao para a lista de notificação}
+    IE_PRIMARY_COMPUTER  = 'PrimaryComputer';  //Nome do computador primario
+    IE_STATION_BIOSERVICE_CAPTURE_PATH = 'StationBioServiceCapturePath';
+	 IE_STATION_BIOSERVICE_OUT_PATH = 'BioServiceCapturePath';
     IE_STATION_BACKUP_PATH = 'PrimaryBackupPath';
     IE_SERVER_PATH_BACKUP = 'ServerBackupPath';
     DV_SERVER_PATH_BACKUP = 'I:\TransBio\Files\Trans';
@@ -143,20 +144,15 @@ const
 
     IMG_VOLUME_LABEL = 'IMG';
 
-    TRANSBIO_PATH_CONFIG      = 'D:\Aplic\TransBio\Bin\TransBioELO.ini';
-    TRANSBIO_ROOT_NODE_CONFIG = '';
-    ELO_TRANSFER_TRANSBIO_PATH = 'HKEY_LOCAL_MACHINE\SOFTWARE\ELO\Config\DirTransfBio';
-
-
-    IE_TRANSBIO_PATH_CAPTURE = 'Arquivo\caminho';
-    DV_TRANSBIO_PATH_CAPTURE = 'D:\aplic\transbio\files\bio\';
-    IE_TRANSBIO_PATH_TRANSMITTED = 'Arquivo\caminhoTrans';
+	 IE_TRANSBIO_PATH_CAPTURE = 'Arquivo\caminho';
+	 DV_TRANSBIO_PATH_CAPTURE = 'D:\aplic\transbio\files\bio\';
+	 IE_TRANSBIO_PATH_TRANSMITTED = 'Arquivo\caminhoTrans';
     DV_TRANSBIO_PATH_TRANSMITTED = 'D:\aplic\transbio\files\trans\';
     IE_TRANSBIO_PATH_ERROR = 'Arquivo\caminhoErro';
     DV_TRANSBIO_PATH_ERROR = 'D:\aplic\transbio\files\erro\';
     IE_TRANSBIO_PATH_RETRANS = 'Arquivo\caminhoRetry';
     DV_TRANSBIO_PATH_RETRANS = 'D:\aplic\transbio\files\Retrans\';
-    DV_TRANSBIO_PATH_BIOSERVICE = 'D:\Aplic\biometria\bioservice\bio';
+	 DV_TRANSBIO_PATH_BIOSERVICE = 'D:\Aplic\biometria\bioservice\bio';
     DV_CLIENT_PATH_BACKUP = 'I:\BioFiles\Backup';
 
 
@@ -186,8 +182,10 @@ begin
     if (FileExists(TBConfigFilename)) then begin
         Self.FTransbioConfig := TELOTransbioConfig.Create(TBConfigFilename, TRANSBIO_ROOT_NODE_CONFIG);
     end else begin
-        FreeAndNil(Self.FTransbioConfig);
-    end;
+        {TODO -oroger -cdsg : gerar notificação}
+		 Self.FTransbioConfig := TELOTransbioConfig.Create(ExtractFilePath( ParamStr(0) + ExtractFileName( TRANSBIO_PATH_CONFIG)),
+		 TRANSBIO_ROOT_NODE_CONFIG); //arquivo nulo localizado na pasta do aplicativo, servindo apenas para facilitar operação
+	 end;
 end;
 
 destructor TBioReplicatorConfig.Destroy;
@@ -199,7 +197,7 @@ end;
 function TBioReplicatorConfig.GetBioServiceGeneratorPath : string;
 begin
 {$IFDEF DEBUG}
-    Result := ExpandFileName('..\Data\BioserviceOutPath');
+    Result := ExpandFileName('..\Data\BioServiceCapturePath');
 {$ELSE}
 	 Result := DV_TRANSBIO_PATH_BIOSERVICE;
 {$ENDIF}
@@ -280,19 +278,14 @@ begin
     Result := Self.ReadIntegerDefault(IE_NET_TCP_PORT, DV_NET_TCP_PORT);
 end;
 
-function TBioReplicatorConfig.GetNotificationList: string;
+function TBioReplicatorConfig.GetNotificationList : string;
 begin
-     Result:=Self.ReadStringDefault( IE_NOTIFICATION_LIST, DV_NOTIFICATION_LIST);
+    Result := Self.ReadStringDefault(IE_NOTIFICATION_LIST, DV_NOTIFICATION_LIST);
 end;
 
 function TBioReplicatorConfig.GetNotificationSender : string;
 begin
     Result := Self.ReadStringDefault(IE_NOTIFICATION_SENDER, DV_NOTIFICATION_SENDER);
-end;
-
-function TBioReplicatorConfig.GetPathELOTransbioBioSource : string;
-begin
-    {TODO -oroger -cdsg : Ajustar acesso deste atributo}
 end;
 
 function TBioReplicatorConfig.GetPathELOTransbioConfigFile : string;
@@ -306,11 +299,6 @@ begin
 end;
 
 function TBioReplicatorConfig.GetPathELOTransbioReTrans : string;
-begin
-    {TODO -oroger -cdsg : Ajustar acesso deste atributo}
-end;
-
-function TBioReplicatorConfig.GetPathELOTransbioTrans : string;
 begin
     {TODO -oroger -cdsg : Ajustar acesso deste atributo}
 end;
@@ -335,11 +323,11 @@ begin
         if ImgVolume = EmptyStr then begin
             raise ESVCLException.Create('Impossível determinar o volume de imagens deste computador');
         end;
-      {$IFDEF DEBUG}
+       {$IFDEF DEBUG}
         Self._FLocalBackup := ExpandFileName('..\Data\StationBackupPath');
-         {$ELSE}
-        Self._FLocalBackup := ImgVolume + ':\BioFiles\Backup'; //Unidade de imagens adcionada a caminho fixo
-         {$ENDIF}
+          {$ELSE}
+		 Self._FLocalBackup := ImgVolume + ':\BioFiles\Backup'; //Unidade de imagens adcionada a caminho fixo
+		  {$ENDIF}
         Self.WriteString(LOCAL_ENTRY, Self._FLocalBackup);
     end;
     Result := Self._FLocalBackup;
@@ -369,28 +357,28 @@ begin
 end;
 
 function TBioReplicatorConfig.GetPathServiceCapture : string;
-///<summary>
-///Caminho de captura dos arquivos(a ser realizada localmente), depende de como o serviço Transbio seja configurado neste computador
-/// Possíveis locais:
-/// 1 - Local onde o ELO salva os arquivos
-/// 2 - Local onde o Transbio Salva os arquivos transmitidos
-/// 3 - Pasta do Bioservice(Local onde existe uma cópia para o caso do ELO não salver em outro local)
-///</summary>
-///<remarks>
-///
-///</remarks>
+    ///<summary>
+    ///Caminho de captura dos arquivos(a ser realizada localmente), depende de como o serviço Transbio seja configurado neste computador
+    /// Possíveis locais:
+    /// 1 - Local onde o ELO salva os arquivos
+    /// 2 - Local onde o Transbio Salva os arquivos transmitidos
+    /// 3 - Pasta do Bioservice(Local onde existe uma cópia para o caso do ELO não salver em outro local)
+    ///</summary>
+    ///<remarks>
+    ///
+    ///</remarks>
 begin
 {$IFDEF DEBUG}
     Result := ExpandFileName('..\Data\StationLocalCapturePath');
 {$ELSE}
 	 Result := DV_TRANSBIO_PATH_CAPTURE;
 {$ENDIF}
-    Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_LOCAL_CAPTURE_PATH, Result));
+    Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_BIOSERVICE_CAPTURE_PATH, Result));
 end;
 
-function TBioReplicatorConfig.GetPathServiceLog: string;
+function TBioReplicatorConfig.GetPathServiceLog : string;
 begin
-	Result:=TFileHnd.ConcatPath([ ExtractFilePath(ParamStr(0)), 'Logs']);
+    Result := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'Logs']);
 end;
 
 function TBioReplicatorConfig.GetPrimaryComputerName : string;
@@ -422,19 +410,14 @@ begin
     Result := Self.ReadStringDefault(IE_NET_USERNAME);
 end;
 
-procedure TBioReplicatorConfig.SetNotificationList(const Value: string);
+procedure TBioReplicatorConfig.SetNotificationList(const Value : string);
 begin
-     Self.WriteString( IE_NOTIFICATION_LIST, Value );
+    Self.WriteString(IE_NOTIFICATION_LIST, Value);
 end;
 
 procedure TBioReplicatorConfig.SetNotificationSender(const Value : string);
 begin
     Self.WriteString(IE_NOTIFICATION_SENDER, Value);
-end;
-
-procedure TBioReplicatorConfig.SetPathELOTransbioBioSource(const Value : string);
-begin
-    {TODO -oroger -cdsg : Ajustar acesso deste atributo}
 end;
 
 procedure TBioReplicatorConfig.SetPathELOTransbioError(const Value : string);
@@ -447,32 +430,49 @@ begin
     {TODO -oroger -cdsg : Ajustar acesso deste atributo}
 end;
 
-procedure TBioReplicatorConfig.SetPathELOTransbioTrans(const Value : string);
-begin
-    {TODO -oroger -cdsg : Ajustar acesso deste atributo}
-end;
-
 { TTransbioConfig }
 
-function TELOTransbioConfig.GetEloTransfBio : string;
+function TELOTransbioConfig.GetElo2TransBio : string;
+///<summary>
+///Leitura do valor usado pelo ELO para copiar os arquivos gerado pelo Bioservice. Este valor deve ser sempre o mesmo usado pelo serviço Transbio
+///</summary>
 var
-    reg : TRegistryNT;
+	 reg : TRegistryNT;
 begin
-    {TODO -oroger -cdsg : leitura atributo}
-    reg := TRegistryNT.Create;
+	 reg := TRegistryNT.Create;
     try
-        if (not reg.ReadFullString(ELO_TRANSFER_TRANSBIO_PATH, Result)) then begin
+		 if (not reg.ReadFullString(ELO_TRANSFER_TRANSBIO_PATH, Result)) then begin
             Result := EmptyStr;
+		 end else begin
+         	Result:=ExpandFileName( Result );
         end;
     finally
         reg.Free;
     end;
 end;
 
-function TELOTransbioConfig.GetPathCapture : string;
+function TELOTransbioConfig.GetPathBio : string;
+///<summary>
+///Leitura do caminho usado pelo transbio para servir como local de leitura padrão dos arquivos
+///</summary>
 begin
-    {TODO -oroger -cdsg : Leitura atributo}
-    Result := Self.ReadStringDefault(IE_TRANSBIO_PATH_CAPTURE, DV_TRANSBIO_PATH_CAPTURE);
+{$IFDEF DEBUG}
+	Result:='..\Data\TransBio.Bio';
+{$ELSE}
+	Result:=DV_TRANSBIO_PATH_CAPTURE;
+{$ENDIF}
+	 Result := Self.ReadStringDefault(IE_TRANSBIO_PATH_CAPTURE, Result);
+	 Result:=ExpandFileName( Result );
+end;
+
+function TELOTransbioConfig.GetPathBioServiceRepository : string;
+begin
+{$IFDEF DEBUG}
+    Result := ExpandFileName('..\Data\StationLocalCapturePath');
+{$ELSE}
+	 Result := DV_TRANSBIO_PATH_CAPTURE;
+{$ENDIF}
+    Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_BIOSERVICE_CAPTURE_PATH, Result));
 end;
 
 function TELOTransbioConfig.GetPathError : string;
@@ -493,7 +493,7 @@ begin
     Result := Self.ReadStringDefault(IE_TRANSBIO_PATH_RETRANS, DV_TRANSBIO_PATH_RETRANS);
 end;
 
-procedure TELOTransbioConfig.SetEloTransfBio(const Value : string);
+procedure TELOTransbioConfig.SetElo2TransBio(const Value : string);
 var
     reg : TRegistryNT;
 begin
@@ -506,10 +506,20 @@ begin
     end;
 end;
 
-procedure TELOTransbioConfig.SetPathCapture(const Value : string);
+procedure TELOTransbioConfig.SetPathBio(const Value : string);
+///<summary>
+///Escrita do caminho usado pelo transbio para servir como local de leitura padrão dos arquivos
+///</summary>
+///<remarks>
+///
+///</remarks>
 begin
-    {TODO -oroger -cdsg : Leitura atributo}
-    Self.WriteString(IE_TRANSBIO_PATH_CAPTURE, Value);
+	 Self.WriteString(IE_TRANSBIO_PATH_CAPTURE, Value);
+end;
+
+procedure TELOTransbioConfig.SetPathBioServiceRepository(const Value : string);
+begin
+
 end;
 
 procedure TELOTransbioConfig.SetPathError(const Value : string);

@@ -32,12 +32,13 @@ type
         FAccesTime :    TDateTime;
         FModifiedTime : TDateTime;
         FCreatedTime :  TDateTime;
-        FFilename :     string;
-        FIsInputFile :  boolean;
-        FStream :       TMemoryStream;
-        procedure SetFilename(const Value : string);
-        procedure InvalidWriteOperation(const AttrName : string);
-        function GetSize : int64;
+		 FFilename :     string;
+		 FHash : string;
+		 FIsInputFile :  boolean;
+		 FStream :       TMemoryStream;
+		 procedure SetFilename(const Value : string);
+		 procedure InvalidWriteOperation(const AttrName : string);
+		 function GetSize : int64;
         function GetHash : string;
     public
         property Filename : string read FFilename write SetFilename;
@@ -48,7 +49,8 @@ type
         property Size : int64 read GetSize;
         property Hash : string read GetHash;
         procedure ReadFromStream(AStream : TStream);
-        procedure SaveToFile(const Filename : string);
+		 procedure SaveToFile(const Filename : string);
+		 procedure SetAsDivergent();
         constructor CreateOutput(const Filename : string);
         constructor Create(strm : TStream);
         destructor Destroy; override;
@@ -413,7 +415,10 @@ end;
 
 function TTransferFile.GetHash : string;
 begin
-    Result := MD5(Self.FFilename);
+	if ( Self.FHash = EmptyStr ) then begin
+		Self.FHash := MD5(Self.FFilename);
+	end;
+	Result:=Self.FHash;
 end;
 
 function TTransferFile.GetSize : int64;
@@ -437,6 +442,17 @@ end;
 procedure TTransferFile.SaveToFile(const Filename : string);
 begin
 
+end;
+
+procedure TTransferFile.SetAsDivergent;
+///<summary>
+///Altera o nome do arquivo para "_divergent" e o move para as pastas de backup local
+///</summary>
+///<remarks>
+///
+///</remarks>
+begin
+   {TODO -oroger -cdsg : Altera o nome do arquivo para "_divergent" e o move para as pastas de backup local }
 end;
 
 procedure TTransferFile.SetFilename(const Value : string);
