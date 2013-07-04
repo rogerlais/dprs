@@ -76,6 +76,10 @@ var
     f :   TFileSystemEntry;
     cmp : string;
 begin
+    cmp := TFileHnd.FirstOccurrence(GlobalConfig.PathServiceCapture, BIOMETRIC_FILE_MASK);
+    if (cmp = EmptyStr) then begin
+        Exit;
+    end;
     cmp := WinNetHnd.GetComputerName();
     DMTCPTransfer.StartClient;
     try
@@ -193,7 +197,7 @@ begin
             Self.FCycleErrorCount := 0; //Reseta contador de erros do ciclo
         except
             on EComm : Exception do begin
-                LSRReportError( EComm );
+                LSRReportError(EComm);
             end;
         end;
         //Suspende este thread até a liberação pelo thread do serviço

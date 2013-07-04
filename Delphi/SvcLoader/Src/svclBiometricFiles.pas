@@ -92,21 +92,22 @@ begin
 end;
 
 procedure TBioFilesService.CheckLogs;
-///<summary>
-///Buscar por logs posteriores a data de registro, enviando todos aqueles que possuirem erros.
+ ///<summary>
+ ///Buscar por logs posteriores a data de registro, enviando todos aqueles que possuirem erros.
 /// A cada envio com sucesso avancar a data de registro para a data do respectivo arquivo de log e buscar pelo mais antigo até chegar ao log atual
-///</summary>
-///<remarks>
-///
-///</remarks>
+ ///</summary>
+ ///<remarks>
+ ///
+ ///</remarks>
 var
-	 Files : IEnumerable<TFileSystemEntry>;
-	 f :     TFileSystemEntry;
-	 currLogName, sentPath : string;
-	 logText : TXPStringList;
-	 dummy : Integer;
+    Files :  IEnumerable<TFileSystemEntry>;
+    f :      TFileSystemEntry;
+    currLogName, sentPath : string;
+    logText : TXPStringList;
+    dummy :  Integer;
+    sentOK : boolean;
 begin
-	 currLogName := AppLog.TLogFile.GetDefaultLogFile.FileName;
+    currLogName := AppLog.TLogFile.GetDefaultLogFile.FileName;
     Files := TDirectory.FileSystemEntries(GlobalConfig.PathServiceLog, '*.log', False);
     for f in Files do begin
         if (not Sametext(f.FullName, currLogName)) then begin //Pula o arquivo em uso no momento como saida de log
@@ -117,18 +118,22 @@ begin
                 if (logText.FindPos('erro:', dummy, dummy)) then begin
                     try
                         Self.SendMailNotification(logText.Text);
+                        sentOK := True;
                     except
                         on E : Exception do begin  //Apenas logar a falha de envio e continuar com os demais arquivos
                             TLogFile.Log('Envio de notificações de erro falhou:'#13#10 + E.Message, lmtError);
+                            sentOK := False;
                         end;
                     end;
                 end;
                 //mover arquivo para a pasta de enviados applog
-                sentPath := GlobalConfig.PathServiceLog + '\Sent\';
-                ForceDirectories(sentPath);
-                sentPath := sentPath + F.Name;
-                if (not MoveFile(PWideChar(F.FullName), PWideChar((sentPath)))) then begin
-					 TLogFile.Log('Final do processamento de arquivo de log falhou:'#13#10 + SysErrorMessage(GetLastError()), lmtError);
+                if (sentOK) then begin
+                    sentPath := GlobalConfig.PathServiceLog + '\Sent\';
+                    ForceDirectories(sentPath);
+                    sentPath := sentPath + F.Name;
+                    if (not MoveFile(PWideChar(F.FullName), PWideChar((sentPath)))) then begin
+                        TLogFile.Log('Final do processamento de arquivo de log falhou:'#13#10 + SysErrorMessage(GetLastError()), lmtError);
+                    end;
                 end;
             finally
                 logText.Free;
