@@ -59,9 +59,9 @@ end;
 
 procedure TForm3.FormCreate(Sender : TObject);
 begin
-    Self.chkServerSwitch.Checked := GlobalConfig.isPrimaryComputer;
+    Self.chkServerSwitch.Checked := GlobalConfig.RunAsServer;
     Self.edtDir.Directory := GlobalConfig.PathELOBioService;
-    Self.edtDirOutput.Directory := GlobalConfig.PathELOTransbioTrans;
+    Self.edtDirOutput.Directory := GlobalConfig.PathLocalBackup;
     TLogFile.GetDefaultLogFile.OnMessageReceived := Self.DoCopyLogMessage;
      {$IFDEF DEBUG}
     TLogFile.GetDefaultLogFile.DebugLevel := DBGLEVEL_ULTIMATE;

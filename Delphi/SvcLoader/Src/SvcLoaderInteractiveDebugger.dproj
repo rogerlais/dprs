@@ -58,6 +58,7 @@
 			</DCCReference>
 			<DCCReference Include="svclConfig.pas"/>
 			<DCCReference Include="svclTCPTransfer.pas"/>
+			<None Include="..\Debug\SvcLoaderInteractiveDebugger.ini"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

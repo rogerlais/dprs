@@ -114,8 +114,9 @@ begin
             logText := TXPStringList.Create;
             try
                 logText.LoadFromFile(f.FullName);
-                dummy := 1; //Sempre do inicio
-                if (logText.FindPos('erro:', dummy, dummy)) then begin
+				 dummy := 1; //Sempre do inicio
+				 sentOk:=not logText.FindPos('erro:', dummy, dummy);
+				 if (not sentOK) then begin
                     try
                         Self.SendMailNotification(logText.Text);
                         sentOK := True;

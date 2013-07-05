@@ -8,15 +8,15 @@ unit svclTransBio;
 interface
 
 uses
-    SysUtils, Windows, Classes, XPFileEnumerator, XPThreads;
+    SysUtils, Windows, Classes, XPFileEnumerator, XPThreads, svclTCPTransfer;
 
 type
-    TTransBioThread = class(TXPNamedThread)
-    private
-        FCycleErrorCount : Integer;
-        procedure DoClientCycle;
-        procedure DoServerCycle;
-        procedure ReplicDataFiles2PrimaryMachine(const Filename : string);
+	 TTransBioThread = class(TXPNamedThread)
+	 private
+		 FCycleErrorCount : Integer;
+		 procedure DoClientCycle;
+		 procedure DoServerCycle;
+		 procedure ReplicDataFiles2PrimaryMachine(BioFile : TTransferFile );
         procedure CreatePrimaryBackup(const DirName : string);
         procedure CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
         procedure StoreTransmitted(SrcFile : TFileSystemEntry);
@@ -28,7 +28,7 @@ type
 implementation
 
 uses
-    svclConfig, FileHnd, AppLog, svclUtils, svclTCPTransfer, WinNetHnd, WinReg32, AppSettings, JclSysInfo, svclBiometricFiles;
+    svclConfig, FileHnd, AppLog, svclUtils, WinNetHnd, WinReg32, AppSettings, JclSysInfo, svclBiometricFiles;
 
 { TTransBioThread }
 procedure TTransBioThread.CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
@@ -70,107 +70,115 @@ begin
 end;
 
 procedure TTransBioThread.DoClientCycle;
-///Inicia novo ciclo de operação
-///
+ ///Inicia novo ciclo de operação
+ ///
 
-procedure LSRSearchDivergents( list : TStringList );
-//--------------------------------------------------------
-///<summary>
-///Varre lista de arquivos ordenada por nome por arquivos com hash divergente. Encontrando
-///</summary>
-///<remarks>
-///
-///</remarks>
-var
-	x : Integer;
-	f1, f2 : TTransferFile;
-	oldName : string;
-begin
-	x:=list.Count-1; //pivot no final da lista para comparar aos pares
-	while( x >=0 ) do begin
-		if ( list.Strings[x] = list.Strings[x-1] ) then begin //comparar os hash
-			f1:=TTransferFile( list.Objects[x-1] );
-			f2:=TTransferFile( list.Objects[x] );
-			if ( f1.Hash <> f2.Hash ) then begin //Renomear e remover os não constantes na pasta Bioservice
-				if ( not SameText( TFileHnd.ParentDir(f2.Filename ) , GlobalConfig.PathELOBioService )  ) then begin
-					f2.SetAsDivergent;
-					f2.Free;
-					list.Delete( x );
-					x:=list.Count; //recomeçar
-					System.Continue;
-				end;
-			end;
-		end;
-		Dec( x ); //Pula para o par seguinte, se houver
-   end;
-end;
+    procedure LSRSearchDivergents(list : TStringList);
+    //--------------------------------------------------------
+    ///<summary>
+    ///Varre lista de arquivos ordenada por nome por arquivos com hash divergente. Encontrando
+    ///</summary>
+    ///<remarks>
+    ///
+    ///</remarks>
+    var
+        x : Integer;
+        f1, f2 : TTransferFile;
+    begin
+        x := list.Count - 1; //pivot no final da lista para comparar aos pares
+        while (x > 0) do begin
+            if (list.Strings[x] = list.Strings[x - 1]) then begin //comparar os hash
+                f1 := TTransferFile(list.Objects[x - 1]);
+                f2 := TTransferFile(list.Objects[x]);
+                if (f1.Hash <> f2.Hash) then begin //Renomear e remover os não constantes na pasta Bioservice
+                    if (not SameText(TFileHnd.ParentDir(f2.Filename), GlobalConfig.PathELOBioService)) then begin
+                        f2.SetAsDivergent;
+                        f2.Free;
+                        list.Delete(x);
+                    end else begin
+                        if (not SameText(TFileHnd.ParentDir(f1.Filename), GlobalConfig.PathELOBioService)) then begin
+                            f1.SetAsDivergent;
+                            f1.Free;
+                            list.Delete(x - 1);
+                        end;
+                    end;
+                    x := list.Count -1; //recomeçar
+                    System.Continue;
+                end;
+            end;
+            Dec(x); //Pula para o par seguinte, se houver
+        end;
+    end;
 
 var
-	 FileEnt : IEnumerable<TFileSystemEntry>;
-	 f :   TFileSystemEntry;
-	 cmp : string;
+    FileEnt : IEnumerable<TFileSystemEntry>;
+    f :   TFileSystemEntry;
+    cmp : string;
 	 FileList : TStringList;
+	 x : Integer;
+	 bioFile : TTransferFile;
 begin
-	 //Coleta a lista de arquivos para a operação neste ciclo
-	 FileList := TStringList.Create;
-	 try
-		 FileList.Sorted := True;
-		 FileList.Duplicates := dupIgnore;
-		 {TODO -oroger -cdebug : Ponto critico de verificação de memory leak}
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathELOBioService, BIOMETRIC_FILE_MASK, False); //repositorio Bioservice
-		 for f in FileEnt do begin
-			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-		 end;
+	 {TODO -oroger -cdebug : Ponto critico de verificação de memory leak}
+    //Coleta a lista de arquivos para a operação neste ciclo
+    FileList := TStringList.Create;
+    try
+        FileList.Sorted     := True;
+        FileList.Duplicates := dupAccept;
 
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.Elo2TransBio, BIOMETRIC_FILE_MASK, False);
-		 //repositorio TransBio(Bio)
-		 for f in FileEnt do begin
-			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-		 end;
+        //repositorio Bioservice(Bio)
+        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathELOBioService, BIOMETRIC_FILE_MASK, False); //repositorio Bioservice
+        for f in FileEnt do begin
+            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
+        end;
 
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathBio, BIOMETRIC_FILE_MASK, False);
-		 //repositorio TransBio(Trans)
-		 for f in FileEnt do begin
-			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-		 end;
+        //repositorio TransBio(Bio)
+        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.Elo2TransBio, BIOMETRIC_FILE_MASK, False);
+        for f in FileEnt do begin
+            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
+        end;
 
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathELOTransbioReTrans, BIOMETRIC_FILE_MASK, False);
-		 //repositorio TransBio(ReTrans)
-		 for f in FileEnt do begin
-			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-		 end;
+        //repositorio TransBio(Trans)
+        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathTransmitted, BIOMETRIC_FILE_MASK, False);
+        for f in FileEnt do begin
+            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
+        end;
 
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathELOTransbioError, BIOMETRIC_FILE_MASK, False);
-		 //repositorio TransBio(Erro)
-		 for f in FileEnt do begin
+        //repositorio TransBio(ReTrans)
+        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathRetrans, BIOMETRIC_FILE_MASK, False);
+        for f in FileEnt do begin
+            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
+        end;
+
+        //repositorio TransBio(Erro)
+        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathError, BIOMETRIC_FILE_MASK, False);
+        for f in FileEnt do begin
 			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
 		 end;
 
 		 //Inicia busca por divergentes
-        LSRSearchDivergents( FileList );
+		 LSRSearchDivergents(FileList);
 
 		 //Processa a lista de arquivos para envio
-		 cmp := TFileHnd.FirstOccurrence(GlobalConfig.PathServiceCapture, BIOMETRIC_FILE_MASK);
-		 if (cmp = EmptyStr) then begin
+		 if (FileList.Count <= 0 ) then begin
 			 Exit;
 		 end;
 		 cmp := WinNetHnd.GetComputerName();
 		 DMTCPTransfer.StartClient;
 		 try
-			 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathServiceCapture, BIOMETRIC_FILE_MASK, False);
 			 DMTCPTransfer.StartSession(cmp);
 			 try
 				 //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
-				 for f in FileEnt do begin
-					 Self.ReplicDataFiles2PrimaryMachine(f.FullName);
+				 for x:=0 to FileList.Count -1  do begin
+					 bioFile:=TTransferFile( FileList.Objects[x] );
+					 Self.ReplicDataFiles2PrimaryMachine( bioFile );
 				 end;
-			 finally
-				 DMTCPTransfer.EndSession(cmp);
-			 end;
+            finally
+                DMTCPTransfer.EndSession(cmp);
+            end;
         finally
             DMTCPTransfer.StopClient;
         end;
-	 finally
+    finally
         FileList.Free;
     end;
 
@@ -183,39 +191,28 @@ begin
     Self.CreatePrimaryBackup(GlobalConfig.PathServerBackup);
 end;
 
-procedure TTransBioThread.ReplicDataFiles2PrimaryMachine(const Filename : string);
+procedure TTransBioThread.ReplicDataFiles2PrimaryMachine( BioFile : TTransferFile );
  //Realiza a operação unitária com o arquivo dado:
  //1 - Copia para a pasta local de transmissão
  //2 - Copia para a pasta de transmissão primária
  //3 - Copia para o bakup local
  //4 - Apaga do local de aquisição
 const
-    ERR_MSG: string = 'Falha copiando arquivo'#13'%s'#13'para'#13'%s'#13'%s'#13'%s';
+	 ERR_MSG: string = 'Falha copiando arquivo'#13'%s'#13'para'#13'%s'#13'%s'#13'%s';
 var
-    PrimaryTransName, LocalTransName, LocalBackupName : string;
-    tf : TTransferFile;
+	 LocalTransName, LocalBackupName : string;
 begin
-    {TODO -oroger -cdsg : empacotar e enviar para servidor}
+	 {TODO -oroger -cdsg : empacotar e enviar para servidor}
 
-    tf := TTransferFile.CreateOutput(Filename);
-    try
-        DMTCPTransfer.SendFile(tf);
-    finally
-        tf.Free;
-    end;
+	 DMTCPTransfer.SendFile(BioFile);
 
+	 //Copia para a pasta local de transmissão
+	 LocalTransName := TFileHnd.ConcatPath([GlobalConfig.PathServiceCapture, ExtractFileName(BioFile.Filename)]);
+	 Self.CopyBioFile(BioFile.Filename, LocalTransName, 'Transbio Local', ERR_MSG, False);
 
-    //Copia para a pasta local de transmissão
-    LocalTransName := TFileHnd.ConcatPath([GlobalConfig.PathServiceCapture, ExtractFileName(Filename)]);
-    Self.CopyBioFile(Filename, LocalTransName, 'Transbio Local', ERR_MSG, False);
-
-	 //Copia arquivo para local remoto de transmissão
-	 //PrimaryTransName := TFileHnd.ConcatPath([GlobalConfig.TransbioConfig.PathBioServiceRepository, ExtractFileName(Filename)]);
-    //Self.CopyBioFile(Filename, PrimaryTransName, 'Repositório primário', ERR_MSG, False);
-
-    //Move arquivo para backup local
-    LocalBackupName := TFileHnd.ConcatPath([GlobalConfig.PathLocalBackup, ExtractFileName(Filename)]);
-    Self.CopyBioFile(Filename, LocalBackupName, 'Backup Local', ERR_MSG, True);
+	 //Move arquivo para backup local
+	 LocalBackupName := TFileHnd.ConcatPath([GlobalConfig.PathLocalBackup, ExtractFileName(BioFile.Filename)]);
+	 Self.CopyBioFile(BioFile.Filename, LocalBackupName, 'Backup Local', ERR_MSG, True);
 end;
 
 procedure TTransBioThread.Execute;
@@ -268,7 +265,7 @@ begin
     Self.FCycleErrorCount := 0;
     while Self.IsAlive do begin
         try
-            if (GlobalConfig.isPrimaryComputer) then begin {TODO -oroger -cdsg : remover computador primario por flag servidor/estacao}
+            if (GlobalConfig.RunAsServer) then begin
                 Self.DoServerCycle;
             end else begin
                 Self.DoClientCycle;
@@ -293,35 +290,36 @@ var
 begin
     //**** Configurações do TransBio *****
     //Todas as configurações do TransBio forcadas desta forma, caso o ini do serviço esteja ompleto
-	 if (Assigned(GlobalConfig.TransbioConfig)) then begin
-		 GlobalConfig.TransbioConfig.Import(GlobalConfig, 'TransBio', '', True);
-	 end;
-	 //Caminhos de configuração do elo e pasta de transmissão do Transbio devem ser iguais, notificar para divergente
-	 if (not SameText(GlobalConfig.TransbioConfig.Elo2TransBio, GlobalConfig.TransbioConfig.PathBio)) then begin
-		 BioFilesService.SendMailNotification(
-			 'Caminhos de destino do arquivos biométricos do elo divergente do caminho de leitura do serviço Transbio nesta estação');
-	 end;
+    if (Assigned(GlobalConfig.TransbioConfig)) then begin
+        GlobalConfig.TransbioConfig.Import(GlobalConfig, 'TransBio', '', True);
+    end;
+    //Caminhos de configuração do elo e pasta de transmissão do Transbio devem ser iguais, notificar para divergente
+    if (not SameText(GlobalConfig.TransbioConfig.Elo2TransBio, GlobalConfig.TransbioConfig.PathBio)) then begin
+        BioFilesService.SendMailNotification(
+            'Caminhos de destino do arquivos biométricos do elo divergente do caminho de leitura do serviço Transbio nesta estação'#13#10 +
+            'ELO=' + GlobalConfig.TransbioConfig.Elo2TransBio + #13#10 +
+            'TransBio=' + GlobalConfig.TransbioConfig.PathBio);
+    end;
 
-	 if (not IsDebuggerPresent) then begin
-		 if (JclSysInfo.GetWindowsVersion() > wvWinXP) then begin
-			 raise Exception.Create('Versão do windows não suportada(Requer elevação)');
-		 end;
-
-		 //Configurações do ELO
-		 EloReg := TRegistryNT.Create;
-		 try
-			 try
-				 EloReg.WriteFullString(ELO_TRANSFER_TRANSBIO_PATH, GlobalConfig.TransbioConfig.PathBio, True);
-			 finally
-				 EloReg.Free;
-			 end;
-		 except
-			 on E : Exception do begin
-				 {TODO -oroger -cdsg : Registrar a falha e continuar com a operação}
-			 end;
-		 end;
-
-	 end;
+    //Configurações do ELO a serem forçadas
+    if (not IsDebuggerPresent) then begin
+        if (JclSysInfo.GetWindowsVersion() > wvWinXP) then begin
+            raise Exception.Create('Versão do windows não suportada(Requer elevação)');
+        end;
+        //Configurações do ELO(Local onde serão armazenados o arquivos lidos do Bioservice)
+        EloReg := TRegistryNT.Create;
+        try
+            try
+                EloReg.WriteFullString(ELO_TRANSFER_TRANSBIO_PATH, GlobalConfig.TransbioConfig.PathBio, True);
+            finally
+                EloReg.Free;
+            end;
+        except
+            on E : Exception do begin
+                TLogFile.Log('Configuração do ELO não foram forçadas corretamente'#13#10 + E.Message, lmtWarning);
+            end;
+        end;
+    end;
 end;
 
 procedure TTransBioThread.StoreTransmitted(SrcFile : TFileSystemEntry);
