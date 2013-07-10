@@ -220,14 +220,15 @@ procedure TDMTCPTransfer.StartClient;
  ///</remarks>
 begin
     Self.tcpclnt.ConnectTimeout := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
-    Self.tcpclnt.Host      := GlobalConfig.PrimaryComputerName;
-    Self.tcpclnt.Port      := GlobalConfig.NetServicePort;
-    Self.tcpclnt.OnDisconnected := tcpclntDisconnected;
-    Self.tcpclnt.OnConnected := tcpclntConnected;
-    Self.tcpclnt.ConnectTimeout := 0;
-    Self.tcpclnt.IPVersion := Id_IPv4;
-    Self.tcpclnt.ReadTimeout := -1;
-    TLogFile.LogDebug(Format('Falando na porta: %d', [GlobalConfig.NetServicePort]), DBGLEVEL_DETAILED);
+	 Self.tcpclnt.Host      := GlobalConfig.PrimaryComputerName;
+	 Self.tcpclnt.Port      := GlobalConfig.NetServicePort;
+	 Self.tcpclnt.OnDisconnected := tcpclntDisconnected;
+	 Self.tcpclnt.OnConnected := tcpclntConnected;
+	 Self.tcpclnt.ConnectTimeout := 0;
+	 Self.tcpclnt.IPVersion := Id_IPv4;
+	 Self.tcpclnt.ReadTimeout := -1;
+	 TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)',
+		[GlobalConfig.NetServicePort, GlobalConfig.PrimaryComputerName ]), DBGLEVEL_DETAILED);
 end;
 
 
@@ -447,10 +448,10 @@ var
 begin
 	 {TODO -oroger -cdsg : Altera o nome do arquivo para "_divergent" e o move para as pastas de backup local }
     newName := TFileHnd.ExtractFilenamePure(Self.FFilename);
-    newName := TFileHnd.ConcatPath([GlobalConfig.PathClientBackup, newName + '_divergent.' + ExtractFileExtension(Self.FFilename)]);
+	 newName := TFileHnd.ConcatPath([GlobalConfig.PathOrderlyBackup, newName + '_divergent.' + SysUtils.ExtractFileExt(Self.FFilename)]);
     if (FileExists(newName)) then begin
         newName := TFileHnd.NextFamilyFilename(newName); //unicidade no destino
-    end;
+	 end;
     if (MoveFile(PWideChar(Self.FFilename), PWideChar(newName))) then begin
         Self.FFilename := newName;
     end else begin
