@@ -1,3 +1,8 @@
+{$IFDEF svclEditConfigForm}
+	 {$DEFINE DEBUG_UNIT}
+{$ENDIF}
+{$I SvcLoader.inc}
+
 unit svclEditConfigForm;
 
 interface

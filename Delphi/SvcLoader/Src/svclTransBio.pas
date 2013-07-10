@@ -65,7 +65,7 @@ var
 begin
     FileEnt := TDirectory.FileSystemEntries(DirName, BIOMETRIC_FILE_MASK, False);
     for f in FileEnt do begin
-        Self.StoreTransmitted(f);
+		 Self.StoreTransmitted(f);
     end;
 end;
 
@@ -187,7 +187,7 @@ procedure TTransBioThread.DoServerCycle;
 ///Inicia novo ciclo de operação do servidor
 begin
     //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
-    Self.CreatePrimaryBackup(GlobalConfig.PathServerBackup);
+	 Self.CreatePrimaryBackup(GlobalConfig.PathServerBackup);
 end;
 
 procedure TTransBioThread.ReplicDataFiles2PrimaryMachine( BioFile : TTransferFile );
@@ -207,10 +207,7 @@ begin
 	 //Envia o arquivo para o servidor, passando ok -> realiza seu backup local
 	 DMTCPTransfer.SendFile(BioFile);
 
-	 //Copia para a pasta de backup agrupado por data "Backup Cliente"
-	 TFileHnd.FileTimeProperties( BioFile.Filename, dummy, dummy, fileDate );
-	 DateFolderName:=FormatDateTime( 'YYYYMMDD', fileDate );
-	 DestFilename := TFileHnd.ConcatPath([GlobalConfig.PathOrderlyBackup, DateFolderName, ExtractFileName(BioFile.Filename)]);
+	 DestFilename := TFileHnd.ConcatPath([GlobalConfig.PathOrderlyBackup, BioFile.DateStamp, ExtractFileName(BioFile.Filename)]);
 	 Self.CopyBioFile(BioFile.Filename, DestFilename, 'Backup do cliente', ERR_MSG, False);
 
 	 //Move arquivo para backup local, todos os arquivos sem agrupamento
@@ -329,15 +326,15 @@ procedure TTransBioThread.StoreTransmitted(SrcFile : TFileSystemEntry);
  /// Move arquivo da pasta de transmitidos de acordo com a data de criação para a pasta raiz de armazenamento
  ///
 var
-    DestPath, FullDateStr, sy, sm, sd : string;
-    dummy, t : TDateTime;
+	 DestPath, FullDateStr, sy, sm, sd : string;
+	 dummy, t : TDateTime;
 begin
-    TFileHnd.FileTimeProperties(SrcFile.FullName, dummy, dummy, t);
-    FullDateStr := FormatDateTime('YYYYMMDD', t);
-    sy := Copy(FullDateStr, 1, 4);
-    sm := Copy(FullDateStr, 5, 2);
-    sd := Copy(FullDateStr, 7, 2);
-    DestPath := TFileHnd.ConcatPath([GlobalConfig.PathOrderlyBackup, sy, sm, sd]);
+	 TFileHnd.FileTimeProperties(SrcFile.FullName, dummy, dummy, t);
+	 FullDateStr := FormatDateTime('YYYYMMDD', t);
+	 sy := Copy(FullDateStr, 1, 4);
+	 sm := Copy(FullDateStr, 5, 2);
+	 sd := Copy(FullDateStr, 7, 2);
+	 DestPath := TFileHnd.ConcatPath([GlobalConfig.PathOrderlyBackup, sy, sm, sd]);
     ForceDirectories(DestPath);
     if (not MoveFile(PChar(SrcFile.FullName), PChar(DestPath + '\' + SrcFile.Name))) then begin
         TLogFile.Log('Erro movendo arquivo para o repositório definitivo no computador primário'#13 +

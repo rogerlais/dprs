@@ -186,7 +186,7 @@ function TBioReplicatorConfig.GetBioServiceGeneratorPath : string;
     ///</summary>
 begin
 {$IFDEF DEBUG}
-    Result := ExpandFileName('..\Data\BioService.Bio');
+	 Result := '..\Data\BioService.Bio';
 {$ELSE}
 	 Result := DV_TRANSBIO_PATH_BIOSERVICE;
 {$ENDIF}
