@@ -14,7 +14,7 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object btnStart: TBitBtn
-    Left = 24
+    Left = 30
     Top = 24
     Width = 75
     Height = 25
@@ -55,27 +55,16 @@ object Form1: TForm1
     TabOrder = 3
     OnClick = btnCloseClick
   end
-  object btnRegister: TBitBtn
+  object btnEditConfig: TBitBtn
     Left = 111
     Top = 80
     Width = 75
     Height = 25
-    Caption = 'Registro'
+    Caption = 'Edit Config'
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 4
-    OnClick = btnRegisterClick
-  end
-  object btnGetDomain: TBitBtn
-    Left = 105
-    Top = 136
-    Width = 75
-    Height = 25
-    Caption = 'btnServiceLogon'
-    DoubleBuffered = True
-    ParentDoubleBuffered = False
-    TabOrder = 5
-    OnClick = btnGetDomainClick
+    OnClick = btnEditConfigClick
   end
   object tmrServiceThread: TTimer
     Enabled = False

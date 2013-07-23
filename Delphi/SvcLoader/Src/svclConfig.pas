@@ -32,10 +32,8 @@ type
         function GetElo2TransBio : string;
         procedure SetElo2TransBio(const Value : string);
         function GetPathBioServiceRepository : string;
-        procedure SetPathBioServiceRepository(const Value : string);
-    public
-        property PathBioServiceRepository : string read GetPathBioServiceRepository write SetPathBioServiceRepository;
-        property PathBio : string read GetPathBio write SetPathBio;
+	 public
+		 property PathBio : string read GetPathBio write SetPathBio;
         property PathTransmitted : string read GetPathTransmitted write SetPathTransmitted;
         property PathError : string read GetPathError write SetPathError;
         property PathRetrans : string read GetPathRetrans write SetPathRetrans;
@@ -57,7 +55,7 @@ type
         function GetPathLocalBackup : string;
         function GetPathClientBackup : string;
         function GetPathServerBackup : string;
-        function GetPathServiceCapture : string;
+		 function GetPathServiceCapture : string;
         function GetPrimaryComputerName : string;
         function GetServicePassword : string;
         function GetServiceUsername : string;
@@ -76,13 +74,13 @@ type
         property EncryptServicePassword : string read GetEncryptServicePassword;
         property RunAsServer : boolean read GetisPrimaryComputer;
         property NetServicePort : Integer read GetNetServicePort;
-        property PathELOBioService : string read GetBioServiceGeneratorPath;
+		 property PathELOBioService : string read GetBioServiceGeneratorPath;
 		 property PathELOTransbioConfigFile : string read GetPathELOTransbioConfigFile;
         property PathFullyBackup : string read GetPathLocalBackup;
         property PathOrderlyBackup : string read GetPathClientBackup;
         property PathServerBackup : string read GetPathServerBackup;
-        property PathServiceCapture : string read GetPathServiceCapture;
-        property PathServiceLog : string read GetPathServiceLog;
+		 property PathServiceCapture : string read GetPathServiceCapture;
+		 property PathServiceLog : string read GetPathServiceLog;
         property PrimaryComputerName : string read GetPrimaryComputerName;
         property ServicePassword : string read GetServicePassword;
         property ServiceUsername : string read GetServiceUsername;
@@ -363,7 +361,7 @@ function TBioReplicatorConfig.GetPathServiceCapture : string;
     ///</remarks>
 begin
 {$IFDEF DEBUG}
-    Result := ExpandFileName('..\Data\StationLocalCapturePath');
+	 Result := ExpandFileName('..\Data\StationLocalCapturePath');
 {$ELSE}
 	 Result := DV_TRANSBIO_PATH_CAPTURE;
 {$ENDIF}
@@ -467,28 +465,24 @@ end;
 
 function TELOTransbioConfig.GetPathError : string;
 begin
-    {TODO -oroger -cdsg : Leitura atributo}
-    Result := ExpandFilename(Self.ReadStringDefault(IE_TRANSBIO_PATH_ERROR, DV_TRANSBIO_PATH_ERROR));
+	 Result := ExpandFilename(Self.ReadStringDefault(IE_TRANSBIO_PATH_ERROR, DV_TRANSBIO_PATH_ERROR));
 end;
 
 function TELOTransbioConfig.GetPathRetrans : string;
 begin
-    {TODO -oroger -cdsg : Leitura atributo}
-    Result := ExpandFilename(Self.ReadStringDefault(IE_TRANSBIO_PATH_RETRANS, DV_TRANSBIO_PATH_RETRANS));
+	 Result := ExpandFilename(Self.ReadStringDefault(IE_TRANSBIO_PATH_RETRANS, DV_TRANSBIO_PATH_RETRANS));
 end;
 
 function TELOTransbioConfig.GetPathTransmitted : string;
 begin
-    {TODO -oroger -cdsg : Leitura atributo}
-    Result := ExpandFilename(Self.ReadStringDefault(IE_TRANSBIO_PATH_TRANSMITTED, DV_TRANSBIO_PATH_TRANSMITTED));
+	 Result := ExpandFilename(Self.ReadStringDefault(IE_TRANSBIO_PATH_TRANSMITTED, DV_TRANSBIO_PATH_TRANSMITTED));
 end;
 
 procedure TELOTransbioConfig.SetElo2TransBio(const Value : string);
 var
-    reg : TRegistryNT;
+	 reg : TRegistryNT;
 begin
-    {TODO -oroger -cdsg : escrita atributo}
-    reg := TRegistryNT.Create;
+	 reg := TRegistryNT.Create;
     try
         reg.WriteFullString(ELO_TRANSFER_TRANSBIO_PATH, Value, True);
     finally
@@ -507,27 +501,19 @@ begin
     Self.WriteString(IE_TRANSBIO_PATH_CAPTURE, Value);
 end;
 
-procedure TELOTransbioConfig.SetPathBioServiceRepository(const Value : string);
-begin
-
-end;
-
 procedure TELOTransbioConfig.SetPathError(const Value : string);
 begin
-    {TODO -oroger -cdsg : Leitura atributo}
-    Self.WriteString(IE_TRANSBIO_PATH_ERROR, Value);
+	 Self.WriteString(IE_TRANSBIO_PATH_ERROR, Value);
 end;
 
 procedure TELOTransbioConfig.SetPathRetrans(const Value : string);
 begin
-    {TODO -oroger -cdsg : Leitura atributo}
-    Self.WriteString(IE_TRANSBIO_PATH_RETRANS, Value);
+	 Self.WriteString(IE_TRANSBIO_PATH_RETRANS, Value);
 end;
 
 procedure TELOTransbioConfig.SetPathTransmitted(const Value : string);
 begin
-    {TODO -oroger -cdsg : Leitura atributo}
-    Self.WriteString(IE_TRANSBIO_PATH_TRANSMITTED, Value);
+	 Self.WriteString(IE_TRANSBIO_PATH_TRANSMITTED, Value);
 end;
 
 initialization

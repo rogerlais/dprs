@@ -9,7 +9,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls, svclConfig, Mask, JvExMask, JvToolEdit;
+  Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls, svclConfig, Mask, JvExMask, JvToolEdit, Spin;
 
 type
   TEditConfigForm = class(TForm)
@@ -18,9 +18,26 @@ type
 	 btnCancel: TBitBtn;
 	 pnlTop: TPanel;
 	 chkServerMode: TCheckBox;
-	 tbcConfig: TTabControl;
+    tbcConfig: TPageControl;
+    tsClientConfig: TTabSheet;
+    tsServerConfig: TTabSheet;
+    lblSourceBioService: TLabel;
     edtDirCapturePath: TJvDirectoryEdit;
-    lblSourceFilePath: TLabel;
+    edtDir1: TJvDirectoryEdit;
+    lblTrasnBioBio: TLabel;
+    edtDirTransBioTrans: TJvDirectoryEdit;
+    lblTransBioTrans: TLabel;
+    edtDirTransBioRetrans: TJvDirectoryEdit;
+    lblTransBioRetrans: TLabel;
+    edtDirTransBioError: TJvDirectoryEdit;
+    lblTransBioError: TLabel;
+    edtDirELO2TransBio: TJvDirectoryEdit;
+    lblELO2TransBio: TLabel;
+    lblServername: TLabel;
+    edtServername: TEdit;
+    tsCommon: TTabSheet;
+    edtTCPPort: TSpinEdit;
+    lblTCPPort: TLabel;
   private
 	 { Private declarations }
 	 procedure LoadConfig();
@@ -60,7 +77,7 @@ begin
 	{TODO -oroger -cdsg : Carrega as configurações para os controles}
 
 
-	 Self.edtDirCapturePath.Text:=GlobalConfig.PathServiceCapture;
+	 Self.edtDirCapturePath.Text:=GlobalConfig.PathELOBioService;
 
 
 {

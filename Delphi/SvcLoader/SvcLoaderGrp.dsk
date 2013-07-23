@@ -17,16 +17,16 @@ File_14=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\AppLog.pas',0,1,259,47,275,0
 
 [Modules]
 Module0=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
-Module1=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
-Module2=default.htm
+Module1=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj
+Module2=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
 Module3=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Data\TransBioELO.ini
 Module4=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Debug\SvcLoaderInteractiveDebugger.ini
 Module5=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclEditConfigForm.pas
 Module6=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas
 Module7=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
-Module8=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj
-Module9=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
-Module10=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20
+Module8=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
+Module9=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20
+Module10=default.htm
 Count=11
 EditWindowCount=1
 
@@ -35,13 +35,13 @@ ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
+[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj]
+ModuleType=TBaseProject
+
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas]
 ModuleType=TSourceModule
 FormState=1
 FormOnTop=0
-
-[default.htm]
-ModuleType=TURLModule
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Data\TransBioELO.ini]
 ModuleType=TSourceModule
@@ -64,9 +64,6 @@ ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj]
-ModuleType=TBaseProject
-
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas]
 ModuleType=TSourceModule
 FormState=1
@@ -74,6 +71,9 @@ FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20]
 ModuleType=TTogetherDocModule
+
+[default.htm]
+ModuleType=TURLModule
 
 [EditWindow0]
 ViewCount=11
@@ -109,7 +109,7 @@ LeftPanelSize=1177
 LeftPanelClients=PropertyInspector,DockSite1
 LeftPanelData=00000800010100000000D00E0000000000000199040000000000000100000000F209000009000000446F636B53697465310100000000551A00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=1318
-RightPanelClients=DockSite2,DockSite0
+RightPanelClients=DockSite0,DockSite2
 RightPanelData=00000800010100000000D00E00000000000001260500000000000001000000004412000009000000446F636B53697465300100000000551A000009000000446F636B5369746532FFFFFFFF
 BottomPanelSize=2019
 BottomPanelClients=DockSite3,DockSite4
@@ -134,8 +134,8 @@ EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
 [View2]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
-CursorX=53
-CursorY=209
+CursorX=88
+CursorY=200
 TopLine=189
 LeftCol=1
 Elisions=
@@ -349,8 +349,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-1667
-Top=229
+Left=-1793
+Top=-101
 Width=276
 Height=352
 MaxLeft=-1
@@ -451,8 +451,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-1675
-Top=-63
+Left=-1667
+Top=-101
 Width=2844
 Height=6204
 MaxLeft=-1
@@ -472,11 +472,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
+Width=5000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
+ClientWidth=5000
 ClientHeight=1574
 TBDockHeight=2315
 LRDockWidth=2823
@@ -537,12 +537,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=661
-Height=6389
+Width=1318
+Height=8833
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=661
-ClientHeight=6389
+ClientWidth=1318
+ClientHeight=8833
 TBDockHeight=4880
 LRDockWidth=7151
 Dockable=1
@@ -576,12 +576,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=661
-Height=6389
+Width=1318
+Height=8833
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=661
-ClientHeight=6389
+ClientWidth=1318
+ClientHeight=8833
 TBDockHeight=4880
 LRDockWidth=5307
 Dockable=1
@@ -593,8 +593,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=0
-Top=-1003
+Left=-113
+Top=-101
 Width=1844
 Height=3148
 MaxLeft=-1
@@ -689,7 +689,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=1318
 ClientHeight=4426
-TBDockHeight=6620
+TBDockHeight=9065
 LRDockWidth=1318
 Dockable=1
 StayOnTop=0
@@ -790,9 +790,9 @@ LRDockWidth=8250
 Dockable=1
 StayOnTop=0
 TabPosition=1
-ActiveTabID=FindReferencsForm
+ActiveTabID=LocalVarsWindow
 TabDockClients=LocalVarsWindow,WatchWindow,CallStackWindow,ThreadStatusWindow,BreakpointWindow,DebugLogView,FindReferencsForm,RefactoringForm
 
 [ActiveProject]
-ActiveProject=7
+ActiveProject=11
 

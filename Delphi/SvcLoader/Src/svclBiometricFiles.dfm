@@ -1,7 +1,6 @@
 object BioFilesService: TBioFilesService
   OldCreateOrder = False
   OnCreate = ServiceCreate
-  AllowPause = False
   Dependencies = <
     item
       Name = 'Netlogon'
@@ -10,6 +9,8 @@ object BioFilesService: TBioFilesService
   DisplayName = 'SESOP TransBio Replicator'
   BeforeInstall = ServiceBeforeInstall
   AfterInstall = ServiceAfterInstall
+  OnContinue = ServiceContinue
+  OnPause = ServicePause
   OnStart = ServiceStart
   OnStop = ServiceStop
   Height = 153

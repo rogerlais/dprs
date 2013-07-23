@@ -191,19 +191,22 @@ begin
 end;
 
 procedure TTransBioThread.ReplicDataFiles2PrimaryMachine( BioFile : TTransferFile );
- //Realiza a operação unitária com o arquivo dado:
- //1 - Copia para a pasta local de transmissão
- //2 - Copia para a pasta de transmissão primária
- //3 - Copia para o bakup local
- //4 - Apaga do local de aquisição
+///<summary>
+/// Realiza a operação unitária com o arquivo dado:
+/// 1 - Envia o arquivo para o servidor
+/// 2 - Copia para a pasta de backup ordenado
+/// 3 - Copia para o bakup local(não ordenado)
+/// 4 - Apaga do local de aquisição
+///</summary>
+///<remarks>
+///
+///</remarks>
 const
 	 ERR_MSG: string = 'Falha copiando arquivo'#13'%s'#13'para'#13'%s'#13'%s'#13'%s';
 var
 	 DestFilename, DateFolderName, LocalBackupName : string;
 	 fileDate, dummy : TDateTime;
 begin
-	 {TODO -oroger -cdsg : empacotar e enviar para servidor}
-
 	 //Envia o arquivo para o servidor, passando ok -> realiza seu backup local
 	 DMTCPTransfer.SendFile(BioFile);
 
@@ -235,14 +238,14 @@ var
     ErrorMessage : string;
 
     procedure LSRReportError(EComm : Exception);
-    begin
-        //Registrar o erro e testar o contador de erros
-        Inc(Self.FCycleErrorCount);
-        ErrorMessage := Format('Quantidade de erros consecutivos(%d) ultrapassou o limite.'#13#10 +
-            'Último erro registrado = "%s"', [Self.FCycleErrorCount, EComm.Message]);
-        if (Integer(Self.FCycleErrorCount) > 10) then begin
-            {TODO -oroger -cdsg : Interrromper servico e notificar agente monitorador}
-            TLogFile.Log(ErrorMessage, lmtError);
+    //notificar agente monitorador
+	 begin
+		 //Registrar o erro e testar o contador de erros
+		 Inc(Self.FCycleErrorCount);
+		 ErrorMessage := Format('Quantidade de erros consecutivos(%d) ultrapassou o limite.'#13#10 +
+			 'Último erro registrado = "%s"', [Self.FCycleErrorCount, EComm.Message]);
+		 if (Integer(Self.FCycleErrorCount) > 10) then begin
+			 TLogFile.Log(ErrorMessage, lmtError);
             Self.FCycleErrorCount := 0; //reseta contador global
         end;
     end;
@@ -273,8 +276,8 @@ begin
             Self.FCycleErrorCount := 0; //Reseta contador de erros do ciclo
         except
             on EComm : Exception do begin
-                LSRReportError(EComm);
-            end;
+				 LSRReportError(EComm);
+			 end;
         end;
         //Suspende este thread até a liberação pelo thread do serviço
         Self.Suspended := True;

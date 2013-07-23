@@ -23,6 +23,8 @@ type
         procedure ServiceStop(Sender : TService; var Stopped : boolean);
         procedure tmrCycleEventTimer(Sender : TObject);
         procedure ServiceBeforeInstall(Sender : TService);
+        procedure ServicePause(Sender : TService; var Paused : boolean);
+        procedure ServiceContinue(Sender : TService; var Continued : boolean);
     private
         { Private declarations }
         FSvcThread : TTransBioThread;
@@ -114,9 +116,9 @@ begin
             logText := TXPStringList.Create;
             try
                 logText.LoadFromFile(f.FullName);
-				 dummy := 1; //Sempre do inicio
-				 sentOk:=not logText.FindPos('erro:', dummy, dummy);
-				 if (not sentOK) then begin
+                dummy  := 1; //Sempre do inicio
+                sentOk := not logText.FindPos('erro:', dummy, dummy);
+                if (not sentOK) then begin
                     try
                         Self.SendMailNotification(logText.Text);
                         sentOK := True;
@@ -133,7 +135,8 @@ begin
                     ForceDirectories(sentPath);
                     sentPath := sentPath + F.Name;
                     if (not MoveFile(PWideChar(F.FullName), PWideChar((sentPath)))) then begin
-                        TLogFile.Log('Final do processamento de arquivo de log falhou:'#13#10 + SysErrorMessage(GetLastError()), lmtError);
+                        TLogFile.Log('Final do processamento de arquivo de log falhou:'#13#10 +
+                            SysErrorMessage(GetLastError()), lmtError);
                     end;
                 end;
             finally
@@ -225,13 +228,37 @@ begin
     TLogFile.Log('Ordem de carga do serviço alterada com SUCESSO no computador local', lmtInformation);
 end;
 
+procedure TBioFilesService.ServiceContinue(Sender : TService; var Continued : boolean);
+begin
+    {TODO -oroger -cdsg : Reincio do servico }
+    if Assigned(Self.FSvcThread) and (Self.FSvcThread.Suspended) then begin
+        if Self.FSvcThread.Suspended then begin
+            Self.FSvcThread.Resume;
+        end;
+        Continued := (Self.FSvcThread.Suspended = False);
+    end else begin
+        Continued := False;
+    end;
+end;
+
 procedure TBioFilesService.ServiceCreate(Sender : TObject);
 begin
     Self.DisplayName := APP_SERVICE_DISPLAYNAME;
     Self.LoadGroup  := APP_SERVICE_GROUP;
-    Self.TagID      := 100;
+    //Self.TagID      := 100;  {TODO -oroger -cdsg : Sem sentido esta atribuição - procurar razão }
     Self.FSvcThread := TTransBioThread.Create(True);  //Criar thread de operação primário
     Self.FSvcThread.Name := APP_SERVICE_DISPLAYNAME;  //Nome de exibição do thread primário
+end;
+
+procedure TBioFilesService.ServicePause(Sender : TService; var Paused : boolean);
+begin
+    {TODO -oroger -cdsg : Pause do servico}
+    if Assigned(Self.FSvcThread) and (not Self.FSvcThread.Suspended) then begin
+        Self.FSvcThread.Suspend;
+        Paused := (Self.FSvcThread.Suspended = True);
+    end else begin
+        Paused := False;
+    end;
 end;
 
 procedure TBioFilesService.ServiceStart(Sender : TService; var Started : boolean);

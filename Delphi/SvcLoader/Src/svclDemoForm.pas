@@ -17,16 +17,13 @@ type
         btnPause :         TBitBtn;
         btnStop :          TBitBtn;
         btnClose :         TBitBtn;
-        tmrServiceThread : TTimer;
-        btnRegister :      TBitBtn;
-        btnGetDomain :     TBitBtn;
+		 tmrServiceThread : TTimer;
+    btnEditConfig: TBitBtn;
         procedure btnStartClick(Sender : TObject);
         procedure btnCloseClick(Sender : TObject);
         procedure tmrServiceThreadTimer(Sender : TObject);
-		 procedure btnRegisterClick(Sender : TObject);
 		 procedure btnServiceLogonClick(Sender : TObject);
-
-		 procedure btnGetDomainClick(Sender : TObject);
+		 procedure btnEditConfigClick(Sender : TObject);
     private
         { Private declarations }
     public
@@ -39,7 +36,7 @@ var
 implementation
 
 uses
-    svclBiometricFiles, svclConfig, JwaWindows, svclUtils, WinNetHnd, StrHnd, WNetExHnd;
+	 svclBiometricFiles, svclConfig, JwaWindows, svclUtils, WinNetHnd, StrHnd, WNetExHnd, svclEditConfigForm;
 
 {$R *.dfm}
 
@@ -48,19 +45,9 @@ begin
     Self.Close;
 end;
 
-procedure TForm1.btnGetDomainClick(Sender : TObject);
-var
-    ret : string;
+procedure TForm1.btnEditConfigClick(Sender : TObject);
 begin
-	 ret := WinNetHnd.GetComputerName();
-	 InputQuery('Nome da estação', 'Estação:', ret);
-	 ret := WNetExHnd.GetDomainFromComputerName(ret);
-	 MessageDlg(ret, mtInformation, [mbOK], 0);
-end;
-
-procedure TForm1.btnRegisterClick(Sender : TObject);
-begin
-	 MessageDlg(Format('conta = %s, senha=%s', [EmptyStr, EmptyStr]), mtInformation, [mbOK], 0);
+	TEditConfigForm.EditConfig();
 end;
 
 procedure TForm1.btnServiceLogonClick(Sender : TObject);
@@ -78,16 +65,16 @@ end;
 
 procedure TForm1.btnStartClick(Sender : TObject);
 var
-    Started : boolean;
+	ret : Boolean;
 begin
-	 Started := False;
-    BioFilesService.ServiceStart(BioFilesService, Started);
-    Self.tmrServiceThread.Enabled := True;
+	ret:=False;
+	 BioFilesService.ServiceStart(BioFilesService, ret );
+	 Self.tmrServiceThread.Enabled := True;
 end;
 
 procedure TForm1.tmrServiceThreadTimer(Sender : TObject);
 begin
-    BioFilesService.TimeCycleEvent();
+	 BioFilesService.TimeCycleEvent();
 end;
 
 end.

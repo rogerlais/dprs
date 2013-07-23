@@ -45,7 +45,7 @@ type
         procedure InvalidWriteOperation(const AttrName : string);
         function GetSize : int64;
         function GetHash : string;
-    function GetDateStamp: string;
+        function GetDateStamp : string;
     public
         property Filename : string read FFilename write SetFilename;
         property IsInputFile : boolean read FIsInputFile;
@@ -53,10 +53,10 @@ type
         property ModifiedTime : TDateTime read FModifiedTime;
         property CreatedTime : TDateTime read FCreatedTime;
         property Size : int64 read GetSize;
-		 property Hash : string read GetHash;
-		 property DateStamp : string read GetDateStamp;
-		 procedure ReadFromStream(AStream : TStream);
-		 procedure SetAsDivergent();
+        property Hash : string read GetHash;
+        property DateStamp : string read GetDateStamp;
+        procedure ReadFromStream(AStream : TStream);
+        procedure SetAsDivergent();
         constructor CreateOutput(const Filename : string);
         constructor Create(strm : TStream);
         destructor Destroy; override;
@@ -227,15 +227,15 @@ procedure TDMTCPTransfer.StartClient;
  ///</remarks>
 begin
     Self.tcpclnt.ConnectTimeout := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
-	 Self.tcpclnt.Host      := GlobalConfig.PrimaryComputerName;
-	 Self.tcpclnt.Port      := GlobalConfig.NetServicePort;
-	 Self.tcpclnt.OnDisconnected := tcpclntDisconnected;
-	 Self.tcpclnt.OnConnected := tcpclntConnected;
-	 Self.tcpclnt.ConnectTimeout := 0;
-	 Self.tcpclnt.IPVersion := Id_IPv4;
-	 Self.tcpclnt.ReadTimeout := -1;
-	 TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)',
-		[GlobalConfig.NetServicePort, GlobalConfig.PrimaryComputerName ]), DBGLEVEL_DETAILED);
+    Self.tcpclnt.Host      := GlobalConfig.PrimaryComputerName;
+    Self.tcpclnt.Port      := GlobalConfig.NetServicePort;
+    Self.tcpclnt.OnDisconnected := tcpclntDisconnected;
+    Self.tcpclnt.OnConnected := tcpclntConnected;
+    Self.tcpclnt.ConnectTimeout := 0;
+    Self.tcpclnt.IPVersion := Id_IPv4;
+    Self.tcpclnt.ReadTimeout := -1;
+    TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)',
+        [GlobalConfig.NetServicePort, GlobalConfig.PrimaryComputerName]), DBGLEVEL_DETAILED);
 end;
 
 
@@ -420,24 +420,24 @@ begin
     inherited;
 end;
 
-function TTransferFile.GetDateStamp: string;
-/// <summary>
-/// Retorna a cadeia no formato YYYY\MM\DD para a data de modificação do arquivo
-/// </summary>
+function TTransferFile.GetDateStamp : string;
+    /// <summary>
+    /// Retorna a cadeia no formato YYYY\MM\DD para a data de modificação do arquivo
+    /// </summary>
 var
-	modDate, dummy : TDateTime;
-	FullDateStr, sy, sm, sd : string;
+    modDate, dummy : TDateTime;
+    FullDateStr, sy, sm, sd : string;
 begin
-	TFileHnd.FileTimeProperties( Self.FFilename, dummy, dummy, modDate );
+    TFileHnd.FileTimeProperties(Self.FFilename, dummy, dummy, modDate);
 
-	Result :=FormatDateTime( 'YYYY\MM\DD' , modDate );
-	{
+    Result := FormatDateTime('YYYY\MM\DD', modDate);
+    {
 
-	FullDateStr :=FormatDateTime( 'YYYMMDD' , modDate );
+    FullDateStr :=FormatDateTime( 'YYYMMDD' , modDate );
 
-	 sy := Copy(FullDateStr, 1, 4);
-	 sm := Copy(FullDateStr, 5, 2);
-	 sd := Copy(FullDateStr, 7, 2);
+     sy := Copy(FullDateStr, 1, 4);
+     sm := Copy(FullDateStr, 5, 2);
+     sd := Copy(FullDateStr, 7, 2);
     }
 end;
 
@@ -468,20 +468,21 @@ begin
 end;
 
 procedure TTransferFile.SetAsDivergent;
-///<summary>
-///Altera o nome do arquivo para "_divergent" e o move para as pastas de backup local
-///</summary>
+ ///<summary>
+ /// Altera sufixando o nome do arquivo para "_divergent" e o move para as pastas de backup ordenado
+ ///</summary>
 var
-	 newName : string;
+    newName : string;
 begin
-	 {TODO -oroger -cdsg : Altera o nome do arquivo para "_divergent" e o move para as pastas de backup ordenado }
-	 TLogFile.Log( 'Arquivo divergente encontrado: "' + Self.FFilename + '". Usada a outra versão em Bioservice(caso haja)', lmtError );
-	 newName := TFileHnd.ExtractFilenamePure(Self.FFilename);
-	 newName := TFileHnd.ConcatPath([GlobalConfig.PathOrderlyBackup, Self.DateStamp, newName + '_divergent.' + SysUtils.ExtractFileExt(Self.FFilename)]);
-	 ForceDirectories( TFileHnd.ParentDir( newName ));
+    TLogFile.Log('Arquivo divergente encontrado: "' + Self.FFilename + '". Usada a outra versão em Bioservice(caso haja)',
+        lmtError);
+    newName := TFileHnd.ExtractFilenamePure(Self.FFilename);
+    newName := TFileHnd.ConcatPath([GlobalConfig.PathOrderlyBackup, Self.DateStamp, newName + '_divergent.' +
+        SysUtils.ExtractFileExt(Self.FFilename)]);
+    ForceDirectories(TFileHnd.ParentDir(newName));
     if (FileExists(newName)) then begin
         newName := TFileHnd.NextFamilyFilename(newName); //unicidade no destino
-	 end;
+    end;
     if (MoveFile(PWideChar(Self.FFilename), PWideChar(newName))) then begin
         Self.FFilename := newName;
     end else begin
