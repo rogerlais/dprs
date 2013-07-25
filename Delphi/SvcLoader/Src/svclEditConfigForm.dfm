@@ -1,9 +1,11 @@
 object EditConfigForm: TEditConfigForm
   Left = 0
   Top = 0
+  BorderIcons = []
+  BorderStyle = bsDialog
   Caption = 'Configura'#231#245'es (Servi'#231'o / TransBio / ELO)'
-  ClientHeight = 460
-  ClientWidth = 690
+  ClientHeight = 462
+  ClientWidth = 692
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,16 +17,16 @@ object EditConfigForm: TEditConfigForm
   TextHeight = 13
   object pnlBottom: TPanel
     Left = 0
-    Top = 396
-    Width = 690
+    Top = 398
+    Width = 692
     Height = 64
     Align = alBottom
-    TabOrder = 0
+    TabOrder = 2
     DesignSize = (
-      690
+      692
       64)
     object btnOk: TBitBtn
-      Left = 378
+      Left = 379
       Top = 19
       Width = 110
       Height = 25
@@ -32,10 +34,10 @@ object EditConfigForm: TEditConfigForm
       DoubleBuffered = True
       Kind = bkCancel
       ParentDoubleBuffered = False
-      TabOrder = 0
+      TabOrder = 1
     end
     object btnCancel: TBitBtn
-      Left = 202
+      Left = 203
       Top = 19
       Width = 110
       Height = 25
@@ -43,16 +45,16 @@ object EditConfigForm: TEditConfigForm
       DoubleBuffered = True
       Kind = bkOK
       ParentDoubleBuffered = False
-      TabOrder = 1
+      TabOrder = 0
     end
   end
   object pnlTop: TPanel
     Left = 0
     Top = 0
-    Width = 690
+    Width = 692
     Height = 41
     Align = alTop
-    TabOrder = 1
+    TabOrder = 0
     object chkServerMode: TCheckBox
       Left = 16
       Top = 13
@@ -65,138 +67,226 @@ object EditConfigForm: TEditConfigForm
   object tbcConfig: TPageControl
     Left = 0
     Top = 41
-    Width = 690
-    Height = 355
-    ActivePage = tsCommon
+    Width = 692
+    Height = 357
+    ActivePage = tsClientConfig
     Align = alClient
-    TabOrder = 2
+    TabOrder = 1
     object tsClientConfig: TTabSheet
       Caption = '&Esta'#231#227'o'
-      object lblSourceBioService: TLabel
+      ExplicitLeft = 8
+      ExplicitTop = 22
+      ExplicitWidth = 0
+      ExplicitHeight = 0
+      object lblClientSourceBioService: TLabel
         Left = 9
         Top = 28
         Width = 97
         Height = 13
         Caption = 'Caminho BioService:'
       end
-      object lblTrasnBioBio: TLabel
-        Left = 9
-        Top = 76
-        Width = 111
-        Height = 13
-        Caption = 'Caminho TransBio(Bio):'
-      end
-      object lblTransBioTrans: TLabel
+      object lblClientTransBioTrans: TLabel
         Left = 9
         Top = 124
         Width = 124
         Height = 13
         Caption = 'Caminho TransBio(Trans):'
       end
-      object lblTransBioRetrans: TLabel
+      object lblClientTransBioRetrans: TLabel
         Left = 9
         Top = 172
         Width = 135
         Height = 13
         Caption = 'Caminho TransBio(Retrans):'
       end
-      object lblTransBioError: TLabel
+      object lblClientTransBioError: TLabel
         Left = 9
         Top = 228
         Width = 117
         Height = 13
         Caption = 'Caminho TransBio(Erro):'
       end
-      object lblELO2TransBio: TLabel
+      object lblClientELO2TransBio: TLabel
         Left = 9
-        Top = 284
-        Width = 120
+        Top = 78
+        Width = 142
         Height = 13
-        Caption = 'Caminho ELO->TransBio:'
+        Caption = 'Caminho ELO->TransBio(Bio):'
       end
-      object lblServername: TLabel
-        Left = 361
+      object lblClientServername: TLabel
+        Left = 345
         Top = 28
         Width = 44
         Height = 13
         Caption = 'Servidor:'
       end
-      object edtDirCapturePath: TJvDirectoryEdit
+      object lblClientTimeInterval: TLabel
+        Left = 345
+        Top = 76
+        Width = 69
+        Height = 13
+        Caption = 'Intervalo(ms):'
+      end
+      object lblClientPathFullyBackup: TLabel
+        Left = 345
+        Top = 126
+        Width = 110
+        Height = 13
+        Caption = 'Caminho Backup Geral:'
+      end
+      object lblClientPathOrderedBackup: TLabel
+        Left = 345
+        Top = 172
+        Width = 133
+        Height = 13
+        Caption = 'Caminho Backup Ordenado:'
+      end
+      object edtDirClientBioServicePath: TJvDirectoryEdit
         Left = 9
         Top = 47
         Width = 299
         Height = 21
         DialogKind = dkWin32
         TabOrder = 0
-        Text = 'edtDirBioService'
       end
-      object edtDir1: TJvDirectoryEdit
-        Left = 9
-        Top = 95
-        Width = 299
-        Height = 21
-        DialogKind = dkWin32
-        TabOrder = 1
-        Text = 'edtDirTransBioBio'
-      end
-      object edtDirTransBioTrans: TJvDirectoryEdit
+      object edtDirClientTransBioTrans: TJvDirectoryEdit
         Left = 9
         Top = 143
         Width = 299
         Height = 21
         DialogKind = dkWin32
         TabOrder = 2
-        Text = 'edtDirTransBioBio'
       end
-      object edtDirTransBioRetrans: TJvDirectoryEdit
+      object edtDirClientTransBioRetrans: TJvDirectoryEdit
         Left = 9
         Top = 191
         Width = 299
         Height = 21
         DialogKind = dkWin32
         TabOrder = 3
-        Text = 'edtDirTransBioBio'
       end
-      object edtDirTransBioError: TJvDirectoryEdit
+      object edtDirClientTransBioError: TJvDirectoryEdit
         Left = 9
         Top = 247
         Width = 299
         Height = 21
         DialogKind = dkWin32
         TabOrder = 4
-        Text = 'edtDirTransBioBio'
       end
-      object edtDirELO2TransBio: TJvDirectoryEdit
+      object edtDirClientELO2TransBioBio: TJvDirectoryEdit
         Left = 9
-        Top = 303
+        Top = 97
         Width = 299
         Height = 21
         DialogKind = dkWin32
-        TabOrder = 5
-        Text = 'edtDirTransBioBio'
+        TabOrder = 1
       end
-      object edtServername: TEdit
-        Left = 360
+      object edtClientServername: TEdit
+        Left = 345
         Top = 47
         Width = 121
         Height = 21
+        TabOrder = 5
+      end
+      object seClientTimeInterval: TSpinEdit
+        Left = 345
+        Top = 95
+        Width = 67
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
         TabOrder = 6
-        Text = 'edtServername'
+        Value = 0
+      end
+      object edtDirClientPathFullyBackup: TJvDirectoryEdit
+        Left = 345
+        Top = 143
+        Width = 299
+        Height = 21
+        DialogKind = dkWin32
+        TabOrder = 7
+      end
+      object edtDirClientPathOrderedBackup: TJvDirectoryEdit
+        Left = 345
+        Top = 191
+        Width = 299
+        Height = 21
+        DialogKind = dkWin32
+        TabOrder = 8
       end
     end
     object tsServerConfig: TTabSheet
       Caption = 'Ser&vidor'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
+      object lblServerPathPrimaryBackup: TLabel
+        Left = 12
+        Top = 28
+        Width = 123
+        Height = 13
+        Caption = 'Caminho Backup Prim'#225'rio:'
+      end
+      object lblServerPathOrderlyBackup: TLabel
+        Left = 9
+        Top = 76
+        Width = 131
+        Height = 13
+        Caption = 'Caminho Backup ordenado:'
+      end
+      object edtDirServerPathPrimaryBackup: TJvDirectoryEdit
+        Left = 9
+        Top = 47
+        Width = 299
+        Height = 21
+        DialogKind = dkWin32
+        TabOrder = 0
+      end
+      object edtDirServerPathOrderlyBackup: TJvDirectoryEdit
+        Left = 9
+        Top = 95
+        Width = 299
+        Height = 21
+        DialogKind = dkWin32
+        TabOrder = 1
+      end
     end
     object tsCommon: TTabSheet
       Caption = '&Comum'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lblTCPPort: TLabel
         Left = 13
         Top = 28
         Width = 52
         Height = 13
         Caption = 'Porta TCP:'
+      end
+      object lblNotificationList: TLabel
+        Left = 13
+        Top = 85
+        Width = 96
+        Height = 13
+        Caption = 'Lista de noti&fica'#231#227'o:'
+      end
+      object lblEmailEmitter: TLabel
+        Left = 13
+        Top = 149
+        Width = 95
+        Height = 13
+        Caption = 'Emissor notifica'#231#227'o:'
+      end
+      object lblTransBioConfigFile: TLabel
+        Left = 14
+        Top = 205
+        Width = 152
+        Height = 13
+        Caption = 'Arquivo Configura'#231#227'o Transbio:'
       end
       object edtTCPPort: TSpinEdit
         Left = 12
@@ -207,6 +297,28 @@ object EditConfigForm: TEditConfigForm
         MinValue = 0
         TabOrder = 0
         Value = 0
+      end
+      object edtNotificationList: TEdit
+        Left = 13
+        Top = 104
+        Width = 121
+        Height = 21
+        TabOrder = 1
+      end
+      object edtEmailEmitter: TEdit
+        Left = 13
+        Top = 168
+        Width = 121
+        Height = 21
+        TabOrder = 2
+      end
+      object edtfTransBioConfigFile: TJvFilenameEdit
+        Left = 13
+        Top = 224
+        Width = 233
+        Height = 21
+        TabOrder = 3
+        Text = 'edtfTransBioConfigFile'
       end
     end
   end

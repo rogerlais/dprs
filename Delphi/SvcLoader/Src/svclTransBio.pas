@@ -91,11 +91,11 @@ procedure TTransBioThread.DoClientCycle;
                 f1 := TTransferFile(list.Objects[x - 1]);
                 f2 := TTransferFile(list.Objects[x]);
                 if (f1.Hash <> f2.Hash) then begin //Renomear e remover os não constantes na pasta Bioservice
-                    if (not SameText(TFileHnd.ParentDir(f2.Filename), GlobalConfig.PathELOBioService)) then begin
+                    if (not SameText(TFileHnd.ParentDir(f2.Filename), GlobalConfig.PathBioService)) then begin
                         f2.SetAsDivergent;
 						 list.Delete(x); //OwnsObjects = true para a lista libera instância
 					 end else begin
-						 if (not SameText(TFileHnd.ParentDir(f1.Filename), GlobalConfig.PathELOBioService)) then begin
+						 if (not SameText(TFileHnd.ParentDir(f1.Filename), GlobalConfig.PathBioService)) then begin
 							 f1.SetAsDivergent;
 							 list.Delete(x - 1); //OwnsObjects = true para a lista libera instância
 						 end;
@@ -125,7 +125,7 @@ begin
 		 FileList.OwnsObjects := True; //mantera as instancia consigo
 
 		 //repositorio Bioservice(Bio)
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathELOBioService, BIOMETRIC_FILE_MASK, False); //repositorio Bioservice
+		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathBioService, BIOMETRIC_FILE_MASK, False); //repositorio Bioservice
 		 for f in FileEnt do begin
 			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
 		 end;
@@ -187,7 +187,7 @@ procedure TTransBioThread.DoServerCycle;
 ///Inicia novo ciclo de operação do servidor
 begin
     //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
-	 Self.CreatePrimaryBackup(GlobalConfig.PathServerBackup);
+	 Self.CreatePrimaryBackup(GlobalConfig.PathServerOrderedBackup);
 end;
 
 procedure TTransBioThread.ReplicDataFiles2PrimaryMachine( BioFile : TTransferFile );
@@ -210,11 +210,11 @@ begin
 	 //Envia o arquivo para o servidor, passando ok -> realiza seu backup local
 	 DMTCPTransfer.SendFile(BioFile);
 
-	 DestFilename := TFileHnd.ConcatPath([GlobalConfig.PathOrderlyBackup, BioFile.DateStamp, ExtractFileName(BioFile.Filename)]);
+	 DestFilename := TFileHnd.ConcatPath([GlobalConfig.PathClientOrderlyBackup, BioFile.DateStamp, ExtractFileName(BioFile.Filename)]);
 	 Self.CopyBioFile(BioFile.Filename, DestFilename, 'Backup do cliente', ERR_MSG, False);
 
 	 //Move arquivo para backup local, todos os arquivos sem agrupamento
-	 LocalBackupName := TFileHnd.ConcatPath([GlobalConfig.PathFullyBackup, ExtractFileName(BioFile.Filename)]);
+	 LocalBackupName := TFileHnd.ConcatPath([GlobalConfig.PathClientFullyBackup, ExtractFileName(BioFile.Filename)]);
 	 Self.CopyBioFile(BioFile.Filename, LocalBackupName, 'Backup Local', ERR_MSG, True);
 end;
 
@@ -337,7 +337,7 @@ begin
 	 sy := Copy(FullDateStr, 1, 4);
 	 sm := Copy(FullDateStr, 5, 2);
 	 sd := Copy(FullDateStr, 7, 2);
-	 DestPath := TFileHnd.ConcatPath([GlobalConfig.PathOrderlyBackup, sy, sm, sd]);
+	 DestPath := TFileHnd.ConcatPath([GlobalConfig.PathClientOrderlyBackup, sy, sm, sd]);
     ForceDirectories(DestPath);
     if (not MoveFile(PChar(SrcFile.FullName), PChar(DestPath + '\' + SrcFile.Name))) then begin
         TLogFile.Log('Erro movendo arquivo para o repositório definitivo no computador primário'#13 +

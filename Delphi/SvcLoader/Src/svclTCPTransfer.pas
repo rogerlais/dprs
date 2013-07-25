@@ -32,7 +32,7 @@ type
     end;
 
 
-    TTransferFile = class
+	 TTransferFile = class(TObject)
     private
         FAccesTime :    TDateTime;
         FModifiedTime : TDateTime;
@@ -227,7 +227,7 @@ procedure TDMTCPTransfer.StartClient;
  ///</remarks>
 begin
     Self.tcpclnt.ConnectTimeout := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
-    Self.tcpclnt.Host      := GlobalConfig.PrimaryComputerName;
+    Self.tcpclnt.Host      := GlobalConfig.ServerName;
     Self.tcpclnt.Port      := GlobalConfig.NetServicePort;
     Self.tcpclnt.OnDisconnected := tcpclntDisconnected;
     Self.tcpclnt.OnConnected := tcpclntConnected;
@@ -235,7 +235,7 @@ begin
     Self.tcpclnt.IPVersion := Id_IPv4;
     Self.tcpclnt.ReadTimeout := -1;
     TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)',
-        [GlobalConfig.NetServicePort, GlobalConfig.PrimaryComputerName]), DBGLEVEL_DETAILED);
+        [GlobalConfig.NetServicePort, GlobalConfig.ServerName]), DBGLEVEL_DETAILED);
 end;
 
 
@@ -396,7 +396,8 @@ end;
 
 constructor TTransferFile.Create;
 begin
-    Self.FIsInputFile := True; //Atributo RO indica que o arquivo será lido como entrada da transmissão
+	 inherited Create;
+	 Self.FIsInputFile := True; //Atributo RO indica que o arquivo será lido como entrada da transmissão
 end;
 
 constructor TTransferFile.CreateOutput(const Filename : string);
@@ -407,7 +408,8 @@ constructor TTransferFile.CreateOutput(const Filename : string);
     ///
     ///</remarks>
 begin
-    Self.FIsInputFile := False;
+	 inherited;
+	 Self.FIsInputFile := False;
     Self.FFilename    := Filename;
     FileHnd.TFileHnd.FileTimeProperties(Self.FFilename, Self.FCreatedTime, Self.FAccesTime, Self.FModifiedTime);
 end;
@@ -477,7 +479,7 @@ begin
     TLogFile.Log('Arquivo divergente encontrado: "' + Self.FFilename + '". Usada a outra versão em Bioservice(caso haja)',
         lmtError);
     newName := TFileHnd.ExtractFilenamePure(Self.FFilename);
-    newName := TFileHnd.ConcatPath([GlobalConfig.PathOrderlyBackup, Self.DateStamp, newName + '_divergent.' +
+    newName := TFileHnd.ConcatPath([GlobalConfig.PathClientOrderlyBackup, Self.DateStamp, newName + '_divergent.' +
         SysUtils.ExtractFileExt(Self.FFilename)]);
     ForceDirectories(TFileHnd.ParentDir(newName));
     if (FileExists(newName)) then begin
