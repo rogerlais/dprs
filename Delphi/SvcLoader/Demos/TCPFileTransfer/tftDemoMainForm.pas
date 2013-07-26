@@ -11,7 +11,7 @@ type
         edtDir :          TJvDirectoryEdit;
         chkServerSwitch : TCheckBox;
         lblInputDir :     TLabel;
-        edtDirOutput :    TJvDirectoryEdit;
+		 edtDirOutput :    TJvDirectoryEdit;
         lblOutDir :       TLabel;
         btnStartStop :    TBitBtn;
         tmrCycle :        TTimer;
@@ -19,6 +19,7 @@ type
         procedure btnStartStopClick(Sender : TObject);
         procedure FormCreate(Sender : TObject);
         procedure tmrCycleTimer(Sender : TObject);
+    procedure chkServerSwitchClick(Sender: TObject);
     private
         { Private declarations }
         FStarted : boolean;
@@ -51,21 +52,27 @@ begin
 end;
 
 
+procedure TForm3.chkServerSwitchClick(Sender: TObject);
+begin
+	Self.edtDir.Enabled:=not Self.chkServerSwitch.Checked;
+end;
+
 procedure TForm3.DoCopyLogMessage(Sender : TObject; var Text : string; MessageType : TLogMessageType; var Canceled : boolean);
 begin
-    Self.memoLog.Lines.Add(Text);
+	 Self.memoLog.Lines.Add(Text);
     Canceled := False;
 end;
 
 procedure TForm3.FormCreate(Sender : TObject);
 begin
     Self.chkServerSwitch.Checked := GlobalConfig.RunAsServer;
-    Self.edtDir.Directory := GlobalConfig.PathBioService;
-    Self.edtDirOutput.Directory := GlobalConfig.PathServerTransbioCapture;
+	 Self.edtDir.Directory := GlobalConfig.PathBioService; //Unico caminho para leitura e envio dos arquivos
+	 Self.edtDirOutput.Directory := GlobalConfig.PathServerTransbioCapture;
     TLogFile.GetDefaultLogFile.OnMessageReceived := Self.DoCopyLogMessage;
      {$IFDEF DEBUG}
     TLogFile.GetDefaultLogFile.DebugLevel := DBGLEVEL_ULTIMATE;
-     {$ENDIF}
+	  {$ENDIF}
+	  Self.chkServerSwitchClick( Self );
 end;
 
 procedure TForm3.SetServiceStarted(startCmd : boolean);
@@ -119,15 +126,15 @@ begin
         if (Self.chkServerSwitch.Checked) then begin // Modo Servidor ativo
             {TODO -oroger -cdsg : Organizar os arquivos recebidos }
         end else begin
-            //Modo cliente
-            if (TFileHnd.FirstOccurrence(Self.edtDir.Directory, '*.bio') = EmptyStr) then begin
+			 //Modo cliente
+			 if (TFileHnd.FirstOccurrence(Self.edtDir.Directory, '*.bio') = EmptyStr) then begin
                 Exit; //Nada a enviar sair do loop
             end;
 
-            //Abrir o socket para envio
+			 //Abrir o socket para envio
             DMTCPTransfer.tcpclnt.Connect;  {TODO -oroger -cdsg : proteger chamada com tratamento correto}
             DMTCPTransfer.tcpclnt.IOHandler.WriteLn(GetComputerName() + STR_BEGIN_SESSION_SIGNATURE);
-            FileEnum := TDirectory.FileSystemEntries(Self.edtDir.Directory, '*.bio', True);
+			 FileEnum := TDirectory.FileSystemEntries(Self.edtDir.Directory, '*.bio', True);
             try
                 for f in FileEnum do begin
                     if (f.Name <> '.') and (f.Name <> '..') then begin

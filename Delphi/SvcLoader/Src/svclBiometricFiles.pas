@@ -263,19 +263,21 @@ end;
 
 procedure TBioFilesService.ServiceStart(Sender : TService; var Started : boolean);
 begin
-    Self.CheckLogs();
-    //Rotina de inicio do servico, cria o thread da operação e o inicia
-    Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
-    Self.tmrCycleEvent.Enabled  := True;
-    Self.FSvcThread.Start;
-    Sleep(300);
-    Self.FSvcThread.Suspended := False;
-    Started := True;
+	{TODO -oroger -cdsg : rever modo de iniciar e parar serviço, preferencialmente desaolcando tudo}
+	 Self.CheckLogs();
+	 //Rotina de inicio do servico, cria o thread da operação e o inicia
+	 Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
+	 Self.tmrCycleEvent.Enabled  := True;
+	 Self.FSvcThread.Start;
+	 Sleep(300);
+	 Self.FSvcThread.Suspended := False;
+	 Started := True;
 end;
 
 procedure TBioFilesService.ServiceStop(Sender : TService; var Stopped : boolean);
 begin
-    Self.FSvcThread.Suspended := True;
+	 Self.FSvcThread.Suspended := True; {TODO -oroger -cdsg : remover gambiarra}
+	 Stopped:=True;
 end;
 
 procedure TBioFilesService.TimeCycleEvent;

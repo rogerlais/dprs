@@ -20,16 +20,16 @@ object Form3: TForm3
   object lblInputDir: TLabel
     Left = 24
     Top = 32
-    Width = 49
+    Width = 130
     Height = 13
-    Caption = 'lblInputDir'
+    Caption = 'Caminho de leitura(Cliente)'
   end
   object lblOutDir: TLabel
     Left = 24
     Top = 80
-    Width = 49
+    Width = 110
     Height = 13
-    Caption = 'lblInputDir'
+    Caption = 'Pasta Backup completo'
   end
   object edtDir: TJvDirectoryEdit
     Left = 24
@@ -46,7 +46,8 @@ object Form3: TForm3
     Width = 137
     Height = 17
     Caption = '&Modo Servidor/Cliente'
-    TabOrder = 1
+    TabOrder = 2
+    OnClick = chkServerSwitchClick
   end
   object edtDirOutput: TJvDirectoryEdit
     Left = 24
@@ -54,7 +55,7 @@ object Form3: TForm3
     Width = 345
     Height = 21
     DialogKind = dkWin32
-    TabOrder = 2
+    TabOrder = 1
     Text = 'edtDir'
   end
   object btnStartStop: TBitBtn
@@ -65,7 +66,7 @@ object Form3: TForm3
     Caption = '&Iniciar'
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 3
+    TabOrder = 4
     OnClick = btnStartStopClick
   end
   object memoLog: TMemo
@@ -74,7 +75,7 @@ object Form3: TForm3
     Width = 341
     Height = 151
     Anchors = [akLeft, akTop, akRight, akBottom]
-    TabOrder = 4
+    TabOrder = 3
   end
   object tmrCycle: TTimer
     Enabled = False
