@@ -44,7 +44,7 @@ type
         lblEmailEmitter : TLabel;
         lblServerPathPrimaryBackup : TLabel;
         lblServerPathOrderlyBackup : TLabel;
-        edtDirServerPathPrimaryBackup : TJvDirectoryEdit;
+    edtDirServerPathTransBio: TJvDirectoryEdit;
         edtDirServerPathOrderlyBackup : TJvDirectoryEdit;
         edtfTransBioConfigFile : TJvFilenameEdit;
         lblTransBioConfigFile : TLabel;
@@ -93,7 +93,7 @@ begin
     //Modo de trabalho
     Self.chkServerMode.Checked := GlobalConfig.RunAsServer;
     //Conf. cliente
-    Self.edtDirClientBioServicePath.Text := GlobalConfig.PathBioService;
+    Self.edtDirClientBioServicePath.Text := GlobalConfig.PathClientBioService;
     Self.edtDirClientELO2TransBioBio.Text := GlobalConfig.TransbioConfig.PathBio;
     Self.edtDirClientTransBioTrans.Text := GlobalConfig.TransbioConfig.PathTransmitted;
     Self.edtDirClientTransBioRetrans.Text := GlobalConfig.TransbioConfig.PathRetrans;
@@ -103,7 +103,7 @@ begin
     Self.edtClientServername.Text := GlobalConfig.ServerName;
     Self.seClientTimeInterval.Value := GlobalConfig.CycleInterval;
     //Conf. Server
-    Self.edtDirServerPathPrimaryBackup.Text := GlobalConfig.PathServerTransbioCapture;
+	 Self.edtDirServerPathTransBio.Text := GlobalConfig.PathServerTransBio;
     Self.edtDirServerPathOrderlyBackup.Text := GlobalConfig.PathServerOrderedBackup;
     //Conf. Comum
     Self.edtTCPPort.Value     := GlobalConfig.NetServicePort;
@@ -119,7 +119,7 @@ begin
     //Modo de trabalho
     GlobalConfig.RunAsServer    := Self.chkServerMode.Checked;
     //Conf. cliente
-    GlobalConfig.PathBioService := Self.edtDirClientBioServicePath.Text;
+    GlobalConfig.PathClientBioService := Self.edtDirClientBioServicePath.Text;
     GlobalConfig.TransbioConfig.PathBio := Self.edtDirClientELO2TransBioBio.Text;
     GlobalConfig.TransbioConfig.PathTransmitted := Self.edtDirClientTransBioTrans.Text;
     GlobalConfig.TransbioConfig.PathRetrans := Self.edtDirClientTransBioRetrans.Text;
@@ -129,7 +129,7 @@ begin
     GlobalConfig.ServerName     := Self.edtClientServername.Text;
     GlobalConfig.CycleInterval  := Self.seClientTimeInterval.Value;
     //Conf. Server
-    GlobalConfig.PathServerTransbioCapture := Self.edtDirServerPathPrimaryBackup.Text;
+	 GlobalConfig.PathServerTransBio:= Self.edtDirServerPathTransBio.Text;
     GlobalConfig.PathServerOrderedBackup:= Self.edtDirServerPathOrderlyBackup.Text;
     //Conf. Comum
     GlobalConfig.NetServicePort := Self.edtTCPPort.Value;

@@ -67,7 +67,7 @@ procedure TForm3.FormCreate(Sender : TObject);
 begin
     Self.chkServerSwitch.Checked := GlobalConfig.RunAsServer;
 	 Self.edtDir.Directory := GlobalConfig.PathBioService; //Unico caminho para leitura e envio dos arquivos
-	 Self.edtDirOutput.Directory := GlobalConfig.PathServerTransbioCapture;
+	 Self.edtDirOutput.Directory := GlobalConfig.PathServerFullyBackup;
     TLogFile.GetDefaultLogFile.OnMessageReceived := Self.DoCopyLogMessage;
      {$IFDEF DEBUG}
     TLogFile.GetDefaultLogFile.DebugLevel := DBGLEVEL_ULTIMATE;

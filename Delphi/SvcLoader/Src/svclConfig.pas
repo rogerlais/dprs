@@ -8,7 +8,7 @@ unit svclConfig;
 interface
 
 uses
-    Classes, Windows, SysUtils, AppSettings;
+	 Classes, Windows, SysUtils, AppSettings;
 
 const
     BIOMETRIC_FILE_EXTENSION   = '.bio';
@@ -18,9 +18,9 @@ const
 
 
 type
-    TELOTransbioConfig = class(AppSettings.TBaseStartSettings)
-    private
-        _Elo2TransBio : string;
+	 TELOTransbioConfig = class(AppSettings.TBaseStartSettings)
+	 private
+		 _Elo2TransBio : string;
         function GetPathBio : string;
         function GetPathError : string;
         function GetPathRetrans : string;
@@ -52,7 +52,7 @@ type
         function GetPathClientFullyBackup : string;
         function GetPathClientOrderlyBackup : string;
         function GetPathServerOrderedBackup : string;
-        function GetPathServerTransbioCapture : string;
+        function GetPathServerTransBio : string;
         function GetServerName : string;
         function GetPathTransbioConfigFile : string;
         function GetNotificationSender : string;
@@ -61,10 +61,10 @@ type
         procedure SetNotificationList(const Value : string);
         function GetPathServiceLog : string;
         procedure SetRunAsServer(const Value : boolean);
-        procedure SetPathBioService(const Value : string);
+        procedure SetPathClientBioService(const Value : string);
         procedure SetCycleInterval(const Value : Integer);
         procedure SetServerName(const Value : string);
-        procedure SetPathServerTransbioCapture(const Value : string);
+        procedure SetPathServerTransBio(const Value : string);
         procedure SetPathServerOrderedBackup(const Value : string);
         procedure SetNetServicePort(const Value : Integer);
         procedure SetPathTransbioConfigFile(const Value : string);
@@ -77,12 +77,12 @@ type
         property DebugLevel : Integer read GetDebugLevel;
         property RunAsServer : boolean read GetRunAsServer write SetRunAsServer;
         property NetServicePort : Integer read GetNetServicePort write SetNetServicePort;
-        property PathBioService : string read GetPathBioService write SetPathBioService;
 		 property PathTransbioConfigFile : string read GetPathTransbioConfigFile write SetPathTransbioConfigFile;
+		 property PathClientBioService : string read GetPathBioService write SetPathClientBioService;
 		 property PathClientFullyBackup : string read GetPathClientFullyBackup write SetPathClientFullyBackup;
 		 property PathClientOrderlyBackup : string read GetPathClientOrderlyBackup write SetPathClientOrderlyBackup;
 		 property PathServerOrderedBackup : string read GetPathServerOrderedBackup write SetPathServerOrderedBackup;
-		 property PathServerTransbioCapture : string read GetPathServerTransbioCapture write SetPathServerTransbioCapture;
+		 property PathServerTransBio : string read GetPathServerTransBio write SetPathServerTransBio;
         property PathServiceLog : string read GetPathServiceLog;
         property ServerName : string read GetServerName write SetServerName;
         property TransbioConfig : TELOTransbioConfig read FTransbioConfig;
@@ -115,14 +115,13 @@ const
 	 DV_NOTIFICATION_LIST = 'bioreplic@tre-pb.jus.br;null@tre-pb.jus.br';
 	 {TODO -oroger -creq : Definir valor padrao para a lista de notificação}
 	 IE_STATION_SERVERNAME  = 'ServerName';  //Nome do computador primario
-	 IE_STATION_PATH_BIOSERVICE_BIO = 'BioService.Bio';
+	 IE_CLIENT_PATH_BIOSERVICE_BIO = 'PathClientBioService.Bio';
 	 IE_STATION_PATH_ORDERLY_BACKUP = 'PathClientOrderlyBackup';
 	 IE_STATION_PATH_FULLY_BACKUP = 'PathClientFullyBackup';
 
 	 IE_SERVER_PATH_ORDERED_BACKUP = 'PathServerOrderedPath';
 	 DV_SERVER_PATH_ORDERED_BACKUP = 'I:\ReplicBio\Server\Bak';
-
-    IE_SERVER_PATH_TRANSBIO_BIO = 'PathServerTransBio.Bio';
+	 IE_SERVER_PATH_TRANSBIO_BIO = 'PathServerTransBio.Bio';
     DV_SERVER_PATH_TRANSBIO_BIO = 'D:\Aplic\TransBio\Files\Bio';
 
 	 IE_DEBUG_LEVEL = 'DebugLevel';
@@ -185,7 +184,7 @@ begin
 {$ELSE}
 	 Result := DV_TRANSBIO_PATH_BIOSERVICE;
 {$ENDIF}
-    Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_PATH_BIOSERVICE_BIO, Result));
+    Result := ExpandFileName(Self.ReadStringDefault(IE_CLIENT_PATH_BIOSERVICE_BIO, Result));
 end;
 
 function TBioReplicatorConfig.GetCycleInterval : Integer;
@@ -309,12 +308,12 @@ begin
 {$IFDEF DEBUG}
 	 Result := ExpandFileName('..\Data\Server\Orderly.Backup');
 {$ELSE}
-	 Result := DV_SERVER_PATH_BACKUP;
+	 Result := DV_SERVER_PATH_ORDERED_BACKUP;
 {$ENDIF}
 	 Result := ExpandFileName(Self.ReadStringDefault(IE_SERVER_PATH_ORDERED_BACKUP, Result));
 end;
 
-function TBioReplicatorConfig.GetPathServerTransbioCapture : string;
+function TBioReplicatorConfig.GetPathServerTransBio : string;
     ///<summary>
     ///Caminho de captura dos arquivos(a ser realizada localmente), depende de como o serviço Transbio seja configurado neste computador
     /// Possíveis locais:
@@ -331,7 +330,7 @@ begin
 {$ELSE}
 	 Result := DV_TRANSBIO_PATH_CAPTURE;
 {$ENDIF}
-    Result := ExpandFileName(Self.ReadStringDefault(IE_SERVER_PATH_ORDERED_BACKUP, Result));
+	 Result := ExpandFileName(Self.ReadStringDefault(IE_SERVER_PATH_TRANSBIO_BIO, Result));
 end;
 
 function TBioReplicatorConfig.GetPathServiceLog : string;
@@ -376,9 +375,9 @@ begin
     Self.WriteString(IE_NOTIFICATION_SENDER, Value);
 end;
 
-procedure TBioReplicatorConfig.SetPathBioService(const Value : string);
+procedure TBioReplicatorConfig.SetPathClientBioService(const Value : string);
 begin
-    Self.WriteString(IE_STATION_PATH_BIOSERVICE_BIO, Value);
+    Self.WriteString(IE_CLIENT_PATH_BIOSERVICE_BIO, Value);
 end;
 
 procedure TBioReplicatorConfig.SetPathClientOrderlyBackup(const Value : string);
@@ -396,9 +395,9 @@ begin
     Self.ReadStringDefault(IE_SERVER_PATH_ORDERED_BACKUP, Value);
 end;
 
-procedure TBioReplicatorConfig.SetPathServerTransbioCapture(const Value : string);
+procedure TBioReplicatorConfig.SetPathServerTransBio(const Value : string);
 begin
-    Self.WriteString(IE_STATION_PATH_BIOSERVICE_BIO, Value);
+    Self.WriteString(IE_SERVER_PATH_TRANSBIO_BIO, Value);
 end;
 
 procedure TBioReplicatorConfig.SetRunAsServer(const Value : boolean);

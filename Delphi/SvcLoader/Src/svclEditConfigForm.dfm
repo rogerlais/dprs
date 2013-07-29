@@ -13,6 +13,7 @@ object EditConfigForm: TEditConfigForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 13
   object pnlBottom: TPanel
@@ -74,10 +75,6 @@ object EditConfigForm: TEditConfigForm
     TabOrder = 1
     object tsClientConfig: TTabSheet
       Caption = '&Esta'#231#227'o'
-      ExplicitLeft = 8
-      ExplicitTop = 22
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lblClientSourceBioService: TLabel
         Left = 9
         Top = 28
@@ -218,16 +215,12 @@ object EditConfigForm: TEditConfigForm
     object tsServerConfig: TTabSheet
       Caption = 'Ser&vidor'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lblServerPathPrimaryBackup: TLabel
         Left = 12
         Top = 28
-        Width = 123
+        Width = 136
         Height = 13
-        Caption = 'Caminho Backup Prim'#225'rio:'
+        Caption = 'Caminho Transbio(servidor):'
       end
       object lblServerPathOrderlyBackup: TLabel
         Left = 9
@@ -236,7 +229,7 @@ object EditConfigForm: TEditConfigForm
         Height = 13
         Caption = 'Caminho Backup ordenado:'
       end
-      object edtDirServerPathPrimaryBackup: TJvDirectoryEdit
+      object edtDirServerPathTransBio: TJvDirectoryEdit
         Left = 9
         Top = 47
         Width = 299
@@ -256,10 +249,6 @@ object EditConfigForm: TEditConfigForm
     object tsCommon: TTabSheet
       Caption = '&Comum'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lblTCPPort: TLabel
         Left = 13
         Top = 28

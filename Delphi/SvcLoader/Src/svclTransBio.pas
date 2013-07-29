@@ -91,11 +91,11 @@ procedure TTransBioThread.DoClientCycle;
                 f1 := TTransferFile(list.Objects[x - 1]);
                 f2 := TTransferFile(list.Objects[x]);
                 if (f1.Hash <> f2.Hash) then begin //Renomear e remover os não constantes na pasta Bioservice
-                    if (not SameText(TFileHnd.ParentDir(f2.Filename), GlobalConfig.PathBioService)) then begin
+                    if (not SameText(TFileHnd.ParentDir(f2.Filename), GlobalConfig.PathClientBioService)) then begin
                         f2.SetAsDivergent;
 						 list.Delete(x); //OwnsObjects = true para a lista libera instância
 					 end else begin
-						 if (not SameText(TFileHnd.ParentDir(f1.Filename), GlobalConfig.PathBioService)) then begin
+						 if (not SameText(TFileHnd.ParentDir(f1.Filename), GlobalConfig.PathClientBioService)) then begin
 							 f1.SetAsDivergent;
 							 list.Delete(x - 1); //OwnsObjects = true para a lista libera instância
 						 end;
@@ -125,7 +125,7 @@ begin
 		 FileList.OwnsObjects := True; //mantera as instancia consigo
 
 		 //repositorio Bioservice(Bio)
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathBioService, BIOMETRIC_FILE_MASK, False); //repositorio Bioservice
+		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathClientBioService, BIOMETRIC_FILE_MASK, False); //repositorio Bioservice
 		 for f in FileEnt do begin
 			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
 		 end;
