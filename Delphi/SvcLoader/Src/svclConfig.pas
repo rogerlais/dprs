@@ -120,7 +120,10 @@ const
 	 IE_STATION_PATH_FULLY_BACKUP = 'PathClientFullyBackup';
 
 	 IE_SERVER_PATH_ORDERED_BACKUP = 'PathServerOrderedPath';
-	 DV_SERVER_PATH_BACKUP = 'I:\TransBio\Files\Trans';
+	 DV_SERVER_PATH_ORDERED_BACKUP = 'I:\ReplicBio\Server\Bak';
+
+    IE_SERVER_PATH_TRANSBIO_BIO = 'PathServerTransBio.Bio';
+    DV_SERVER_PATH_TRANSBIO_BIO = 'D:\Aplic\TransBio\Files\Bio';
 
 	 IE_DEBUG_LEVEL = 'DebugLevel';
 	 IE_RUN_AS_SERVER_FLAG = 'RunAsServer'; //Forca este computador ser servidor
@@ -328,7 +331,7 @@ begin
 {$ELSE}
 	 Result := DV_TRANSBIO_PATH_CAPTURE;
 {$ENDIF}
-    Result := ExpandFileName(Self.ReadStringDefault(IE_STATION_PATH_BIOSERVICE_BIO, Result));
+    Result := ExpandFileName(Self.ReadStringDefault(IE_SERVER_PATH_ORDERED_BACKUP, Result));
 end;
 
 function TBioReplicatorConfig.GetPathServiceLog : string;

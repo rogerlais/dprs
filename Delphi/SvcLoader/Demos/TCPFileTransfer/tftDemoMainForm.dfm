@@ -56,7 +56,7 @@ object Form3: TForm3
     Height = 21
     DialogKind = dkWin32
     TabOrder = 1
-    Text = 'edtDir'
+    Text = 'edtDirOutput'
   end
   object btnStartStop: TBitBtn
     Left = 168
