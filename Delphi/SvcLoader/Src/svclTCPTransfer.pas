@@ -73,13 +73,14 @@ type
         procedure tcpclntConnected(Sender : TObject);
         procedure tcpclntDisconnected(Sender : TObject);
         procedure DataModuleDestroy(Sender : TObject);
-        procedure tcpsrvrExecute(AContext : TIdContext);
-        procedure tcpsrvrStatus(ASender : TObject; const AStatus : TIdStatus; const AStatusText : string);
-        procedure Configurar1Click(Sender : TObject);
-    private
-        { Private declarations }
-        FClientSessionList : TThreadStringList;
-    public
+		 procedure tcpsrvrExecute(AContext : TIdContext);
+		 procedure tcpsrvrStatus(ASender : TObject; const AStatus : TIdStatus; const AStatusText : string);
+		 procedure Configurar1Click(Sender : TObject);
+	 private
+		 { Private declarations }
+		 FClientSessionList : TThreadStringList;
+		 procedure SaveBioFile( const ClientName, Filename, screateDate, saccessDate, smodifiedDate : string; inputStrm : TStream );
+	 public
         { Public declarations }
         procedure StartServer();
         procedure StartClient();
@@ -88,7 +89,6 @@ type
         procedure StopServer();
         procedure StopClient();
         procedure SendFile(AFile : TTransferFile);
-        procedure SendBioFilesToServer(const Filename : string);
         constructor Create(AOwner : TComponent); override;
         destructor Destroy; override;
     end;
@@ -144,46 +144,17 @@ begin
     Self.tcpclnt.IOHandler.WriteLn(SessionName + STR_END_SESSION_SIGNATURE); //Envia msg de fim de sessão
 end;
 
-procedure TDMTCPTransfer.SendBioFilesToServer(const Filename : string);
-begin
-(*
+procedure TDMTCPTransfer.SaveBioFile(const ClientName, Filename, screateDate, saccessDate, smodifiedDate: string;
+  inputStrm: TStream);
 var
-     FileEnum : IEnumerable<TFileSystemEntry>;
-     f :  TFileSystemEntry;
-     tf : TTransferFile;
+	createDate, modDate, accDate : TDateTime;
+	TransbioFileName, BackupFileName : string;
 begin
-     if (Self.FStarted) then begin
-         if (Self.chkServerSwitch.Checked) then begin // Modo Servidor ativo
-             {TODO -oroger -cdsg : Organizar os arquivos recebidos }
-         end else begin
-             //Modo cliente
-             if (TFileHnd.FirstOccurrence(Self.edtDir.Directory, '*.bio') = EmptyStr) then begin
-                 Exit; //Nada a enviar sair do loop
-             end;
-
-             //Abrir o socket para envio
-             DMTCPTransfer.tcpclnt.Connect;  {TODO -oroger -cdsg : proteger chamada com tratamento correto}
-             DMTCPTransfer.tcpclnt.IOHandler.WriteLn(GetComputerName() + STR_BEGIN_SESSION_SIGNATURE);
-             FileEnum := TDirectory.FileSystemEntries(Self.edtDir.Directory, '*.bio', True);
-             try
-                 for f in FileEnum do begin
-                     if (f.Name <> '.') and (f.Name <> '..') then begin
-                         tf := TTransferFile.CreateOutput(f.FullName);
-                         try
-                             DMTCPTransfer.SendFile(tf);
-                         finally
-                             tf.Free;
-                         end;
-                     end;
-                 end;
-             finally
-                 DMTCPTransfer.tcpclnt.IOHandler.WriteLn(GetComputerName() + STR_END_SESSION_SIGNATURE); //Envia msg de fim de sessão
-                 DMTCPTransfer.StopClient;
-             end;
-         end;
-     end;
-end;
-*)
+	createDate := StrToDate( screateDate );
+	modDate:= StrToDate( smodifiedDate );
+	accDate:= StrToDate( saccessDate );
+	TransbioFileName:=TFileHnd.ConcatPath([ GlobalConfig.PathServerTransBio, Filename ] );
+	BackupFileName:=TFileHnd.ConcatPath([ GlobalConfig.PathServerOrderedBackup, ClientName, FormatDateTime( 'YYYY\MM\DD', modDate ), Filename ] );
 end;
 
 procedure TDMTCPTransfer.SendFile(AFile : TTransferFile);
@@ -330,54 +301,55 @@ begin
             retClientName := EmptyStr;
             TLogFile.LogDebug(
                 Format('Falha de protocolo, cadeia recebida=%s', [retSignature]), DBGLEVEL_ALERT_ONLY);
-        end else begin
-            retClientName := Copy(retSignature, 1, Pos(STR_BEGIN_SESSION_SIGNATURE, retSignature) - 1);
-        end;
+		 end else begin
+			 retClientName := Copy(retSignature, 1, Pos(STR_BEGIN_SESSION_SIGNATURE, retSignature) - 1);
+		 end;
 
-        repeat
-            //Linha incial de dados deve conter os atributos do arquivo(fullname, createdDate, accessDate, modifiedDate, Size )
-            //No inicio da operação, captura as cadeias. Caso a linha possua o token de final de sessão desconecta(o servidor espera uma nova sessão)
-            retSignature := AContext.Connection.IOHandler.ReadLn();
-            if (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)) then begin
-                System.Continue;
-            end;
-            sfilename := retSignature;
-            screateDate := AContext.Connection.IOHandler.ReadLn();
-            saccessDate := AContext.Connection.IOHandler.ReadLn();
-            smodifiedDAte := AContext.Connection.IOHandler.ReadLn();
-            sFileSize := AContext.Connection.IOHandler.ReadLn();
-            sHash := AContext.Connection.IOHandler.ReadLn();
+		 repeat
+			 //Linha incial de dados deve conter os atributos do arquivo(fullname, createdDate, accessDate, modifiedDate, Size )
+			 //No inicio da operação, captura as cadeias. Caso a linha possua o token de final de sessão desconecta(o servidor espera uma nova sessão)
+			 retSignature := AContext.Connection.IOHandler.ReadLn();
+			 if (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)) then begin
+				 System.Continue;
+			 end;
+			 sfilename := retSignature;
+			 screateDate := AContext.Connection.IOHandler.ReadLn();
+			 saccessDate := AContext.Connection.IOHandler.ReadLn();
+			 smodifiedDAte := AContext.Connection.IOHandler.ReadLn();
+			 sFileSize := AContext.Connection.IOHandler.ReadLn();
+			 sHash := AContext.Connection.IOHandler.ReadLn();
 
-            TLogFile.LogDebug(Format(
-                'Recebida cadeia do cliente(%s) ao servidor:'#13#10'arquivo="%s"'#13#10'criação=%s'#13#10 +
-                'acesso=%s'#13#10'Modificação=%s'#13#10'tamanho=%s'#13#10'hash=%s'#13#10,
-                [retClientName, sfilename, smodifiedDate, saccessDate, screateDate, sFileSize, sHash]), DBGLEVEL_DETAILED);
+			 TLogFile.LogDebug(Format(
+				 'Recebida cadeia do cliente(%s) ao servidor:'#13#10'arquivo="%s"'#13#10'criação=%s'#13#10 +
+				 'acesso=%s'#13#10'Modificação=%s'#13#10'tamanho=%s'#13#10'hash=%s'#13#10,
+				 [retClientName, sfilename, smodifiedDate, saccessDate, screateDate, sFileSize, sHash]), DBGLEVEL_DETAILED);
 
-            nFileSize := StrToInt64(sFileSize); //Tamanho do stream a ser lido pela rede
+			 nFileSize := StrToInt64(sFileSize); //Tamanho do stream a ser lido pela rede
 
-            inStrm := TMemoryStream.Create();
-            try
+			 inStrm := TMemoryStream.Create();
+			 try
 
-                AContext.Connection.IOHandler.ReadStream(inStrm, nFileSize);
-            finally
-                if (inStrm.Size = nFileSize) then begin //Recepção ok -> testar integridade
-                    retHash := MD5(inStrm);
-                    if (SameText(retHash, sHash)) then begin
-                        AContext.Connection.IOHandler.WriteLn(STR_OK_PACK); //informa OK e em seguida o tamanho do streamer lido
-                    end else begin
-                        AContext.Connection.IOHandler.WriteLn(STR_FAIL_HASH); //informa OK e em seguida o tamanho do streamer lido
-                    end;
-                end else begin  //Erro de recepção rejeitar arquivo
-                    AContext.Connection.IOHandler.WriteLn(STR_FAIL_SIZE); //informa OK e em seguida o tamanho do streamer lido
-                end;
-                inStrm.Free;
-            end;
-        until (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)); // assinatura de fim de sessão
-    finally
-        //Finaliza a sessão
-        try
-            AContext.Connection.Disconnect;
-        finally
+				 AContext.Connection.IOHandler.ReadStream(inStrm, nFileSize);
+			 finally
+				 if (inStrm.Size = nFileSize) then begin //Recepção ok -> testar integridade
+					 retHash := MD5(inStrm);
+					 if (SameText(retHash, sHash)) then begin
+						 AContext.Connection.IOHandler.WriteLn(STR_OK_PACK); //informa OK e em seguida o tamanho do streamer lido
+						 Self.SaveBioFile( retClientName, sfilename, screateDate, saccessDate, smodifiedDAte, inStrm ); //Salva arquivo denominado OK
+					 end else begin
+						 AContext.Connection.IOHandler.WriteLn(STR_FAIL_HASH); //informa OK e em seguida o tamanho do streamer lido
+					 end;
+				 end else begin  //Erro de recepção rejeitar arquivo
+					 AContext.Connection.IOHandler.WriteLn(STR_FAIL_SIZE); //informa OK e em seguida o tamanho do streamer lido
+				 end;
+				 inStrm.Free;
+			 end;
+		 until (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)); // assinatura de fim de sessão
+	 finally
+		 //Finaliza a sessão
+		 try
+			 AContext.Connection.Disconnect;
+		 finally
             if (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)) then begin
                 TLogFile.LogDebug('Cliente desconectado normalmente', DBGLEVEL_DETAILED);
             end else begin

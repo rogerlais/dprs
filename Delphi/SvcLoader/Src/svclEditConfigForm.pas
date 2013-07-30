@@ -87,8 +87,13 @@ begin
 end;
 
 procedure TEditConfigForm.LoadConfig;
+///<summary>
+///    Carrega as configurações para os controles
+///</summary>
+///<remarks>
+///
+///</remarks>
 begin
-    {TODO -oroger -cdsg : Carrega as configurações para os controles}
 
     //Modo de trabalho
     Self.chkServerMode.Checked := GlobalConfig.RunAsServer;
@@ -114,8 +119,14 @@ begin
 end;
 
 procedure TEditConfigForm.SaveConfig;
+///<summary>
+///Salva as configurações dos controles para o arquivo
+///</summary>
+///<remarks>
+///
+///</remarks>
 begin
-    {TODO -oroger -cdsg : Salva as configurações dos controles para o arquivo}
+
     //Modo de trabalho
     GlobalConfig.RunAsServer    := Self.chkServerMode.Checked;
     //Conf. cliente

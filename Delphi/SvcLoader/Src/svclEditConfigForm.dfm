@@ -215,6 +215,10 @@ object EditConfigForm: TEditConfigForm
     object tsServerConfig: TTabSheet
       Caption = 'Ser&vidor'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lblServerPathPrimaryBackup: TLabel
         Left = 12
         Top = 28
@@ -249,6 +253,10 @@ object EditConfigForm: TEditConfigForm
     object tsCommon: TTabSheet
       Caption = '&Comum'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lblTCPPort: TLabel
         Left = 13
         Top = 28

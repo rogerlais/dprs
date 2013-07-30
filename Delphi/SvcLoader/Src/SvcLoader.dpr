@@ -12,8 +12,7 @@ uses
   svclConfig in 'svclConfig.pas',
   svclUtils in 'svclUtils.pas',
   svclTCPTransfer in 'svclTCPTransfer.pas',
-  svclEditConfigForm in 'svclEditConfigForm.pas' {EditConfigForm},
-  AppSettings in '..\..\..\..\Pcks\StfLib\Src\AppSettings.pas';
+  svclEditConfigForm in 'svclEditConfigForm.pas' {EditConfigForm};
 
 {$R *.RES}
 

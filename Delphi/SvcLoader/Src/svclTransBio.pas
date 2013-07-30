@@ -37,10 +37,10 @@ var
     DestName : string;
 begin
     //Verificar se existe o destino, garantindo nome único
-    if FileExists(Dest) then begin
+	 if FileExists(Dest) then begin
         DestName := TFileHnd.NextFamilyFilename(Dest);
     end else begin
-        DestName := Dest;
+		 DestName := Dest;
     end;
     if not (ForceDirectories(ExtractFilePath(Dest))) then begin
         raise ESVCLException.CreateFmt(ErrMsg, [Source, DestName, Fase, SysErrorMessage(ERROR_CANNOT_MAKE)]);
@@ -84,7 +84,8 @@ procedure TTransBioThread.DoClientCycle;
     var
         x : Integer;
         f1, f2 : TTransferFile;
-    begin
+	 begin
+	 	 {TODO -oroger -cfuture : Melhorar implementa~çao de modo a buscar por arquivo do bioservice e na ausencia usar outro para denomiar de primario}
 		 x := list.Count - 1; //pivot no final da lista para comparar aos pares
         while (x > 0) do begin
             if (list.Strings[x] = list.Strings[x - 1]) then begin //comparar os hash
@@ -117,9 +118,9 @@ var
 	 bioFile : TTransferFile;
 begin
 	 {TODO -oroger -cdebug : Ponto critico de verificação de memory leak}
-    //Coleta a lista de arquivos para a operação neste ciclo
-    FileList := TStringList.Create;
-    try
+	 //Coleta a lista de arquivos para a operação neste ciclo
+	 FileList := TStringList.Create;
+	 try
 		 FileList.Sorted     := True;
 		 FileList.Duplicates := dupAccept;
 		 FileList.OwnsObjects := True; //mantera as instancia consigo
@@ -144,13 +145,13 @@ begin
 
 		 //repositorio TransBio(ReTrans)
 		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathRetrans, BIOMETRIC_FILE_MASK, False);
-        for f in FileEnt do begin
-            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-        end;
+		 for f in FileEnt do begin
+			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
+		 end;
 
-        //repositorio TransBio(Erro)
-        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathError, BIOMETRIC_FILE_MASK, False);
-        for f in FileEnt do begin
+		 //repositorio TransBio(Erro)
+		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathError, BIOMETRIC_FILE_MASK, False);
+		 for f in FileEnt do begin
 			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
 		 end;
 
@@ -179,14 +180,14 @@ begin
 		 end;
 	 finally
 		 FileList.Free; //OwnsObjects = true para a lista libera instâncias
-    end;
+	 end;
 
 end;
 
 procedure TTransBioThread.DoServerCycle;
 ///Inicia novo ciclo de operação do servidor
 begin
-    //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
+	 //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
 	 Self.CreatePrimaryBackup(GlobalConfig.PathServerOrderedBackup);
 end;
 
