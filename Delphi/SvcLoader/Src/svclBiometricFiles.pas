@@ -109,6 +109,7 @@ var
     dummy :  Integer;
     sentOK : boolean;
 begin
+     {TODO -oroger -cdsg : verificar se a data corrente diverge da data do arquivo}
 	 currLogName := AppLog.TLogFile.GetDefaultLogFile.FileName;
     Files := TDirectory.FileSystemEntries(GlobalConfig.PathServiceLog, '*.log', False);
     for f in Files do begin

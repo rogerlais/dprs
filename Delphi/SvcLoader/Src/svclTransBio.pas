@@ -11,12 +11,12 @@ uses
     SysUtils, Windows, Classes, XPFileEnumerator, XPThreads, svclTCPTransfer;
 
 type
-	 TTransBioThread = class(TXPNamedThread)
-	 private
-		 FCycleErrorCount : Integer;
-		 procedure DoClientCycle;
-		 procedure DoServerCycle;
-		 procedure ReplicDataFiles2PrimaryMachine(BioFile : TTransferFile );
+    TTransBioThread = class(TXPNamedThread)
+    private
+        FCycleErrorCount : Integer;
+        procedure DoClientCycle;
+        procedure DoServerCycle;
+        procedure ReplicDataFiles2PrimaryMachine(BioFile : TTransferFile);
         procedure CreatePrimaryBackup(const DirName : string);
         procedure CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
         procedure StoreTransmitted(SrcFile : TFileSystemEntry);
@@ -37,10 +37,10 @@ var
     DestName : string;
 begin
     //Verificar se existe o destino, garantindo nome único
-	 if FileExists(Dest) then begin
+    if FileExists(Dest) then begin
         DestName := TFileHnd.NextFamilyFilename(Dest);
     end else begin
-		 DestName := Dest;
+        DestName := Dest;
     end;
     if not (ForceDirectories(ExtractFilePath(Dest))) then begin
         raise ESVCLException.CreateFmt(ErrMsg, [Source, DestName, Fase, SysErrorMessage(ERROR_CANNOT_MAKE)]);
@@ -65,7 +65,7 @@ var
 begin
     FileEnt := TDirectory.FileSystemEntries(DirName, BIOMETRIC_FILE_MASK, False);
     for f in FileEnt do begin
-		 Self.StoreTransmitted(f);
+        Self.StoreTransmitted(f);
     end;
 end;
 
@@ -82,11 +82,11 @@ procedure TTransBioThread.DoClientCycle;
     ///
     ///</remarks>
     var
-        x : Integer;
+        x :      Integer;
         f1, f2 : TTransferFile;
-	 begin
-	 	 {TODO -oroger -cfuture : Melhorar implementa~çao de modo a buscar por arquivo do bioservice e na ausencia usar outro para denomiar de primario}
-		 x := list.Count - 1; //pivot no final da lista para comparar aos pares
+    begin
+        {TODO -oroger -cfuture : Melhorar implementa~çao de modo a buscar por arquivo do bioservice e na ausencia usar outro para denomiar de primario}
+        x := list.Count - 1; //pivot no final da lista para comparar aos pares
         while (x > 0) do begin
             if (list.Strings[x] = list.Strings[x - 1]) then begin //comparar os hash
                 f1 := TTransferFile(list.Objects[x - 1]);
@@ -94,14 +94,14 @@ procedure TTransBioThread.DoClientCycle;
                 if (f1.Hash <> f2.Hash) then begin //Renomear e remover os não constantes na pasta Bioservice
                     if (not SameText(TFileHnd.ParentDir(f2.Filename), GlobalConfig.PathClientBioService)) then begin
                         f2.SetAsDivergent;
-						 list.Delete(x); //OwnsObjects = true para a lista libera instância
-					 end else begin
-						 if (not SameText(TFileHnd.ParentDir(f1.Filename), GlobalConfig.PathClientBioService)) then begin
-							 f1.SetAsDivergent;
-							 list.Delete(x - 1); //OwnsObjects = true para a lista libera instância
-						 end;
+                        list.Delete(x); //OwnsObjects = true para a lista libera instância
+                    end else begin
+                        if (not SameText(TFileHnd.ParentDir(f1.Filename), GlobalConfig.PathClientBioService)) then begin
+                            f1.SetAsDivergent;
+                            list.Delete(x - 1); //OwnsObjects = true para a lista libera instância
+                        end;
                     end;
-                    x := list.Count -1; //recomeçar
+                    x := list.Count - 1; //recomeçar
                     System.Continue;
                 end;
             end;
@@ -113,110 +113,111 @@ var
     FileEnt : IEnumerable<TFileSystemEntry>;
     f :   TFileSystemEntry;
     cmp : string;
-	 FileList : TStringList;
-	 x : Integer;
-	 bioFile : TTransferFile;
+    FileList : TStringList;
+    x :   Integer;
+    bioFile : TTransferFile;
 begin
-	 {TODO -oroger -cdebug : Ponto critico de verificação de memory leak}
-	 //Coleta a lista de arquivos para a operação neste ciclo
-	 FileList := TStringList.Create;
-	 try
-		 FileList.Sorted     := True;
-		 FileList.Duplicates := dupAccept;
-		 FileList.OwnsObjects := True; //mantera as instancia consigo
+    {TODO -oroger -cdebug : Ponto critico de verificação de memory leak}
+    //Coleta a lista de arquivos para a operação neste ciclo
+    FileList := TStringList.Create;
+    try
+        FileList.Sorted      := True;
+        FileList.Duplicates  := dupAccept;
+        FileList.OwnsObjects := True; //mantera as instancia consigo
 
-		 //repositorio Bioservice(Bio)
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathClientBioService, BIOMETRIC_FILE_MASK, False); //repositorio Bioservice
-		 for f in FileEnt do begin
-			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-		 end;
+        //repositorio Bioservice(Bio)
+        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathClientBioService, BIOMETRIC_FILE_MASK, False); //repositorio Bioservice
+        for f in FileEnt do begin
+            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
+        end;
 
-		 //repositorio TransBio(Bio)
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.Elo2TransBio, BIOMETRIC_FILE_MASK, False);
-		 for f in FileEnt do begin
-			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-		 end;
+        //repositorio TransBio(Bio)
+        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.Elo2TransBio, BIOMETRIC_FILE_MASK, False);
+        for f in FileEnt do begin
+            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
+        end;
 
-		 //repositorio TransBio(Trans)
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathTransmitted, BIOMETRIC_FILE_MASK, False);
-		 for f in FileEnt do begin
-			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-		 end;
+        //repositorio TransBio(Trans)
+        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathTransmitted, BIOMETRIC_FILE_MASK, False);
+        for f in FileEnt do begin
+            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
+        end;
 
-		 //repositorio TransBio(ReTrans)
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathRetrans, BIOMETRIC_FILE_MASK, False);
-		 for f in FileEnt do begin
-			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-		 end;
+        //repositorio TransBio(ReTrans)
+        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathRetrans, BIOMETRIC_FILE_MASK, False);
+        for f in FileEnt do begin
+            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
+        end;
 
-		 //repositorio TransBio(Erro)
-		 FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathError, BIOMETRIC_FILE_MASK, False);
-		 for f in FileEnt do begin
-			 FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-		 end;
+        //repositorio TransBio(Erro)
+        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathError, BIOMETRIC_FILE_MASK, False);
+        for f in FileEnt do begin
+            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
+        end;
 
-		 //Inicia busca por divergentes
-		 LSRSearchDivergents(FileList);
+        //Inicia busca por divergentes
+        LSRSearchDivergents(FileList);
 
-		 //Processa a lista de arquivos para envio
-		 if (FileList.Count <= 0 ) then begin
-			 Exit;
-		 end;
-		 cmp := WinNetHnd.GetComputerName();
-		 DMTCPTransfer.StartClient;
-		 try
-			 DMTCPTransfer.StartSession(cmp);
-			 try
-				 //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
-				 for x:=0 to FileList.Count -1  do begin
-					 bioFile:=TTransferFile( FileList.Objects[x] );
-					 Self.ReplicDataFiles2PrimaryMachine( bioFile );
-				 end;
-			 finally
-				 DMTCPTransfer.EndSession(cmp);
-			 end;
-		 finally
-			 DMTCPTransfer.StopClient;
-		 end;
-	 finally
-		 FileList.Free; //OwnsObjects = true para a lista libera instâncias
-	 end;
+        //Processa a lista de arquivos para envio
+        if (FileList.Count <= 0) then begin
+            Exit;
+        end;
+        cmp := WinNetHnd.GetComputerName();
+        DMTCPTransfer.StartClient;
+        try
+            DMTCPTransfer.StartSession(cmp);
+            try
+                //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
+                for x := 0 to FileList.Count - 1 do begin
+                    bioFile := TTransferFile(FileList.Objects[x]);
+                    Self.ReplicDataFiles2PrimaryMachine(bioFile);
+                end;
+            finally
+                DMTCPTransfer.EndSession(cmp);
+            end;
+        finally
+            DMTCPTransfer.StopClient;
+        end;
+    finally
+        FileList.Free; //OwnsObjects = true para a lista libera instâncias
+    end;
 
 end;
 
 procedure TTransBioThread.DoServerCycle;
 ///Inicia novo ciclo de operação do servidor
 begin
-	 //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
-	 Self.CreatePrimaryBackup(GlobalConfig.PathServerOrderedBackup);
+    //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
+    Self.CreatePrimaryBackup(GlobalConfig.PathServerOrderedBackup);
 end;
 
-procedure TTransBioThread.ReplicDataFiles2PrimaryMachine( BioFile : TTransferFile );
-///<summary>
-/// Realiza a operação unitária com o arquivo dado:
-/// 1 - Envia o arquivo para o servidor
-/// 2 - Copia para a pasta de backup ordenado
-/// 3 - Copia para o bakup local(não ordenado)
-/// 4 - Apaga do local de aquisição
-///</summary>
-///<remarks>
-///
-///</remarks>
+procedure TTransBioThread.ReplicDataFiles2PrimaryMachine(BioFile : TTransferFile);
+ ///<summary>
+ /// Realiza a operação unitária com o arquivo dado:
+ /// 1 - Envia o arquivo para o servidor
+ /// 2 - Copia para a pasta de backup ordenado
+ /// 3 - Copia para o bakup local(não ordenado)
+ /// 4 - Apaga do local de aquisição
+ ///</summary>
+ ///<remarks>
+ ///
+ ///</remarks>
 const
-	 ERR_MSG: string = 'Falha copiando arquivo'#13'%s'#13'para'#13'%s'#13'%s'#13'%s';
+    ERR_MSG: string = 'Falha copiando arquivo'#13'%s'#13'para'#13'%s'#13'%s'#13'%s';
 var
-	 DestFilename, DateFolderName, LocalBackupName : string;
-	 fileDate, dummy : TDateTime;
+    DestFilename, DateFolderName, LocalBackupName : string;
+    fileDate, dummy : TDateTime;
 begin
-	 //Envia o arquivo para o servidor, passando ok -> realiza seu backup local
-	 DMTCPTransfer.SendFile(BioFile);
+    //Envia o arquivo para o servidor, passando ok -> realiza seu backup local
+    DMTCPTransfer.SendFile(BioFile);
 
-	 DestFilename := TFileHnd.ConcatPath([GlobalConfig.PathClientOrderlyBackup, BioFile.DateStamp, ExtractFileName(BioFile.Filename)]);
-	 Self.CopyBioFile(BioFile.Filename, DestFilename, 'Backup do cliente', ERR_MSG, False);
+    DestFilename := TFileHnd.ConcatPath([GlobalConfig.PathClientOrderlyBackup, BioFile.DateStamp,
+        ExtractFileName(BioFile.Filename)]);
+    Self.CopyBioFile(BioFile.Filename, DestFilename, 'Backup do cliente', ERR_MSG, False);
 
-	 //Move arquivo para backup local, todos os arquivos sem agrupamento
-	 LocalBackupName := TFileHnd.ConcatPath([GlobalConfig.PathClientFullyBackup, ExtractFileName(BioFile.Filename)]);
-	 Self.CopyBioFile(BioFile.Filename, LocalBackupName, 'Backup Local', ERR_MSG, True);
+    //Move arquivo para backup local, todos os arquivos sem agrupamento
+    LocalBackupName := TFileHnd.ConcatPath([GlobalConfig.PathClientFullyBackup, ExtractFileName(BioFile.Filename)]);
+    Self.CopyBioFile(BioFile.Filename, LocalBackupName, 'Backup Local', ERR_MSG, True);
 end;
 
 procedure TTransBioThread.Execute;
@@ -240,13 +241,13 @@ var
 
     procedure LSRReportError(EComm : Exception);
     //notificar agente monitorador
-	 begin
-		 //Registrar o erro e testar o contador de erros
-		 Inc(Self.FCycleErrorCount);
-		 ErrorMessage := Format('Quantidade de erros consecutivos(%d) ultrapassou o limite.'#13#10 +
-			 'Último erro registrado = "%s"', [Self.FCycleErrorCount, EComm.Message]);
-		 if (Integer(Self.FCycleErrorCount) > 10) then begin
-			 TLogFile.Log(ErrorMessage, lmtError);
+    begin
+        //Registrar o erro e testar o contador de erros
+        Inc(Self.FCycleErrorCount);
+        ErrorMessage := Format('Quantidade de erros consecutivos(%d) ultrapassou o limite.'#13#10 +
+            'Último erro registrado = "%s"', [Self.FCycleErrorCount, EComm.Message]);
+        if (Integer(Self.FCycleErrorCount) > 10) then begin
+            TLogFile.Log(ErrorMessage, lmtError);
             Self.FCycleErrorCount := 0; //reseta contador global
         end;
     end;
@@ -277,8 +278,8 @@ begin
             Self.FCycleErrorCount := 0; //Reseta contador de erros do ciclo
         except
             on EComm : Exception do begin
-				 LSRReportError(EComm);
-			 end;
+                LSRReportError(EComm);
+            end;
         end;
         //Suspende este thread até a liberação pelo thread do serviço
         Self.Suspended := True;
@@ -295,6 +296,7 @@ begin
     //Todas as configurações do TransBio forcadas desta forma, caso o ini do serviço esteja ompleto
     if (Assigned(GlobalConfig.TransbioConfig)) then begin
         GlobalConfig.TransbioConfig.Import(GlobalConfig, 'TransBio', '', True);
+        GlobalConfig.TransbioConfig.Elo2TransBio := GlobalConfig.TransbioConfig.PathBio;
     end;
     //Caminhos de configuração do elo e pasta de transmissão do Transbio devem ser iguais, notificar para divergente
     if (not SameText(GlobalConfig.TransbioConfig.Elo2TransBio, GlobalConfig.TransbioConfig.PathBio)) then begin
@@ -330,15 +332,15 @@ procedure TTransBioThread.StoreTransmitted(SrcFile : TFileSystemEntry);
  /// Move arquivo da pasta de transmitidos de acordo com a data de criação para a pasta raiz de armazenamento
  ///
 var
-	 DestPath, FullDateStr, sy, sm, sd : string;
-	 dummy, t : TDateTime;
+    DestPath, FullDateStr, sy, sm, sd : string;
+    dummy, t : TDateTime;
 begin
-	 TFileHnd.FileTimeProperties(SrcFile.FullName, dummy, dummy, t);
-	 FullDateStr := FormatDateTime('YYYYMMDD', t);
-	 sy := Copy(FullDateStr, 1, 4);
-	 sm := Copy(FullDateStr, 5, 2);
-	 sd := Copy(FullDateStr, 7, 2);
-	 DestPath := TFileHnd.ConcatPath([GlobalConfig.PathClientOrderlyBackup, sy, sm, sd]);
+    TFileHnd.FileTimeProperties(SrcFile.FullName, dummy, dummy, t);
+    FullDateStr := FormatDateTime('YYYYMMDD', t);
+    sy := Copy(FullDateStr, 1, 4);
+    sm := Copy(FullDateStr, 5, 2);
+    sd := Copy(FullDateStr, 7, 2);
+    DestPath := TFileHnd.ConcatPath([GlobalConfig.PathClientOrderlyBackup, sy, sm, sd]);
     ForceDirectories(DestPath);
     if (not MoveFile(PChar(SrcFile.FullName), PChar(DestPath + '\' + SrcFile.Name))) then begin
         TLogFile.Log('Erro movendo arquivo para o repositório definitivo no computador primário'#13 +

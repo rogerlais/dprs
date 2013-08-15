@@ -9,7 +9,7 @@ interface
 
 uses
     Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-    Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls, svclConfig, Mask, JvExMask, JvToolEdit, Spin;
+    Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls, svclConfig, Mask, JvToolEdit, Spin, JvExMask;
 
 type
     TEditConfigForm = class(TForm)
