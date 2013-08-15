@@ -1,0 +1,6 @@
+Elaboração:
+
+Após consulta em:
+http://desenv.tre-pb.gov.br/zimbra/listar_todos.php
+montamos planilha(csv) com os seguintes campos
+LOGIN, TIPO, E-MAIL
