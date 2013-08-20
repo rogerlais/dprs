@@ -15,12 +15,21 @@ type
     private
         FCycleErrorCount : Integer;
         procedure DoClientCycle;
-        procedure DoServerCycle;
         procedure ReplicDataFiles2PrimaryMachine(BioFile : TTransferFile);
-        procedure CreatePrimaryBackup(const DirName : string);
         procedure CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
-        procedure StoreTransmitted(SrcFile : TFileSystemEntry);
         procedure ForceEloConfiguration();
+    public
+        procedure Execute(); override;
+    end;
+
+    TTransBioServerThread = class(TXPNamedThread)
+        {TODO -oroger -cdsg : Para eventos de pausa start e stop repassar verbos para o servidor tcp }
+    private
+        procedure StoreTransmitted(SrcFile : TFileSystemEntry);
+        procedure DoServerCycle;
+        procedure CreatePrimaryBackup(const DirName : string);
+        procedure CheckTCPServer;
+        procedure ReagroupTransmitted;
     public
         procedure Execute(); override;
     end;
@@ -53,19 +62,6 @@ begin
         if not CopyFile(PWideChar(Source), PWideChar(DestName), True) then begin
             raise ESVCLException.CreateFmt(ErrMsg, [Source, DestName, Fase, SysErrorMessage(GetLastError())]);
         end;
-    end;
-end;
-
-procedure TTransBioThread.CreatePrimaryBackup(const DirName : string);
- ///Monta arvore de diretorios baseado na data do arquivo no padrão <root>\year\month\day
- /// Onde <root> é configurado
-var
-    FileEnt : IEnumerable<TFileSystemEntry>;
-    f : TFileSystemEntry;
-begin
-    FileEnt := TDirectory.FileSystemEntries(DirName, BIOMETRIC_FILE_MASK, False);
-    for f in FileEnt do begin
-        Self.StoreTransmitted(f);
     end;
 end;
 
@@ -126,7 +122,8 @@ begin
         FileList.OwnsObjects := True; //mantera as instancia consigo
 
         //repositorio Bioservice(Bio)
-        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathClientBioService, BIOMETRIC_FILE_MASK, False); //repositorio Bioservice
+        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathClientBioService, BIOMETRIC_FILE_MASK, False);
+        //repositorio Bioservice
         for f in FileEnt do begin
             FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
         end;
@@ -182,13 +179,6 @@ begin
         FileList.Free; //OwnsObjects = true para a lista libera instâncias
     end;
 
-end;
-
-procedure TTransBioThread.DoServerCycle;
-///Inicia novo ciclo de operação do servidor
-begin
-    //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
-    Self.CreatePrimaryBackup(GlobalConfig.PathServerOrderedBackup);
 end;
 
 procedure TTransBioThread.ReplicDataFiles2PrimaryMachine(BioFile : TTransferFile);
@@ -270,9 +260,7 @@ begin
     Self.FCycleErrorCount := 0;
     while Self.IsAlive do begin
         try
-            if (GlobalConfig.RunAsServer) then begin
-                Self.DoServerCycle;
-            end else begin
+            if (not GlobalConfig.RunAsServer) then begin
                 Self.DoClientCycle;
             end;
             Self.FCycleErrorCount := 0; //Reseta contador de erros do ciclo
@@ -327,7 +315,48 @@ begin
     end;
 end;
 
-procedure TTransBioThread.StoreTransmitted(SrcFile : TFileSystemEntry);
+{TTransBioServerThread}
+procedure TTransBioServerThread.DoServerCycle;
+///Inicia novo ciclo de operação do servidor
+begin
+    //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
+    Self.CreatePrimaryBackup(GlobalConfig.PathServerOrderedBackup);
+end;
+
+procedure TTransBioServerThread.Execute;
+begin
+    inherited;
+    Self.CheckTCPServer;
+    Self.ReagroupTransmitted;
+end;
+
+procedure TTransBioServerThread.CheckTCPServer;
+begin
+    {TODO -oroger -cdsg : Verificar a atividade do servidor tcp, ativando o mesmo se necessário}
+    if (not DMTCPTransfer.tcpsrvr.Active) then begin
+        DMTCPTransfer.StartServer();
+    end;
+end;
+
+procedure TTransBioServerThread.ReagroupTransmitted;
+begin
+    {TODO -oroger -cdsg : A cada ciclo varre a pasta do transbio local e move para o backup ordenado }
+end;
+
+procedure TTransBioServerThread.CreatePrimaryBackup(const DirName : string);
+ ///Monta arvore de diretorios baseado na data do arquivo no padrão <root>\year\month\day
+ /// Onde <root> é configurado
+var
+    FileEnt : IEnumerable<TFileSystemEntry>;
+    f : TFileSystemEntry;
+begin
+    FileEnt := TDirectory.FileSystemEntries(DirName, BIOMETRIC_FILE_MASK, False);
+    for f in FileEnt do begin
+        Self.StoreTransmitted(f);
+    end;
+end;
+
+procedure TTransBioServerThread.StoreTransmitted(SrcFile : TFileSystemEntry);
  ///
  /// Move arquivo da pasta de transmitidos de acordo com a data de criação para a pasta raiz de armazenamento
  ///
@@ -347,5 +376,6 @@ begin
             SysErrorMessage(GetLastError()));
     end;
 end;
+
 
 end.

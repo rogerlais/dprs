@@ -9,7 +9,8 @@ interface
 
 uses
     Windows, Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, svclTransBio, ExtCtrls, IdMessage, IdBaseComponent,
-    IdComponent, IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient, IdSMTPBase, IdSMTP, FileInfo;
+    IdComponent, IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient, IdSMTPBase,
+    IdSMTP, FileInfo, XPThreads;
 
 type
     TBioFilesService = class(TService)
@@ -20,14 +21,14 @@ type
         procedure ServiceStart(Sender : TService; var Started : boolean);
         procedure ServiceCreate(Sender : TObject);
         procedure ServiceAfterInstall(Sender : TService);
-        procedure ServiceStop(Sender : TService; var Stopped : boolean);
+		 procedure ServiceStop(Sender : TService; var Stopped : boolean);
 		 procedure tmrCycleEventTimer(Sender : TObject);
-        procedure ServiceBeforeInstall(Sender : TService);
+		 procedure ServiceBeforeInstall(Sender : TService);
         procedure ServicePause(Sender : TService; var Paused : boolean);
         procedure ServiceContinue(Sender : TService; var Continued : boolean);
     private
         { Private declarations }
-        FSvcThread : TTransBioThread;
+        FSvcThread : TXPNamedThread;
         procedure AddDestinations;
         procedure CheckLogs();
     public
@@ -109,8 +110,8 @@ var
     dummy :  Integer;
     sentOK : boolean;
 begin
-     {TODO -oroger -cdsg : verificar se a data corrente diverge da data do arquivo}
-	 currLogName := AppLog.TLogFile.GetDefaultLogFile.FileName;
+    {TODO -oroger -cdsg : verificar se a data corrente diverge da data do arquivo}
+    currLogName := AppLog.TLogFile.GetDefaultLogFile.FileName;
     Files := TDirectory.FileSystemEntries(GlobalConfig.PathServiceLog, '*.log', False);
     for f in Files do begin
         if (not Sametext(f.FullName, currLogName)) then begin //Pula o arquivo em uso no momento como saida de log
@@ -230,15 +231,15 @@ begin
 end;
 
 procedure TBioFilesService.ServiceContinue(Sender : TService; var Continued : boolean);
-///<summary>
-///Reincio do servico
-///</summary>
-///<remarks>
-///
-///</remarks>
+ ///<summary>
+ ///Reincio do servico
+ ///</summary>
+ ///<remarks>
+ ///
+ ///</remarks>
 begin
-	 Self.tmrCycleEvent.Enabled:=True; //Liberar disparo de liberação de thread de serviço
-	 if Assigned(Self.FSvcThread) and (Self.FSvcThread.Suspended) then begin
+    Self.tmrCycleEvent.Enabled := True; //Liberar disparo de liberação de thread de serviço
+    if Assigned(Self.FSvcThread) and (Self.FSvcThread.Suspended) then begin
         if Self.FSvcThread.Suspended then begin
             Self.FSvcThread.Resume;
         end;
@@ -251,21 +252,24 @@ end;
 procedure TBioFilesService.ServiceCreate(Sender : TObject);
 begin
     Self.DisplayName := APP_SERVICE_DISPLAYNAME;
-    Self.LoadGroup  := APP_SERVICE_GROUP;
-    //Self.TagID      := 100;  {TODO -oroger -cdsg : Sem sentido esta atribuição - procurar razão }
-    Self.FSvcThread := TTransBioThread.Create(True);  //Criar thread de operação primário
+    Self.LoadGroup   := APP_SERVICE_GROUP;
+    if (GlobalConfig.RunAsServer) then begin
+        Self.FSvcThread := TTransBioServerThread.Create(True);
+    end else begin
+        Self.FSvcThread := TTransBioThread.Create(True);  //Criar thread de operação primário
+    end;
     Self.FSvcThread.Name := APP_SERVICE_DISPLAYNAME;  //Nome de exibição do thread primário
 end;
 
 procedure TBioFilesService.ServicePause(Sender : TService; var Paused : boolean);
-///<summary>
-///	 Pause do servico
-///</summary>
-///<remarks>
-///
-///</remarks>
+ ///<summary>
+ ///     Pause do servico
+ ///</summary>
+ ///<remarks>
+ ///
+ ///</remarks>
 begin
-	 Self.tmrCycleEvent.Enabled:=False; //Suspende timer de liberação do thread do serviço
+    Self.tmrCycleEvent.Enabled := False; //Suspende timer de liberação do thread do serviço
     if Assigned(Self.FSvcThread) and (not Self.FSvcThread.Suspended) then begin
         Self.FSvcThread.Suspend;
         Paused := (Self.FSvcThread.Suspended = True);
@@ -276,32 +280,35 @@ end;
 
 procedure TBioFilesService.ServiceStart(Sender : TService; var Started : boolean);
 begin
-	{TODO -oroger -cfuture : rever modo de iniciar e parar serviço, preferencialmente desaolcando tudo}
-	 Self.CheckLogs();
-	 //Rotina de inicio do servico, cria o thread da operação e o inicia
-	 Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
-	 Self.tmrCycleEvent.Enabled  := True;
-	 Self.FSvcThread.Start;
-	 Sleep(300);
-	 Self.FSvcThread.Suspended := False;
-	 Started := True;
+    {TODO -oroger -cfuture : rever modo de iniciar e parar serviço, preferencialmente desaolcando tudo}
+    Self.CheckLogs();
+    //Rotina de inicio do servico, cria o thread da operação e o inicia
+    Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
+    Self.tmrCycleEvent.Enabled  := True;
+    Self.FSvcThread.Start;
+    Sleep(300);
+    Self.FSvcThread.Suspended := False;
+    Started := True;
 end;
 
 procedure TBioFilesService.ServiceStop(Sender : TService; var Stopped : boolean);
 begin
-	 Self.FSvcThread.Suspended := True; {TODO -oroger -cfuture : Caso alterado o ciclo de vida do serviço, local para desalocar o thread de trabalho}
-	 Stopped:=True;
+	 Self.FSvcThread.Suspended := True;
+	 Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
+	 Self.tmrCycleEvent.Enabled  := False; //Para a reativação do thread de serviço
+    {TODO -oroger -cfuture : Caso alterado o ciclo de vida do serviço, local para desalocar o thread de trabalho}
+    Stopped := True;
 end;
 
 procedure TBioFilesService.TimeCycleEvent;
 begin
-	 Self.FSvcThread.Suspended := False;
+    Self.FSvcThread.Suspended := False;
 end;
 
 procedure TBioFilesService.tmrCycleEventTimer(Sender : TObject);
 begin
-	Self.CheckLogs;
-	 Self.TimeCycleEvent();
+    Self.CheckLogs;
+    Self.TimeCycleEvent();
 end;
 
 initialization

@@ -17,13 +17,13 @@ type
         btnPause :         TBitBtn;
         btnStop :          TBitBtn;
         btnClose :         TBitBtn;
-		 tmrServiceThread : TTimer;
-    btnEditConfig: TBitBtn;
+        tmrServiceThread : TTimer;
+        btnEditConfig :    TBitBtn;
         procedure btnStartClick(Sender : TObject);
         procedure btnCloseClick(Sender : TObject);
         procedure tmrServiceThreadTimer(Sender : TObject);
-		 procedure btnServiceLogonClick(Sender : TObject);
-		 procedure btnEditConfigClick(Sender : TObject);
+        procedure btnServiceLogonClick(Sender : TObject);
+        procedure btnEditConfigClick(Sender : TObject);
     private
         { Private declarations }
     public
@@ -36,7 +36,7 @@ var
 implementation
 
 uses
-	 svclBiometricFiles, svclConfig, JwaWindows, svclUtils, WinNetHnd, StrHnd, WNetExHnd, svclEditConfigForm;
+    svclBiometricFiles, svclConfig, JwaWindows, svclUtils, WinNetHnd, StrHnd, WNetExHnd, svclEditConfigForm;
 
 {$R *.dfm}
 
@@ -47,14 +47,14 @@ end;
 
 procedure TForm1.btnEditConfigClick(Sender : TObject);
 begin
-	TEditConfigForm.EditConfig();
+    TEditConfigForm.EditConfig();
 end;
 
 procedure TForm1.btnServiceLogonClick(Sender : TObject);
 var
     lStatus : DWORD;
 begin
-	 //lStatus := AddPrivilegeToAccount('Administrators'{or any account/group name}, 'SeServiceLogonRight');
+    //lStatus := AddPrivilegeToAccount('Administrators'{or any account/group name}, 'SeServiceLogonRight');
     lStatus := AddPrivilegeToAccount('TRE-PB\Roger'{or any account/group name}, SE_SERVICE_LOGON_NAME);
     if lStatus = ERROR_SUCCESS then begin
         Caption := 'OK';
@@ -65,16 +65,16 @@ end;
 
 procedure TForm1.btnStartClick(Sender : TObject);
 var
-	ret : Boolean;
+    ret : boolean;
 begin
-	ret:=False;
-	 BioFilesService.ServiceStart(BioFilesService, ret );
-	 Self.tmrServiceThread.Enabled := True;
+    ret := False;
+    BioFilesService.ServiceStart(BioFilesService, ret);
+    Self.tmrServiceThread.Enabled := True;
 end;
 
 procedure TForm1.tmrServiceThreadTimer(Sender : TObject);
 begin
-	 BioFilesService.TimeCycleEvent();
+    BioFilesService.TimeCycleEvent();
 end;
 
 end.

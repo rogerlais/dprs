@@ -79,7 +79,7 @@ object Form3: TForm3
   end
   object tmrCycle: TTimer
     Enabled = False
-    Interval = 10000
+    Interval = 5000
     OnTimer = tmrCycleTimer
     Left = 264
     Top = 136
