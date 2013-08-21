@@ -25,7 +25,7 @@ type
         procedure FormCreate(Sender : TObject);
         procedure tmrCycleTimer2(Sender : TObject);
         procedure chkServerSwitchClick(Sender : TObject);
-    procedure tmrCycleTimer(Sender: TObject);
+        procedure tmrCycleTimer(Sender : TObject);
     private
         { Private declarations }
         FStarted :      boolean;
@@ -44,27 +44,27 @@ var
 implementation
 
 uses
-	 svclTCPTransfer, svclConfig, XPFileEnumerator, FileHnd, WinNetHnd, svclBiometricFiles;
+    svclTCPTransfer, svclConfig, XPFileEnumerator, FileHnd, WinNetHnd, svclBiometricFiles;
 
 {$R *.dfm}
 
 procedure TForm3.btnStartStopClick(Sender : TObject);
 var
-	 ret : boolean;
+    ret : boolean;
 begin
-	 Self.btnStartStop.Enabled := False;
-	 try
-		 if (GlobalConfig.RunAsServer) then begin //modo servidor
-			 Self.SetServiceStarted(not Self.FStarted);
-		 end else begin  //modo cliente
-			 ret := False;
-			 BioFilesService.ServiceStart(BioFilesService, ret);
-			 BioFilesService.TimeCycleEvent();
-			 Self.tmrCycle.Enabled := True;
-		 end;
-	 finally
-		 Self.btnStartStop.Enabled := True;
-	 end;
+    Self.btnStartStop.Enabled := False;
+    try
+        if (GlobalConfig.RunAsServer) then begin //modo servidor
+            Self.SetServiceStarted(not Self.FStarted);
+        end else begin  //modo cliente
+            ret := False;
+            BioFilesService.ServiceStart(BioFilesService, ret);
+            BioFilesService.TimeCycleEvent();
+            Self.tmrCycle.Enabled := True;
+        end;
+    finally
+        Self.btnStartStop.Enabled := True;
+    end;
 end;
 
 
@@ -139,10 +139,10 @@ begin
     end;
 end;
 
-procedure TForm3.tmrCycleTimer(Sender: TObject);
+procedure TForm3.tmrCycleTimer(Sender : TObject);
 begin
-   //codigo original para tmrCycleTimer2(Sender : TObject);
-	BioFilesService.TimeCycleEvent();
+    //codigo original para tmrCycleTimer2(Sender : TObject);
+    BioFilesService.TimeCycleEvent();
 end;
 
 procedure TForm3.tmrCycleTimer2(Sender : TObject);
@@ -155,8 +155,8 @@ begin
         if (GlobalConfig.RunAsServer) then begin // Modo Servidor ativo
             {TODO -oroger -cdsg : Organizar os arquivos recebidos }
         end else begin
-			 if (Assigned(Self.FClientThread) and ( Self.FClientThread.Suspended ) )then begin
-				 Self.FClientThread.Start;
+            if (Assigned(Self.FClientThread) and (Self.FClientThread.Suspended)) then begin
+                Self.FClientThread.Start;
             end;
              {
              //Modo cliente

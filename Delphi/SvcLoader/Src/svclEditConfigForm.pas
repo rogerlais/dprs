@@ -49,16 +49,16 @@ type
         edtfTransBioConfigFile : TJvFilenameEdit;
         lblTransBioConfigFile : TLabel;
         lblClientPathFullyBackup : TLabel;
-        lblClientPathOrderedBackup : TLabel;
-        edtDirClientPathFullyBackup : TJvDirectoryEdit;
-        edtDirClientPathOrderedBackup : TJvDirectoryEdit;
-    private
-        { Private declarations }
-        procedure LoadConfig();
-        procedure SaveConfig();
-    public
-        { Public declarations }
-        class procedure EditConfig;
+		 lblClientPathOrderedBackup : TLabel;
+		 edtDirClientPathFullyBackup : TJvDirectoryEdit;
+		 edtDirClientPathOrderedBackup : TJvDirectoryEdit;
+	 private
+		 { Private declarations }
+		 procedure LoadConfig();
+		 procedure SaveConfig();
+	 public
+		 { Public declarations }
+		 class procedure EditConfig;
     end;
 
 var
@@ -66,15 +66,21 @@ var
 
 implementation
 
+uses svclBiometricFiles, SvcMgr;
+
 {$R *.dfm}
 
 { TEditConfigForm }
 
 class procedure TEditConfigForm.EditConfig;
 var
-    frm : TEditConfigForm;
+	 frm : TEditConfigForm;
+	 oldStatus : TCurrentStatus;
 begin
-    Application.CreateForm(TEditConfigForm, frm);
+	 if ( BioFilesService.Status <> csStopped ) then begin
+    	raise Exception.Create('Serviço deve estar parado antes de ser configurado');
+	 end;
+	 Application.CreateForm(TEditConfigForm, frm);
     try
         frm.LoadConfig();
         frm.ShowModal();

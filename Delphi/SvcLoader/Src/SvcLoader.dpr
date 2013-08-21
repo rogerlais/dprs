@@ -35,6 +35,5 @@ begin
   if not Application.DelayInitialize or Application.Installing then
 	 Application.Initialize;
   Application.CreateForm(TBioFilesService, BioFilesService);
-  Application.CreateForm(TEditConfigForm, EditConfigForm);
   Application.Run;
 end.

@@ -6,7 +6,9 @@ uses
   svclTCPTransfer in '..\..\Src\svclTCPTransfer.pas' {DMTCPTransfer: TDataModule},
   svclConfig in '..\..\Src\svclConfig.pas',
   svclUtils in '..\..\Src\svclUtils.pas',
-  svclEditConfigForm in '..\..\Src\svclEditConfigForm.pas';
+  svclEditConfigForm in '..\..\Src\svclEditConfigForm.pas',
+  svclTransBio in '..\..\Src\svclTransBio.pas',
+  svclBiometricFiles in '..\..\Src\svclBiometricFiles.pas';
 
 {$R *.res}
 

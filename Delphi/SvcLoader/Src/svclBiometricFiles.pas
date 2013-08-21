@@ -62,8 +62,9 @@ procedure InitServiceLog();
 var
     LogFileName : string;
 begin
-    LogFileName := TFileHnd.ConcatPath([GlobalConfig.PathServiceLog, APP_SERVICE_NAME + '_'
-        + FormatDateTime('YYYYMMDD', Now())]) + '.log';
+	 LogFileName := TFileHnd.ConcatPath([GlobalConfig.PathServiceLog, APP_SERVICE_NAME + '_' +
+	 	TFileHnd.ExtractFilenamePure( ParamStr( 0 ) ) + '_' +
+        FormatDateTime('YYYYMMDD', Now())]) + '.log';
     try
         AppLog.TLogFile.GetDefaultLogFile.FileName := LogFileName;
     except
@@ -256,7 +257,7 @@ begin
     if (GlobalConfig.RunAsServer) then begin
         Self.FSvcThread := TTransBioServerThread.Create(True);
     end else begin
-        Self.FSvcThread := TTransBioThread.Create(True);  //Criar thread de operação primário
+		 Self.FSvcThread := TTransBioThread.Create(True);  //Criar thread de operação primário
     end;
     Self.FSvcThread.Name := APP_SERVICE_DISPLAYNAME;  //Nome de exibição do thread primário
 end;
