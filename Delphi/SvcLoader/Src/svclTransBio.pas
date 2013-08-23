@@ -327,7 +327,7 @@ procedure TTransBioServerThread.Execute;
 begin
     inherited;
     Self.CheckTCPServer;
-    Self.ReagroupTransmitted;
+    Self.ReagroupTransmitted; //remonta backup do servidor pela data de transmissão/coleta
 end;
 
 procedure TTransBioServerThread.CheckTCPServer;

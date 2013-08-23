@@ -74,7 +74,9 @@ end;
 
 procedure TForm1.tmrServiceThreadTimer(Sender : TObject);
 begin
-    BioFilesService.TimeCycleEvent();
+	Exit;
+	{TODO -oroger -cdsg : remover timer desnecessário}
+	//BioFilesService.TimeCycleEvent();
 end;
 
 end.

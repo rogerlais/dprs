@@ -136,7 +136,8 @@ begin
                 if (sentOK) then begin
                     sentPath := GlobalConfig.PathServiceLog + '\Sent\';
                     ForceDirectories(sentPath);
-                    sentPath := sentPath + F.Name;
+					 sentPath := sentPath + F.Name;
+					 sentPath:=TFileHnd.NextFamilyFilename( sentPath );
                     if (not MoveFile(PWideChar(F.FullName), PWideChar((sentPath)))) then begin
                         TLogFile.Log('Final do processamento de arquivo de log falhou:'#13#10 +
                             SysErrorMessage(GetLastError()), lmtError);
