@@ -6,8 +6,7 @@ uses
   svclTransBio in 'svclTransBio.pas',
   svclBiometricFiles in 'svclBiometricFiles.pas' {BioFilesService: TService},
   svclConfig in 'svclConfig.pas',
-  svclTCPTransfer in 'svclTCPTransfer.pas',
-  FileHnd in '..\..\..\..\Pcks\XPLib\Src\FileHnd.pas';
+  svclTCPTransfer in 'svclTCPTransfer.pas';
 
 {$R *.res}
 

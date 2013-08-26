@@ -54,13 +54,30 @@ var
 begin
     Self.btnStartStop.Enabled := False;
     try
-        if (GlobalConfig.RunAsServer) then begin //modo servidor
-            Self.SetServiceStarted(not Self.FStarted);
-        end else begin  //modo cliente
-            ret := False;
-            BioFilesService.ServiceStart(BioFilesService, ret);
-            BioFilesService.TimeCycleEvent();
-            Self.tmrCycle.Enabled := True;
+        case Self.btnStartStop.Tag of
+            0 : begin
+				 Self.btnStartStop.Caption := '&Parar';
+				 Self.btnStartStop.Tag:=1;
+				 if (GlobalConfig.RunAsServer) then begin //modo servidor
+					 Self.SetServiceStarted(not Self.FStarted);
+				 end else begin  //modo cliente
+					 ret := False;
+					 BioFilesService.ServiceStart(BioFilesService, ret);
+					 BioFilesService.TimeCycleEvent();
+					 Self.tmrCycle.Enabled := True;
+				 end;
+			 end;
+			 1 : begin
+				 Self.btnStartStop.Caption := '&Iniciar';
+				 Self.btnStartStop.Tag:=0;
+                ret := False;
+                BioFilesService.ServiceStop(BioFilesService, ret);
+                BioFilesService.TimeCycleEvent();
+                Self.tmrCycle.Enabled := False;
+            end;
+            else begin
+                raise Exception.Create('Estado inválido');
+            end;
         end;
     finally
         Self.btnStartStop.Enabled := True;

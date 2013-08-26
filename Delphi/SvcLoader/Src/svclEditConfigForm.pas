@@ -75,7 +75,6 @@ uses svclBiometricFiles, SvcMgr;
 class procedure TEditConfigForm.EditConfig;
 var
 	 frm : TEditConfigForm;
-	 oldStatus : TCurrentStatus;
 begin
 	 if ( BioFilesService.Status <> csStopped ) then begin
     	raise Exception.Create('Serviço deve estar parado antes de ser configurado');
