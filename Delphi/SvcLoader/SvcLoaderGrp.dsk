@@ -1,34 +1,35 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\Core\IdIOHandler.pas',0,1,1403,33,1416,0,0,,{3,552,1}
-File_1=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\win\Windows.pas',0,1,28639,89,28657,0,0,,{1,19248,1}
-File_2=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\SysUtils.pas',0,1,15200,1,15218,0,0,,{4,71,1}{5,3505,1}
-File_3=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\SvcMgr.pas',0,1,88,1,106,0,0,,
-File_4=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\Core\IdThread.pas',0,1,367,1,395,0,0,,
+File_0=TSourceModule,'C:\Sw\WorkDir\Pcks\StFLib\Src\StreamHnd.pas',0,1,1,13,19,0,0,,
+File_1=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\XPThreads.pas',0,1,1,1,73,0,0,,{1
+File_2=TSourceModule,'C:\Sw\WorkDir\Pcks\WinAdvLib\Src\WinLSAUtils.pas',0,1,5,65,14,0,0,,
+File_3=TSourceModule,'C:\Sw\WorkDir\Pcks\WinSysLib\Src\FileInfo.pas',0,1,1,162,10,0,0,,{1
+File_4=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\common\Classes.pas',0,1,11163,3,11180,0,0,,{1
 File_5=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\Core\IdCustomTCPServer.pas',0,1,972,1,990,0,0,,
-File_6=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\FileHnd.pas',0,1,1782,123,1806,0,0,,
-File_7=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\common\Classes.pas',0,1,11496,3,11514,0,0,,{1
-File_8=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\Protocols\IdHashMessageDigest.pas',0,1,351,1,369,0,0,,
-File_9=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclUtils.pas',0,1,7,1,40,0,0,,
-File_10=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\Protocols\IdGlobalProtocols.pas',0,1,3195,1,3213,0,0,,{1
-File_11=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\Dateoper.pas',0,1,625,38,635,0,0,,{1
-File_12=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdComponent.pas',0,1,51,1,69,0,0,,
-File_13=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdStackWindows.pas',0,1,995,1,1013,0,0,,
-File_14=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdStack.pas',0,1,661,1,679,0,0,,
+File_6=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\Core\IdThread.pas',0,1,367,1,395,0,0,,
+File_7=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdGlobal.pas',0,1,4168,1,4190,0,0,,
+File_8=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\Core\IdSocketHandle.pas',0,1,547,1,565,0,0,,
+File_9=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\SvcMgr.pas',0,1,198,1,216,0,0,,
+File_10=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdWinsock2.pas',0,1,5452,1,5470,0,0,,
+File_11=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\Core\IdIOHandler.pas',0,1,1403,33,1416,0,0,,{3
+File_12=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\win\Windows.pas',0,1,28639,89,28657,0,0,,{1
+File_13=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\SysUtils.pas',0,1,15200,1,15218,0,0,,{4
+File_14=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\FileHnd.pas',0,1,1782,123,1806,0,0,,
 
 [Modules]
-Module0=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
+Module0=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
 Module1=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
-Module2=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclEditConfigForm.pas
-Module3=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20
-Module4=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas
-Module5=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
-Module6=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
-Module7=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas
-Module8=default.htm
-Count=9
+Module2=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
+Module3=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclEditConfigForm.pas
+Module4=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
+Module5=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclUtils.pas
+Module6=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas
+Module7=default.htm
+Module8=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas
+Module9=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20
+Count=10
 EditWindowCount=1
 
-[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas]
+[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas]
 ModuleType=TSourceModule
 FormState=1
 FormOnTop=0
@@ -38,27 +39,24 @@ ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclEditConfigForm.pas]
-ModuleType=TSourceModule
-FormState=1
-FormOnTop=0
-
-[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20]
-ModuleType=TTogetherDocModule
-
-[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas]
-ModuleType=TSourceModule
-FormState=1
-FormOnTop=0
-
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas]
+[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclEditConfigForm.pas]
 ModuleType=TSourceModule
 FormState=1
+FormOnTop=0
+
+[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
+
+[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclUtils.pas]
+ModuleType=TSourceModule
+FormState=0
 FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas]
@@ -69,9 +67,17 @@ FormOnTop=0
 [default.htm]
 ModuleType=TURLModule
 
+[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
+
+[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20]
+ModuleType=TTogetherDocModule
+
 [EditWindow0]
-ViewCount=9
-CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
+ViewCount=10
+CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
 View0=0
 View1=1
 View2=2
@@ -81,6 +87,7 @@ View5=5
 View6=6
 View7=7
 View8=8
+View9=9
 PercentageSizes=1
 Create=1
 Visible=1
@@ -97,15 +104,15 @@ ClientHeight=8787
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
-LeftPanelSize=1177
+LeftPanelSize=2099
 LeftPanelClients=PropertyInspector,DockSite1
-LeftPanelData=00000800010100000000D00E0000000000000199040000000000000100000000F209000009000000446F636B53697465310100000000551A00001100000050726F7065727479496E73706563746F72FFFFFFFF
-RightPanelSize=1318
+LeftPanelData=00000800010100000000A50F0000000000000133080000000000000100000000F209000009000000446F636B53697465310100000000D01B00001100000050726F7065727479496E73706563746F72FFFFFFFF
+RightPanelSize=2135
 RightPanelClients=DockSite2,DockSite0
-RightPanelData=00000800010100000000D00E00000000000001260500000000000001000000004412000009000000446F636B53697465300100000000551A000009000000446F636B5369746532FFFFFFFF
-BottomPanelSize=2019
+RightPanelData=00000800010100000000A50F00000000000001570800000000000001000000004412000009000000446F636B53697465300100000000D01B000009000000446F636B5369746532FFFFFFFF
+BottomPanelSize=1639
 BottomPanelClients=DockSite3,DockSite4
-BottomPanelData=00000800010200000000724500000000000002E3070000000000000100000000B922000009000000446F636B536974653401000000007245000009000000446F636B5369746533FFFFFFFF
+BottomPanelData=0000080001020000000072450000000000000267060000000000000100000000B922000009000000446F636B536974653401000000007245000009000000446F636B5369746533FFFFFFFF
 BottomMiddlePanelSize=0
 
 [View0]
@@ -113,70 +120,70 @@ CustomEditViewType=TWelcomePageView
 WelcomePageURL=bds:/default.htm
 
 [View1]
-CustomEditViewType=TTogetherEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20
-
-[View2]
 CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas
-CursorX=26
-CursorY=71
-TopLine=55
+Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
+CursorX=67
+CursorY=310
+TopLine=295
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
 
-[View3]
-CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
-CursorX=35
-CursorY=62
-TopLine=44
-LeftCol=1
-Elisions=
-Bookmarks={1,124,17}{2,123,1}
-EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
-
-[View4]
+[View2]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
-CursorX=24
-CursorY=12
-TopLine=1
+CursorX=42
+CursorY=369
+TopLine=341
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
 
-[View5]
+[View3]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas
-CursorX=1
-CursorY=61
-TopLine=48
+CursorX=21
+CursorY=162
+TopLine=147
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas
 
-[View6]
+[View4]
+CustomEditViewType=TTogetherEditView
+Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20
+
+[View5]
 CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
-CursorX=5
-CursorY=347
-TopLine=329
+Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas
+CursorX=121
+CursorY=38
+TopLine=5
 LeftCol=1
 Elisions=
-Bookmarks={1,332,1}
-EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
+Bookmarks=
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclDemoForm.pas
+
+[View6]
+CustomEditViewType=TEditView
+Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
+CursorX=10
+CursorY=475
+TopLine=454
+LeftCol=1
+Elisions=
+Bookmarks={1,138,13}{2,121,1}
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
 
 [View7]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclEditConfigForm.pas
-CursorX=1
-CursorY=78
-TopLine=63
+CursorX=25
+CursorY=77
+TopLine=65
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -184,14 +191,25 @@ EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclEditConfigForm.pas
 
 [View8]
 CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
-CursorX=1
-CursorY=321
-TopLine=300
+Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
+CursorX=51
+CursorY=162
+TopLine=147
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
+
+[View9]
+CustomEditViewType=TEditView
+Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclUtils.pas
+CursorX=5
+CursorY=19
+TopLine=4
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclUtils.pas
 
 [Watches]
 Count=5
@@ -212,40 +230,33 @@ State=0
 Left=0
 Top=0
 Width=5000
-Height=1574
+Height=1194
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=5000
-ClientHeight=1574
+ClientHeight=1194
 TBDockHeight=213
 LRDockWidth=13599
 Dockable=1
 StayOnTop=0
 
 [Breakpoints]
-Count=22
-Breakpoint0='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',245,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint1='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',263,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint2='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',268,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint3='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas',164,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint4='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas',288,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint5='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas',164,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint6='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',168,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint7='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',118,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint8='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',156,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint9='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',91,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint10='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',243,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint11='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',382,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint12='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',199,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint13='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',493,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint14='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',218,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint15='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',314,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint16='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',324,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint17='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',329,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint18='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',309,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint19='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',278,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint20='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas',74,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint21='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas',57,'',0,1,'',1,0,0,'',1,'','','',0,''
+Count=15
+Breakpoint0='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas',170,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint1='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',170,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint2='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',120,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint3='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',255,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint4='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',396,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint5='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',211,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint6='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',507,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint7='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',230,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint8='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',293,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint9='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas',74,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint10='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Demos\TCPFileTransfer\tftDemoMainForm.pas',57,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint11='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',247,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint12='C:\Sw\WorkDir\Pcks\XPLib\Src\XPThreads.pas',365,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint13='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',372,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint14='C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas',322,'',0,1,'',1,0,0,'',1,'','','',0,''
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -278,11 +289,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1318
+Width=2135
 Height=4194
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1318
+ClientWidth=2135
 ClientHeight=4194
 TBDockHeight=5898
 LRDockWidth=2349
@@ -298,11 +309,11 @@ State=0
 Left=0
 Top=0
 Width=5000
-Height=1574
+Height=1194
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=5000
-ClientHeight=1574
+ClientHeight=1194
 TBDockHeight=1630
 LRDockWidth=2771
 Dockable=1
@@ -316,12 +327,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1318
-Height=1852
+Width=2135
+Height=2231
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1318
-ClientHeight=1852
+ClientWidth=2135
+ClientHeight=2231
 TBDockHeight=7157
 LRDockWidth=2000
 Dockable=1
@@ -333,7 +344,7 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-1667
+Left=-1510
 Top=229
 Width=276
 Height=352
@@ -358,11 +369,11 @@ State=0
 Left=0
 Top=0
 Width=5000
-Height=1574
+Height=1194
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=5000
-ClientHeight=1574
+ClientHeight=1194
 TBDockHeight=407
 LRDockWidth=4948
 Dockable=1
@@ -377,11 +388,11 @@ State=0
 Left=0
 Top=0
 Width=5000
-Height=1574
+Height=1194
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=5000
-ClientHeight=1574
+ClientHeight=1194
 TBDockHeight=213
 LRDockWidth=7406
 Dockable=1
@@ -399,12 +410,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
-Height=1574
+Width=5000
+Height=1426
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
-ClientHeight=1574
+ClientWidth=5000
+ClientHeight=1426
 TBDockHeight=778
 LRDockWidth=3479
 Dockable=1
@@ -418,12 +429,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
-Height=1574
+Width=5000
+Height=1194
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
-ClientHeight=1574
+ClientWidth=5000
+ClientHeight=1194
 TBDockHeight=2056
 LRDockWidth=3479
 Dockable=1
@@ -435,7 +446,7 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-1675
+Left=-1597
 Top=-63
 Width=2844
 Height=6204
@@ -457,11 +468,11 @@ State=0
 Left=0
 Top=0
 Width=4979
-Height=1574
+Height=1194
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=4979
-ClientHeight=1574
+ClientHeight=1194
 TBDockHeight=2315
 LRDockWidth=2823
 Dockable=1
@@ -476,11 +487,11 @@ State=0
 Left=0
 Top=0
 Width=5000
-Height=1574
+Height=1194
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=5000
-ClientHeight=1574
+ClientHeight=1194
 TBDockHeight=1269
 LRDockWidth=2823
 Dockable=1
@@ -494,17 +505,17 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=5000
-Height=1574
+Width=10000
+Height=1194
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=5000
-ClientHeight=1574
+ClientWidth=10000
+ClientHeight=1194
 TBDockHeight=1157
 LRDockWidth=3677
 Dockable=1
 StayOnTop=0
-Column0Width=314
+Column0Width=370
 Column1Width=30
 Column2Width=150
 Column3Width=172
@@ -521,11 +532,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=661
+Width=1068
 Height=6389
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=661
+ClientWidth=1068
 ClientHeight=6389
 TBDockHeight=4880
 LRDockWidth=7151
@@ -540,22 +551,17 @@ Docked=1
 State=0
 Left=0
 Top=298
-Width=1177
-Height=3981
+Width=2099
+Height=4361
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1177
-ClientHeight=3981
+ClientWidth=2099
+ClientHeight=4361
 TBDockHeight=9065
-LRDockWidth=1177
+LRDockWidth=2099
 Dockable=1
 StayOnTop=0
-SplitPos=69
-
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=AllowPause,
-ExpandedItems=
+SplitPos=150
 
 [ModelViewTool]
 PercentageSizes=1
@@ -565,11 +571,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=661
+Width=1068
 Height=6389
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=661
+ClientWidth=1068
 ClientHeight=6389
 TBDockHeight=4880
 LRDockWidth=5307
@@ -604,11 +610,11 @@ State=0
 Left=0
 Top=0
 Width=5000
-Height=1574
+Height=1194
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=5000
-ClientHeight=1574
+ClientHeight=1194
 TBDockHeight=1546
 LRDockWidth=8745
 Dockable=1
@@ -629,11 +635,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1177
+Width=2099
 Height=2296
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1177
+ClientWidth=2099
 ClientHeight=2296
 TBDockHeight=3676
 LRDockWidth=1896
@@ -672,14 +678,14 @@ Docked=1
 State=0
 Left=0
 Top=23
-Width=1318
+Width=2135
 Height=4426
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1318
+ClientWidth=2135
 ClientHeight=4426
 TBDockHeight=6620
-LRDockWidth=1318
+LRDockWidth=2135
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -696,14 +702,14 @@ Docked=1
 State=0
 Left=0
 Top=23
-Width=1177
+Width=2099
 Height=2296
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1177
+ClientWidth=2099
 ClientHeight=2296
 TBDockHeight=9065
-LRDockWidth=1177
+LRDockWidth=2099
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -720,14 +726,14 @@ Docked=1
 State=0
 Left=0
 Top=528
-Width=1318
-Height=1852
+Width=2135
+Height=2231
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1318
-ClientHeight=1852
+ClientWidth=2135
+ClientHeight=2231
 TBDockHeight=9065
-LRDockWidth=1318
+LRDockWidth=2135
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -745,12 +751,12 @@ State=0
 Left=960
 Top=23
 Width=5000
-Height=1806
+Height=1426
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=5000
-ClientHeight=1806
-TBDockHeight=1806
+ClientHeight=1426
+TBDockHeight=1426
 LRDockWidth=2755
 Dockable=1
 StayOnTop=0
@@ -769,12 +775,12 @@ State=0
 Left=0
 Top=23
 Width=4979
-Height=1806
+Height=1426
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=4979
-ClientHeight=1806
-TBDockHeight=1806
+ClientHeight=1426
+TBDockHeight=1426
 LRDockWidth=8250
 Dockable=1
 StayOnTop=0
@@ -783,5 +789,5 @@ ActiveTabID=FindReferencsForm
 TabDockClients=LocalVarsWindow,WatchWindow,CallStackWindow,ThreadStatusWindow,BreakpointWindow,DebugLogView,FindReferencsForm,RefactoringForm
 
 [ActiveProject]
-ActiveProject=7
+ActiveProject=9
 

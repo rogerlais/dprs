@@ -21,7 +21,7 @@ object Form1: TForm1
     Caption = 'btnStart'
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 0
+    TabOrder = 1
     OnClick = btnStartClick
   end
   object btnPause: TBitBtn
@@ -32,7 +32,7 @@ object Form1: TForm1
     Caption = 'btnPause'
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 1
+    TabOrder = 2
   end
   object btnStop: TBitBtn
     Left = 198
@@ -42,7 +42,8 @@ object Form1: TForm1
     Caption = 'btnStop'
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 2
+    TabOrder = 4
+    OnClick = btnStopClick
   end
   object btnClose: TBitBtn
     Left = 24
@@ -52,7 +53,7 @@ object Form1: TForm1
     Caption = 'btnClose'
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 3
+    TabOrder = 0
     OnClick = btnCloseClick
   end
   object btnEditConfig: TBitBtn
@@ -63,14 +64,7 @@ object Form1: TForm1
     Caption = 'Edit Config'
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 4
+    TabOrder = 3
     OnClick = btnEditConfigClick
-  end
-  object tmrServiceThread: TTimer
-    Enabled = False
-    Interval = 5000
-    OnTimer = tmrServiceThreadTimer
-    Left = 224
-    Top = 80
   end
 end

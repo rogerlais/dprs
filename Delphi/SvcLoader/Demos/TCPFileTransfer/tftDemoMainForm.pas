@@ -63,16 +63,16 @@ begin
 				 end else begin  //modo cliente
 					 ret := False;
 					 BioFilesService.ServiceStart(BioFilesService, ret);
-					 BioFilesService.TimeCycleEvent();
+					 BioFilesService.ServiceThreadPulse();
 					 Self.tmrCycle.Enabled := True;
 				 end;
 			 end;
 			 1 : begin
 				 Self.btnStartStop.Caption := '&Iniciar';
 				 Self.btnStartStop.Tag:=0;
-                ret := False;
-                BioFilesService.ServiceStop(BioFilesService, ret);
-                BioFilesService.TimeCycleEvent();
+				 ret := False;
+				 BioFilesService.ServiceStop(BioFilesService, ret);
+                BioFilesService.ServiceThreadPulse();
                 Self.tmrCycle.Enabled := False;
             end;
             else begin
@@ -159,7 +159,7 @@ end;
 procedure TForm3.tmrCycleTimer(Sender : TObject);
 begin
     //codigo original para tmrCycleTimer2(Sender : TObject);
-    BioFilesService.TimeCycleEvent();
+	 BioFilesService.ServiceThreadPulse();
 end;
 
 procedure TForm3.tmrCycleTimer2(Sender : TObject);

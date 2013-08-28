@@ -13,17 +13,16 @@ uses
 
 type
     TForm1 = class(TForm)
-        btnStart :         TBitBtn;
-        btnPause :         TBitBtn;
-        btnStop :          TBitBtn;
-        btnClose :         TBitBtn;
-        tmrServiceThread : TTimer;
-        btnEditConfig :    TBitBtn;
+        btnStart :      TBitBtn;
+        btnPause :      TBitBtn;
+        btnStop :       TBitBtn;
+        btnClose :      TBitBtn;
+        btnEditConfig : TBitBtn;
         procedure btnStartClick(Sender : TObject);
         procedure btnCloseClick(Sender : TObject);
-        procedure tmrServiceThreadTimer(Sender : TObject);
         procedure btnServiceLogonClick(Sender : TObject);
         procedure btnEditConfigClick(Sender : TObject);
+        procedure btnStopClick(Sender : TObject);
     private
         { Private declarations }
     public
@@ -36,7 +35,7 @@ var
 implementation
 
 uses
-    svclBiometricFiles, svclConfig, JwaWindows, svclUtils, WinNetHnd, StrHnd, WNetExHnd, svclEditConfigForm;
+    svclBiometricFiles, svclConfig, JwaWindows, svclUtils, WinNetHnd, StrHnd, WNetExHnd, svclEditConfigForm, WinLSAUtils;
 
 {$R *.dfm}
 
@@ -69,14 +68,14 @@ var
 begin
     ret := False;
     BioFilesService.ServiceStart(BioFilesService, ret);
-    Self.tmrServiceThread.Enabled := True;
 end;
 
-procedure TForm1.tmrServiceThreadTimer(Sender : TObject);
+procedure TForm1.btnStopClick(Sender : TObject);
+var
+    ret : boolean;
 begin
-	Exit;
-	{TODO -oroger -cdsg : remover timer desnecessário}
-	//BioFilesService.TimeCycleEvent();
+    ret := False;
+    BioFilesService.ServiceStop(BioFilesService, ret);
 end;
 
 end.

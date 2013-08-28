@@ -11,10 +11,16 @@ uses
 	 Classes, Windows, SysUtils, AppSettings;
 
 const
-    BIOMETRIC_FILE_EXTENSION   = '.bio';
-    BIOMETRIC_FILE_MASK        = '*' + BIOMETRIC_FILE_EXTENSION;
-    TRANSBIO_ROOT_NODE_CONFIG  = '';
-    ELO_TRANSFER_TRANSBIO_PATH = 'HKEY_LOCAL_MACHINE\SOFTWARE\ELO\Config\DirTransfBio';
+	 BIOMETRIC_FILE_EXTENSION   = '.bio';
+	 BIOMETRIC_FILE_MASK        = '*' + BIOMETRIC_FILE_EXTENSION;
+	 ELO_TRANSFER_TRANSBIO_PATH = 'HKEY_LOCAL_MACHINE\SOFTWARE\ELO\Config\DirTransfBio';
+
+const
+    APP_SERVICE_NAME        = 'BioFilesService';
+    APP_SERVICE_KEY         = 'BioSvc';
+    APP_SERVICE_DISPLAYNAME = 'SESOP TransBio Replicator';
+    APP_SERVICE_GROUP       = 'SESOPSvcGroup';
+    APP_NOTIFICATION_DESCRIPTION = 'SESOP-Serviço de replicação de arquivos biométricos';
 
 
 type
@@ -90,14 +96,6 @@ type
         property NotificationList : string read GetNotificationList write SetNotificationList;
     end;
 
-
-const
-    APP_SERVICE_NAME        = 'BioFilesService';
-    APP_SERVICE_KEY         = 'BioSvc';
-    APP_SERVICE_DISPLAYNAME = 'SESOP TransBio Replicator';
-    APP_SERVICE_GROUP       = 'SESOPSvcGroup';
-    APP_NOTIFICATION_DESCRIPTION = 'SESOP-Serviço de replicação de arquivos biométricos';
-
 var
     GlobalConfig : TBioReplicatorConfig;
 
@@ -129,6 +127,9 @@ const
 
 	 IE_NET_TCP_PORT  = 'TCPPort';
 	 DV_NET_TCP_PORT  = 12013;
+
+	 //Configurações do Transbio
+	 TRANSBIO_ROOT_NODE_CONFIG  = '';
 
 	 DV_TRANSBIO_PATH_BIOSERVICE = 'D:\Aplic\biometria\bioservice\bio';
 	 IMG_VOLUME_LABEL = 'IMG';
@@ -165,7 +166,7 @@ end;
 constructor TBioReplicatorConfig.Create(const FileName : string; const AKeyPrefix : string = '');
 begin
     inherited Create(FileName, AKeyPrefix);
-    Self.FTransbioConfig := TELOTransbioConfig.Create(Self.PathTransbioConfigFile, TRANSBIO_ROOT_NODE_CONFIG);
+	 Self.FTransbioConfig := TELOTransbioConfig.Create(Self.PathTransbioConfigFile, TRANSBIO_ROOT_NODE_CONFIG);
 end;
 
 destructor TBioReplicatorConfig.Destroy;
@@ -417,10 +418,10 @@ function TELOTransbioConfig.GetElo2TransBio : string;
     ///Leitura do valor usado pelo ELO para copiar os arquivos gerado pelo Bioservice. Este valor deve ser sempre o mesmo usado pelo serviço Transbio
     ///</summary>
 var
-    reg : TRegistryNT;
+	 Reg : TRegistryNT;
 begin
-    if (Self._Elo2TransBio = EmptyStr) then begin
-        reg := TRegistryNT.Create;
+	 if (Self._Elo2TransBio = EmptyStr) then begin
+        Reg := TRegistryNT.Create;
         try
             if (not reg.ReadFullString(ELO_TRANSFER_TRANSBIO_PATH, Self._Elo2TransBio)) then begin
                 Self._Elo2TransBio := EmptyStr;
@@ -465,13 +466,13 @@ end;
 
 procedure TELOTransbioConfig.SetElo2TransBio(const Value : string);
 var
-    reg : TRegistryNT;
+	 Reg : TRegistryNT;
 begin
-    reg := TRegistryNT.Create;
-    try
-        reg.WriteFullString(ELO_TRANSFER_TRANSBIO_PATH, Value, True);
-    finally
-        reg.Free;
+	 Reg := TRegistryNT.Create;
+	 try
+		 Reg.WriteFullString(ELO_TRANSFER_TRANSBIO_PATH, Value, True);
+	 finally
+        Reg.Free;
     end;
 end;
 

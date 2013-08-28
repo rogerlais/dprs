@@ -1,40 +1,40 @@
 {$IFDEF svclBiometricFiles}
-	 {$DEFINE DEBUG_UNIT}
+{$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I SvcLoader.inc}
-
 unit svclBiometricFiles;
 
 interface
 
 uses
-    Windows, Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, svclTransBio, ExtCtrls, IdMessage, IdBaseComponent,
-    IdComponent, IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient, IdSMTPBase,
-    IdSMTP, FileInfo, XPThreads;
+    Windows, Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, svclTransBio, ExtCtrls,
+    IdMessage, IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase,
+    IdMessageClient, IdSMTPBase, IdSMTP, FileInfo, XPThreads;
 
 type
-	 TBioFilesService = class(TService)
-		 tmrCycleEvent : TTimer;
-		 smtpSender :    TIdSMTP;
-		 mailMsgNotify : TIdMessage;
-		 fvInfo :        TFileVersionInfo;
-		 procedure ServiceStart(Sender : TService; var Started : boolean);
-		 procedure ServiceCreate(Sender : TObject);
-		 procedure ServiceAfterInstall(Sender : TService);
-		 procedure ServiceStop(Sender : TService; var Stopped : boolean);
-		 procedure tmrCycleEventTimer(Sender : TObject);
-		 procedure ServiceBeforeInstall(Sender : TService);
-		 procedure ServicePause(Sender : TService; var Paused : boolean);
-		 procedure ServiceContinue(Sender : TService; var Continued : boolean);
-	 private
-		 { Private declarations }
-		 FSvcThread : TXPNamedThread;
-		 FLastLogCheck : Word;
-		 procedure AddDestinations;
-		 procedure CheckLogs();
-	 public
-		 function GetServiceController : TServiceController; override;
-        procedure TimeCycleEvent();
+    TBioFilesService = class(TService)
+        tmrCycleEvent : TTimer;
+        smtpSender :    TIdSMTP;
+        mailMsgNotify : TIdMessage;
+        fvInfo :        TFileVersionInfo;
+        procedure ServiceAfterInstall(Sender : TService);
+        procedure ServiceBeforeInstall(Sender : TService);
+        procedure ServiceCreate(Sender : TObject);
+        procedure ServicePause(Sender : TService; var Paused : boolean);
+        procedure ServiceStart(Sender : TService; var Started : boolean);
+        procedure ServiceStop(Sender : TService; var Stopped : boolean);
+        procedure ServiceContinue(Sender : TService; var Continued : boolean);
+        procedure tmrCycleEventTimer(Sender : TObject);
+    private
+        { Private declarations }
+        FSvcThread :    TXPNamedThread; // Dualidade entre o thread de cliente e de servidor
+        FLastLogCheck : Word;
+        procedure AddDestinations;
+        procedure CheckLogs();
+    public
+        class function LogFilePrefix() : string;
+        function GetServiceController : TServiceController; override;
+        procedure ServiceThreadPulse();
         procedure SendMailNotification(const NotificationText : string);
         { Public declarations }
     end;
@@ -46,7 +46,7 @@ implementation
 
 uses
     AppLog, WinReg32, FileHnd, svclConfig, svclUtils, WinnetHnd, APIHnd, svclEditConfigForm, Str_Pas,
-    IdEMailAddress, XPFileEnumerator, StrHnd;
+    IdEMailAddress, XPFileEnumerator, StrHnd, svclTCPTransfer;
 
 {$R *.DFM}
 
@@ -59,22 +59,21 @@ begin
 end;
 
 procedure InitServiceLog();
-///Altera o nome do log a ser gerado para esta iniciação do serviço de modo a ser unico por dia de levantameto
+/// Altera o nome do log a ser gerado para esta iniciação do serviço de modo a ser unico por dia de levantameto
 var
     LogFileName : string;
 begin
-	 LogFileName := TFileHnd.ConcatPath([GlobalConfig.PathServiceLog, APP_SERVICE_NAME + '_' +
-	 	TFileHnd.ExtractFilenamePure( ParamStr( 0 ) ) + '_' +
+    LogFileName := TFileHnd.ConcatPath([GlobalConfig.PathServiceLog, TBioFilesService.LogFilePrefix() +
         FormatDateTime('YYYYMMDD', Now())]) + '.log';
     try
         AppLog.TLogFile.GetDefaultLogFile.FileName := LogFileName;
     except
         on E : Exception do begin
-            AppLog.AppFatalError('Erro fatal iniciando aplicativo'#13#10 + E.Message, 10);
+            AppLog.AppFatalError('Erro fatal iniciando aplicativo'#13#10 + E.Message,
+                10);
         end;
     end;
 end;
-
 
 procedure TBioFilesService.AddDestinations;
 var
@@ -97,52 +96,53 @@ begin
 end;
 
 procedure TBioFilesService.CheckLogs;
- ///<summary>
- ///Buscar por logs posteriores a data de registro, enviando todos aqueles que possuirem erros.
+ /// <summary>
+ /// Buscar por logs posteriores a data de registro, enviando todos aqueles que possuirem erros.
 /// A cada envio com sucesso avancar a data de registro para a data do respectivo arquivo de log e buscar pelo mais antigo até chegar ao log atual
- ///</summary>
- ///<remarks>
+ /// </summary>
+ /// <remarks>
  ///
- ///</remarks>
+ /// </remarks>
 var
     Files :  IEnumerable<TFileSystemEntry>;
     f :      TFileSystemEntry;
     currLogName, sentPath : string;
     logText : TXPStringList;
     dummy :  Integer;
-	 sentOK : boolean;
-	 lt : TSystemTime;
+    sentOK : boolean;
+    lt :     TSystemTime;
 begin
-	 {TODO -oroger -cdsg : verificar se a data corrente diverge da data do arquivo}
-	 GetLocalTime( lt );
-	 FLastLogCheck:=lt.wHour;
-	 currLogName := AppLog.TLogFile.GetDefaultLogFile.FileName;
-    Files := TDirectory.FileSystemEntries(GlobalConfig.PathServiceLog, '*.log', False);
+    // Registra a hora da ultima passagem de verificação de log
+    GetLocalTime(lt);
+    Self.FLastLogCheck := lt.wHour;
+    currLogName := AppLog.TLogFile.GetDefaultLogFile.FileName;
+    // filtra arquivos referentes apenas a este runtime
+    Files := TDirectory.FileSystemEntries(GlobalConfig.PathServiceLog, TBioFilesService.LogFilePrefix + '*.log', False);
     for f in Files do begin
-        if (not Sametext(f.FullName, currLogName)) then begin //Pula o arquivo em uso no momento como saida de log
+        if (not Sametext(f.FullName, currLogName)) then begin // Pula o arquivo em uso no momento como saida de log
             logText := TXPStringList.Create;
             try
                 logText.LoadFromFile(f.FullName);
-                dummy  := 1; //Sempre do inicio
-                sentOk := not logText.FindPos('erro:', dummy, dummy);
+                dummy  := 1; // Sempre do inicio
+                sentOK := not logText.FindPos('erro:', dummy, dummy);
                 if (not sentOK) then begin
                     try
                         Self.SendMailNotification(logText.Text);
                         sentOK := True;
                     except
-                        on E : Exception do begin  //Apenas logar a falha de envio e continuar com os demais arquivos
+                        on E : Exception do begin // Apenas logar a falha de envio e continuar com os demais arquivos
                             TLogFile.Log('Envio de notificações de erro falhou:'#13#10 + E.Message, lmtError);
                             sentOK := False;
                         end;
                     end;
                 end;
-                //mover arquivo para a pasta de enviados applog
+                // mover arquivo para a pasta de enviados applog
                 if (sentOK) then begin
                     sentPath := GlobalConfig.PathServiceLog + '\Sent\';
                     ForceDirectories(sentPath);
-					 sentPath := sentPath + F.Name;
-					 sentPath:=TFileHnd.NextFamilyFilename( sentPath );
-                    if (not MoveFile(PWideChar(F.FullName), PWideChar((sentPath)))) then begin
+                    sentPath := sentPath + f.Name;
+                    sentPath := TFileHnd.NextFamilyFilename(sentPath);
+                    if (not MoveFile(PWideChar(f.FullName), PWideChar((sentPath)))) then begin
                         TLogFile.Log('Final do processamento de arquivo de log falhou:'#13#10 +
                             SysErrorMessage(GetLastError()), lmtError);
                     end;
@@ -159,11 +159,16 @@ begin
     Result := ServiceController;
 end;
 
+class function TBioFilesService.LogFilePrefix : string;
+begin
+    Result := APP_SERVICE_NAME + '_' + TFileHnd.ExtractFilenamePure(ParamStr(0)) + '_';
+end;
+
 procedure TBioFilesService.SendMailNotification(const NotificationText : string);
 begin
+    mailMsgNotify.ConvertPreamble := True;
     mailMsgNotify.AttachmentEncoding := 'UUE';
     mailMsgNotify.Encoding      := meDefault;
-    mailMsgNotify.ConvertPreamble := True;
     mailMsgNotify.From.Address  := GlobalConfig.NotificationSender;
     mailMsgNotify.From.Name     := Application.Title;
     mailMsgNotify.From.Text     := Format(' %s <%s>', [Application.Title, GlobalConfig.NotificationSender]);
@@ -175,10 +180,10 @@ begin
     mailMsgNotify.Sender.Domain := mailMsgNotify.From.Domain;
     mailMsgNotify.Sender.User   := mailMsgNotify.From.User;
 
-    //Coletar informações de destino de mensagem com possibilidade de macros no mesmo arquivo de configuração
+    // Coletar informações de destino de mensagem com possibilidade de macros no mesmo arquivo de configuração
     Self.AddDestinations();
 
-    Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvInfo.FileVersion, WinNetHnd.GetComputerName(),
+    Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvInfo.FileVersion, WinnetHnd.GetComputerName(),
         FormatDateTime('yyyyMMDDhhmm', Now())]);
     Self.mailMsgNotify.Body.Text := NotificationText;
     Self.smtpSender.Connect;
@@ -188,15 +193,16 @@ end;
 
 procedure TBioFilesService.ServiceAfterInstall(Sender : TService);
  /// <summary>
- ///  Registra as informações de função deste serviço
+ /// Registra as informações de função deste serviço
  /// </summary>
 var
     Reg : TRegistryNT;
 begin
     Reg := TRegistryNT.Create();
     try
-        Reg.WriteFullString(
-            TFileHnd.ConcatPath(['HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services', Self.Name, 'Description']),
+        Reg.WriteFullString(TFileHnd.ConcatPath([
+            'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services', Self.Name,
+            'Description']),
             'Replica os arquivos de dados biométricos para máquina primária, possibilitando o transporte centralizado.', True);
     finally
         Reg.Free;
@@ -204,54 +210,61 @@ begin
 end;
 
 procedure TBioFilesService.ServiceBeforeInstall(Sender : TService);
- ///  <summary>
- ///    Ajusta os parametros do serviço antes de sua instalação. Dentre as ações está levantar o serviço como o último da lista de
+ /// <summary>
+ /// Ajusta os parametros do serviço antes de sua instalação. Dentre as ações está levantar o serviço como o último da lista de
  /// serviços
- ///  </summary>
- ///  <remarks>
+ /// </summary>
+ /// <remarks>
  ///
- ///  </remarks>
+ /// </remarks>
 var
-    reg : TRegistryNT;
+    Reg : TRegistryNT;
     lst : TStringList;
 begin
 
-    TEditConfigForm.EditConfig; //Chama janela de configuração para exibição
+    TEditConfigForm.EditConfig; // Chama janela de configuração para exibição
 
-    reg := TRegistryNT.Create;
+    Reg := TRegistryNT.Create;
     lst := TStringList.Create;
     try
-        reg.ReadFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst);
+        Reg.ReadFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', lst);
         if ((lst.IndexOf(APP_SERVICE_GROUP) < 0)) then begin
             lst.Add(APP_SERVICE_GROUP);
             TLogFile.Log('Alterando ordem de inicializaçao dos serviços no registro local', lmtInformation);
             if (not IsDebuggerPresent()) then begin
-                reg.WriteFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', Lst, True);
+                Reg.WriteFullMultiSZ('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ServiceGroupOrder\List', lst, True);
             end;
         end;
     finally
-        reg.Free;
+        Reg.Free;
         lst.Free;
     end;
     TLogFile.Log('Ordem de carga do serviço alterada com SUCESSO no computador local', lmtInformation);
 end;
 
 procedure TBioFilesService.ServiceContinue(Sender : TService; var Continued : boolean);
- ///<summary>
- ///Reincio do servico
- ///</summary>
- ///<remarks>
+ /// <summary>
+ /// Reincio do servico
+ /// </summary>
+ /// <remarks>
  ///
- ///</remarks>
+ /// </remarks>
 begin
-    Self.tmrCycleEvent.Enabled := True; //Liberar disparo de liberação de thread de serviço
+    // Rotina de inicio do servico, dispara thread da operação
+    Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
+    Self.tmrCycleEvent.Enabled  := True; // Liberar disparo de liberação de thread de serviço
     if Assigned(Self.FSvcThread) and (Self.FSvcThread.Suspended) then begin
         if Self.FSvcThread.Suspended then begin
-			 Self.FSvcThread.Start;
+            Self.FSvcThread.Start;
+            Sleep(300);
         end;
-        Continued := (Self.FSvcThread.Suspended = False);
+        Continued := (not Self.FSvcThread.Suspended);
     end else begin
         Continued := False;
+    end;
+    // Para de aceitar conexoes se no modo servidor
+    if (GlobalConfig.RunAsServer) then begin
+        DMTCPTransfer.tcpsrvr.StartListening;
     end;
 end;
 
@@ -259,72 +272,104 @@ procedure TBioFilesService.ServiceCreate(Sender : TObject);
 begin
     Self.DisplayName := APP_SERVICE_DISPLAYNAME;
     Self.LoadGroup   := APP_SERVICE_GROUP;
-    if (GlobalConfig.RunAsServer) then begin
-        Self.FSvcThread := TTransBioServerThread.Create(True);
-    end else begin
-		 Self.FSvcThread := TTransBioThread.Create(True);  //Criar thread de operação primário
-    end;
-    Self.FSvcThread.Name := APP_SERVICE_DISPLAYNAME;  //Nome de exibição do thread primário
 end;
 
 procedure TBioFilesService.ServicePause(Sender : TService; var Paused : boolean);
- ///<summary>
- ///     Pause do servico
- ///</summary>
- ///<remarks>
+ /// <summary>
+ /// Pause do servico
+ /// </summary>
+ /// <remarks>
  ///
- ///</remarks>
+ /// </remarks>
 begin
-    Self.tmrCycleEvent.Enabled := False; //Suspende timer de liberação do thread do serviço
+    Self.tmrCycleEvent.Enabled := False; // Suspende timer de liberação do thread do serviço
     if Assigned(Self.FSvcThread) and (not Self.FSvcThread.Suspended) then begin
-		 Self.FSvcThread.Suspended:=True;
-	 end;
-	 Paused := Self.FSvcThread.Suspended ;
+        Self.FSvcThread.Suspended := True;
+    end;
+
+    // Para de aceitar conexoes se no modo servidor
+    if (GlobalConfig.RunAsServer) then begin
+        DMTCPTransfer.tcpsrvr.StopListening;
+    end;
+
+    Paused := Self.FSvcThread.Suspended;
 end;
 
 procedure TBioFilesService.ServiceStart(Sender : TService; var Started : boolean);
 begin
-	 {TODO -oroger -cfuture : rever modo de iniciar e parar serviço, preferencialmente desaolcando tudo}
-	 Self.CheckLogs();
-	 //Rotina de inicio do servico, cria o thread da operação e o inicia
-	 Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
-	 Self.tmrCycleEvent.Enabled  := True;
-	 Self.FSvcThread.Start;
-	 Sleep(300);
-    Self.FSvcThread.Suspended := False;
-    Started := True;
+    try
+        Self.CheckLogs(); // proteger chamada ,pois rede pode estar instavel neste momento
+    except
+        on E : Exception do begin
+            TLogFile.Log('Checagem de logs falhou.'#13#10 + E.Message, lmtWarning);
+        end;
+    end;
+
+    if (Self.Status = csStopped) then begin
+        if (GlobalConfig.RunAsServer) then begin // veio de parada(não pause)
+            Self.FSvcThread := TTransBioServerThread.Create(True);
+        end else begin
+            Self.FSvcThread := TTransBioThread.Create(True);
+            // Criar thread de operação primário
+        end;
+        Self.FSvcThread.Name := APP_SERVICE_DISPLAYNAME;
+        // Nome de exibição do thread primário
+    end;
+
+    Self.ServiceContinue(Sender, Started); // Rotinas de resumo do thread de servico
 end;
 
 procedure TBioFilesService.ServiceStop(Sender : TService; var Stopped : boolean);
+ /// <summary>
+ /// Destroi o thread de servico parando o servico
+ /// </summary>
+ /// <remarks>
+ ///
+ /// </remarks>
+var
+    cnt : Word;
 begin
-	 Self.FSvcThread.Suspended := True;
-	 Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
-	 Self.tmrCycleEvent.Enabled  := False; //Para a reativação do thread de serviço
-	 {TODO -oroger -cfuture : Caso alterado o ciclo de vida do serviço, local para desalocar o thread de trabalho}
-	 Self.FSvcThread.Suspended:=True;
+    // Para timer de gatilho do thread de serviço
+    if (Assigned(Self.FSvcThread)) then begin
+        Self.FSvcThread.Terminate; // informa do fim da vida deste thread
+        cnt := 0;
+        while ((not Self.FSvcThread.Finished) and (cnt < 5)) do begin // aguarda tempo para liberação(tempo chutado)
+            Sleep(300);
+            Inc(cnt);
+        end;
+        if (not Self.FSvcThread.Finished) then begin
+            TLogFile.Log('Thread de serviço não parou em tempo hábil', lmtError);
+        end;
+        FreeAndNil(Self.FSvcThread);
+    end;
+    Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
+    Self.tmrCycleEvent.Enabled := False; // Para a reativação do thread de serviço
     Stopped := True;
 end;
 
-procedure TBioFilesService.TimeCycleEvent;
+procedure TBioFilesService.ServiceThreadPulse;
+/// Dispara libera o thread de serviço de seu estado de ociosidade
 begin
     Self.FSvcThread.Suspended := False;
 end;
 
 procedure TBioFilesService.tmrCycleEventTimer(Sender : TObject);
 var
-	lt : TSystemTime;
+    lt : TSystemTime;
 begin
-	//Realiza a checkagem dos logs a cada mudança de hora
-	 GetLocalTime( lt );
-	 if ( lt.wHour <> Self.FLastLogCheck ) then begin
-		Self.CheckLogs;
-	 end;
-	 Self.TimeCycleEvent();
+    // Realiza a checkagem dos logs a cada mudança de hora
+    GetLocalTime(lt);
+    if (lt.wHour <> Self.FLastLogCheck) then begin
+        Self.FLastLogCheck := lt.wHour;
+        Self.CheckLogs;
+    end;
+    Self.ServiceThreadPulse();
 end;
 
 initialization
-	 begin
-		 InitServiceLog();
-	 end;
+
+    begin
+        InitServiceLog();
+    end;
 
 end.

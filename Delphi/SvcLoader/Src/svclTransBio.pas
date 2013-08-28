@@ -23,12 +23,14 @@ type
     end;
 
     TTransBioServerThread = class(TXPNamedThread)
-        {TODO -oroger -cdsg : Para eventos de pausa start e stop repassar verbos para o servidor tcp }
     private
         procedure StoreTransmitted(SrcFile : TFileSystemEntry);
         procedure DoServerCycle;
         procedure CreatePrimaryBackup(const DirName : string);
-        procedure CheckTCPServer;
+        procedure StartTCPServer;
+		 procedure StopTCPServer;
+	 protected
+	 	procedure DoTerminate(); override;
     public
         procedure Execute(); override;
     end;
@@ -36,7 +38,7 @@ type
 implementation
 
 uses
-	 svclConfig, FileHnd, AppLog, svclUtils, WinNetHnd, WinReg32, AppSettings, JclSysInfo, svclBiometricFiles;
+    svclConfig, FileHnd, AppLog, svclUtils, WinNetHnd, WinReg32, AppSettings, JclSysInfo, svclBiometricFiles;
 
 { TTransBioThread }
 procedure TTransBioThread.CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
@@ -80,15 +82,15 @@ procedure TTransBioThread.DoClientCycle;
         x :      Integer;
         f1, f2 : TTransferFile;
     begin
-        {TODO -oroger -cfuture : Melhorar implementa~çao de modo a buscar por arquivo do bioservice e na ausencia usar outro para denomiar de primario}
+		 {TODO -oroger -cfuture : Melhorar implementa~çao de modo a buscar por arquivo do bioservice e na ausencia usar outro para denomiar de primario}
         x := list.Count - 1; //pivot no final da lista para comparar aos pares
         while (x > 0) do begin
             if (list.Strings[x] = list.Strings[x - 1]) then begin //comparar os hash
                 f1 := TTransferFile(list.Objects[x - 1]);
                 f2 := TTransferFile(list.Objects[x]);
                 if (f1.Hash <> f2.Hash) then begin //Renomear e remover os não constantes na pasta Bioservice
-                    if (not SameText(TFileHnd.ParentDir(f2.Filename), GlobalConfig.PathClientBioService)) then begin
-                        f2.SetAsDivergent;
+					 if (not SameText(TFileHnd.ParentDir(f2.Filename), GlobalConfig.PathClientBioService)) then begin
+						 f2.SetAsDivergent;
                         list.Delete(x); //OwnsObjects = true para a lista libera instância
                     end else begin
                         if (not SameText(TFileHnd.ParentDir(f1.Filename), GlobalConfig.PathClientBioService)) then begin
@@ -110,7 +112,7 @@ var
     cmp : string;
     FileList : TStringList;
     x :   Integer;
-    bioFile : TTransferFile;
+    BioFile : TTransferFile;
 begin
     {TODO -oroger -cdebug : Ponto critico de verificação de memory leak}
     //Coleta a lista de arquivos para a operação neste ciclo
@@ -256,7 +258,7 @@ begin
     //Repetir os ciclos de acordo com a temporização configurada
     //O Thread primário pode enviar notificação da cancelamento que deve ser verificada ao inicio de cada ciclo
     Self.FCycleErrorCount := 0;
-    while Self.IsAlive do begin
+    while (not Self.Terminated) do begin
         try
             if (not GlobalConfig.RunAsServer) then begin
                 Self.DoClientCycle;
@@ -307,7 +309,7 @@ begin
             end;
         except
             on E : Exception do begin
-				 TLogFile.Log('Configuração do ELO não foram forçadas corretamente'#13#10 + E.Message, lmtWarning);
+                TLogFile.Log('Configuração do ELO não foram forçadas corretamente'#13#10 + E.Message, lmtWarning);
             end;
         end;
     end;
@@ -318,29 +320,36 @@ procedure TTransBioServerThread.DoServerCycle;
 ///Inicia novo ciclo de operação do servidor
 begin
     //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
-    Self.CreatePrimaryBackup(GlobalConfig.PathServerOrderedBackup); //move arquivos da pasta de transmitidos do transbio para ordenado
+    Self.CreatePrimaryBackup(GlobalConfig.PathServerOrderedBackup);
+    //move arquivos da pasta de transmitidos do transbio para ordenado
+end;
+
+procedure TTransBioServerThread.DoTerminate;
+begin
+    //Parada do servidor TCP
+    Self.StopTCPServer;
+    inherited;
 end;
 
 procedure TTransBioServerThread.Execute;
 begin
-	 inherited;
-	 Self.CheckTCPServer; {TODO -oroger -cdsg : Identificar a razao e local deste metodo}
-	 while Self.IsAlive do begin
-		 try
-
+    inherited;
+    Self.StartTCPServer; //Para o servidor inicia escuta na porta
+    while (not Self.Terminated) do begin
+        try
 			 Self.DoServerCycle();
-			 {TODO -oroger -cdsg : Coletar logs para envio de notificação}
-        except
-            {TODO -oroger -cdsg : Registrar erro para informar}
-        end;
-        Self.WaitFor(GlobalConfig.CycleInterval); {TODO -oroger -curgente : testar o resumo pelo start normalmente}
+		 except
+			on E : Exception do begin
+			 TLogFile.Log( 'Ciclo de organização de arquivos do servidor de envio falhou: ' + E.Message, lmtError );
+			end;
+		 end;
     end;
 end;
 
-procedure TTransBioServerThread.CheckTCPServer;
+procedure TTransBioServerThread.StartTCPServer;
+//Verificar a atividade do servidor tcp, ativando o mesmo se necessário
 begin
-    {TODO -oroger -cdsg : Verificar a atividade do servidor tcp, ativando o mesmo se necessário}
-    if (not DMTCPTransfer.tcpsrvr.Active) then begin
+	 if (not DMTCPTransfer.tcpsrvr.Active) then begin
         DMTCPTransfer.StartServer();
     end;
 end;
@@ -358,24 +367,32 @@ begin
     end;
 end;
 
+procedure TTransBioServerThread.StopTCPServer;
+begin
+    if (DMTCPTransfer.tcpsrvr.Active) then begin
+        DMTCPTransfer.StopServer();
+    end;
+end;
+
 procedure TTransBioServerThread.StoreTransmitted(SrcFile : TFileSystemEntry);
  ///
  /// Move arquivo da pasta de transmitidos de acordo com a data de criação para a pasta raiz de armazenamento
  ///
 var
     DestPath, FullDateStr, sy, sm, sd : string;
-    dummy, t : TDateTime;
+    dummy, FileCreateTime : TDateTime;
 begin
-    TFileHnd.FileTimeProperties(SrcFile.FullName, t, dummy, dummy);
-    FullDateStr := FormatDateTime('YYYYMMDD', t); //Conversão da data de criação(supostamente o momento de transmissão pelo transbio)
+    TFileHnd.FileTimeProperties(SrcFile.FullName, FileCreateTime, dummy, dummy);
+    FullDateStr := FormatDateTime('YYYYMMDD', FileCreateTime);
+    //Conversão da data de criação(supostamente o momento de transmissão pelo transbio)
     sy := Copy(FullDateStr, 1, 4);
     sm := Copy(FullDateStr, 5, 2);
     sd := Copy(FullDateStr, 7, 2);
     DestPath := TFileHnd.ConcatPath([GlobalConfig.PathClientOrderlyBackup, sy, sm, sd]);
     ForceDirectories(DestPath);
     if (not MoveFile(PChar(SrcFile.FullName), PChar(DestPath + '\' + SrcFile.Name))) then begin
-		 TLogFile.Log('Erro movendo arquivo para o repositório definitivo no computador primário'#13 +
-			 SysErrorMessage(GetLastError()));
+        TLogFile.Log('Erro movendo arquivo para o repositório definitivo no computador primário'#13 +
+            SysErrorMessage(GetLastError()));
     end;
 end;
 
