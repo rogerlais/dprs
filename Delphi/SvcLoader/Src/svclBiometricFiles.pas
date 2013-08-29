@@ -63,14 +63,13 @@ procedure InitServiceLog();
 var
     LogFileName : string;
 begin
-    LogFileName := TFileHnd.ConcatPath([GlobalConfig.PathServiceLog, TBioFilesService.LogFilePrefix() +
-        FormatDateTime('YYYYMMDD', Now())]) + '.log';
-    try
-        AppLog.TLogFile.GetDefaultLogFile.FileName := LogFileName;
-    except
-        on E : Exception do begin
-            AppLog.AppFatalError('Erro fatal iniciando aplicativo'#13#10 + E.Message,
-                10);
+	 LogFileName := TFileHnd.ConcatPath([GlobalConfig.PathServiceLog, TBioFilesService.LogFilePrefix() +
+		 FormatDateTime('YYYYMMDD', Now())]) + '.log';
+	 try
+		 AppLog.TLogFile.GetDefaultLogFile.FileName := LogFileName;
+	 except
+		 on E : Exception do begin
+			 AppLog.AppFatalError('Erro fatal iniciando aplicativo'#13#10 + E.Message, 10);
         end;
     end;
 end;
@@ -249,22 +248,34 @@ procedure TBioFilesService.ServiceContinue(Sender : TService; var Continued : bo
  /// <remarks>
  ///
  /// </remarks>
+var
+	ret : Integer;
 begin
-    // Rotina de inicio do servico, dispara thread da operação
-    Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
-    Self.tmrCycleEvent.Enabled  := True; // Liberar disparo de liberação de thread de serviço
-    if Assigned(Self.FSvcThread) and (Self.FSvcThread.Suspended) then begin
-        if Self.FSvcThread.Suspended then begin
-            Self.FSvcThread.Start;
-            Sleep(300);
-        end;
-        Continued := (not Self.FSvcThread.Suspended);
+	 // Rotina de inicio do servico, dispara thread da operação
+	 Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
+	 Self.tmrCycleEvent.Enabled  := True; // Liberar disparo de liberação de thread de serviço
+	 if Assigned(Self.FSvcThread) then begin
+		 if Self.FSvcThread.Suspended then begin
+			 Self.FSvcThread.Start; //Dispara o thread de serviço
+			 Sleep(300);
+		 end;
+		 Continued := (not Self.FSvcThread.Finished);
     end else begin
         Continued := False;
+		 TLogFile.Log('Thread de Serviço não criado anteriormente!');
     end;
     // Para de aceitar conexoes se no modo servidor
     if (GlobalConfig.RunAsServer) then begin
-        DMTCPTransfer.tcpsrvr.StartListening;
+        try
+            DMTCPTransfer.tcpsrvr.StartListening;
+            Continued := True;
+        except
+            on E : Exception do begin
+                Continued := False;
+                TLogFile.Log(Format('Serviço não foi capaz de iniciar escuta na porta:%d',
+                    [GlobalConfig.NetServicePort]), lmtError);
+            end;
+        end;
     end;
 end;
 
@@ -296,7 +307,15 @@ begin
 end;
 
 procedure TBioFilesService.ServiceStart(Sender : TService; var Started : boolean);
+var
+    msvc : string;
 begin
+    if (GlobalConfig.RunAsServer) then begin
+        TLogFile.Log('Iniciando o serviço no modo servidor....', lmtInformation);
+    end else begin
+        TLogFile.Log('Iniciando o serviço no modo cliente...', lmtInformation);
+    end;
+
     try
         Self.CheckLogs(); // proteger chamada ,pois rede pode estar instavel neste momento
     except
@@ -305,18 +324,53 @@ begin
         end;
     end;
 
-    if (Self.Status = csStopped) then begin
-        if (GlobalConfig.RunAsServer) then begin // veio de parada(não pause)
-            Self.FSvcThread := TTransBioServerThread.Create(True);
-        end else begin
-            Self.FSvcThread := TTransBioThread.Create(True);
-            // Criar thread de operação primário
-        end;
-        Self.FSvcThread.Name := APP_SERVICE_DISPLAYNAME;
-        // Nome de exibição do thread primário
-    end;
 
-    Self.ServiceContinue(Sender, Started); // Rotinas de resumo do thread de servico
+    case Self.Status of
+        csStopped : begin
+            msvc := 'csStopped';
+        end;
+		 csStartPending : begin
+			 msvc := 'csStartPending';
+		 end;
+		 csStopPending : begin
+			 msvc := 'csStopPending';
+		 end;
+		 csRunning : begin
+			 msvc := 'csRunning';
+		 end;
+		 csContinuePending : begin
+			 msvc := 'csContinuePending';
+		 end;
+		 csPausePending : begin
+			 msvc := 'csPausePending';
+		 end;
+		 csPaused : begin
+			 msvc := 'csPaused';
+		 end;
+		 else begin
+			 msvc := 'Estado desconhecido';
+		 end
+	 end;
+
+	 TLogFile.Log('Transição de estado durante início do serviço. Estado anterior = ' + msvc, lmtInformation );
+
+	 if (Self.Status in [ csStartPending,  csStopped] ) then begin
+		 if (GlobalConfig.RunAsServer) then begin // veio de parada(não pause)
+			 TLogFile.Log('Criando thread de serviço no modo servidor', lmtInformation);
+			 Self.FSvcThread := TTransBioServerThread.Create(True);
+		 end else begin
+		 	 TLogFile.Log('Criando thread de serviço no modo cliente', lmtInformation);
+			 Self.FSvcThread := TTransBioThread.Create(True);
+		 end;
+		 Self.FSvcThread.Name := APP_SERVICE_DISPLAYNAME; // Nome de exibição do thread primário
+	 end;
+
+	 Self.ServiceContinue(Sender, Started); // Rotinas de resumo do thread de servico
+    if (Started) then begin
+        TLogFile.Log('Serviço iniciado com sucesso.', lmtInformation);
+    end else begin
+        TLogFile.Log('Serviço falhou em sua carga.', lmtWarning);
+    end;
 end;
 
 procedure TBioFilesService.ServiceStop(Sender : TService; var Stopped : boolean);

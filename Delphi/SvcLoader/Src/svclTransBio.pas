@@ -318,10 +318,9 @@ end;
 {TTransBioServerThread}
 procedure TTransBioServerThread.DoServerCycle;
 ///Inicia novo ciclo de operação do servidor
+///Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
 begin
-    //Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
-    Self.CreatePrimaryBackup(GlobalConfig.PathServerOrderedBackup);
-    //move arquivos da pasta de transmitidos do transbio para ordenado
+	 Self.CreatePrimaryBackup(GlobalConfig.TransbioConfig.PathTransmitted);  //move arquivos da pasta de transmitidos do transbio para ordenado
 end;
 
 procedure TTransBioServerThread.DoTerminate;
@@ -333,8 +332,8 @@ end;
 
 procedure TTransBioServerThread.Execute;
 begin
-    inherited;
-    Self.StartTCPServer; //Para o servidor inicia escuta na porta
+	 inherited;
+	 Self.StartTCPServer; //Para o servidor inicia escuta na porta
     while (not Self.Terminated) do begin
         try
 			 Self.DoServerCycle();
@@ -385,10 +384,10 @@ begin
     TFileHnd.FileTimeProperties(SrcFile.FullName, FileCreateTime, dummy, dummy);
     FullDateStr := FormatDateTime('YYYYMMDD', FileCreateTime);
     //Conversão da data de criação(supostamente o momento de transmissão pelo transbio)
-    sy := Copy(FullDateStr, 1, 4);
+	 sy := Copy(FullDateStr, 1, 4);
     sm := Copy(FullDateStr, 5, 2);
     sd := Copy(FullDateStr, 7, 2);
-    DestPath := TFileHnd.ConcatPath([GlobalConfig.PathClientOrderlyBackup, sy, sm, sd]);
+	 DestPath := TFileHnd.ConcatPath([GlobalConfig.PathServerFullyBackup, sy, sm, sd]);
     ForceDirectories(DestPath);
     if (not MoveFile(PChar(SrcFile.FullName), PChar(DestPath + '\' + SrcFile.Name))) then begin
         TLogFile.Log('Erro movendo arquivo para o repositório definitivo no computador primário'#13 +

@@ -75,10 +75,6 @@ object EditConfigForm: TEditConfigForm
     TabOrder = 1
     object tsClientConfig: TTabSheet
       Caption = '&Esta'#231#227'o'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lblClientSourceBioService: TLabel
         Left = 9
         Top = 28
@@ -219,10 +215,6 @@ object EditConfigForm: TEditConfigForm
     object tsServerConfig: TTabSheet
       Caption = 'Ser&vidor'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lblServerPathPrimaryBackup: TLabel
         Left = 12
         Top = 28
@@ -233,6 +225,13 @@ object EditConfigForm: TEditConfigForm
       object lblServerPathOrderlyBackup: TLabel
         Left = 9
         Top = 76
+        Width = 131
+        Height = 13
+        Caption = 'Caminho Backup ordenado:'
+      end
+      object lbledtDirServerPathFullyBackup: TLabel
+        Left = 9
+        Top = 132
         Width = 131
         Height = 13
         Caption = 'Caminho Backup ordenado:'
@@ -253,14 +252,18 @@ object EditConfigForm: TEditConfigForm
         DialogKind = dkWin32
         TabOrder = 1
       end
+      object edtDirServerPathFullyBackup: TJvDirectoryEdit
+        Left = 9
+        Top = 151
+        Width = 299
+        Height = 21
+        DialogKind = dkWin32
+        TabOrder = 2
+      end
     end
     object tsCommon: TTabSheet
       Caption = '&Comum'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lblTCPPort: TLabel
         Left = 13
         Top = 28
@@ -270,28 +273,35 @@ object EditConfigForm: TEditConfigForm
       end
       object lblNotificationList: TLabel
         Left = 13
-        Top = 85
+        Top = 73
         Width = 96
         Height = 13
         Caption = 'Lista de noti&fica'#231#227'o:'
       end
       object lblEmailEmitter: TLabel
         Left = 13
-        Top = 149
+        Top = 117
         Width = 95
         Height = 13
         Caption = 'Emissor notifica'#231#227'o:'
       end
       object lblTransBioConfigFile: TLabel
-        Left = 14
-        Top = 205
+        Left = 13
+        Top = 161
         Width = 152
         Height = 13
         Caption = 'Arquivo Configura'#231#227'o Transbio:'
       end
+      object lblDebugLevel: TLabel
+        Left = 13
+        Top = 208
+        Width = 96
+        Height = 13
+        Caption = 'N'#237'vel de depura'#231#227'o:'
+      end
       object edtTCPPort: TSpinEdit
-        Left = 12
-        Top = 47
+        Left = 13
+        Top = 46
         Width = 67
         Height = 22
         MaxValue = 0
@@ -301,25 +311,35 @@ object EditConfigForm: TEditConfigForm
       end
       object edtNotificationList: TEdit
         Left = 13
-        Top = 104
+        Top = 91
         Width = 121
         Height = 21
         TabOrder = 1
       end
       object edtEmailEmitter: TEdit
         Left = 13
-        Top = 168
+        Top = 135
         Width = 121
         Height = 21
         TabOrder = 2
       end
       object edtfTransBioConfigFile: TJvFilenameEdit
         Left = 13
-        Top = 224
+        Top = 179
         Width = 233
         Height = 21
         TabOrder = 3
         Text = 'edtfTransBioConfigFile'
+      end
+      object seDebugLevel: TSpinEdit
+        Left = 13
+        Top = 226
+        Width = 67
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 4
+        Value = 0
       end
     end
   end

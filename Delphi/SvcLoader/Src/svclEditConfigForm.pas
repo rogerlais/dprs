@@ -52,6 +52,10 @@ type
 		 lblClientPathOrderedBackup : TLabel;
 		 edtDirClientPathFullyBackup : TJvDirectoryEdit;
 		 edtDirClientPathOrderedBackup : TJvDirectoryEdit;
+    edtDirServerPathFullyBackup: TJvDirectoryEdit;
+    lbledtDirServerPathFullyBackup: TLabel;
+    seDebugLevel: TSpinEdit;
+    lblDebugLevel: TLabel;
 	 private
 		 { Private declarations }
 		 procedure LoadConfig();
@@ -99,7 +103,6 @@ procedure TEditConfigForm.LoadConfig;
 ///
 ///</remarks>
 begin
-
     //Modo de trabalho
     Self.chkServerMode.Checked := GlobalConfig.RunAsServer;
     //Conf. cliente
@@ -108,19 +111,21 @@ begin
     Self.edtDirClientTransBioTrans.Text := GlobalConfig.TransbioConfig.PathTransmitted;
     Self.edtDirClientTransBioRetrans.Text := GlobalConfig.TransbioConfig.PathRetrans;
     Self.edtDirClientTransBioError.Text := GlobalConfig.TransbioConfig.PathError;
-    Self.edtDirClientPathFullyBackup.Text := GlobalConfig.PathClientFullyBackup;
-    Self.edtDirClientPathOrderedBackup.Text := GlobalConfig.PathClientOrderlyBackup;
-    Self.edtClientServername.Text := GlobalConfig.ServerName;
-    Self.seClientTimeInterval.Value := GlobalConfig.CycleInterval;
-    //Conf. Server
+	 Self.edtDirClientPathFullyBackup.Text := GlobalConfig.PathClientFullyBackup;
+	 Self.edtDirClientPathOrderedBackup.Text := GlobalConfig.PathClientOrderlyBackup;
+	 Self.edtClientServername.Text := GlobalConfig.ServerName;
+	 Self.seClientTimeInterval.Value := GlobalConfig.CycleInterval;
+	 //Conf. Server
 	 Self.edtDirServerPathTransBio.Text := GlobalConfig.PathServerTransBio;
-    Self.edtDirServerPathOrderlyBackup.Text := GlobalConfig.PathServerOrderedBackup;
-    //Conf. Comum
+	 Self.edtDirServerPathOrderlyBackup.Text := GlobalConfig.PathServerOrderedBackup;
+	 Self.edtDirServerPathFullyBackup.Text := GlobalConfig.PathServerFullyBackup;
+	 //Conf. Comum
     Self.edtTCPPort.Value     := GlobalConfig.NetServicePort;
     Self.edtNotificationList.Text := GlobalConfig.NotificationList;
     Self.edtEmailEmitter.Text := GlobalConfig.NotificationSender;
-    Self.edtfTransBioConfigFile.Text := GlobalConfig.PathTransbioConfigFile;
-
+	 Self.edtfTransBioConfigFile.Text := GlobalConfig.PathTransbioConfigFile;
+	 Self.seDebugLevel.Value := GlobalConfig.DebugLevel;
+	 {TODO -oroger -cdsg : Voltar snap da vm11}
 end;
 
 procedure TEditConfigForm.SaveConfig;
@@ -131,27 +136,28 @@ procedure TEditConfigForm.SaveConfig;
 ///
 ///</remarks>
 begin
-
-    //Modo de trabalho
-    GlobalConfig.RunAsServer    := Self.chkServerMode.Checked;
-    //Conf. cliente
-    GlobalConfig.PathClientBioService := Self.edtDirClientBioServicePath.Text;
-    GlobalConfig.TransbioConfig.PathBio := Self.edtDirClientELO2TransBioBio.Text;
-    GlobalConfig.TransbioConfig.PathTransmitted := Self.edtDirClientTransBioTrans.Text;
-    GlobalConfig.TransbioConfig.PathRetrans := Self.edtDirClientTransBioRetrans.Text;
-    GlobalConfig.TransbioConfig.PathError := Self.edtDirClientTransBioError.Text;
-    GlobalConfig.PathClientFullyBackup := Self.edtDirClientPathFullyBackup.Text;
-    GlobalConfig.PathClientOrderlyBackup := Self.edtDirClientPathOrderedBackup.Text;
-    GlobalConfig.ServerName     := Self.edtClientServername.Text;
-    GlobalConfig.CycleInterval  := Self.seClientTimeInterval.Value;
-    //Conf. Server
+	 //Modo de trabalho
+	 GlobalConfig.RunAsServer    := Self.chkServerMode.Checked;
+	 //Conf. cliente
+	 GlobalConfig.PathClientBioService := Self.edtDirClientBioServicePath.Text;
+	 GlobalConfig.TransbioConfig.PathBio := Self.edtDirClientELO2TransBioBio.Text;
+	 GlobalConfig.TransbioConfig.PathTransmitted := Self.edtDirClientTransBioTrans.Text;
+	 GlobalConfig.TransbioConfig.PathRetrans := Self.edtDirClientTransBioRetrans.Text;
+	 GlobalConfig.TransbioConfig.PathError := Self.edtDirClientTransBioError.Text;
+	 GlobalConfig.PathClientFullyBackup := Self.edtDirClientPathFullyBackup.Text;
+	 GlobalConfig.PathClientOrderlyBackup := Self.edtDirClientPathOrderedBackup.Text;
+	 GlobalConfig.ServerName     := Self.edtClientServername.Text;
+	 GlobalConfig.CycleInterval  := Self.seClientTimeInterval.Value;
+	 //Conf. Server
 	 GlobalConfig.PathServerTransBio:= Self.edtDirServerPathTransBio.Text;
-    GlobalConfig.PathServerOrderedBackup:= Self.edtDirServerPathOrderlyBackup.Text;
-    //Conf. Comum
-    GlobalConfig.NetServicePort := Self.edtTCPPort.Value;
-    GlobalConfig.NotificationList := Self.edtNotificationList.Text;
-    GlobalConfig.NotificationSender := Self.edtEmailEmitter.Text;
-    GlobalConfig.PathTransbioConfigFile := Self.edtfTransBioConfigFile.Text;
+	 GlobalConfig.PathServerOrderedBackup:= Self.edtDirServerPathOrderlyBackup.Text;
+	 GlobalConfig.PathServerFullyBackup:=   Self.edtDirServerPathFullyBackup.Text;
+	 //Conf. Comum
+	 GlobalConfig.NetServicePort := Self.edtTCPPort.Value;
+	 GlobalConfig.NotificationList := Self.edtNotificationList.Text;
+	 GlobalConfig.NotificationSender := Self.edtEmailEmitter.Text;
+	 GlobalConfig.PathTransbioConfigFile := Self.edtfTransBioConfigFile.Text;
+	 GlobalConfig.DebugLevel := Self.seDebugLevel.Value;
 end;
 
 end.
