@@ -28,9 +28,9 @@ type
         procedure DoServerCycle;
         procedure CreatePrimaryBackup(const DirName : string);
         procedure StartTCPServer;
-		 procedure StopTCPServer;
-	 protected
-	 	procedure DoTerminate(); override;
+        procedure StopTCPServer;
+    protected
+        procedure DoTerminate(); override;
     public
         procedure Execute(); override;
     end;
@@ -82,15 +82,15 @@ procedure TTransBioThread.DoClientCycle;
         x :      Integer;
         f1, f2 : TTransferFile;
     begin
-		 {TODO -oroger -cfuture : Melhorar implementa~çao de modo a buscar por arquivo do bioservice e na ausencia usar outro para denomiar de primario}
+        {TODO -oroger -cfuture : Melhorar implementa~çao de modo a buscar por arquivo do bioservice e na ausencia usar outro para denomiar de primario}
         x := list.Count - 1; //pivot no final da lista para comparar aos pares
         while (x > 0) do begin
             if (list.Strings[x] = list.Strings[x - 1]) then begin //comparar os hash
                 f1 := TTransferFile(list.Objects[x - 1]);
                 f2 := TTransferFile(list.Objects[x]);
                 if (f1.Hash <> f2.Hash) then begin //Renomear e remover os não constantes na pasta Bioservice
-					 if (not SameText(TFileHnd.ParentDir(f2.Filename), GlobalConfig.PathClientBioService)) then begin
-						 f2.SetAsDivergent;
+                    if (not SameText(TFileHnd.ParentDir(f2.Filename), GlobalConfig.PathClientBioService)) then begin
+                        f2.SetAsDivergent;
                         list.Delete(x); //OwnsObjects = true para a lista libera instância
                     end else begin
                         if (not SameText(TFileHnd.ParentDir(f1.Filename), GlobalConfig.PathClientBioService)) then begin
@@ -317,10 +317,11 @@ end;
 
 {TTransBioServerThread}
 procedure TTransBioServerThread.DoServerCycle;
-///Inicia novo ciclo de operação do servidor
-///Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
+ ///Inicia novo ciclo de operação do servidor
+ ///Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
 begin
-	 Self.CreatePrimaryBackup(GlobalConfig.TransbioConfig.PathTransmitted);  //move arquivos da pasta de transmitidos do transbio para ordenado
+    Self.CreatePrimaryBackup(GlobalConfig.TransbioConfig.PathTransmitted);
+    //move arquivos da pasta de transmitidos do transbio para ordenado
 end;
 
 procedure TTransBioServerThread.DoTerminate;
@@ -332,24 +333,39 @@ end;
 
 procedure TTransBioServerThread.Execute;
 begin
-	 inherited;
-	 Self.StartTCPServer; //Para o servidor inicia escuta na porta
+    inherited;
+    try
+        Self.StartTCPServer; //Para o servidor inicia escuta na porta
+    except
+        on E : Exception do begin
+            TLogFile.Log('Serviço não pode continuar e será encerrado. Razão:' + E.Message, lmtError);
+            raise;
+        end;
+    end;
     while (not Self.Terminated) do begin
         try
-			 Self.DoServerCycle();
-		 except
-			on E : Exception do begin
-			 TLogFile.Log( 'Ciclo de organização de arquivos do servidor de envio falhou: ' + E.Message, lmtError );
-			end;
-		 end;
+            Self.DoServerCycle();
+        except
+            on E : Exception do begin
+                TLogFile.Log('Ciclo de organização de arquivos do servidor de envio falhou: ' + E.Message, lmtError);
+            end;
+        end;
     end;
 end;
 
 procedure TTransBioServerThread.StartTCPServer;
 //Verificar a atividade do servidor tcp, ativando o mesmo se necessário
 begin
-	 if (not DMTCPTransfer.tcpsrvr.Active) then begin
-        DMTCPTransfer.StartServer();
+    try
+        if (not DMTCPTransfer.tcpsrvr.Active) then begin
+            TLogFile.LogDebug('Abrindo porta no modo servidor', DBGLEVEL_ULTIMATE);
+            DMTCPTransfer.StartServer();
+        end;
+    except
+        on E : Exception do begin
+            TLogFile.Log('Chamada StartTCPServer retornou erro:' + E.Message, lmtError);
+            raise;
+        end;
     end;
 end;
 
@@ -384,10 +400,10 @@ begin
     TFileHnd.FileTimeProperties(SrcFile.FullName, FileCreateTime, dummy, dummy);
     FullDateStr := FormatDateTime('YYYYMMDD', FileCreateTime);
     //Conversão da data de criação(supostamente o momento de transmissão pelo transbio)
-	 sy := Copy(FullDateStr, 1, 4);
+    sy := Copy(FullDateStr, 1, 4);
     sm := Copy(FullDateStr, 5, 2);
     sd := Copy(FullDateStr, 7, 2);
-	 DestPath := TFileHnd.ConcatPath([GlobalConfig.PathServerFullyBackup, sy, sm, sd]);
+    DestPath := TFileHnd.ConcatPath([GlobalConfig.PathServerFullyBackup, sy, sm, sd]);
     ForceDirectories(DestPath);
     if (not MoveFile(PChar(SrcFile.FullName), PChar(DestPath + '\' + SrcFile.Name))) then begin
         TLogFile.Log('Erro movendo arquivo para o repositório definitivo no computador primário'#13 +

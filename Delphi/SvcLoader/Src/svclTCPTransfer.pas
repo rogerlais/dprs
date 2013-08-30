@@ -8,18 +8,18 @@ unit svclTCPTransfer;
 interface
 
 uses
-	 SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
+    SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
     IdTCPServer, AppLog, XPFileEnumerator, IdGlobal, Menus, ExtCtrls, SyncObjs, StreamHnd, ImgList, Controls;
 
 type
     TThreadStringList = class(TStringList)
     private
         FLocker : TCriticalSection;
-	 protected
-		 procedure Enter;
-		 procedure Leave;
-	 public
-		 constructor Create;
+    protected
+        procedure Enter;
+        procedure Leave;
+    public
+        constructor Create;
         destructor Destroy; override;
     end;
 
@@ -48,7 +48,7 @@ type
         property Hash : string read GetHash;
         property DateStamp : string read GetDateStamp;
         procedure ReadFromStream(AStream : TStream);
-		 procedure SetAsDivergent();
+        procedure SetAsDivergent();
         constructor CreateOutput(const Filename : string);
         constructor Create(strm : TStream);
         destructor Destroy; override;
@@ -62,7 +62,7 @@ type
         pmTrayMenu :  TPopupMenu;
         Configurar1 : TMenuItem;
         Sair1 :       TMenuItem;
-    ilIcons: TImageList;
+        ilIcons :     TImageList;
         procedure tcpclntConnected(Sender : TObject);
         procedure tcpclntDisconnected(Sender : TObject);
         procedure DataModuleDestroy(Sender : TObject);
@@ -77,40 +77,40 @@ type
         procedure InitSettings();
     public
         { Public declarations }
-		 procedure StartServer();
-		 procedure StartClient();
-		 procedure StartSession(const SessionName : string);
-		 procedure EndSession(const SessionName : string);
-		 procedure StopServer();
-		 procedure StopClient();
-		 procedure SendFile(AFile : TTransferFile);
-		 constructor Create(AOwner : TComponent); override;
-		 destructor Destroy; override;
-	 end;
+        procedure StartServer();
+        procedure StartClient();
+        procedure StartSession(const SessionName : string);
+        procedure EndSession(const SessionName : string);
+        procedure StopServer();
+        procedure StopClient();
+        procedure SendFile(AFile : TTransferFile);
+        constructor Create(AOwner : TComponent); override;
+        destructor Destroy; override;
+    end;
 
 var
-	 DMTCPTransfer : TDMTCPTransfer;
+    DMTCPTransfer : TDMTCPTransfer = nil; //Criado manualmente nas aplicações de teste
 
 implementation
 
 uses
-	 svclConfig, FileHnd, svclUtils, StrHnd, svclEditConfigForm;
+    svclConfig, FileHnd, svclUtils, StrHnd, svclEditConfigForm;
 
 {$R *.dfm}
 
 const
-	 TOKEN_DELIMITER = #13#10;
-	 STR_END_SESSION_SIGNATURE = '=end_session';
-	 STR_BEGIN_SESSION_SIGNATURE = '=start_session';
-	 STR_OK_PACK   = 'OK';
-	 STR_FAIL_HASH = 'FAIL HASH';
-	 STR_FAIL_SIZE = 'FAIL SIZE';
+    TOKEN_DELIMITER = #13#10;
+    STR_END_SESSION_SIGNATURE = '=end_session';
+    STR_BEGIN_SESSION_SIGNATURE = '=start_session';
+    STR_OK_PACK     = 'OK';
+    STR_FAIL_HASH   = 'FAIL HASH';
+    STR_FAIL_SIZE   = 'FAIL SIZE';
 
-	 II_SERVER_OK = 0;
-	 II_SERVER_BAD = 1;
-	 II_CLIENT_OK = 0;
-	 II_CLIENT_BAD = 1;
-	 II_DATA_SENDING = 2;
+    II_SERVER_OK    = 0;
+    II_SERVER_BAD   = 1;
+    II_CLIENT_OK    = 0;
+    II_CLIENT_BAD   = 1;
+    II_DATA_SENDING = 2;
 
 var
     ForcedFormatSettings : TFormatSettings;
@@ -123,12 +123,12 @@ end;
 constructor TDMTCPTransfer.Create(AOwner : TComponent);
 begin
     inherited;
-	 Self.FClientSessionList := TThreadStringList.Create;
-	 if ( GlobalConfig.RunAsServer ) then begin
-	    Self.TrayIcon.IconIndex := II_SERVER_BAD; //Mesmo valor para o servidor no momento
-	 end else begin
-		Self.TrayIcon.IconIndex := II_CLIENT_BAD; //Mesmo valor para o servidor no momento
-	 end;
+    Self.FClientSessionList := TThreadStringList.Create;
+    if (GlobalConfig.RunAsServer) then begin
+        Self.TrayIcon.IconIndex := II_SERVER_BAD; //Mesmo valor para o servidor no momento
+    end else begin
+        Self.TrayIcon.IconIndex := II_CLIENT_BAD; //Mesmo valor para o servidor no momento
+    end;
 end;
 
 procedure TDMTCPTransfer.DataModuleCreate(Sender : TObject);
@@ -153,8 +153,8 @@ procedure TDMTCPTransfer.EndSession(const SessionName : string);
 var
     idx : Integer;
 begin
-    Self.TrayIcon.IconIndex:=II_CLIENT_OK;
-	 Self.FClientSessionList.Enter;
+    Self.TrayIcon.IconIndex := II_CLIENT_OK;
+    Self.FClientSessionList.Enter;
     try
         idx := Self.FClientSessionList.IndexOf(SessionName);
         if (idx >= 0) then begin
@@ -261,8 +261,8 @@ begin
     Self.tcpclnt.OnConnected := tcpclntConnected;
     Self.tcpclnt.ConnectTimeout := 0;
     Self.tcpclnt.IPVersion := Id_IPv4;
-	 Self.tcpclnt.ReadTimeout := -1;
-	 Self.TrayIcon.IconIndex:=II_CLIENT_OK;
+    Self.tcpclnt.ReadTimeout := -1;
+    Self.TrayIcon.IconIndex := II_CLIENT_OK;
     TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)',
         [GlobalConfig.NetServicePort, GlobalConfig.ServerName]), DBGLEVEL_DETAILED);
 end;
@@ -276,20 +276,28 @@ procedure TDMTCPTransfer.StartServer;
  ///
  ///</remarks>
 begin
-    Self.InitSettings;
-    Self.tcpsrvr.OnStatus    := tcpsrvrStatus;
-    Self.tcpsrvr.DefaultPort := GlobalConfig.NetServicePort;
-    Self.tcpsrvr.OnExecute   := tcpsrvrExecute;
-    Self.tcpsrvr.TerminateWaitTime := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
-    Self.tcpsrvr.Active      := True;
-	 Self.tcpsrvr.StartListening;
-	 Self.TrayIcon.IconIndex:=II_SERVER_OK;
-    TLogFile.LogDebug(Format('Escutando na porta: %d', [GlobalConfig.NetServicePort]), DBGLEVEL_DETAILED);
+    TLogFile.LogDebug('Ajustando parametros para o modo servidor', DBGLEVEL_ULTIMATE);
+    try
+        Self.InitSettings;
+        Self.tcpsrvr.OnStatus    := tcpsrvrStatus;
+        Self.tcpsrvr.DefaultPort := GlobalConfig.NetServicePort;
+        Self.tcpsrvr.OnExecute   := tcpsrvrExecute;
+        Self.tcpsrvr.TerminateWaitTime := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
+        Self.tcpsrvr.Active      := True;
+        Self.tcpsrvr.StartListening;
+        Self.TrayIcon.IconIndex := II_SERVER_OK;
+        TLogFile.LogDebug(Format('Escutando na porta: %d', [GlobalConfig.NetServicePort]), DBGLEVEL_DETAILED);
+    except
+        on E : Exception do begin
+            TLogFile.Log(Format('Erro fatal abrindo porta %d.'#13#10'%s', [GlobalConfig.NetServicePort, E.Message]), lmtError);
+            raise E;
+        end;
+    end;
 end;
 
 procedure TDMTCPTransfer.StartSession(const SessionName : string);
 begin
-	Self.TrayIcon.IconIndex := II_DATA_SENDING;
+    Self.TrayIcon.IconIndex := II_DATA_SENDING;
     Self.FClientSessionList.Enter;
     try
         try
@@ -322,26 +330,26 @@ procedure TDMTCPTransfer.StopClient;
 begin
     if (Self.tcpclnt.Connected()) then begin
         Self.tcpclnt.Disconnect;
-	 end;
+    end;
 end;
 
 procedure TDMTCPTransfer.StopServer;
 begin
-	 if (Self.tcpsrvr.Active) then begin
-		 Self.tcpsrvr.StopListening;
-		 Self.tcpsrvr.Active := False;
-		 TLogFile.LogDebug('Servidor interrompido!', DBGLEVEL_DETAILED);
-	 end;
+    if (Self.tcpsrvr.Active) then begin
+        Self.tcpsrvr.StopListening;
+        Self.tcpsrvr.Active := False;
+        TLogFile.LogDebug('Servidor interrompido!', DBGLEVEL_DETAILED);
+    end;
 end;
 
 procedure TDMTCPTransfer.tcpclntConnected(Sender : TObject);
 begin
-	 TLogFile.LogDebug('Conectado ao servidor', DBGLEVEL_DETAILED);
+    TLogFile.LogDebug('Conectado ao servidor', DBGLEVEL_DETAILED);
 end;
 
 procedure TDMTCPTransfer.tcpclntDisconnected(Sender : TObject);
 begin
-	 TLogFile.LogDebug('Desconectado do servidor', DBGLEVEL_DETAILED);
+    TLogFile.LogDebug('Desconectado do servidor', DBGLEVEL_DETAILED);
 end;
 
 procedure TDMTCPTransfer.tcpsrvrExecute(AContext : TIdContext);
@@ -353,10 +361,10 @@ procedure TDMTCPTransfer.tcpsrvrExecute(AContext : TIdContext);
  /// Estudar como proteger o metodo e o timeout da passagem dos dados
  ///</remarks>
 var
-	 sfilename, smodifiedDate, saccessDate, screateDate, sFileSize, sHash : string;
+    sfilename, smodifiedDate, saccessDate, screateDate, sFileSize, sHash : string;
     retSignature, retHash, retClientName : string;
-	 inStrm :    TMemoryStream;
-	 nFileSize : int64;
+    inStrm :    TMemoryStream;
+    nFileSize : int64;
 begin
     //Criticidade em ReadBytes para o stream, ajustado para 30 segundos
     AContext.Connection.Socket.ReadTimeout := 30000;
@@ -400,7 +408,7 @@ begin
                 AContext.Connection.IOHandler.ReadStream(inStrm, nFileSize); //Local para o ajuste do ReadTimeout
             finally
                 if (inStrm.Size = nFileSize) then begin //Recepção ok -> testar integridade
-					 retHash := THashHnd.MD5(inStrm);
+                    retHash := THashHnd.MD5(inStrm);
                     if (SameText(retHash, sHash)) then begin
                         AContext.Connection.IOHandler.WriteLn(STR_OK_PACK); //informa OK e em seguida o tamanho do streamer lido
                         Self.SaveBioFile(retClientName, sfilename, screateDate, saccessDate, smodifiedDAte, inStrm);
@@ -487,8 +495,8 @@ end;
 function TTransferFile.GetHash : string;
 begin
     if (Self.FHash = EmptyStr) then begin
-		 Self.FHash := THashHnd.MD5(Self.FFilename);
-	 end;
+        Self.FHash := THashHnd.MD5(Self.FFilename);
+    end;
     Result := Self.FHash;
 end;
 
@@ -536,7 +544,7 @@ end;
 procedure TTransferFile.SetFilename(const Value : string);
 {TODO -oroger -cfuture : diferenciar a carga nomral do construtor para carregar pelo streamer os dados das datas do arquivo }
 begin
-	 if (not Self.FIsInputFile) then begin
+    if (not Self.FIsInputFile) then begin
         Self.FFilename := Value;
     end else begin
         Self.InvalidWriteOperation('Nome do arquivo:' + Value + ' não pode ser alterado neste momento');

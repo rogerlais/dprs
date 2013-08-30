@@ -37,6 +37,9 @@
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+			<DCC_MapFile>3</DCC_MapFile>
+			<DCC_RemoteDebug>true</DCC_RemoteDebug>
 			<DCC_UnitSearchPath>$(Pcks)\TRE\Src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_DependencyCheckOutputName>..\Debug\SvcLoader.exe</DCC_DependencyCheckOutputName>
 			<DCC_Define>DEBUG;DEBUG_ALL;$(DCC_Define)</DCC_Define>

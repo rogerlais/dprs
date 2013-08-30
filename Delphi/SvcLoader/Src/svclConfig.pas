@@ -109,7 +109,6 @@ uses
     FileHnd, TREUtils, TREConsts, WinDisks, TREUsers, WinNetHnd, CryptIni, WNetExHnd, svclUtils, StrHnd, WinReg32, AppLog;
 
 const
-    {TODO -oroger -creq : Varrer todas as contantes DV_ e checar padroes }
     IE_CYCLE_INTERVAL      = 'Common\CycleInterval';
     DV_CYCLE_INTERVAL      = 60000;
     IE_NOTIFICATION_SENDER = 'Common\NotificationSender';
