@@ -19,7 +19,7 @@ type
         fvInfo :        TFileVersionInfo;
         procedure ServiceAfterInstall(Sender : TService);
         procedure ServiceBeforeInstall(Sender : TService);
-        procedure ServiceCreate(Sender : TObject);
+		 procedure ServiceCreate(Sender : TObject);
         procedure ServicePause(Sender : TService; var Paused : boolean);
         procedure ServiceStart(Sender : TService; var Started : boolean);
         procedure ServiceStop(Sender : TService; var Stopped : boolean);
@@ -296,6 +296,8 @@ procedure TBioFilesService.ServiceCreate(Sender : TObject);
 begin
 	{TODO -oroger -cdsg : Checar no beforeUninstal para retornar ok}
 	{TODO -oroger -cdsg : Inserir hint no tray o servico }
+	{TODO -oroger -cdsg : Registrar servico par interagir com o desktop}
+	{TODO -oroger -cdsg : Parar thread ao final de ciclo de operação }
 	while DebugHook <> 0 do begin
 		{TODO -oroger -cdsg : testar forma de atribuir depuração para carga por attachprocess }
 		Break;

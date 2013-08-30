@@ -349,7 +349,8 @@ begin
             on E : Exception do begin
                 TLogFile.Log('Ciclo de organização de arquivos do servidor de envio falhou: ' + E.Message, lmtError);
             end;
-        end;
+		 end;
+        Self.Suspended:=True; //Libera cpu até novo ciclo
     end;
 end;
 
