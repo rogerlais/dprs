@@ -19,7 +19,7 @@ type
         fvInfo :        TFileVersionInfo;
         procedure ServiceAfterInstall(Sender : TService);
         procedure ServiceBeforeInstall(Sender : TService);
-		 procedure ServiceCreate(Sender : TObject);
+        procedure ServiceCreate(Sender : TObject);
         procedure ServicePause(Sender : TService; var Paused : boolean);
         procedure ServiceStart(Sender : TService; var Started : boolean);
         procedure ServiceStop(Sender : TService; var Stopped : boolean);
@@ -106,16 +106,24 @@ procedure TBioFilesService.CheckLogs;
 var
     Files :  IEnumerable<TFileSystemEntry>;
     f :      TFileSystemEntry;
-    currLogName, sentPath : string;
+    currLogName, newLogName, sentPath : string;
     logText : TXPStringList;
     dummy :  Integer;
     sentOK : boolean;
     lt :     TSystemTime;
 begin
     // Registra a hora da ultima passagem de verificação de log
-    GetLocalTime(lt);
-    Self.FLastLogCheck := lt.wHour;
     currLogName := AppLog.TLogFile.GetDefaultLogFile.FileName;
+    GetLocalTime(lt);
+    if (Self.FLastLogCheck <> lt.wHour) then begin
+        newLogName := TFileHnd.ConcatPath([GlobalConfig.PathServiceLog, TBioFilesService.LogFilePrefix() +
+            FormatDateTime('YYYYMMDD', Now())]) + '.log';
+        if (currLogName <> newLogName) then begin
+            AppLog.TLogFile.GetDefaultLogFile.FileName := newLogName;
+            currLogName := newLogName;
+        end;
+        Self.FLastLogCheck := lt.wHour; //Registra a mudanca de hora
+    end;
     // filtra arquivos referentes apenas a este runtime
     Files := TDirectory.FileSystemEntries(GlobalConfig.PathServiceLog, TBioFilesService.LogFilePrefix + '*.log', False);
     for f in Files do begin
@@ -288,20 +296,21 @@ begin
                      [GlobalConfig.NetServicePort]), lmtError);
              end;
          end;
-     end;
+      end;
      }
 end;
 
 procedure TBioFilesService.ServiceCreate(Sender : TObject);
 begin
-	{TODO -oroger -cdsg : Checar no beforeUninstal para retornar ok}
-	{TODO -oroger -cdsg : Inserir hint no tray o servico }
-	{TODO -oroger -cdsg : Registrar servico par interagir com o desktop}
-	{TODO -oroger -cdsg : Parar thread ao final de ciclo de operação }
-	while DebugHook <> 0 do begin
-		{TODO -oroger -cdsg : testar forma de atribuir depuração para carga por attachprocess }
-		Break;
-   end;
+    {DONE -oroger -cdsg : Inserir hint no tray o servico }
+    {DONE -oroger -cdsg : Registrar servico par interagir com o desktop}
+    {DONE -oroger -cdsg : Parar thread ao final de ciclo de operação }
+    {TODO -oroger -cdsg : testar forma de atribuir depuração para carga por attachprocess }
+    (*
+    while DebugHook <> 0 do begin
+        Break;
+    end;
+    *)
     Self.DisplayName := APP_SERVICE_DISPLAYNAME;
     Self.LoadGroup   := APP_SERVICE_GROUP;
 end;
@@ -433,15 +442,9 @@ begin
 end;
 
 procedure TBioFilesService.tmrCycleEventTimer(Sender : TObject);
-var
-    lt : TSystemTime;
 begin
     // Realiza a checkagem dos logs a cada mudança de hora
-    GetLocalTime(lt);
-    if (lt.wHour <> Self.FLastLogCheck) then begin
-        Self.FLastLogCheck := lt.wHour;
-        Self.CheckLogs;
-    end;
+    Self.CheckLogs;
     Self.ServiceThreadPulse();
 end;
 

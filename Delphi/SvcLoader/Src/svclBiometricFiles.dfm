@@ -7,26 +7,28 @@ object BioFilesService: TBioFilesService
       IsGroup = False
     end>
   DisplayName = 'SESOP TransBio Replicator'
+  Interactive = True
+  WaitHint = 1000
   BeforeInstall = ServiceBeforeInstall
   AfterInstall = ServiceAfterInstall
   OnContinue = ServiceContinue
   OnPause = ServicePause
   OnStart = ServiceStart
   OnStop = ServiceStop
-  Height = 153
+  Height = 236
   Width = 339
   object tmrCycleEvent: TTimer
     Enabled = False
     Interval = 60000
     OnTimer = tmrCycleEventTimer
-    Left = 64
-    Top = 48
+    Left = 184
+    Top = 4
   end
   object smtpSender: TIdSMTP
     Host = 'smtp.tre-pb.gov.br'
     SASLMechanisms = <>
-    Left = 145
-    Top = 49
+    Left = 126
+    Top = 120
   end
   object mailMsgNotify: TIdMessage
     AttachmentEncoding = 'UUE'
@@ -39,11 +41,11 @@ object BioFilesService: TBioFilesService
     Recipients = <>
     ReplyTo = <>
     ConvertPreamble = True
-    Left = 225
-    Top = 44
+    Left = 126
+    Top = 62
   end
   object fvInfo: TFileVersionInfo
-    Left = 288
-    Top = 40
+    Left = 126
+    Top = 4
   end
 end

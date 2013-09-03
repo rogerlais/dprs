@@ -6,21 +6,21 @@ echo on
 
 
 REM Area de definicoes
-set source=D:\Comum\InstSeg\SvcLoader.exe
+set source=D:\Comum\InstSeg\SvcLoader.*
 set sesop_home=D:\AplicTRE\Suporte
 set dest=%sesop_home%\Scripts
+set svcname=BioFilesService
+set svcdisplay=SESOP TransBio Replicator
 
-REM Area de operacoes
-net start | find "BioFilesService"
-if errorlevel 0 goto install
-REM para e desinstala
-net stop BioFilesService
+rem parar servico
+net stop %svcname%
+rem desinstalar anterior
 %dest%\SvcLoader.exe /uninstall /silent
-
-:install
-move %source% %dest% /y
+rem copia do local temp para destino(arquivo antes poderia estar aberto)
+move /y %source% %dest%
 if not errorlevel 0 goto copy_error
 
+:install
 %dest%\SvcLoader.exe /install /silent
 if not errorlevel 0 goto service_error
 goto final
@@ -40,3 +40,4 @@ goto final
 
 
 :final
+echo: Instalacao finalizada
