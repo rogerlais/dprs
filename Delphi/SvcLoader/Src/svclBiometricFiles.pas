@@ -213,15 +213,19 @@ procedure TBioFilesService.ServiceAfterInstall(Sender : TService);
  /// Registra as informações de função deste serviço
  /// </summary>
 var
-    Reg : TRegistryNT;
+	 Reg : TRegistryNT;
+	 svcType : Integer;
+	 svcKey : string;
 begin
-    Reg := TRegistryNT.Create();
-    try
-        Reg.WriteFullString(TFileHnd.ConcatPath([
-            'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services', Self.Name,
-            'Description']),
-            'Replica os arquivos de dados biométricos para máquina primária, possibilitando o transporte centralizado.', True);
-    finally
+	 Reg := TRegistryNT.Create();
+	 try
+		svcKey := TFileHnd.ConcatPath([ 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services', Self.Name]);
+		 Reg.WriteFullString( svcKey + '\Description',
+			 'Replica os arquivos de dados biométricos para máquina primária, possibilitando o transporte centralizado.', True);
+		 Reg.ReadFullInteger(svcKey + '\Type', svcType );
+		 svcType := svcType or $100; //Nono bit para indicar interativo
+		 Reg.WriteFullInteger(svcKey + '\Type', svcType, True );
+	 finally
         Reg.Free;
     end;
 end;
@@ -239,7 +243,13 @@ var
     lst : TStringList;
 begin
 
-    TEditConfigForm.EditConfig; // Chama janela de configuração para exibição
+    try
+        TEditConfigForm.EditConfig; // Chama janela de configuração para exibição
+    except
+        on E : Exception do begin
+            AppFatalError('Configurações do serviço não efetivadas'#13#10 + E.Message, 8666, True);
+        end;
+    end;
 
     Reg := TRegistryNT.Create;
     lst := TStringList.Create;

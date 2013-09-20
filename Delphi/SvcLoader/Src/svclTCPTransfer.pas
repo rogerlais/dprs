@@ -70,9 +70,11 @@ type
         procedure tcpsrvrStatus(ASender : TObject; const AStatus : TIdStatus; const AStatusText : string);
         procedure Configurar1Click(Sender : TObject);
         procedure DataModuleCreate(Sender : TObject);
+        procedure TrayIconMouseMove(Sender : TObject; Shift : TShiftState; X, Y : Integer);
     private
         { Private declarations }
         FClientSessionList : TThreadStringList;
+        FTrafficFileCount :  Integer;
         procedure SaveBioFile(const ClientName, Filename, screateDate, saccessDate, smodifiedDate : string; inputStrm : TStream);
         procedure InitSettings();
     public
@@ -242,6 +244,8 @@ begin
     s := Self.tcpclnt.IOHandler.ReadLn();
     if (s <> STR_OK_PACK) then begin
         raise ESVCLException.CreateFmt('Retorno de erro de envio: "%s" para arquivo="%s".', [s, AFile.Filename]);
+    end else begin
+        Inc(Self.FTrafficFileCount); //Incrementa contador de trafego(modo cliente)
     end;
 end;
 
@@ -413,6 +417,7 @@ begin
                         AContext.Connection.IOHandler.WriteLn(STR_OK_PACK); //informa OK e em seguida o tamanho do streamer lido
                         Self.SaveBioFile(retClientName, sfilename, screateDate, saccessDate, smodifiedDAte, inStrm);
                         //Salva arquivo denominado OK
+                        Inc(Self.FTrafficFileCount); //Incrementa contador de trafego(modo servidor)
                     end else begin
                         AContext.Connection.IOHandler.WriteLn(STR_FAIL_HASH); //informa OK e em seguida o tamanho do streamer lido
                     end;
@@ -439,6 +444,22 @@ end;
 procedure TDMTCPTransfer.tcpsrvrStatus(ASender : TObject; const AStatus : TIdStatus; const AStatusText : string);
 begin
     TLogFile.LogDebug(Format('Status do servidor: "%s"', [AStatusText]), DBGLEVEL_DETAILED);
+end;
+
+procedure TDMTCPTransfer.TrayIconMouseMove(Sender : TObject; Shift : TShiftState; X, Y : Integer);
+///Atualiza status da dica, informando o tráfego atual da sessão
+begin
+    if (GlobalConfig.RunAsServer) then begin
+        Self.TrayIcon.Hint := Format(
+            'SESOP - Replicação de arquivos de biometria' + #13#10 +
+            'Arquivos recebidos = %d' + #13#10,
+            [Self.FTrafficFileCount]);
+    end else begin
+        Self.TrayIcon.Hint := Format(
+            'SESOP - Replicação de arquivos de biometria' + #13#10 +
+            'Arquivos enviados = %d' + #13#10,
+            [Self.FTrafficFileCount]);
+    end;
 end;
 
 { TTransferFile }

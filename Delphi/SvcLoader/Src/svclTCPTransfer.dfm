@@ -23,7 +23,6 @@ object DMTCPTransfer: TDMTCPTransfer
     Top = 16
   end
   object TrayIcon: TTrayIcon
-    BalloonHint = 'SESOP - Replica'#231#227'o de arquivos de biometria'
     BalloonTitle = 'SESOP - Service Loader'
     BalloonTimeout = 1000
     BalloonFlags = bfInfo
@@ -31,6 +30,7 @@ object DMTCPTransfer: TDMTCPTransfer
     IconIndex = 1
     PopupMenu = pmTrayMenu
     Visible = True
+    OnMouseMove = TrayIconMouseMove
     Left = 248
     Top = 16
   end

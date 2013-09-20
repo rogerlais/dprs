@@ -89,6 +89,8 @@ begin
         frm.ShowModal();
         if (frm.ModalResult = mrOk) then begin
             frm.SaveConfig();
+		 end else begin
+         	raise Exception.Create('Operação cancelada pelo usuário');
         end;
     finally
         frm.Free;
