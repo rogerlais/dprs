@@ -132,7 +132,9 @@ begin
             try
                 logText.LoadFromFile(f.FullName);
                 dummy  := 1; // Sempre do inicio
-                sentOK := not logText.FindPos('erro:', dummy, dummy);
+				 sentOK := not logText.FindPos('erro:', dummy, dummy);
+				 sentOK := sentOK and ( not logText.FindPos('Alarme:', dummy, dummy) );
+				 {TODO -oroger -cdsg : Idem acima para o caso de alarmes}
                 if (not sentOK) then begin
                     try
                         Self.SendMailNotification(logText.Text);
@@ -202,7 +204,8 @@ begin
 
     Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvInfo.FileVersion, WinnetHnd.GetComputerName(),
         FormatDateTime('yyyyMMDDhhmm', Now())]);
-    Self.mailMsgNotify.Body.Text := NotificationText;
+	 Self.mailMsgNotify.Body.Text := NotificationText;
+	 {TODO -oroger -cdsg : Capturar o erro isolando a causa }
     Self.smtpSender.Connect;
     Self.smtpSender.Send(Self.mailMsgNotify);
     Self.smtpSender.Disconnect(True);
@@ -242,9 +245,13 @@ var
     Reg : TRegistryNT;
     lst : TStringList;
 begin
-
-    try
-        TEditConfigForm.EditConfig; // Chama janela de configuração para exibição
+	{TODO -oroger -cdsg : Remover dependencia de NetLogon e colocar a do cliente dns}
+	{TODO -oroger -cdsg : Inserir um lmtAlarm para envio de notificação}
+	 try
+		{TODO -oroger -cdsg : Não invocar dialogo para o caso de instalação automatica}
+		if ( not FindCmdLineSwitch( 'noconfig' ) ) then begin
+			TEditConfigForm.EditConfig; // Chama janela de configuração para exibição
+		end;
     except
         on E : Exception do begin
             AppFatalError('Configurações do serviço não efetivadas'#13#10 + E.Message, 8666, True);
@@ -276,8 +283,6 @@ procedure TBioFilesService.ServiceContinue(Sender : TService; var Continued : bo
  /// <remarks>
  ///
  /// </remarks>
-var
-    ret : Integer;
 begin
     TLogFile.LogDebug('Chamada de ServiceContinue em execução', DBGLEVEL_ULTIMATE);
     // Rotina de inicio do servico, dispara thread da operação

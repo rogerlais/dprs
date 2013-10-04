@@ -449,6 +449,7 @@ end;
 procedure TDMTCPTransfer.TrayIconMouseMove(Sender : TObject; Shift : TShiftState; X, Y : Integer);
 ///Atualiza status da dica, informando o tráfego atual da sessão
 begin
+	{TODO -oroger -cdsg : Adicionar a versão do aplicativo}
     if (GlobalConfig.RunAsServer) then begin
         Self.TrayIcon.Hint := Format(
             'SESOP - Replicação de arquivos de biometria' + #13#10 +
