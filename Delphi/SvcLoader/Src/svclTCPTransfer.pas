@@ -96,7 +96,7 @@ var
 implementation
 
 uses
-    svclConfig, FileHnd, svclUtils, StrHnd, svclEditConfigForm;
+    svclConfig, FileHnd, svclUtils, StrHnd, svclEditConfigForm, svclBiometricFiles;
 
 {$R *.dfm}
 
@@ -229,8 +229,8 @@ procedure TDMTCPTransfer.SendFile(AFile : TTransferFile);
 var
     s : string;
 begin
-    if (not Self.tcpclnt.Connected) then begin
-        raise ESVCLException.Create('Canal com o servidor não estabelecido antecipadamente');
+	 if (not Self.tcpclnt.Connected) then begin
+		 raise ESVCLException.Create('Canal com o servidor não estabelecido antecipadamente');
     end;
     //Passados obrigatoriamente nesta ordem!!!
     s := AFile.FFilename + TOKEN_DELIMITER +
@@ -449,15 +449,15 @@ end;
 procedure TDMTCPTransfer.TrayIconMouseMove(Sender : TObject; Shift : TShiftState; X, Y : Integer);
 ///Atualiza status da dica, informando o tráfego atual da sessão
 begin
-	{TODO -oroger -cdsg : Adicionar a versão do aplicativo}
-    if (GlobalConfig.RunAsServer) then begin
-        Self.TrayIcon.Hint := Format(
-            'SESOP - Replicação de arquivos de biometria' + #13#10 +
-            'Arquivos recebidos = %d' + #13#10,
-            [Self.FTrafficFileCount]);
-    end else begin
-        Self.TrayIcon.Hint := Format(
-            'SESOP - Replicação de arquivos de biometria' + #13#10 +
+	{DONE -oroger -cdsg : Adicionar a versão do aplicativo}
+	 if (GlobalConfig.RunAsServer) then begin
+		 Self.TrayIcon.Hint := Format(
+			 'SESOP - Replicação de arquivos de biometria' + #13#10 + BioFilesService.fvInfo.FileVersion + #13#10 +
+			 'Arquivos recebidos = %d' + #13#10,
+			 [Self.FTrafficFileCount]);
+	 end else begin
+		 Self.TrayIcon.Hint := Format(
+			 'SESOP - Replicação de arquivos de biometria' + #13#10 + BioFilesService.fvInfo.FileVersion + #13#10 +
             'Arquivos enviados = %d' + #13#10,
             [Self.FTrafficFileCount]);
     end;

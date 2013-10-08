@@ -48,4 +48,13 @@ object BioFilesService: TBioFilesService
     Left = 126
     Top = 4
   end
+  object icmpclntMain: TIdIcmpClient
+    Protocol = 1
+    ProtocolIPv6 = 58
+    IPVersion = Id_IPv4
+    PacketSize = 32
+    OnReply = icmpclntMainReply
+    Left = 200
+    Top = 64
+  end
 end

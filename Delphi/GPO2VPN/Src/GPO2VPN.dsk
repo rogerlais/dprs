@@ -1,38 +1,45 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\rtl\win\Messages.pas',0,1,1789,62,1801,0,0,,
-File_1=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\rtl\win\MMSystem.pas',0,1,4392,3,4408,0,0,,
-File_2=TSourceModule,'C:\Sw\WorkDir\Testes\Delphi\SWMonit_Agent\SWAgent\Src\swaProcessThread.pas',0,1,353,53,52,0,0,,
-File_3=TSourceModule,'C:\Sw\WorkDir\Testes\Delphi\SWMonit_Agent\SWAgent\Src\F_Main.pas',0,1,1,58,9,0,0,,
+File_0=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\FileHnd.pas',0,1,860,22,865,0,0,,
+File_1=TSourceModule,'C:\Sw\WorkDir\Pcks\Externals\jedi\jvcl\archive\JvVCLUtils.pas',0,1,384,27,402,0,0,,
+File_2=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Graphics.pas',0,1,8680,1,8712,0,0,,
+File_3=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\win\Windows.pas',0,1,13089,1,13107,0,0,,{1
+File_4=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\SysUtils.pas',0,1,7284,1,7284,0,0,,{4
+File_5=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\Resource\Data.7z',0,1,1,1,1,0,0,,
+File_6=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas',0,1,94,1,112,0,0,,
+File_7=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',0,1,1,19,17,0,0,,
+File_8=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas',0,1,271,1,282,0,0,,
+File_9=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',0,1,398,111,410,0,0,,
+File_10=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ExtCtrls.pas',0,1,1,1,1,0,0,,
+File_11=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclEditConfigForm.pas',0,1,73,73,93,0,0,,
+File_12=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\SvcMgr.pas',0,1,89,27,106,0,0,,
+File_13=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\win\WinSvc.pas',0,1,287,28,306,0,0,,
+File_14=TSourceModule,'C:\Sw\WorkDir\Pcks\Externals\jedi\jwapi\Win32API\JwaWinSvc.pas',0,1,1843,14,1868,0,0,,
 
 [Modules]
-Module0=C:\Sw\WorkDir\Dprs\Delphi\MicroRelogio\Src\main.pas
-Module1=default.htm
-Module2=c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\rtl\win\Windows.pas
-Module3=c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\vcl\Keyboard.pas
+Module0=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas
+Module1=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\GPO2VPN.dproj
+Module2=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvBinaryResource.rc
+Module3=default.htm
 Count=4
 EditWindowCount=1
 
-[C:\Sw\WorkDir\Dprs\Delphi\MicroRelogio\Src\main.pas]
+[C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas]
 ModuleType=TSourceModule
-FormState=1
+FormState=0
 FormOnTop=0
+
+[C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\GPO2VPN.dproj]
+ModuleType=TBaseProject
+
+[C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvBinaryResource.rc]
+ModuleType=TSourceModule
 
 [default.htm]
 ModuleType=TURLModule
 
-[c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\rtl\win\Windows.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\vcl\Keyboard.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
 [EditWindow0]
 ViewCount=4
-CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\MicroRelogio\Src\main.pas
+CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas
 View0=0
 View1=1
 View2=2
@@ -70,36 +77,36 @@ WelcomePageURL=bds:/default.htm
 
 [View1]
 CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\MicroRelogio\Src\main.pas
+Module=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\GPO2VPN.dpr
 CursorX=1
-CursorY=38
-TopLine=16
+CursorY=34
+TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=C:\Sw\WorkDir\Dprs\Delphi\MicroRelogio\Src\main.pas
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\GPO2VPN.dpr
 
 [View2]
 CustomEditViewType=TEditView
-Module=c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\rtl\win\Windows.pas
-CursorX=20
-CursorY=33398
-TopLine=33392
-LeftCol=1
-Elisions=
-Bookmarks={1,19248,1}
-EditViewName=c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\rtl\win\Windows.pas
-
-[View3]
-CustomEditViewType=TEditView
-Module=c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\vcl\Keyboard.pas
-CursorX=15
-CursorY=336
-TopLine=323
+Module=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas
+CursorX=77
+CursorY=49
+TopLine=35
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\vcl\Keyboard.pas
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas
+
+[View3]
+CustomEditViewType=TEditView
+Module=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvBinaryResource.rc
+CursorX=1
+CursorY=1
+TopLine=1
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvBinaryResource.rc
 
 [Watches]
 Count=0
@@ -114,11 +121,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
+Width=5000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
+ClientWidth=5000
 ClientHeight=1574
 TBDockHeight=213
 LRDockWidth=13599
@@ -126,7 +133,8 @@ Dockable=1
 StayOnTop=0
 
 [Breakpoints]
-Count=0
+Count=1
+Breakpoint0='C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas',45,'',0,1,'',1,0,0,'',1,'','','',0,''
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -238,11 +246,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
+Width=5000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
+ClientWidth=5000
 ClientHeight=1574
 TBDockHeight=407
 LRDockWidth=4948
@@ -257,11 +265,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
+Width=5000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
+ClientWidth=5000
 ClientHeight=1574
 TBDockHeight=213
 LRDockWidth=7406
@@ -299,11 +307,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
+Width=5000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
+ClientWidth=5000
 ClientHeight=1574
 TBDockHeight=2056
 LRDockWidth=3479
@@ -337,11 +345,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
+Width=5000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
+ClientWidth=5000
 ClientHeight=1574
 TBDockHeight=2315
 LRDockWidth=2823
@@ -356,11 +364,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
+Width=5000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
+ClientWidth=5000
 ClientHeight=1574
 TBDockHeight=1269
 LRDockWidth=2823
@@ -375,11 +383,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=5000
+Width=10000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=5000
+ClientWidth=10000
 ClientHeight=1574
 TBDockHeight=1157
 LRDockWidth=3677
@@ -403,11 +411,11 @@ State=0
 Left=0
 Top=0
 Width=1318
-Height=4194
+Height=8833
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1318
-ClientHeight=4194
+ClientHeight=8833
 TBDockHeight=4880
 LRDockWidth=7151
 Dockable=1
@@ -442,11 +450,11 @@ State=0
 Left=0
 Top=0
 Width=1318
-Height=4194
+Height=8833
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1318
-ClientHeight=4194
+ClientHeight=8833
 TBDockHeight=4880
 LRDockWidth=5307
 Dockable=1
@@ -479,11 +487,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
+Width=5000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
+ClientWidth=5000
 ClientHeight=1574
 TBDockHeight=1546
 LRDockWidth=8745

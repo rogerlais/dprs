@@ -9,7 +9,7 @@ interface
 uses
     Windows, Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, svclTransBio, ExtCtrls,
     IdMessage, IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase,
-    IdMessageClient, IdSMTPBase, IdSMTP, FileInfo, XPThreads;
+    IdMessageClient, IdSMTPBase, IdSMTP, FileInfo, XPThreads, IdRawBase, IdRawClient, IdIcmpClient;
 
 type
     TBioFilesService = class(TService)
@@ -17,6 +17,7 @@ type
         smtpSender :    TIdSMTP;
         mailMsgNotify : TIdMessage;
         fvInfo :        TFileVersionInfo;
+        icmpclntMain :  TIdIcmpClient;
         procedure ServiceAfterInstall(Sender : TService);
         procedure ServiceBeforeInstall(Sender : TService);
         procedure ServiceCreate(Sender : TObject);
@@ -25,12 +26,15 @@ type
         procedure ServiceStop(Sender : TService; var Stopped : boolean);
         procedure ServiceContinue(Sender : TService; var Continued : boolean);
         procedure tmrCycleEventTimer(Sender : TObject);
+    procedure icmpclntMainReply(ASender: TComponent; const AReplyStatus: TReplyStatus);
     private
         { Private declarations }
         FSvcThread :    TXPNamedThread; // Dualidade entre o thread de cliente e de servidor
-        FLastLogCheck : Word;
-        procedure AddDestinations;
-        procedure CheckLogs();
+		 FLastLogCheck : Word;
+		 FLastPingReply : Boolean;
+		 procedure AddDestinations;
+		 procedure CheckLogs();
+		 function isIntranetConnected() : boolean;
     public
         class function LogFilePrefix() : string;
         constructor CreateNew(AOwner : TComponent; Dummy : Integer = 0); override;
@@ -47,7 +51,7 @@ implementation
 
 uses
     AppLog, WinReg32, FileHnd, svclConfig, svclUtils, WinnetHnd, APIHnd, svclEditConfigForm, Str_Pas,
-    IdEMailAddress, XPFileEnumerator, StrHnd, svclTCPTransfer;
+    IdEMailAddress, XPFileEnumerator, StrHnd, svclTCPTransfer, IdGlobal;
 
 {$R *.DFM}
 
@@ -132,12 +136,12 @@ begin
             try
                 logText.LoadFromFile(f.FullName);
                 dummy  := 1; // Sempre do inicio
-				 sentOK := not logText.FindPos('erro:', dummy, dummy);
-				 sentOK := sentOK and ( not logText.FindPos('Alarme:', dummy, dummy) );
-				 {TODO -oroger -cdsg : Idem acima para o caso de alarmes}
+                sentOK := not logText.FindPos('erro:', dummy, dummy);
+                sentOK := sentOK and (not logText.FindPos('Alarme:', dummy, dummy));
+                {TODO -oroger -cdsg : Idem acima para o caso de alarmes}
                 if (not sentOK) then begin
                     try
-                        Self.SendMailNotification(logText.Text);
+                        Self.SendMailNotification(logText.Text);   --para o caso de impossibilidade de transmissão fica no lugar
                         sentOK := True;
                     except
                         on E : Exception do begin // Apenas logar a falha de envio e continuar com os demais arquivos
@@ -178,6 +182,33 @@ begin
     Result := ServiceController;
 end;
 
+procedure TBioFilesService.icmpclntMainReply(ASender: TComponent; const AReplyStatus: TReplyStatus);
+begin
+	Self.FLastPingReply:=True;
+end;
+
+function TBioFilesService.isIntranetConnected : boolean;
+///Alerta: Método não thread safe
+var
+	x : Integer;
+begin
+	 Self.icmpclntMain.Protocol     := 1;
+	 Self.icmpclntMain.ProtocolIPv6 := 58;
+	 Self.icmpclntMain.IPVersion    := Id_IPv4;
+	 Self.icmpclntMain.PacketSize   := 32;
+	 Self.icmpclntMain.Host:=GlobalConfig.ServerName;
+	 Result:=False;
+	 Self.FLastPingReply:=Result;
+	 for x := 0 to 5 - 1 do  begin
+	 	Self.icmpclntMain.Send( GlobalConfig.ServerName );
+		Result:= Result or Self.FLastPingReply;
+		if ( Result ) then begin
+			Self.FLastPingReply:=False;
+			Break;
+		end;
+	 end;
+end;
+
 class function TBioFilesService.LogFilePrefix : string;
 begin
     Result := APP_SERVICE_NAME + '_' + TFileHnd.ExtractFilenamePure(ParamStr(0)) + '_';
@@ -185,6 +216,11 @@ end;
 
 procedure TBioFilesService.SendMailNotification(const NotificationText : string);
 begin
+	 {TODO -oroger -cdsg : Transformar metodp para retornar o sucesso da operacão}
+	 {TODO -oroger -cdsg : Verificar a conectividade com a intranet}
+	 if ( not Self.isIntranetConnected ) then begin
+	 	Exit;
+	 end;
     mailMsgNotify.ConvertPreamble := True;
     mailMsgNotify.AttachmentEncoding := 'UUE';
     mailMsgNotify.Encoding      := meDefault;
@@ -204,11 +240,17 @@ begin
 
     Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvInfo.FileVersion, WinnetHnd.GetComputerName(),
         FormatDateTime('yyyyMMDDhhmm', Now())]);
-	 Self.mailMsgNotify.Body.Text := NotificationText;
-	 {TODO -oroger -cdsg : Capturar o erro isolando a causa }
-    Self.smtpSender.Connect;
-    Self.smtpSender.Send(Self.mailMsgNotify);
-    Self.smtpSender.Disconnect(True);
+    Self.mailMsgNotify.Body.Text := NotificationText;
+    {TODO -oroger -cdsg : Capturar o erro isolando a causa }
+    try
+        Self.smtpSender.Connect;
+        Self.smtpSender.Send(Self.mailMsgNotify);
+        Self.smtpSender.Disconnect(True);
+    except
+        on E : Exception do begin
+            raise ESVCLException.Create('Falha enviando notificação: ' + E.Message);
+        end;
+    end;
 end;
 
 procedure TBioFilesService.ServiceAfterInstall(Sender : TService);
@@ -216,19 +258,19 @@ procedure TBioFilesService.ServiceAfterInstall(Sender : TService);
  /// Registra as informações de função deste serviço
  /// </summary>
 var
-	 Reg : TRegistryNT;
-	 svcType : Integer;
-	 svcKey : string;
+    Reg :     TRegistryNT;
+    svcType : Integer;
+    svcKey :  string;
 begin
-	 Reg := TRegistryNT.Create();
-	 try
-		svcKey := TFileHnd.ConcatPath([ 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services', Self.Name]);
-		 Reg.WriteFullString( svcKey + '\Description',
-			 'Replica os arquivos de dados biométricos para máquina primária, possibilitando o transporte centralizado.', True);
-		 Reg.ReadFullInteger(svcKey + '\Type', svcType );
-		 svcType := svcType or $100; //Nono bit para indicar interativo
-		 Reg.WriteFullInteger(svcKey + '\Type', svcType, True );
-	 finally
+    Reg := TRegistryNT.Create();
+    try
+        svcKey := TFileHnd.ConcatPath(['HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services', Self.Name]);
+        Reg.WriteFullString(svcKey + '\Description',
+            'Replica os arquivos de dados biométricos para máquina primária, possibilitando o transporte centralizado.', True);
+        Reg.ReadFullInteger(svcKey + '\Type', svcType);
+        svcType := svcType or $100; //Nono bit para indicar interativo
+        Reg.WriteFullInteger(svcKey + '\Type', svcType, True);
+    finally
         Reg.Free;
     end;
 end;
@@ -245,13 +287,13 @@ var
     Reg : TRegistryNT;
     lst : TStringList;
 begin
-	{TODO -oroger -cdsg : Remover dependencia de NetLogon e colocar a do cliente dns}
-	{TODO -oroger -cdsg : Inserir um lmtAlarm para envio de notificação}
-	 try
-		{TODO -oroger -cdsg : Não invocar dialogo para o caso de instalação automatica}
-		if ( not FindCmdLineSwitch( 'noconfig' ) ) then begin
-			TEditConfigForm.EditConfig; // Chama janela de configuração para exibição
-		end;
+    {TODO -oroger -cdsg : Remover dependencia de NetLogon e colocar a do cliente dns}
+    {TODO -oroger -cdsg : Inserir um lmtAlarm para envio de notificação}
+    try
+        {TODO -oroger -cdsg : Não invocar dialogo para o caso de instalação automatica}
+        if (not FindCmdLineSwitch('noconfig')) then begin
+            TEditConfigForm.EditConfig; // Chama janela de configuração para exibição
+        end;
     except
         on E : Exception do begin
             AppFatalError('Configurações do serviço não efetivadas'#13#10 + E.Message, 8666, True);
