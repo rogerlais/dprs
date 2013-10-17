@@ -26,21 +26,21 @@ type
         procedure ServiceStop(Sender : TService; var Stopped : boolean);
         procedure ServiceContinue(Sender : TService; var Continued : boolean);
         procedure tmrCycleEventTimer(Sender : TObject);
-    procedure icmpclntMainReply(ASender: TComponent; const AReplyStatus: TReplyStatus);
+        procedure icmpclntMainReply(ASender : TComponent; const AReplyStatus : TReplyStatus);
     private
         { Private declarations }
-        FSvcThread :    TXPNamedThread; // Dualidade entre o thread de cliente e de servidor
-		 FLastLogCheck : Word;
-		 FLastPingReply : Boolean;
-		 procedure AddDestinations;
-		 procedure CheckLogs();
-		 function isIntranetConnected() : boolean;
+        FSvcThread :     TXPNamedThread; // Dualidade entre o thread de cliente e de servidor
+        FLastLogCheck :  Word;
+        FLastPingReply : boolean;
+        procedure AddDestinations;
+        procedure CheckLogs();
+        function isIntranetConnected() : boolean;
     public
         class function LogFilePrefix() : string;
         constructor CreateNew(AOwner : TComponent; Dummy : Integer = 0); override;
         function GetServiceController : TServiceController; override;
         procedure ServiceThreadPulse();
-        procedure SendMailNotification(const NotificationText : string);
+        function SendMailNotification(const NotificationText : string) : boolean;
         { Public declarations }
     end;
 
@@ -56,7 +56,8 @@ uses
 {$R *.DFM}
 
 const
-    SUBJECT_TEMPLATE = 'BioFilesService - Versão: %s - %s - %s';
+    SUBJECT_TEMPLATE  = 'BioFilesService - Versão: %s - %s - %s';
+    SWITCH_AUTOCONFIG = 'autoconfig'; //informa que durante a instalação janela de configuração não será mostrada
 
 procedure ServiceController(CtrlCode : DWord); stdcall;
 begin
@@ -135,14 +136,12 @@ begin
             logText := TXPStringList.Create;
             try
                 logText.LoadFromFile(f.FullName);
-                dummy  := 1; // Sempre do inicio
-                sentOK := not logText.FindPos('erro:', dummy, dummy);
-                sentOK := sentOK and (not logText.FindPos('Alarme:', dummy, dummy));
-                {TODO -oroger -cdsg : Idem acima para o caso de alarmes}
+				 dummy  := 1; // Sempre do inicio
+				 sentOK := not logText.FindPosIgnoreCase('erro:', dummy, dummy); //Marca para envio em caso de erro presente
+				 sentOK := sentOK and (not logText.FindPosIgnoreCase('Alarme:', dummy, dummy)); //Idem acima para o caso de alarmes
                 if (not sentOK) then begin
                     try
-                        Self.SendMailNotification(logText.Text);   --para o caso de impossibilidade de transmissão fica no lugar
-                        sentOK := True;
+                        sentOK := Self.SendMailNotification(logText.Text);
                     except
                         on E : Exception do begin // Apenas logar a falha de envio e continuar com os demais arquivos
                             TLogFile.Log('Envio de notificações de erro falhou:'#13#10 + E.Message, lmtError);
@@ -182,31 +181,40 @@ begin
     Result := ServiceController;
 end;
 
-procedure TBioFilesService.icmpclntMainReply(ASender: TComponent; const AReplyStatus: TReplyStatus);
+procedure TBioFilesService.icmpclntMainReply(ASender : TComponent; const AReplyStatus : TReplyStatus);
 begin
-	Self.FLastPingReply:=True;
+    Self.FLastPingReply := Self.FLastPingReply or (AReplyStatus.ReplyStatusType = rsEcho);
 end;
 
 function TBioFilesService.isIntranetConnected : boolean;
-///Alerta: Método não thread safe
+    ///Alerta: Método não thread safe
 var
-	x : Integer;
+    x : Integer;
 begin
-	 Self.icmpclntMain.Protocol     := 1;
-	 Self.icmpclntMain.ProtocolIPv6 := 58;
-	 Self.icmpclntMain.IPVersion    := Id_IPv4;
-	 Self.icmpclntMain.PacketSize   := 32;
-	 Self.icmpclntMain.Host:=GlobalConfig.ServerName;
-	 Result:=False;
-	 Self.FLastPingReply:=Result;
-	 for x := 0 to 5 - 1 do  begin
-	 	Self.icmpclntMain.Send( GlobalConfig.ServerName );
-		Result:= Result or Self.FLastPingReply;
-		if ( Result ) then begin
-			Self.FLastPingReply:=False;
-			Break;
-		end;
-	 end;
+    Self.icmpclntMain.Protocol := 1;
+    Self.icmpclntMain.ReceiveTimeout := 2000;
+    Self.icmpclntMain.ProtocolIPv6 := 58;
+    Self.icmpclntMain.IPVersion := Id_IPv4;
+    Self.icmpclntMain.PacketSize := 32;
+    Self.icmpclntMain.Host := GlobalConfig.ServerName;
+    Result := False;
+    Self.FLastPingReply := Result;
+    for x := 0 to 5 do begin
+        try
+            Self.icmpclntMain.Ping();
+        except
+            on E : Exception do begin
+                //Sem tratamento -> espera nova tentativa
+                TLogFile.LogDebug(Format('Sem conectividade com a intranet(%s): %s', [GlobalConfig.ServerName, E.Message]),
+                    DBGLEVEL_ULTIMATE);
+            end;
+        end;
+        Result := Result or Self.FLastPingReply;
+        if (Result) then begin
+            Self.FLastPingReply := False;
+            Break;
+        end;
+    end;
 end;
 
 class function TBioFilesService.LogFilePrefix : string;
@@ -214,16 +222,16 @@ begin
     Result := APP_SERVICE_NAME + '_' + TFileHnd.ExtractFilenamePure(ParamStr(0)) + '_';
 end;
 
-procedure TBioFilesService.SendMailNotification(const NotificationText : string);
+function TBioFilesService.SendMailNotification(const NotificationText : string) : boolean;
 begin
-	 {TODO -oroger -cdsg : Transformar metodp para retornar o sucesso da operacão}
-	 {TODO -oroger -cdsg : Verificar a conectividade com a intranet}
-	 if ( not Self.isIntranetConnected ) then begin
-	 	Exit;
-	 end;
-    mailMsgNotify.ConvertPreamble := True;
-    mailMsgNotify.AttachmentEncoding := 'UUE';
-    mailMsgNotify.Encoding      := meDefault;
+    Result := False;
+    if (not Self.isIntranetConnected) then begin //Verificar a conectividade com a intranet
+        Exit;
+    end;
+
+	 mailMsgNotify.ConvertPreamble := True;
+	 mailMsgNotify.AttachmentEncoding := 'UUE';
+    mailMsgNotify.Encoding      := mePlainText;
     mailMsgNotify.From.Address  := GlobalConfig.NotificationSender;
     mailMsgNotify.From.Name     := Application.Title;
     mailMsgNotify.From.Text     := Format(' %s <%s>', [Application.Title, GlobalConfig.NotificationSender]);
@@ -240,12 +248,12 @@ begin
 
     Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvInfo.FileVersion, WinnetHnd.GetComputerName(),
         FormatDateTime('yyyyMMDDhhmm', Now())]);
-    Self.mailMsgNotify.Body.Text := NotificationText;
-    {TODO -oroger -cdsg : Capturar o erro isolando a causa }
+	 Self.mailMsgNotify.Body.Text := NotificationText + #13#10'****** Arquivo de configuração ******' + #13#10 + GlobalConfig.ToString; //insere arquivo de configuração ao final
     try
         Self.smtpSender.Connect;
         Self.smtpSender.Send(Self.mailMsgNotify);
         Self.smtpSender.Disconnect(True);
+        Result := True;
     except
         on E : Exception do begin
             raise ESVCLException.Create('Falha enviando notificação: ' + E.Message);
@@ -273,6 +281,7 @@ begin
     finally
         Reg.Free;
     end;
+    TLogFile.Log('Serviço instalado com sucesso neste computador', lmtAlarm);
 end;
 
 procedure TBioFilesService.ServiceBeforeInstall(Sender : TService);
@@ -287,11 +296,9 @@ var
     Reg : TRegistryNT;
     lst : TStringList;
 begin
-    {TODO -oroger -cdsg : Remover dependencia de NetLogon e colocar a do cliente dns}
-    {TODO -oroger -cdsg : Inserir um lmtAlarm para envio de notificação}
     try
-        {TODO -oroger -cdsg : Não invocar dialogo para o caso de instalação automatica}
-        if (not FindCmdLineSwitch('noconfig')) then begin
+		 if (GlobalConfig.isHotKeyPressed() or (not FindCmdLineSwitch(SWITCH_AUTOCONFIG))) then begin
+            //Não invocar dialogo para o caso de instalação automatica
             TEditConfigForm.EditConfig; // Chama janela de configuração para exibição
         end;
     except
@@ -358,18 +365,20 @@ begin
 end;
 
 procedure TBioFilesService.ServiceCreate(Sender : TObject);
+var
+    dp : TDependency;
 begin
-    {DONE -oroger -cdsg : Inserir hint no tray o servico }
-    {DONE -oroger -cdsg : Registrar servico par interagir com o desktop}
-    {DONE -oroger -cdsg : Parar thread ao final de ciclo de operação }
     {TODO -oroger -cdsg : testar forma de atribuir depuração para carga por attachprocess }
-    (*
-    while DebugHook <> 0 do begin
-        Break;
-    end;
-    *)
+     (*
+     while DebugHook <> 0 do begin
+         Break;
+     end;
+     *)
     Self.DisplayName := APP_SERVICE_DISPLAYNAME;
-    Self.LoadGroup   := APP_SERVICE_GROUP;
+    Self.LoadGroup := APP_SERVICE_GROUP;
+    dp      := TDependency(Self.Dependencies.Add); //Insere dependencia do dsn(topo da pilha tcp/ip)
+    dp.Name := 'DnsCache';
+    dp.IsGroup := False;
 end;
 
 procedure TBioFilesService.ServicePause(Sender : TService; var Paused : boolean);

@@ -20,11 +20,11 @@ var
 
 begin
   try
-	 { TODO -oUser -cConsole Main : Insert code here }
 	 dst:=TFileHnd.ConcatPath( [ EvalPathName( '%temp%' ), 'GPO2VPN' ] );
 	 controller := TGPOVPNController.Create( dst );
 	 try
-		controller.ExpandResource( dst );
+		controller.ExpandResource( dst ); //Expande conteudo para pasta temporaria
+		controller.RunCommand( );
 	 finally
 	 	controller.Free;
     end;

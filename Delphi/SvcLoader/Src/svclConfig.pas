@@ -35,69 +35,71 @@ type
         procedure SetPathError(const Value : string);
         procedure SetPathRetrans(const Value : string);
         procedure SetPathTransmitted(const Value : string);
-        function GetElo2TransBio : string;
-        procedure SetElo2TransBio(const Value : string);
-    public
-        property PathBio : string read GetPathBio write SetPathBio;
-        property PathTransmitted : string read GetPathTransmitted write SetPathTransmitted;
-        property PathError : string read GetPathError write SetPathError;
-        property PathRetrans : string read GetPathRetrans write SetPathRetrans;
-        property Elo2TransBio : string read GetElo2TransBio write SetElo2TransBio;
-    end;
+		 function GetElo2TransBio : string;
+		 procedure SetElo2TransBio(const Value : string);
+	 public
+		 property PathBio : string read GetPathBio write SetPathBio;
+		 property PathTransmitted : string read GetPathTransmitted write SetPathTransmitted;
+		 property PathError : string read GetPathError write SetPathError;
+		 property PathRetrans : string read GetPathRetrans write SetPathRetrans;
+		 property Elo2TransBio : string read GetElo2TransBio write SetElo2TransBio;
+	 end;
 
 
-    TBioReplicatorConfig = class(AppSettings.TBaseStartSettings)
-    private
-        _FLocalBackup :   string;
-        FTransbioConfig : TELOTransbioConfig;
-        function GetPathBioService : string;
-        function GetCycleInterval : Integer;
-        function GetDebugLevel : Integer;
-        function GetRunAsServer : boolean;
-        function GetNetServicePort : Integer;
-        function GetPathClientFullyBackup : string;
-        function GetPathClientOrderlyBackup : string;
-        function GetPathServerOrderedBackup : string;
-        function GetPathServerTransBio : string;
-        function GetServerName : string;
-        function GetPathTransbioConfigFile : string;
-        function GetNotificationSender : string;
-        procedure SetNotificationSender(const Value : string);
-        function GetNotificationList : string;
-        procedure SetNotificationList(const Value : string);
-        function GetPathServiceLog : string;
-        procedure SetRunAsServer(const Value : boolean);
-        procedure SetPathClientBioService(const Value : string);
-        procedure SetCycleInterval(const Value : Integer);
-        procedure SetServerName(const Value : string);
-        procedure SetPathServerTransBio(const Value : string);
-        procedure SetPathServerOrderedBackup(const Value : string);
-        procedure SetNetServicePort(const Value : Integer);
-        procedure SetPathTransbioConfigFile(const Value : string);
-        procedure SetPathClientFullyBackup(const Value : string);
-        procedure SetPathClientOrderlyBackup(const Value : string);
-        function GetPathServerFullyBackup : string;
-        procedure SetPathServerFullyBackup(const Value : string);
-        procedure SetDebugLevel(const Value : Integer);
-    public
-        constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
-        destructor Destroy; override;
-        property CycleInterval : Integer read GetCycleInterval write SetCycleInterval;
-        property DebugLevel : Integer read GetDebugLevel write SetDebugLevel;
-        property RunAsServer : boolean read GetRunAsServer write SetRunAsServer;
-        property NetServicePort : Integer read GetNetServicePort write SetNetServicePort;
-        property PathTransbioConfigFile : string read GetPathTransbioConfigFile write SetPathTransbioConfigFile;
-        property PathClientBioService : string read GetPathBioService write SetPathClientBioService;
-        property PathClientFullyBackup : string read GetPathClientFullyBackup write SetPathClientFullyBackup;
-        property PathClientOrderlyBackup : string read GetPathClientOrderlyBackup write SetPathClientOrderlyBackup;
-        property PathServerOrderedBackup : string read GetPathServerOrderedBackup write SetPathServerOrderedBackup;
-        property PathServerFullyBackup : string read GetPathServerFullyBackup write SetPathServerFullyBackup;
-        property PathServerTransBio : string read GetPathServerTransBio write SetPathServerTransBio;
-        property PathServiceLog : string read GetPathServiceLog;
-        property ServerName : string read GetServerName write SetServerName;
-        property TransbioConfig : TELOTransbioConfig read FTransbioConfig;
-        property NotificationSender : string read GetNotificationSender write SetNotificationSender;
-        property NotificationList : string read GetNotificationList write SetNotificationList;
+	 TBioReplicatorConfig = class(AppSettings.TBaseStartSettings)
+	 private
+		 _FLocalBackup :   string;
+		 FTransbioConfig : TELOTransbioConfig;
+		 function GetPathBioService : string;
+		 function GetCycleInterval : Integer;
+		 function GetDebugLevel : Integer;
+		 function GetRunAsServer : boolean;
+		 function GetNetServicePort : Integer;
+		 function GetPathClientFullyBackup : string;
+		 function GetPathClientOrderlyBackup : string;
+		 function GetPathServerOrderedBackup : string;
+		 function GetPathServerTransBio : string;
+		 function GetServerName : string;
+		 function GetPathTransbioConfigFile : string;
+		 function GetNotificationSender : string;
+		 procedure SetNotificationSender(const Value : string);
+		 function GetNotificationList : string;
+		 procedure SetNotificationList(const Value : string);
+		 function GetPathServiceLog : string;
+		 procedure SetRunAsServer(const Value : boolean);
+		 procedure SetPathClientBioService(const Value : string);
+		 procedure SetCycleInterval(const Value : Integer);
+		 procedure SetServerName(const Value : string);
+		 procedure SetPathServerTransBio(const Value : string);
+		 procedure SetPathServerOrderedBackup(const Value : string);
+		 procedure SetNetServicePort(const Value : Integer);
+		 procedure SetPathTransbioConfigFile(const Value : string);
+		 procedure SetPathClientFullyBackup(const Value : string);
+		 procedure SetPathClientOrderlyBackup(const Value : string);
+		 function GetPathServerFullyBackup : string;
+		 procedure SetPathServerFullyBackup(const Value : string);
+		 procedure SetDebugLevel(const Value : Integer);
+	 public
+		 constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
+		 destructor Destroy; override;
+		 property CycleInterval : Integer read GetCycleInterval write SetCycleInterval;
+		 property DebugLevel : Integer read GetDebugLevel write SetDebugLevel;
+		 property RunAsServer : boolean read GetRunAsServer write SetRunAsServer;
+		 property NetServicePort : Integer read GetNetServicePort write SetNetServicePort;
+		 property PathTransbioConfigFile : string read GetPathTransbioConfigFile write SetPathTransbioConfigFile;
+		 property PathClientBioService : string read GetPathBioService write SetPathClientBioService;
+		 property PathClientFullyBackup : string read GetPathClientFullyBackup write SetPathClientFullyBackup;
+		 property PathClientOrderlyBackup : string read GetPathClientOrderlyBackup write SetPathClientOrderlyBackup;
+		 property PathServerOrderedBackup : string read GetPathServerOrderedBackup write SetPathServerOrderedBackup;
+		 property PathServerFullyBackup : string read GetPathServerFullyBackup write SetPathServerFullyBackup;
+		 property PathServerTransBio : string read GetPathServerTransBio write SetPathServerTransBio;
+		 property PathServiceLog : string read GetPathServiceLog;
+		 property ServerName : string read GetServerName write SetServerName;
+		 property TransbioConfig : TELOTransbioConfig read FTransbioConfig;
+		 property NotificationSender : string read GetNotificationSender write SetNotificationSender;
+		 property NotificationList : string read GetNotificationList write SetNotificationList;
+		 function isHotKeyPressed() : boolean;
+		 function ToString() : string; override;
     end;
 
 var
@@ -116,7 +118,7 @@ const
     IE_NOTIFICATION_LIST   = 'Common\NotificationList';
     DV_NOTIFICATION_LIST   = 'sesop@tre-pb.jus.br';
     IE_STATION_SERVERNAME  = 'Client\ServerName';       //Nome do computador primario
-    DV_STATION_SERVERNAME  = 'bioreplic.tre-pb.gov.br'; {TODO -oroger -cdeploy : DNAME para o PDC da biometria externa}
+    DV_STATION_SERVERNAME  = 'bioreplic.tre-pb.gov.br'; //CNAME para o PDC da biometria externa neste momento
     IE_CLIENT_PATH_BIOSERVICE_BIO = 'Client\PathClientBioService.Bio';
     IE_STATION_PATH_ORDERLY_BACKUP = 'Client\PathClientOrderlyBackup';
     IE_STATION_PATH_FULLY_BACKUP = 'Client\PathClientFullyBackup';
@@ -376,6 +378,14 @@ begin
     Result  := Self.ReadStringDefault(IE_STATION_SERVERNAME, defName);
 end;
 
+function TBioReplicatorConfig.isHotKeyPressed : boolean;
+var
+    State : TKeyboardState;
+begin
+    GetKeyboardState(State);
+    Result := ((State[vk_Shift] and 128) <> 0);
+end;
+
 procedure TBioReplicatorConfig.SetPathClientFullyBackup(const Value : string);
 begin
     Self.WriteString(IE_STATION_PATH_FULLY_BACKUP, Value);
@@ -444,6 +454,19 @@ end;
 procedure TBioReplicatorConfig.SetServerName(const Value : string);
 begin
     Self.WriteString(IE_STATION_SERVERNAME, Value);
+end;
+
+function TBioReplicatorConfig.ToString : string;
+var
+    Lines : TStringList;
+begin
+    Lines := TStringList.Create;
+    try
+        Lines.LoadFromFile(Self.FIni.FileName);
+        Result := Lines.Text;
+	 finally
+		 Lines.Free;
+	 end;
 end;
 
 { TTransbioConfig }

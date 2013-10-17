@@ -1,35 +1,41 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\FileHnd.pas',0,1,860,22,865,0,0,,
-File_1=TSourceModule,'C:\Sw\WorkDir\Pcks\Externals\jedi\jvcl\archive\JvVCLUtils.pas',0,1,384,27,402,0,0,,
-File_2=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Graphics.pas',0,1,8680,1,8712,0,0,,
-File_3=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\win\Windows.pas',0,1,13089,1,13107,0,0,,{1
-File_4=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\SysUtils.pas',0,1,7284,1,7284,0,0,,{4
-File_5=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\Resource\Data.7z',0,1,1,1,1,0,0,,
-File_6=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas',0,1,94,1,112,0,0,,
-File_7=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',0,1,1,19,17,0,0,,
-File_8=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas',0,1,271,1,282,0,0,,
-File_9=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',0,1,398,111,410,0,0,,
-File_10=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ExtCtrls.pas',0,1,1,1,1,0,0,,
-File_11=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclEditConfigForm.pas',0,1,73,73,93,0,0,,
-File_12=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\SvcMgr.pas',0,1,89,27,106,0,0,,
-File_13=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\win\WinSvc.pas',0,1,287,28,306,0,0,,
-File_14=TSourceModule,'C:\Sw\WorkDir\Pcks\Externals\jedi\jwapi\Win32API\JwaWinSvc.pas',0,1,1843,14,1868,0,0,,
+File_0=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\APIHnd.pas',0,1,1,1,1,0,0,,
+File_1=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\FileHnd.pas',0,1,860,22,865,0,0,,
+File_2=TSourceModule,'C:\Sw\WorkDir\Pcks\Externals\jedi\jvcl\archive\JvVCLUtils.pas',0,1,384,27,402,0,0,,
+File_3=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\Graphics.pas',0,1,8680,1,8712,0,0,,
+File_4=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\win\Windows.pas',0,1,13089,1,13107,0,0,,{1
+File_5=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\SysUtils.pas',0,1,7284,1,7284,0,0,,{4
+File_6=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\Resource\Data.7z',0,1,1,1,1,0,0,,
+File_7=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas',0,1,94,1,112,0,0,,
+File_8=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas',0,1,1,19,17,0,0,,
+File_9=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas',0,1,271,1,282,0,0,,
+File_10=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas',0,1,398,111,410,0,0,,
+File_11=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\ExtCtrls.pas',0,1,1,1,1,0,0,,
+File_12=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclEditConfigForm.pas',0,1,73,73,93,0,0,,
+File_13=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\VCL\SvcMgr.pas',0,1,89,27,106,0,0,,
+File_14=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\win\WinSvc.pas',0,1,287,28,306,0,0,,
 
 [Modules]
-Module0=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas
+Module0=C:\Sw\WorkDir\Pcks\WinSysLib\Src\WinHnd.pas
 Module1=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\GPO2VPN.dproj
-Module2=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvBinaryResource.rc
-Module3=default.htm
-Count=4
+Module2=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas
+Module3=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvBinaryResource.rc
+Module4=default.htm
+Count=5
 EditWindowCount=1
 
-[C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas]
+[C:\Sw\WorkDir\Pcks\WinSysLib\Src\WinHnd.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\GPO2VPN.dproj]
 ModuleType=TBaseProject
+
+[C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvBinaryResource.rc]
 ModuleType=TSourceModule
@@ -38,12 +44,13 @@ ModuleType=TSourceModule
 ModuleType=TURLModule
 
 [EditWindow0]
-ViewCount=4
-CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas
+ViewCount=5
+CurrentEditView=C:\Sw\WorkDir\Pcks\WinSysLib\Src\WinHnd.pas
 View0=0
 View1=1
 View2=2
 View3=3
+View4=4
 PercentageSizes=1
 Create=1
 Visible=1
@@ -78,9 +85,9 @@ WelcomePageURL=bds:/default.htm
 [View1]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\GPO2VPN.dpr
-CursorX=1
-CursorY=34
-TopLine=1
+CursorX=23
+CursorY=27
+TopLine=5
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -89,15 +96,26 @@ EditViewName=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\GPO2VPN.dpr
 [View2]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas
-CursorX=77
-CursorY=49
-TopLine=35
+CursorX=45
+CursorY=57
+TopLine=42
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvUtils.pas
 
 [View3]
+CustomEditViewType=TEditView
+Module=C:\Sw\WorkDir\Pcks\WinSysLib\Src\WinHnd.pas
+CursorX=31
+CursorY=598
+TopLine=592
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Sw\WorkDir\Pcks\WinSysLib\Src\WinHnd.pas
+
+[View4]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\GPO2VPN\Src\gvBinaryResource.rc
 CursorX=1

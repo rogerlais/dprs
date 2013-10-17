@@ -9,18 +9,18 @@ unit gvUtils;
 interface
 
 uses
-    Classes, SysUtils, Windows, Graphics, FileHnd;
+	 Classes, SysUtils, Windows, Graphics, FileHnd, WinHnd;
 
 type
-    TGPOVPNController = class
-    private
-        FTempDir : string;
-    public
-        constructor Create(const ATempDir : string);
-        destructor Destroy; override;
-        function ExpandResource(const DestPath : string) : Integer;
-        function RunCommand(const Cmd : string) : Integer;
-    end;
+	 TGPOVPNController = class
+	 private
+		 FTempDir : string;
+	 public
+		 constructor Create(const ATempDir : string);
+		 destructor Destroy; override;
+		 function ExpandResource(const DestPath : string) : Integer;
+		 function RunCommand(const Cmd : string) : Integer;
+	 end;
 
 implementation
 
@@ -28,14 +28,14 @@ implementation
 
 constructor TGPOVPNController.Create(const ATempDir : string);
 begin
-    inherited Create;
-    Self.FTempDir := ATempDir;
+	 inherited Create;
+	 Self.FTempDir := ATempDir;
 end;
 
 destructor TGPOVPNController.Destroy;
 begin
-    //Limpar pasta temporaria
-    TFileHnd.RmDir(Self.FTempDir);
+	 //Limpar pasta temporaria
+	 TFileHnd.RmDir(Self.FTempDir);
     inherited;
 end;
 
@@ -54,7 +54,7 @@ end;
 
 function TGPOVPNController.RunCommand(const Cmd : string) : Integer;
 begin
-
+	WinHnd.WinExecAndWait32( 'wscript.exe ', , True );
 end;
 
 end.

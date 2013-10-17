@@ -1,11 +1,6 @@
 object BioFilesService: TBioFilesService
   OldCreateOrder = False
   OnCreate = ServiceCreate
-  Dependencies = <
-    item
-      Name = 'Netlogon'
-      IsGroup = False
-    end>
   DisplayName = 'SESOP TransBio Replicator'
   Interactive = True
   WaitHint = 1000
