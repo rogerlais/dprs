@@ -5,7 +5,7 @@ File_2=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source
 File_3=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\Protocols\IdMessage.pas',0,1,454,1,472,0,0,,
 File_4=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\System.pas',0,1,362,14,372,0,0,,
 File_5=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclEditConfigForm.pas',0,1,65,53,81,0,0,,
-File_6=TSourceModule,'C:\Sw\WorkDir\Pcks\StFLib\Src\AppSettings.pas',0,1,860,1,868,0,0,,{1,1629,3}
+File_6=TSourceModule,'C:\Sw\WorkDir\Pcks\StFLib\Src\AppSettings.pas',0,1,860,1,868,0,0,,{1
 File_7=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\AppLog.pas',0,1,310,90,323,0,0,,
 File_8=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.dfm',0,1,1,1,1,0,0,,
 File_9=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdStack.pas',0,1,661,1,679,0,0,,
@@ -16,24 +16,27 @@ File_13=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\sourc
 File_14=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdGlobal.pas',0,1,4168,1,4190,0,0,,
 
 [Modules]
-Module0=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
-Module1=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
-Module2=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
-Module3=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
-Module4=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20
-Module5=default.htm
+Module0=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
+Module1=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
+Module2=default.htm
+Module3=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
+Module4=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas
+Module5=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20
 Count=6
 EditWindowCount=1
-
-[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
+
+[C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=0
+
+[default.htm]
+ModuleType=TURLModule
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas]
 ModuleType=TSourceModule
@@ -42,18 +45,15 @@ FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTCPTransfer.pas]
 ModuleType=TSourceModule
-FormState=0
+FormState=1
 FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Docs\ModelSupport_SvcMDL\Biometria.txvUseCaseDiagram20]
 ModuleType=TTogetherDocModule
 
-[default.htm]
-ModuleType=TURLModule
-
 [EditWindow0]
 ViewCount=6
-CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclBiometricFiles.pas
+CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
 View0=0
 View1=1
 View2=2
@@ -120,9 +120,9 @@ EditViewName=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclTransBio.pas
 [View4]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas
-CursorX=1
-CursorY=470
-TopLine=444
+CursorX=81
+CursorY=310
+TopLine=297
 LeftCol=1
 Elisions=
 Bookmarks={1,463,1}
@@ -331,12 +331,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=5000
-Height=1806
+Width=4979
+Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=5000
-ClientHeight=1806
+ClientWidth=4979
+ClientHeight=1574
 TBDockHeight=778
 LRDockWidth=3479
 Dockable=1
@@ -388,11 +388,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
+Width=5000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
+ClientWidth=5000
 ClientHeight=1574
 TBDockHeight=2315
 LRDockWidth=2823
@@ -426,11 +426,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=5000
+Width=10000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=5000
+ClientWidth=10000
 ClientHeight=1574
 TBDockHeight=1157
 LRDockWidth=3677
@@ -682,7 +682,7 @@ LRDockWidth=2755
 Dockable=1
 StayOnTop=0
 TabPosition=1
-ActiveTabID=ToDo List
+ActiveTabID=MessageView
 TabDockClients=MessageView,ToDo List
 
 [DockSite4]
@@ -706,7 +706,7 @@ LRDockWidth=8250
 Dockable=1
 StayOnTop=0
 TabPosition=1
-ActiveTabID=FindReferencsForm
+ActiveTabID=LocalVarsWindow
 TabDockClients=LocalVarsWindow,WatchWindow,CallStackWindow,ThreadStatusWindow,BreakpointWindow,DebugLogView,FindReferencsForm,RefactoringForm
 
 [ActiveProject]

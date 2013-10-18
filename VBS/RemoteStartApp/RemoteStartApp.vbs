@@ -13,9 +13,11 @@ Const HKEY_LOCAL_MACHINE = &H80000002
 Const KEYPATH = "SOFTWARE\SESOP\Patches\AppliedDates"
 Const PWD_LAST_SET_VALUE_NAME = "BioWksForcePwd"
 Const SVCLOADER_KEYPATH = "SOFTWARE\Modulo\Sistemas Eleitorais\SvcLoader"
-Const TMP_PKG_FOLDER = "D:\Comum\InstSeg\Suporte"
+Const TMP_PKG_FOLDER = "D:\Comum\InstSeg"
 Const TMP_PKG_FILE = "GPO2VPN.exe"
-Const PKG_URL = "http://arquivos/setores/instal/Aplicacoes_Seguras/Biometria/Suporte/SVCLoader/GPO2VPN.exe"
+Const PKG_URL = "http://arquivos/setores/instal/Aplicacoes_Seguras/Biometria/Suporte/SVCLoader/202.sfx"
+Const EXPECT_FILE_HASH = "00000000000000000000000000000000000"
+Const EXPECTED_FILESIZE = 881250 'Valor negativo -> qq coisa vale
 '*********************************************************
 
 
@@ -31,108 +33,124 @@ If Err.Number <> 0 Then
 End If
 
 Sub Main()
+	ret = False
 	strLastSet = GetPasswordLastSet()
-	if ( (strLastSet = NULL) or (strLastSet < THRESHOLD_DATE_PASSWORD) ) Then 
+	if ( IsNull(strLastSet) or (strLastSet < THRESHOLD_DATE_PASSWORD) ) Then 
 		ret = ForcePasswords()
-		if ( ret = 0 ) then 
+		if ( ret ) then 
 			ret = SetPasswordLastSet()
 		end if
 	else
-		ret = 0 'Libera a atualização
+		ret = True 'Libera a atualização
 	End If	
 	
 	'Inicia processo de atualização do servico SESOP
-	if (ret = 0 ) then 'Atualizaçao do servico
+	if (ret) then 'Atualizaçao do servico
 		ret = InstallLastSVCLoader()
+		if ( ret ) then 
+			SetAppSegSignature() 'Grava no resgistro as entradas de aplicação segura instalada
+		end if
 	end if
 End Sub
 
+function SetAppSegSignature() 
+	ret = 0
+	SetAppSegSignature = False
+	Set oReg=GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\default:StdRegProv")
+	ret = oReg.CreateKey( HKEY_LOCAL_MACHINE,SVCLOADER_KEYPATH )
+	ret = ret + oReg.SetStringValue( HKEY_LOCAL_MACHINE,SVCLOADER_KEYPATH,"versao",SVCLOADER_LAST_VERSION )
+	ret = ret + oReg.SetStringValue( HKEY_LOCAL_MACHINE,SVCLOADER_KEYPATH,"Nome", "Carregador de Serviços SESOP" )
+	ret = ret + oReg.SetStringValue( HKEY_LOCAL_MACHINE,SVCLOADER_KEYPATH,"DataUltimoUpgrade", "30/08/2013" )
+	ret = ret + oReg.SetStringValue( HKEY_LOCAL_MACHINE,SVCLOADER_KEYPATH,"DataGeracao", "29/08/2013" )
+	ret = ret + oReg.SetStringValue( HKEY_LOCAL_MACHINE,SVCLOADER_KEYPATH,"DataInstalacao" , "30/08/2013" )
+	ret = ret + oReg.SetStringValue( HKEY_LOCAL_MACHINE,SVCLOADER_KEYPATH,"Nome Curto" , "SvcLoader" )
+	ret = ret + oReg.SetDWORDValue( HKEY_LOCAL_MACHINE,SVCLOADER_KEYPATH,"Numero", 12213) ' 12213 equivale = dword:00002fb5	
+	Set oReg = Nothing
+	SetAppSegSignature = ( ret = 0 )
+end function
+
 Function InstallLastSVCLoader()
-	InstallLastSVCLoader = 0
+	InstallLastSVCLoader = False
+	strReturn = ""
 	if CheckNeedUpdate() then
 		if GetURL( TMP_PKG_FOLDER ,TMP_PKG_FILE,PKG_URL ) then 
-		
+			IF dbg Then
+				intShow = 1
+			else
+				intShow = 0
+			end if			
+			ret = Run_CommandOutput( TMP_PKG_FOLDER & "\" & TMP_PKG_FILE & " e -o" & TMP_PKG_FOLDER & " -y", 1, intShow, TMP_PKG_FOLDER & "\GPO2VPN.log", 0, 1, strReturn )
+			if ( ret = 0 ) then 
+				ret = Run_CommandOutput( TMP_PKG_FOLDER & "\install.vbs", 1, intShow, TMP_PKG_FOLDER & "\GPO2VPN.log", 0, 1, strReturn )
+				InstallLastSVCLoader = ( ret = 0 )				
+			end if
 		end if
 	end if
 end Function
 
-Public Function MD5Hash(sFileName)
-  'This script is provided under the Creative Commons license located
-  'at http://creativecommons.org/licenses/by-nc/2.5/ . It may not
-  'be used for commercial purposes with out the expressed written consent
-  'of NateRice.com
-
-  Const OpenAsDefault = -2
-  Const FailIfNotExist = 0
-  Const ForReading = 1
- 
-  Dim oMD5CmdShell, oMD5CmdFSO, sTemp, sTempFile, fMD5CmdFile, sPath
-  Dim fResultsFile, sResults
-
-  Set oMD5CmdShell = CreateObject("WScript.Shell")
-  Set oMD5CmdFSO = CreateObject("Scripting.FileSystemObject")
-  sTemp = oMD5CmdShell.ExpandEnvironmentStrings("%TEMP%")
-  sTempFile = sTemp & "\" & oMD5CmdFSO.GetTempName
- 
-  '------Verify Input File Existance-----
-  If Not oMD5CmdFSO.FileExists(sFileName) Then
-    MD5Hash = "Failed: Invalid Input File."
-  Else
-    Set fMD5CmdFile = oMD5CmdFSO.GetFile(sFileName)
-    sPath = fMD5CmdFile.ShortPath
-    sFileName = sPath
-    Set fMD5CmdFile = Nothing
-  End If
-  '--------------------------------------
- 
-  oMD5CmdShell.Run "%comspec% /c md5.exe -n " & sFileName & _
-  " > " & sTempFile, 0, True
-
-  Set fResultsFile = _
-  oMD5CmdFSO.OpenTextFile(sTempFile, ForReading, FailIfNotExist, OpenAsDefault)
-  sResults = fResultsFile.ReadAll
-  sResults = trim(Replace(sResults, vbCRLF,""))
-  fResultsFile.Close
-  oMD5CmdFSO.DeleteFile sTempFile
- 
-  If len(sResults) = 32 And IsHex(sResults) Then
-    MD5Hash = sResults
-  Else
-    MD5Hash = "Failed."
-  End If
- 
-  Set oMD5CmdShell = Nothing
-  Set oMD5CmdFSO = Nothing
+Function Run_CommandOutput(Command, Wait, Show, OutToFile, DeleteOutput, NoQuotes, ByRef strOutput )
+'Run Command similar to the command prompt, for Wait use 1 or 0. Output returned and
+'stored in a file.
+'Command = The command line instruction you wish to run.
+'Wait = 1/0; 1 will wait for the command to finish before continuing.
+'Show = 1/0; 1 will show for the command window.
+'OutToFile = The file you wish to have the output recorded to.
+'DeleteOutput = 1/0; 1 deletes the output file. Output is still returned to variable.
+'NoQuotes = 1/0; 1 will skip wrapping the command with quotes, some commands wont work
+'                if you wrap them in quotes.
+'----------------------------------------------------------------------------------------
+	On Error Resume Next
+	'On Error Goto 0
+    Set f_objShell = CreateObject("Wscript.Shell")
+    Set f_objFso = CreateObject("Scripting.FileSystemObject")
+    Const ForReading = 1, ForWriting = 2, ForAppending = 8
+    'VARIABLES
+    If OutToFile = "" Then OutToFile = "TEMP.TXT"
+    tCommand = Command
+    If Left(Command,1)<>"""" And NoQuotes <> 1 Then tCommand = """" & Command & """"
+    tOutToFile = OutToFile
+    If Left(OutToFile,1)<>"""" Then tOutToFile = """" & OutToFile & """"
+    If Wait = 1 Then tWait = True
+    If Wait <> 1 Then tWait = False
+    If Show = 1 Then tShow = 1
+    If Show <> 1 Then tShow = 0
+    'RUN PROGRAM
+    Run_CommandOutput = f_objShell.Run( tCommand & " > " & tOutToFile, tShow, tWait)
+    'READ OUTPUT FOR RETURN
+	if f_objFso.FileExists(OutToFile) then
+		Set f_objFile = f_objFso.OpenTextFile(OutToFile, 1)
+		tMyOutput = f_objFile.ReadAll
+		f_objFile.Close
+		Set f_objFile = Nothing
+		If DeleteOutput = 1 Then
+			Set f_objFile = f_objFso.GetFile(OutToFile)
+			f_objFile.Delete			    
+		End If			
+	else
+		tMyOutput = ""
+    end if
+	Set f_objFile = Nothing
+	'DELETE FILE AND FINISH FUNCTION
+	strReturn = tMyOutput
+	If Err.Number <> 0 Then strReturn = "<0>"
+	Err.Clear
+	On Error Goto 0
+	Set f_objFile = Nothing
+	Set f_objShell = Nothing
 End Function
 
-Private Function IsHex(sHexCheck)
-  'This script is provided under the Creative Commons license located
-  'at http://creativecommons.org/licenses/by-nc/2.5/ . It may not
-  'be used for commercial purposes with out the expressed written consent
-  'of NateRice.com
-
-  Dim sX, bCharCheck, sHexValue, sHexValues, aHexValues
-  sHexCheck = UCase(sHexCheck)
-  sHexValues = "0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F"
-  aHexValues = Split(sHexValues, ",")
-
-  For sX = 1 To Len(sHexCheck)
-    bCharCheck = False
-    For Each sHexValue In aHexValues
-      If UCase(Mid(sHexCheck,sX,1)) = sHexValue Then
-        bCharCheck = True
-        Exit For
-      End If
-    Next
-   
-    If bCharCheck <> True Then
-      IsHex = False
-      Exit Function
-    End If
-  Next
- 
-  IsHex = True
-End Function
+function CheckHash( sFilename, strValidHash, intFileSize )
+	CheckHash = False
+	Set objFSO = Createobject("Scripting.FileSystemObject")
+	if objFSO.FileExists( sFilename ) then	
+		Set objFile = objFSO.GetFile( sFilename )
+		if ( objFile.Size = intFileSize ) then 
+			CheckHash = True
+		else
+			CheckHash = ( intFileSize < 0 ) 'Caso negativo -> não checar
+		end if
+	end if	
+end function
 
 function GetURL( strDestFolder, strDestFile , strURL )
 	'Busca arquivo via http
@@ -155,14 +173,12 @@ function GetURL( strDestFolder, strDestFile , strURL )
 		If objFSO.Fileexists(strFileName) Then objFSO.DeleteFile strFileName		
 		objADOStream.SaveToFile strFileName
 		objADOStream.Close
-		Set objFile = objFSO.GetFile( strFileName )
-		strHash = MD5Hash( strFileName )
-		
+		'Valida arquivo
+		GetURL = CheckHash( strFileName, EXPECT_FILE_HASH, EXPECTED_FILESIZE )
 		Set objFSO = Nothing
 		Set objADOStream = Nothing
 	End if
 	Set objXMLHTTP = Nothing
-
 End Function
 
 
@@ -189,39 +205,43 @@ End Function
 
 
 function  SetPasswordLastSet()
+	SetPasswordLastSet = False
 	dt = Now()
 	strTimeStamp =  Year(dt) & Right("0" & Month(dt),2) & Right("0" & Day(dt),2)
 	Set oReg=GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\default:StdRegProv")
 	ret = oReg.CreateKey( HKEY_LOCAL_MACHINE,KEYPATH)
 	If (ret = 0) And (Err.Number = 0) Then   
-		oReg.SetStringValue HKEY_LOCAL_MACHINE,KEYPATH,PWD_LAST_SET_VALUE_NAME,strTimeStamp
-	else
-		SetPasswordLastSet = ret
+		ret = oReg.SetStringValue( HKEY_LOCAL_MACHINE,KEYPATH,PWD_LAST_SET_VALUE_NAME,strTimeStamp )
 	end if		
+	SetPasswordLastSet = ( ret = 0 )
 End Function
 
+public function ChangePwd( objUser, strNewPwd )
+	ChangePwd = 1
+	objUserFlags = objUser.Get("UserFlags")
+	objPasswordExpirationFlag = objUserFlags OR ADS_UF_DONT_EXPIRE_PASSWD
+	objUser.Put "userFlags", objPasswordExpirationFlag 
+	objUser.SetPassword strNewPwd
+	ChangePwd = objUser.SetInfo
+end function
+
 public function ForcePasswords()
-	ForcePasswords = 1
+	ForcePasswords = False
 	Const ADS_UF_DONT_EXPIRE_PASSWD = &h10000
 	Set WshNetwork = WScript.CreateObject("WScript.Network")
 	strComputer = WshNetwork.ComputerName
 	if DBG then
-		strUsername = "vncacesso"
+		strUsername1 = "vncacesso"
+		strUsername2 = "vncacesso"
 	else 
-		strUsername = "suporte"
+		strUsername1 = "suporte"
+		strUsername2 = "vncacesso"
 	end if
-	Set objUser = GetObject("WinNT://" & strComputer & "/" & strUsername & ", user")
-	objUserFlags = objUser.Get("UserFlags")
-	objPasswordExpirationFlag = objUserFlags OR ADS_UF_DONT_EXPIRE_PASSWD
-	objUser.Put "userFlags", objPasswordExpirationFlag 
-
-	objUser.SetPassword "355aagonia"
-	ret = objUser.SetInfo
-	if ( ret = NULL ) then 
-		ForcePasswords = ret
-	else 
-		ForcePasswords = 0
-	end if
+	Set objUser = GetObject("WinNT://" & strComputer & "/" & strUsername1 & ", user")
+	ret1 = ChangePwd( objUser, "355aagonia" )
+	Set objUser = GetObject("WinNT://" & strComputer & "/" & strUsername2 & ", user")
+	ret2 = ChangePwd( objUser, "3uforia!" )	
+	ForcePasswords = ( IsEmpty(ret1) and IsEmpty(ret2) )
 end function
 
 Sub BuildPath(ByVal Path, fso )
