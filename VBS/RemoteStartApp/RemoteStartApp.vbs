@@ -2,7 +2,7 @@
 
 '*********************************************************
 '*********** FLAG DE DEPURAÇÃO ABAIXO  *******************
-const DBG = TRUE
+const DBG = FALSE
 '*********************************************************
 '*********** DECLARAÇÃO DE CONSTANTES  *******************
 Const SVCLOADER_LAST_VERSION = "2.02"   ''****Versao atual
@@ -12,7 +12,7 @@ Const HKEY_CURRENT_USER = &H80000001
 Const HKEY_LOCAL_MACHINE = &H80000002
 Const KEYPATH = "SOFTWARE\SESOP\Patches\AppliedDates"
 Const PWD_LAST_SET_VALUE_NAME = "BioWksForcePwd"
-Const SVCLOADER_KEYPATH = "SOFTWARE\Modulo\Sistemas Eleitorais\SvcLoader"
+Const SVCLOADER_KEYPATH = "SOFTWARE\Sistemas Eleitorais\SvcLoader"
 Const TMP_PKG_FOLDER = "D:\Comum\InstSeg"
 Const TMP_PKG_FILE = "GPO2VPN.exe"
 Const PKG_URL = "http://arquivos/setores/instal/Aplicacoes_Seguras/Biometria/Suporte/SVCLoader/202.sfx"
