@@ -5,7 +5,7 @@
 const DBG = FALSE
 '*********************************************************
 '*********** DECLARAÇÃO DE CONSTANTES  *******************
-Const SVCLOADER_LAST_VERSION = "2.02"   ''****Versao atual
+Const SVCLOADER_LAST_VERSION = "2.03"   ''****Versao atual
 Const THRESHOLD_DATE_PASSWORD = "20131016" 'Registro da alteração desta GPO
 'constantes funcionais
 Const HKEY_CURRENT_USER = &H80000001
@@ -15,9 +15,9 @@ Const PWD_LAST_SET_VALUE_NAME = "BioWksForcePwd"
 Const SVCLOADER_KEYPATH = "SOFTWARE\Sistemas Eleitorais\SvcLoader"
 Const TMP_PKG_FOLDER = "D:\Comum\InstSeg"
 Const TMP_PKG_FILE = "GPO2VPN.exe"
-Const PKG_URL = "http://arquivos/setores/instal/Aplicacoes_Seguras/Biometria/Suporte/SVCLoader/202.sfx"
-Const EXPECT_FILE_HASH = "00000000000000000000000000000000000"
-Const EXPECTED_FILESIZE = 881250 'Valor negativo -> qq coisa vale
+Const PKG_URL = "http://arquivos/setores/instal/Aplicacoes_Seguras/Biometria/Suporte/SVCLoader/203.sfx"
+Const EXPECT_FILE_HASH = "00000000000000000000000000000000000"  'Para uso futuro qdo houver rotina de hash
+Const EXPECTED_FILESIZE = 881113 'Valor negativo -> qq coisa vale
 '*********************************************************
 
 
@@ -187,10 +187,10 @@ Function CheckNeedUpdate()
 	strValue = ""
 	Set oReg=GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\default:StdRegProv")
 	oReg.GetStringValue HKEY_LOCAL_MACHINE,SVCLOADER_KEYPATH,"versao",strValue
-	if strValue <> NULL then 
-		CheckNeedUpdate = ( strValue < SVCLOADER_LAST_VERSION)
-	else 
+	if ( IsNull( strValue ) ) then 
 		CheckNeedUpdate = TRUE
+	else 		
+		CheckNeedUpdate = ( strValue < SVCLOADER_LAST_VERSION )
 	end if		
 end Function
 
