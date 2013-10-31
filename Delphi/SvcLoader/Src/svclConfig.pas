@@ -285,17 +285,16 @@ begin
         if ImgVolume = EmptyStr then begin
             msg := 'Impossível determinar o volume de imagens deste computador'#13 +
                 'Valor deve ser preinformado na configuração inicial!';
-            TLogFile.Log(msg, lmtError);
-            MessageBoxW(0, PWideChar(msg), 'Falha de setup', MB_OK + MB_ICONSTOP + MB_TOPMOST);
-        end;
-         {$IFDEF DEBUG}
-        Self._FLocalBackup := DV_DBG_STATION_PATH_FULLY_BACKUP;
-           {$ELSE}
-		  if ( ImgVolume <> EmptyStr ) then begin
-				Self._FLocalBackup := ImgVolume + ':\BioFiles\Backup.Full'; //Unidade de imagens adcionada a caminho fixo
-		  end else begin
-				Self._FLocalBackup := 'D:\AplicTRE\Suporte\BioFiles\Backup.Full'; //Unidade de imagens adcionada a caminho fixo
-		  end;
+            TLogFile.Log(msg, lmtAlarm);
+		 end;
+		 {$IFDEF DEBUG}
+		 Self._FLocalBackup := DV_DBG_STATION_PATH_FULLY_BACKUP;
+		 {$ELSE}
+		 if ( ImgVolume <> EmptyStr ) then begin
+			Self._FLocalBackup := ImgVolume + ':\BioFiles\Backup.Full'; //Unidade de imagens adcionada a caminho fixo
+		 end else begin
+			Self._FLocalBackup := 'D:\AplicTRE\Suporte\BioFiles\Backup.Full'; //Unidade de imagens adcionada a caminho fixo
+		 end;
 		 {$ENDIF}
         Self.WriteString(IE_STATION_PATH_FULLY_BACKUP, Self._FLocalBackup);
     end;

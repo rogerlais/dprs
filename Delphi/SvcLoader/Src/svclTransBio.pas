@@ -349,8 +349,8 @@ begin
             on E : Exception do begin
                 TLogFile.Log('Ciclo de organização de arquivos do servidor de envio falhou: ' + E.Message, lmtError);
             end;
-		 end;
-        Self.Suspended:=True; //Libera cpu até novo ciclo
+        end;
+        Self.Suspended := True; //Libera cpu até novo ciclo
     end;
 end;
 
@@ -407,8 +407,17 @@ begin
     DestPath := TFileHnd.ConcatPath([GlobalConfig.PathServerFullyBackup, sy, sm, sd]);
     ForceDirectories(DestPath);
     if (not MoveFile(PChar(SrcFile.FullName), PChar(DestPath + '\' + SrcFile.Name))) then begin
-        TLogFile.Log('Erro movendo arquivo para o repositório definitivo no computador primário'#13 +
-            SysErrorMessage(GetLastError()));
+        TLogFile.Log('Impossível mover arquivo para o repositório definitivo no computador primário'#13 +
+            Format('Possível causa: arquivo(%S) retransmitido'#13#10'Razão: = %s', [SrcFile.Name, SysErrorMessage(GetLastError())]),
+            lmtWarning);
+        DestPath := TFileHnd.NextFamilyFilename(DestPath); //Gera nome alternativo
+        if (not MoveFile(PChar(SrcFile.FullName), PChar(DestPath))) then begin
+            TLogFile.Log(
+                'Falha movendo arquivo transmitido para o repositório definitivo do computador primário'#13#10 +
+                Format('Origem = %s'#13#10'Destino = %s'#13#10'Razão: %s', [SrcFile.FullName, DestPath,
+                SysErrorMessage(GetLastError())]),
+                lmtError);
+        end;
     end;
 end;
 

@@ -1,0 +1,52 @@
+Objetivos: 
+1 - Implantar uma versão, seja por instalação limpa, seja por atualização nos computadores da STRE
+2 - Atualizar futuras versões a partir do mesmo mecanismo
+3 - Dispor modelos e configurações
+4 - Outros a definir
+
+Requisitos:
+1 - Processo será disparado por GPO
+2 - A versão anterior será desinstalada e as configurações de usuário anteriores serão substituídas
+3 - Os modelos de documentos será forçado e definidos por <definir> a serem baixados de repositório dinâmico
+
+
+
+Fluxo primário:
+1 - Checa-se a versão da GPO com a assinatura registrada na máquina
+	1.1 - Patch atual ainda não aplicado com sucesso: Fluxo segue para a execução normal.
+	1.2 - Em caso de versão igual ou superior termina-se a execução.
+2 - Todos os arquivos necessários para a continuidade da execução são baixados a partir do repositório via http e checados antes de continuar. 
+	2.1 - Para o caso de algum evento impeditivo ocorrer mensagem será enviada para registro de log [E1]
+3 - Caso não se possa atualizar a instalação anterior será removida[E2].
+	3.1 - Casos de impossibilidade de atualização:
+	a) Versão anterior a 3.2
+	b) <a definir>
+4 - Todos os perfis de usuários terão os dados de aplicativos(subperfil) movidos para uma pasta temporária e compactados
+
+
+5 - Após confirmado o sucesso das operações acima o arquivo é movido da pasta de aquisição para uma pasta de backup de baixa prioridade, onde o caminho será sufixado com a data de geração do arquivo(yyyymmdd). Havendo duplicidade dos arquivos locais, geralmente entre a pasta bioservice e as demais, os duplicados serão apagados
+6 - Ao final do ciclo, opcionalmente podemos ter um agrupamento baseado em algum critério de modo a gerar mídia para armazenamento pela zona a longo prazo.
+
+Exceções:
+E1 - Falha de deslocamento para a pasta de transmissão local:
+1 - Arquivo ignorado neste ciclo, nova tentativa no próximo ciclo.
+
+E2 - Falha na cópia para a pasta de transmissão do computador primário:
+1 - Informa ao cliente da falha
+2 - Arquivo ignorado neste ciclo e reprocessado no próximo.
+3 - Notificação do erro crítico no servidor para equipe de suporte
+
+E3 - Arquivos de mesmo nome mas com conteúdo diferente
+1 - Envia-se o encontrado na pasta BioService e renomeia o outro com sufixo"_divergent" 
+
+Requisitos:
+1 - Porta do serviço aberta no computador primário com acesso de escrita para o local dos arquivos transmitidos.
+2 - Acesso para escrita/deleção nas pastas de operação do computador local, idem no servidor.
+
+CreatePrimaryBackup:
+Descrição:
+O serviço ao rodar no computador primário se aterá apenas a coletar os arquivos localizados na pasta de arquivos transmitidos(\trans) e mover os arquivos lá encontrados para a pasta de backup, a qual será sufixada com a data de transmissão(yyyymmdd)
+Fluxo primário:
+1 - A cada ciclo, enumera-se os arquivos transmitidos pelo transbio
+2 - A cada arquivo enumerado é gerado um novo nome completo composto pela pasta base reservada para o backup acrescido da data do sistema mais o nome original do arquivo
+3 - O arquivo será movido para o novo local
