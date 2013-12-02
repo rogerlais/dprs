@@ -13,9 +13,14 @@ type
     acttbMainForm: TActionToolBar;
     ilMain: TImageList;
     actmgrMain: TActionManager;
-    Action1: TAction;
+    actReadClipboard: TAction;
+    actConfig: TAction;
+    actLocate: TAction;
+    procedure dbgrdMainTitleClick(Column: TColumn);
+	 procedure FormShow(Sender: TObject);
   private
-    { Private declarations }
+	 { Private declarations }
+	 procedure CreateFilterControls();
   public
     { Public declarations }
   end;
@@ -26,5 +31,26 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TForm1.CreateFilterControls;
+var
+	x : Integer;
+	c : TEdit;
+begin
+	for x := 0 to Self.dbgrdMain.Columns.Count - 1 do begin
+
+
+   end;
+end;
+
+procedure TForm1.dbgrdMainTitleClick(Column: TColumn);
+begin
+	{TODO -oroger -cdsg : Identificar coluna e ordenar por ela}
+end;
+
+procedure TForm1.FormShow(Sender: TObject);
+begin
+	Self.CreateFilterControls();
+end;
 
 end.

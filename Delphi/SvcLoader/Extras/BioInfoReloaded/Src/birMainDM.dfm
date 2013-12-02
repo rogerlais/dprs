@@ -28,16 +28,19 @@ object DataModule1: TDataModule1
     Left = 88
     Top = 40
     object wdstrngfldBioFilesFULL_FILENAME: TWideStringField
+      DisplayLabel = 'Arquivo'
       FieldName = 'FULL_FILENAME'
       Required = True
       Size = 43
     end
     object wdstrngfldBioFilesCOMPUTERNAME: TWideStringField
+      DisplayLabel = 'Computador'
       FieldName = 'COMPUTERNAME'
       Required = True
       Size = 15
     end
     object intgrfldBioFilesELECT_ID: TIntegerField
+      DisplayLabel = 'Inscri'#231#227'o'
       FieldName = 'ELECT_ID'
       Required = True
     end
@@ -45,12 +48,15 @@ object DataModule1: TDataModule1
       FieldName = 'BIO_TYPE'
     end
     object intgrfldBioFilesCENTRAL_ID: TIntegerField
+      DisplayLabel = 'Central'
       FieldName = 'CENTRAL_ID'
     end
     object intgrfldBioFilesZONE_ID: TIntegerField
+      DisplayLabel = 'Zona'
       FieldName = 'ZONE_ID'
     end
     object wdstrngfldBioFilesCOMMENT: TWideStringField
+      DisplayLabel = 'Coment'#225'rio'
       FieldName = 'COMMENT'
       Size = 150
     end

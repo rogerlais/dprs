@@ -36,7 +36,7 @@ type
         procedure SetFilename(const Value : string);
         procedure InvalidWriteOperation(const AttrName : string);
         function GetSize : int64;
-        function GetHash : string;
+		 function GetHash : string;
         function GetDateStamp : string;
     public
         property Filename : string read FFilename write SetFilename;
@@ -65,7 +65,7 @@ type
         ilIcons :     TImageList;
         procedure tcpclntConnected(Sender : TObject);
         procedure tcpclntDisconnected(Sender : TObject);
-        procedure DataModuleDestroy(Sender : TObject);
+		 procedure DataModuleDestroy(Sender : TObject);
         procedure tcpsrvrExecute(AContext : TIdContext);
         procedure tcpsrvrStatus(ASender : TObject; const AStatus : TIdStatus; const AStatusText : string);
         procedure Configurar1Click(Sender : TObject);
@@ -96,7 +96,7 @@ var
 implementation
 
 uses
-    svclConfig, FileHnd, svclUtils, StrHnd, svclEditConfigForm, svclBiometricFiles;
+	 svclConfig, FileHnd, svclUtils, StrHnd, svclEditConfigForm, svclBiometricFiles;
 
 {$R *.dfm}
 
@@ -372,15 +372,15 @@ var
 begin
     //Criticidade em ReadBytes para o stream, ajustado para 30 segundos
     AContext.Connection.Socket.ReadTimeout := 30000;
-    TLogFile.LogDebug(Format('Cliente conectado: %s', [AContext.Connection.Socket.Binding.PeerIP]), DBGLEVEL_DETAILED);
+	 TLogFile.LogDebug(Format('Sessão inciada, cliente: %s', [AContext.Connection.Socket.Binding.PeerIP]), DBGLEVEL_DETAILED);
     AContext.Connection.IOHandler.AfterAccept; //processamento pos conexao com sucesso
     try
         retSignature := AContext.Connection.IOHandler.ReadLn(); //Aguarda a assinatura do cliente para iniciar operação
-        if (not TStrHnd.endsWith(retSignature, STR_BEGIN_SESSION_SIGNATURE)) then begin
+		 if (not TStrHnd.endsWith(retSignature, STR_BEGIN_SESSION_SIGNATURE)) then begin
             //Cancela a sessão por falha de protocolo
             retClientName := EmptyStr;
             TLogFile.LogDebug(
-                Format('Falha de protocolo, cadeia recebida=%s', [retSignature]), DBGLEVEL_ALERT_ONLY);
+				 Format('Falha de protocolo, cadeia recebida=%s', [retSignature]), DBGLEVEL_ALERT_ONLY);
         end else begin
             retClientName := Copy(retSignature, 1, Pos(STR_BEGIN_SESSION_SIGNATURE, retSignature) - 1);
         end;
@@ -401,9 +401,9 @@ begin
             sHash := AContext.Connection.IOHandler.ReadLn();
 
             TLogFile.LogDebug(Format(
-                'Recebida cadeia do cliente(%s) ao servidor:'#13#10'arquivo="%s"'#13#10'criação=%s'#13#10 +
+				 'Recebida cadeia do cliente(%s) ao servidor:'#13#10'arquivo="%s"'#13#10'criação=%s'#13#10 +
                 'acesso=%s'#13#10'Modificação=%s'#13#10'tamanho=%s'#13#10'hash=%s'#13#10,
-                [retClientName, sfilename, smodifiedDate, saccessDate, screateDate, sFileSize, sHash]), DBGLEVEL_DETAILED);
+				 [retClientName, sfilename, smodifiedDate, saccessDate, screateDate, sFileSize, sHash]), DBGLEVEL_DETAILED);
 
             nFileSize := StrToInt64(sFileSize); //Tamanho do stream a ser lido pela rede
 
@@ -430,12 +430,12 @@ begin
     finally
         //Finaliza a sessão
         try
-            AContext.Connection.Disconnect;
-        finally
-            if (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)) then begin
-                TLogFile.LogDebug('Cliente desconectado normalmente', DBGLEVEL_DETAILED);
-            end else begin
-                TLogFile.Log(Format('Cliente("%s") desconectado abruptamente', [retClientName]), lmtError);
+			 AContext.Connection.Disconnect;
+		 finally
+			 if (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)) then begin
+				 TLogFile.LogDebug('Sessão encerrada normalmente', DBGLEVEL_DETAILED);
+			 end else begin
+				 TLogFile.Log(Format('Cliente("%s") desconectado abruptamente', [retClientName]), lmtWarning );
             end;
         end;
     end;
