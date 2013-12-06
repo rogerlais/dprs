@@ -368,8 +368,7 @@ procedure TBioFilesService.ServiceCreate(Sender : TObject);
 var
     dp : TDependency;
 begin
-    {TODO -oroger -cdsg : testar forma de atribuir depuração para carga por attachprocess }
-     (*
+	  (*
      while DebugHook <> 0 do begin
          Break;
      end;
@@ -377,7 +376,7 @@ begin
     Self.DisplayName := APP_SERVICE_DISPLAYNAME;
     Self.LoadGroup := APP_SERVICE_GROUP;
     dp      := TDependency(Self.Dependencies.Add); //Insere dependencia do dsn(topo da pilha tcp/ip)
-    dp.Name := 'DnsCache';
+    dp.Name := 'DnsCache';   {TODO -oroger -cdsg : Parametrizar nome das dependencias }
     dp.IsGroup := False;
 end;
 
@@ -465,7 +464,7 @@ begin
     if (Started) then begin
         Self.tmrCycleEvent.Interval := GlobalConfig.CycleInterval;
         Self.tmrCycleEvent.Enabled  := True; // Liberar disparo de liberação de thread de serviço
-        TLogFile.Log('Serviço iniciado com sucesso.', lmtInformation);
+		 TLogFile.Log('Serviço ' + Self.Name + ' - Versão: ' + Self.fvInfo.FileVersion + ' - iniciado com sucesso.', lmtInformation);
     end else begin
         TLogFile.Log('Serviço falhou em sua carga.', lmtWarning);
     end;

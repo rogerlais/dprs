@@ -166,9 +166,12 @@ begin
             DMTCPTransfer.StartSession(cmp);
             try
                 //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
-                for x := 0 to FileList.Count - 1 do begin
-                    bioFile := TTransferFile(FileList.Objects[x]);
-                    Self.ReplicDataFiles2PrimaryMachine(bioFile);
+				 for x := 0 to FileList.Count - 1 do begin
+					if ( Self.Terminated ) then begin
+						System.Break;  //Encurta a execução do loop
+					end;
+					bioFile := TTransferFile(FileList.Objects[x]);
+					Self.ReplicDataFiles2PrimaryMachine(bioFile);
                 end;
             finally
                 DMTCPTransfer.EndSession(cmp);

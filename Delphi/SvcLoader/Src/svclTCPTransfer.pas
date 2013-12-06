@@ -7,6 +7,13 @@ unit svclTCPTransfer;
 
 interface
 
+{TODO -oroger -cdsg : Modificar os atributos do serviço "TransBio para ELO" de modo a depender do SvcLoader, assim alterar parametros de inicialização antecipadamente }
+{TODO -oroger -cdsg : Alternar as cores do icone de acordo com o tipo do computador e a operação, ver tabela abaixo:
+Servidor: Verde - recebendo, azul - ocioso, Laranja - Condição de alerta a ser definida , vermelho - falha qualquer
+Cliente: Verde - Enviando, laranja - Sem comunicação com servidor, azul - ocioso }
+{TODO -oroger -cdsg : Possibilitar pela UI pausar o envio dos dados por x minutos}
+{TODO -oroger -cdsg : Ao receber mensagem de shutdown e havendo arquivos a transmitir, possibilita ao usuário deixar o desligamento a cargo do serviço}
+
 uses
     SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
     IdTCPServer, AppLog, XPFileEnumerator, IdGlobal, Menus, ExtCtrls, SyncObjs, StreamHnd, ImgList, Controls;
@@ -456,6 +463,7 @@ begin
 			 'Arquivos recebidos = %d' + #13#10,
 			 [Self.FTrafficFileCount]);
 	 end else begin
+	 	{TODO -oroger -cdsg : Diferenciar arquivos totais dos do ciclo atual}
 		 Self.TrayIcon.Hint := Format(
 			 'SESOP - Replicação de arquivos de biometria' + #13#10 + BioFilesService.fvInfo.FileVersion + #13#10 +
             'Arquivos enviados = %d' + #13#10,
