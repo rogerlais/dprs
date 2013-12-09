@@ -13,6 +13,7 @@ Servidor: Verde - recebendo, azul - ocioso, Laranja - Condição de alerta a ser d
 Cliente: Verde - Enviando, laranja - Sem comunicação com servidor, azul - ocioso }
 {TODO -oroger -cdsg : Possibilitar pela UI pausar o envio dos dados por x minutos}
 {TODO -oroger -cdsg : Ao receber mensagem de shutdown e havendo arquivos a transmitir, possibilita ao usuário deixar o desligamento a cargo do serviço}
+{TODO -oroger -cdsg : Apenas no servidor possibilitar a importação de arquivos(opção recursivo) de bio informando intervalo de data a igonarar e nome da fonte. podendo ainda moitir a transmissão via transbio }
 
 uses
     SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
