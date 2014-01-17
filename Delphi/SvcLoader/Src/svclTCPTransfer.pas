@@ -7,7 +7,6 @@ unit svclTCPTransfer;
 
 interface
 
-{TODO -oroger -cdsg : Modificar os atributos do serviço "TransBio para ELO" de modo a depender do SvcLoader, assim alterar parametros de inicialização antecipadamente }
 {TODO -oroger -cdsg : Alternar as cores do icone de acordo com o tipo do computador e a operação, ver tabela abaixo:
 Servidor: Verde - recebendo, azul - ocioso, Laranja - Condição de alerta a ser definida , vermelho - falha qualquer
 Cliente: Verde - Enviando, laranja - Sem comunicação com servidor, azul - ocioso }
@@ -44,7 +43,7 @@ type
         procedure SetFilename(const Value : string);
         procedure InvalidWriteOperation(const AttrName : string);
         function GetSize : int64;
-		 function GetHash : string;
+        function GetHash : string;
         function GetDateStamp : string;
     public
         property Filename : string read FFilename write SetFilename;
@@ -73,23 +72,28 @@ type
         ilIcons :     TImageList;
         procedure tcpclntConnected(Sender : TObject);
         procedure tcpclntDisconnected(Sender : TObject);
-		 procedure DataModuleDestroy(Sender : TObject);
+        procedure DataModuleDestroy(Sender : TObject);
         procedure tcpsrvrExecute(AContext : TIdContext);
         procedure tcpsrvrStatus(ASender : TObject; const AStatus : TIdStatus; const AStatusText : string);
         procedure Configurar1Click(Sender : TObject);
         procedure DataModuleCreate(Sender : TObject);
         procedure TrayIconMouseMove(Sender : TObject; Shift : TShiftState; X, Y : Integer);
+        procedure tcpsrvrConnect(AContext : TIdContext);
+        procedure tcpsrvrDisconnect(AContext : TIdContext);
     private
         { Private declarations }
         FClientSessionList : TThreadStringList;
-        FTrafficFileCount :  Integer;
+        FSessionFileCount :  Integer;
+        FCycleFilesCount :   Integer;
+        FMaxTrackedClients : Integer;
         procedure SaveBioFile(const ClientName, Filename, screateDate, saccessDate, smodifiedDate : string; inputStrm : TStream);
         procedure InitSettings();
+        procedure UpdateServerTrayStatus();
     public
         { Public declarations }
         procedure StartServer();
         procedure StartClient();
-        procedure StartSession(const SessionName : string);
+        procedure StartSession(const SessionName : string; TotalFilesCount : Integer);
         procedure EndSession(const SessionName : string);
         procedure StopServer();
         procedure StopClient();
@@ -104,7 +108,7 @@ var
 implementation
 
 uses
-	 svclConfig, FileHnd, svclUtils, StrHnd, svclEditConfigForm, svclBiometricFiles;
+    svclConfig, FileHnd, svclUtils, StrHnd, svclEditConfigForm, svclBiometricFiles;
 
 {$R *.dfm}
 
@@ -116,11 +120,14 @@ const
     STR_FAIL_HASH   = 'FAIL HASH';
     STR_FAIL_SIZE   = 'FAIL SIZE';
 
-    II_SERVER_OK    = 0;
-    II_SERVER_BAD   = 1;
-    II_CLIENT_OK    = 0;
-    II_CLIENT_BAD   = 1;
-    II_DATA_SENDING = 2;
+    II_SERVER_IDLE  = 0;
+    II_SERVER_ERROR = 1;
+    II_SERVER_BUZY  = 2;
+    II_SERVER_OK    = 3;
+    II_CLIENT_IDLE  = 0;
+    II_CLIENT_ERROR = 1;
+    II_CLIENT_BUZY  = 2;
+    II_CLIENT_OK    = 3;
 
 var
     ForcedFormatSettings : TFormatSettings;
@@ -135,9 +142,9 @@ begin
     inherited;
     Self.FClientSessionList := TThreadStringList.Create;
     if (GlobalConfig.RunAsServer) then begin
-        Self.TrayIcon.IconIndex := II_SERVER_BAD; //Mesmo valor para o servidor no momento
+        Self.TrayIcon.IconIndex := II_SERVER_ERROR; //Mesmo valor para o servidor no momento
     end else begin
-        Self.TrayIcon.IconIndex := II_CLIENT_BAD; //Mesmo valor para o servidor no momento
+        Self.TrayIcon.IconIndex := II_CLIENT_ERROR; //Mesmo valor para o servidor no momento
     end;
 end;
 
@@ -163,7 +170,8 @@ procedure TDMTCPTransfer.EndSession(const SessionName : string);
 var
     idx : Integer;
 begin
-    Self.TrayIcon.IconIndex := II_CLIENT_OK;
+    Self.TrayIcon.IconIndex := II_CLIENT_IDLE;
+    Self.FCycleFilesCount   := 0; //zera contador de arquivos para envio
     Self.FClientSessionList.Enter;
     try
         idx := Self.FClientSessionList.IndexOf(SessionName);
@@ -173,7 +181,7 @@ begin
     finally
         Self.FClientSessionList.Leave;
     end;
-    //Envia a abertura de sessão para o servidor
+    //Envia a finalização de sessão para o servidor
     Self.tcpclnt.IOHandler.WriteLn(SessionName + STR_END_SESSION_SIGNATURE); //Envia msg de fim de sessão
 end;
 
@@ -237,8 +245,8 @@ procedure TDMTCPTransfer.SendFile(AFile : TTransferFile);
 var
     s : string;
 begin
-	 if (not Self.tcpclnt.Connected) then begin
-		 raise ESVCLException.Create('Canal com o servidor não estabelecido antecipadamente');
+    if (not Self.tcpclnt.Connected) then begin
+        raise ESVCLException.Create('Canal com o servidor não estabelecido antecipadamente');
     end;
     //Passados obrigatoriamente nesta ordem!!!
     s := AFile.FFilename + TOKEN_DELIMITER +
@@ -253,7 +261,8 @@ begin
     if (s <> STR_OK_PACK) then begin
         raise ESVCLException.CreateFmt('Retorno de erro de envio: "%s" para arquivo="%s".', [s, AFile.Filename]);
     end else begin
-        Inc(Self.FTrafficFileCount); //Incrementa contador de trafego(modo cliente)
+        Inc(Self.FSessionFileCount); //Incrementa contador de trafego(modo cliente)
+        Dec(Self.FCycleFilesCount);  //Decrementa contador de arquivos coletados no ciclo
     end;
 end;
 
@@ -274,7 +283,7 @@ begin
     Self.tcpclnt.ConnectTimeout := 0;
     Self.tcpclnt.IPVersion := Id_IPv4;
     Self.tcpclnt.ReadTimeout := -1;
-    Self.TrayIcon.IconIndex := II_CLIENT_OK;
+    Self.TrayIcon.IconIndex := II_CLIENT_IDLE;
     TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)',
         [GlobalConfig.NetServicePort, GlobalConfig.ServerName]), DBGLEVEL_DETAILED);
 end;
@@ -297,7 +306,7 @@ begin
         Self.tcpsrvr.TerminateWaitTime := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
         Self.tcpsrvr.Active      := True;
         Self.tcpsrvr.StartListening;
-        Self.TrayIcon.IconIndex := II_SERVER_OK;
+        Self.TrayIcon.IconIndex := II_SERVER_IDLE;
         TLogFile.LogDebug(Format('Escutando na porta: %d', [GlobalConfig.NetServicePort]), DBGLEVEL_DETAILED);
     except
         on E : Exception do begin
@@ -307,9 +316,10 @@ begin
     end;
 end;
 
-procedure TDMTCPTransfer.StartSession(const SessionName : string);
+procedure TDMTCPTransfer.StartSession(const SessionName : string; TotalFilesCount : Integer);
 begin
-    Self.TrayIcon.IconIndex := II_DATA_SENDING;
+    Self.TrayIcon.IconIndex := II_CLIENT_BUZY;
+    Self.FCycleFilesCount   := TotalFilesCount;
     Self.FClientSessionList.Enter;
     try
         try
@@ -364,6 +374,16 @@ begin
     TLogFile.LogDebug('Desconectado do servidor', DBGLEVEL_DETAILED);
 end;
 
+procedure TDMTCPTransfer.tcpsrvrConnect(AContext : TIdContext);
+begin
+    Self.UpdateServerTrayStatus();
+end;
+
+procedure TDMTCPTransfer.tcpsrvrDisconnect(AContext : TIdContext);
+begin
+    Self.UpdateServerTrayStatus();
+end;
+
 procedure TDMTCPTransfer.tcpsrvrExecute(AContext : TIdContext);
  ///<summary>
  ///Metodo de operação do tcpserver para cada conexão realizada
@@ -380,15 +400,15 @@ var
 begin
     //Criticidade em ReadBytes para o stream, ajustado para 30 segundos
     AContext.Connection.Socket.ReadTimeout := 30000;
-	 TLogFile.LogDebug(Format('Sessão inciada, cliente: %s', [AContext.Connection.Socket.Binding.PeerIP]), DBGLEVEL_DETAILED);
+    TLogFile.LogDebug(Format('Sessão inciada, cliente: %s', [AContext.Connection.Socket.Binding.PeerIP]), DBGLEVEL_DETAILED);
     AContext.Connection.IOHandler.AfterAccept; //processamento pos conexao com sucesso
     try
         retSignature := AContext.Connection.IOHandler.ReadLn(); //Aguarda a assinatura do cliente para iniciar operação
-		 if (not TStrHnd.endsWith(retSignature, STR_BEGIN_SESSION_SIGNATURE)) then begin
+        if (not TStrHnd.endsWith(retSignature, STR_BEGIN_SESSION_SIGNATURE)) then begin
             //Cancela a sessão por falha de protocolo
             retClientName := EmptyStr;
             TLogFile.LogDebug(
-				 Format('Falha de protocolo, cadeia recebida=%s', [retSignature]), DBGLEVEL_ALERT_ONLY);
+                Format('Falha de protocolo, cadeia recebida=%s', [retSignature]), DBGLEVEL_ALERT_ONLY);
         end else begin
             retClientName := Copy(retSignature, 1, Pos(STR_BEGIN_SESSION_SIGNATURE, retSignature) - 1);
         end;
@@ -409,9 +429,9 @@ begin
             sHash := AContext.Connection.IOHandler.ReadLn();
 
             TLogFile.LogDebug(Format(
-				 'Recebida cadeia do cliente(%s) ao servidor:'#13#10'arquivo="%s"'#13#10'criação=%s'#13#10 +
+                'Recebida cadeia do cliente(%s) ao servidor:'#13#10'arquivo="%s"'#13#10'criação=%s'#13#10 +
                 'acesso=%s'#13#10'Modificação=%s'#13#10'tamanho=%s'#13#10'hash=%s'#13#10,
-				 [retClientName, sfilename, smodifiedDate, saccessDate, screateDate, sFileSize, sHash]), DBGLEVEL_DETAILED);
+                [retClientName, sfilename, smodifiedDate, saccessDate, screateDate, sFileSize, sHash]), DBGLEVEL_DETAILED);
 
             nFileSize := StrToInt64(sFileSize); //Tamanho do stream a ser lido pela rede
 
@@ -425,7 +445,7 @@ begin
                         AContext.Connection.IOHandler.WriteLn(STR_OK_PACK); //informa OK e em seguida o tamanho do streamer lido
                         Self.SaveBioFile(retClientName, sfilename, screateDate, saccessDate, smodifiedDAte, inStrm);
                         //Salva arquivo denominado OK
-                        Inc(Self.FTrafficFileCount); //Incrementa contador de trafego(modo servidor)
+                        Inc(Self.FSessionFileCount); //Incrementa contador de trafego(modo servidor)
                     end else begin
                         AContext.Connection.IOHandler.WriteLn(STR_FAIL_HASH); //informa OK e em seguida o tamanho do streamer lido
                     end;
@@ -438,12 +458,12 @@ begin
     finally
         //Finaliza a sessão
         try
-			 AContext.Connection.Disconnect;
-		 finally
-			 if (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)) then begin
-				 TLogFile.LogDebug('Sessão encerrada normalmente', DBGLEVEL_DETAILED);
-			 end else begin
-				 TLogFile.Log(Format('Cliente("%s") desconectado abruptamente', [retClientName]), lmtWarning );
+            AContext.Connection.Disconnect;
+        finally
+            if (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)) then begin
+                TLogFile.LogDebug('Sessão encerrada normalmente', DBGLEVEL_DETAILED);
+            end else begin
+                TLogFile.Log(Format('Cliente("%s") desconectado abruptamente', [retClientName]), lmtWarning);
             end;
         end;
     end;
@@ -456,19 +476,50 @@ end;
 
 procedure TDMTCPTransfer.TrayIconMouseMove(Sender : TObject; Shift : TShiftState; X, Y : Integer);
 ///Atualiza status da dica, informando o tráfego atual da sessão
+var
+    rtVersion : string;
 begin
-	{DONE -oroger -cdsg : Adicionar a versão do aplicativo}
-	 if (GlobalConfig.RunAsServer) then begin
-		 Self.TrayIcon.Hint := Format(
-			 'SESOP - Replicação de arquivos de biometria' + #13#10 + BioFilesService.fvInfo.FileVersion + #13#10 +
-			 'Arquivos recebidos = %d' + #13#10,
-			 [Self.FTrafficFileCount]);
-	 end else begin
-	 	{TODO -oroger -cdsg : Diferenciar arquivos totais dos do ciclo atual}
-		 Self.TrayIcon.Hint := Format(
-			 'SESOP - Replicação de arquivos de biometria' + #13#10 + BioFilesService.fvInfo.FileVersion + #13#10 +
-            'Arquivos enviados = %d' + #13#10,
-            [Self.FTrafficFileCount]);
+    if (not Assigned(BioFilesService)) then begin
+        rtVersion := '*** DESCONHECIDA ***';
+    end else begin
+        rtVersion := BioFilesService.fvInfo.FileVersion;
+    end;
+    if (GlobalConfig.RunAsServer) then begin
+        Self.TrayIcon.Hint := Format(
+            'SESOP - Replicação de arquivos de biometria' + #13#10 + rtVersion + #13#10 +
+            'Arquivos recebidos = %d' + #13#10,
+            [Self.FSessionFileCount]);
+    end else begin
+        Self.TrayIcon.Hint := Format(
+            'SESOP - Replicação de arquivos de biometria' + #13#10 + rtVersion + #13#10 +
+            'Arquivos enviados na sessão = %d' + #13#10,
+            [Self.FSessionFileCount]);
+        if (Self.FCycleFilesCount > 0) then begin
+			 Self.TrayIcon.Hint := Self.TrayIcon.Hint + 'Arquivos a enviar neste ciclo = ' + IntToStr(Self.FCycleFilesCount) + ' '#13#10;
+        end;
+    end;
+end;
+
+procedure TDMTCPTransfer.UpdateServerTrayStatus;
+var
+    List : TList;
+    clientCount : Integer;
+begin
+    try
+        List := Self.tcpsrvr.Contexts.LockList;
+        clientCount := List.Count;
+    finally
+        Self.tcpsrvr.Contexts.UnlockList;
+    end;
+    if (clientCount > 0) then begin
+        Self.TrayIcon.IconIndex := II_SERVER_BUZY;
+        if (Self.FMaxTrackedClients < clientCount) then begin
+            Self.FMaxTrackedClients := clientCount;
+            TLogFile.LogDebug(Format('Registro de clientes simultâneos aumentado = %d', [Self.FMaxTrackedClients]),
+                DBGLEVEL_DETAILED);
+        end;
+    end else begin
+        Self.TrayIcon.IconIndex := II_SERVER_IDLE;
     end;
 end;
 

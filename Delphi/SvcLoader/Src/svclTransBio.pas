@@ -84,7 +84,7 @@ procedure TTransBioThread.DoClientCycle;
     begin
         {TODO -oroger -cfuture : Melhorar implementa~çao de modo a buscar por arquivo do bioservice e na ausencia usar outro para denomiar de primario}
         x := list.Count - 1; //pivot no final da lista para comparar aos pares
-        while (x > 0) do begin
+        while (not (Self.Terminated) and (x > 0)) do begin
             if (list.Strings[x] = list.Strings[x - 1]) then begin //comparar os hash
                 f1 := TTransferFile(list.Objects[x - 1]);
                 f2 := TTransferFile(list.Objects[x]);
@@ -106,12 +106,27 @@ procedure TTransBioThread.DoClientCycle;
         end;
     end;
 
+    procedure LSRSearchFiles(const APath : string; AFileList : TStringList);
+    var
+        FileEnt : IEnumerable<TFileSystemEntry>;
+        f : TFileSystemEntry;
+    begin
+        if (Self.Terminated) then begin
+            Exit;
+        end;
+        FileEnt := TDirectory.FileSystemEntries(APath, BIOMETRIC_FILE_MASK, False);
+        for f in FileEnt do begin
+            if (Self.Terminated) then begin
+                Exit;
+            end;
+            AFileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
+        end;
+    end;
+
 var
-    FileEnt : IEnumerable<TFileSystemEntry>;
-    f :   TFileSystemEntry;
     cmp : string;
     FileList : TStringList;
-    x :   Integer;
+    x : Integer;
     BioFile : TTransferFile;
 begin
     {TODO -oroger -cdebug : Ponto critico de verificação de memory leak}
@@ -123,35 +138,15 @@ begin
         FileList.OwnsObjects := True; //mantera as instancia consigo
 
         //repositorio Bioservice(Bio)
-        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.PathClientBioService, BIOMETRIC_FILE_MASK, False);
-        //repositorio Bioservice
-        for f in FileEnt do begin
-            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-        end;
-
+        LSRSearchFiles(GlobalConfig.PathClientBioService, FileList);
         //repositorio TransBio(Bio)
-        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.Elo2TransBio, BIOMETRIC_FILE_MASK, False);
-        for f in FileEnt do begin
-            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-        end;
-
+        LSRSearchFiles(GlobalConfig.TransbioConfig.Elo2TransBio, FileList);
         //repositorio TransBio(Trans)
-        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathTransmitted, BIOMETRIC_FILE_MASK, False);
-        for f in FileEnt do begin
-            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-        end;
-
+        LSRSearchFiles(GlobalConfig.TransbioConfig.PathTransmitted, FileList);
         //repositorio TransBio(ReTrans)
-        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathRetrans, BIOMETRIC_FILE_MASK, False);
-        for f in FileEnt do begin
-            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-        end;
-
+        LSRSearchFiles(GlobalConfig.TransbioConfig.PathRetrans, FileList);
         //repositorio TransBio(Erro)
-        FileEnt := TDirectory.FileSystemEntries(GlobalConfig.TransbioConfig.PathError, BIOMETRIC_FILE_MASK, False);
-        for f in FileEnt do begin
-            FileList.AddObject(UpperCase(f.Name), TTransferFile.CreateOutput(f.FullName));
-        end;
+        LSRSearchFiles(GlobalConfig.TransbioConfig.PathError, FileList);
 
         //Inicia busca por divergentes
         LSRSearchDivergents(FileList);
@@ -163,15 +158,15 @@ begin
         cmp := WinNetHnd.GetComputerName();
         DMTCPTransfer.StartClient;
         try
-            DMTCPTransfer.StartSession(cmp);
+            DMTCPTransfer.StartSession(cmp, FileList.Count );
             try
                 //Para o caso de estação(Única a coletar dados biométricos), o sistema executará o caso de uso "ReplicDataFiles2PrimaryMachine"
-				 for x := 0 to FileList.Count - 1 do begin
-					if ( Self.Terminated ) then begin
-						System.Break;  //Encurta a execução do loop
-					end;
-					bioFile := TTransferFile(FileList.Objects[x]);
-					Self.ReplicDataFiles2PrimaryMachine(bioFile);
+                for x := 0 to FileList.Count - 1 do begin
+                    if (Self.Terminated) then begin
+                        System.Break;  //Encurta a execução do loop
+                    end;
+                    bioFile := TTransferFile(FileList.Objects[x]);
+                    Self.ReplicDataFiles2PrimaryMachine(bioFile);
                 end;
             finally
                 DMTCPTransfer.EndSession(cmp);
@@ -182,7 +177,6 @@ begin
     finally
         FileList.Free; //OwnsObjects = true para a lista libera instâncias
     end;
-
 end;
 
 procedure TTransBioThread.ReplicDataFiles2PrimaryMachine(BioFile : TTransferFile);
@@ -411,7 +405,8 @@ begin
     ForceDirectories(DestPath);
     if (not MoveFile(PChar(SrcFile.FullName), PChar(DestPath + '\' + SrcFile.Name))) then begin
         TLogFile.Log('Impossível mover arquivo para o repositório definitivo no computador primário'#13 +
-            Format('Possível causa: arquivo(%S) retransmitido'#13#10'Razão: = %s', [SrcFile.Name, SysErrorMessage(GetLastError())]),
+            Format('Possível causa: arquivo(%S) retransmitido'#13#10'Razão: = %s',
+            [SrcFile.Name, SysErrorMessage(GetLastError())]),
             lmtWarning);
         DestPath := TFileHnd.NextFamilyFilename(DestPath); //Gera nome alternativo
         if (not MoveFile(PChar(SrcFile.FullName), PChar(DestPath))) then begin

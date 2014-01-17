@@ -19,7 +19,7 @@ type
         fvInfo :        TFileVersionInfo;
         icmpclntMain :  TIdIcmpClient;
         procedure ServiceAfterInstall(Sender : TService);
-        procedure ServiceBeforeInstall(Sender : TService);
+		 procedure ServiceBeforeInstall(Sender : TService);
         procedure ServiceCreate(Sender : TObject);
         procedure ServicePause(Sender : TService; var Paused : boolean);
         procedure ServiceStart(Sender : TService; var Started : boolean);
@@ -296,7 +296,7 @@ var
     Reg : TRegistryNT;
     lst : TStringList;
 begin
-    try
+	 try
 		 if (GlobalConfig.isHotKeyPressed() or (not FindCmdLineSwitch(SWITCH_AUTOCONFIG))) then begin
             //Não invocar dialogo para o caso de instalação automatica
             TEditConfigForm.EditConfig; // Chama janela de configuração para exibição
@@ -368,6 +368,15 @@ procedure TBioFilesService.ServiceCreate(Sender : TObject);
 var
     dp : TDependency;
 begin
+{TODO -oroger -cfuture : Modificar os atributos do serviço "TransBio para ELO" de modo a depender do SvcLoader,
+ apenas no modo servidor, assim alterar parametros de inicialização antecipadamente
+ Necessidade de
+ 1 - Parar Transbio
+ 2 - Inserir entradas abaixo
+ HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\ServiceTBE
+ "DependOnService"=hex(7):42,69,6f,46,69,6c,65,73,53,65,72,76,69,63,65,00,00 /* Nome deste servico = BioFilesService */
+"DependOnGroup"=hex(7):00
+}
 	  (*
      while DebugHook <> 0 do begin
          Break;

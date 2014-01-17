@@ -35,7 +35,6 @@ implementation
 procedure TForm1.CreateFilterControls;
 var
 	x : Integer;
-	c : TEdit;
 begin
 	for x := 0 to Self.dbgrdMain.Columns.Count - 1 do begin
 

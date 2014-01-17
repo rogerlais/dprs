@@ -35,7 +35,6 @@ object Form1: TForm1
     Width = 642
     Height = 19
     Panels = <>
-    ExplicitTop = 515
   end
   object acttbMainForm: TActionToolBar
     Left = 0
@@ -48,7 +47,6 @@ object Form1: TForm1
     ColorMap.BtnSelectedColor = clBtnFace
     ColorMap.UnusedColor = 15660791
     Spacing = 0
-    ExplicitHeight = 34
   end
   object ilMain: TImageList
     ColorDepth = cd32Bit
@@ -378,6 +376,7 @@ object Form1: TForm1
           end
           item
             Action = actLocate
+            Caption = '&Localizar'
             ImageIndex = 1
           end
           item
