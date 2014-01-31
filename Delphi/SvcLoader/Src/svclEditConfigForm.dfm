@@ -75,10 +75,6 @@ object EditConfigForm: TEditConfigForm
     TabOrder = 1
     object tsClientConfig: TTabSheet
       Caption = '&Esta'#231#227'o'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lblClientSourceBioService: TLabel
         Left = 9
         Top = 28

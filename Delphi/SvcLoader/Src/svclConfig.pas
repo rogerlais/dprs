@@ -18,9 +18,10 @@ const
 const
     APP_SERVICE_NAME        = 'BioFilesService';
     APP_SERVICE_KEY         = 'BioSvc';
-    APP_SERVICE_DISPLAYNAME = 'SESOP TransBio Replicator';
-    APP_SERVICE_GROUP       = 'SESOPSvcGroup';
-    APP_NOTIFICATION_DESCRIPTION = 'SESOP-Serviço de replicação de arquivos biométricos';
+	 APP_SERVICE_DISPLAYNAME = 'SESOP TransBio Replicator';
+	 APP_SERVICE_GROUP       = 'SESOPSvcGroup';
+	 APP_NOTIFICATION_DESCRIPTION = 'SESOP-Serviço de replicação de arquivos biométricos';
+	 APP_SERVICE_FIRST_DEPENDENCY = 'DnsCache'; {TODO -oroger -cfuture : Parametrizar nome das dependencias }
 
 
 type

@@ -13,6 +13,8 @@ Cliente: Verde - Enviando, laranja - Sem comunicação com servidor, azul - ocioso
 {TODO -oroger -cdsg : Possibilitar pela UI pausar o envio dos dados por x minutos}
 {TODO -oroger -cdsg : Ao receber mensagem de shutdown e havendo arquivos a transmitir, possibilita ao usuário deixar o desligamento a cargo do serviço}
 {TODO -oroger -cdsg : Apenas no servidor possibilitar a importação de arquivos(opção recursivo) de bio informando intervalo de data a igonarar e nome da fonte. podendo ainda moitir a transmissão via transbio }
+{TODO -oroger -cdsg : Limpar caches de imagens do elo na carga do serviço }
+{TODO -oroger -cdsg : Registrar o encerramento do windows }
 
 uses
     SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
@@ -607,6 +609,7 @@ procedure TTransferFile.SetAsDivergent;
 var
     newName : string;
 begin
+	{TODO -oroger -cdsg : Informar todos os dados dos arquivos divergentes para estudo posterior da causa}
     TLogFile.Log('Arquivo divergente encontrado: "' + Self.FFilename + '". Usada a outra versão em Bioservice(caso haja)',
         lmtError);
     newName := TFileHnd.ExtractFilenamePure(Self.FFilename);

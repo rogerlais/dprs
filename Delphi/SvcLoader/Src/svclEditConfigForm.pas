@@ -76,6 +76,8 @@ uses svclBiometricFiles, SvcMgr;
 
 { TEditConfigForm }
 
+{TODO -oroger -cdsg : Adcionar no menu do tray as opções de reparar o serviço de assinatura e fotos+digitais }
+
 class procedure TEditConfigForm.EditConfig;
 var
     frm : TEditConfigForm;

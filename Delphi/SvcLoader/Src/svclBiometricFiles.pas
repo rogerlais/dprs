@@ -369,7 +369,7 @@ var
     dp : TDependency;
 begin
 {TODO -oroger -cfuture : Modificar os atributos do serviço "TransBio para ELO" de modo a depender do SvcLoader,
- apenas no modo servidor, assim alterar parametros de inicialização antecipadamente
+ apenas no modo servidor, bem como reverter, caso alterado para modo o cliente, assim alterar parametros de inicialização antecipadamente
  Necessidade de
  1 - Parar Transbio
  2 - Inserir entradas abaixo
@@ -385,7 +385,7 @@ begin
     Self.DisplayName := APP_SERVICE_DISPLAYNAME;
     Self.LoadGroup := APP_SERVICE_GROUP;
     dp      := TDependency(Self.Dependencies.Add); //Insere dependencia do dsn(topo da pilha tcp/ip)
-    dp.Name := 'DnsCache';   {TODO -oroger -cdsg : Parametrizar nome das dependencias }
+    dp.Name := APP_SERVICE_FIRST_DEPENDENCY;   {TODO -oroger -cdsg : Parametrizar nome das dependencias }
     dp.IsGroup := False;
 end;
 

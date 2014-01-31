@@ -170,40 +170,13 @@ var
 begin
     if (Self.FStarted) then begin
         if (GlobalConfig.RunAsServer) then begin // Modo Servidor ativo
-            {TODO -oroger -cdsg : Organizar os arquivos recebidos }
-        end else begin
-            if (Assigned(Self.FClientThread) and (Self.FClientThread.Suspended)) then begin
-                Self.FClientThread.Start;
-            end;
-             {
-             //Modo cliente
-             if (TFileHnd.FirstOccurrence(Self.edtDir.Directory, '*.bio') = EmptyStr) then begin
-                 Exit; //Nada a enviar sair do loop
-             end;
-
-             //Abrir o socket para envio
-             DMTCPTransfer.tcpclnt.Connect;
-             DMTCPTransfer.tcpclnt.IOHandler.WriteLn(GetComputerName() + STR_BEGIN_SESSION_SIGNATURE);
-             FileEnum := TDirectory.FileSystemEntries(Self.edtDir.Directory, '*.bio', True);
-             try
-                 for f in FileEnum do begin
-                     if (f.Name <> '.') and (f.Name <> '..') then begin
-                         tf := TTransferFile.CreateOutput(f.FullName);
-                         try
-                             DMTCPTransfer.SendFile(tf);
-                         finally
-                             tf.Free;
-                         end;
-                     end;
-                 end;
-             finally
-                 DMTCPTransfer.tcpclnt.IOHandler.WriteLn(GetComputerName() + STR_END_SESSION_SIGNATURE);
-                 //Envia msg de fim de sessão
-                 DMTCPTransfer.StopClient;
-             end;
-             }
-        end;
-    end;
+			 {TODO -oroger -cdsg : Organizar os arquivos recebidos }
+		 end else begin
+			 if (Assigned(Self.FClientThread) and (Self.FClientThread.Suspended)) then begin
+				 Self.FClientThread.Start;
+			 end;
+		 end;
+	 end;
 end;
 
 end.
