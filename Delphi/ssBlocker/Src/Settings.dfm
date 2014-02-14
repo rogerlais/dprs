@@ -24,7 +24,7 @@ object FormSettings: TFormSettings
     Caption = 
       'Prote'#231#227'o de tela com bloqueio autom'#225'tico da esta'#231#227'o'#13#10'SESOP/COSUP' +
       '/STI/TRE-PB'#13#10'Rogerlais Andrade'#13#10#13#10'Sem configura'#231#245'es necess'#225'rias'#13 +
-      #10#13#10#13#10#13#10#13#10
+      #10'Use argumento "/I" para instalar'#13#10#13#10#13#10#13#10
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11

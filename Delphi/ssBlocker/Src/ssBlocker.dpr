@@ -6,22 +6,24 @@ program ssBlocker;
 
 
 uses
-  Windows,
-  SysUtils,
-  Forms,
-  Dialogs,
-  Settings in 'Settings.pas' {FormSettings},
-  Main in 'Main.pas' {FormMain};
+    Windows,
+    SysUtils,
+    Forms,
+    Dialogs,
+    FileHnd,
+    WinReg32,
+    Settings in 'Settings.pas' {FormSettings},
+    Main in 'Main.pas' {FormMain};
 
 // Compiled output has the .scr extension instead of .exe
 {$E .scr}
 
 var
-	 Option : string;
+    Option : string;
 
 
 {$R *.res}
-	 // In addition to the standard stuff, .res holds the value that will show up in
+    // In addition to the standard stuff, .res holds the value that will show up in
     // the Display Settings Screen Saver tab.
     // Set value for ID 1 in the StringTable of Description.res
     // (You may need to find a Resource Editor if you don't already have one.)
@@ -32,7 +34,7 @@ var
     procedure ShowSettings;
     begin
         Application.CreateForm(TFormSettings, FormSettings);
-  end;
+    end;
 
     procedure ShowPreview;
     begin
@@ -50,6 +52,38 @@ var
             Application.CreateForm(TFormMain, FormMain);
             FormMain.Left := Screen.Monitors[I].Left;
             FormMain.WindowState := wsMaximized;
+        end;
+    end;
+
+    procedure ShowInstall;
+    var
+        SrcFile, DestFile : string;
+        reg : TRegistryNT;
+    begin
+        if MessageBoxW(0,
+            'Deseja instalar esta proteção de tela com os parâmetros padrão?',
+            PWideChar(Application.Title), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = idYes then begin
+            srcFile  := ParamStr(0);
+            DestFile := TFileHnd.ConcatPath([EvalPathName('%WINDIR%'), 'System32', ExtractFileName(srcFile)]);
+            //Sempre tenta sobreescrever para atualizar se for o caso
+			 if (
+				( not SameText( SrcFile, DestFile )) and
+				(not CopyFile(PWideChar(srcFile), PWideChar(DestFile), False))
+			 ) then begin
+                MessageBoxW(0,
+                    PWideChar(Format('Erro copiando arquivo para "%s", %s', [DestFile, SysErrorMessage(GetLastError())])),
+                    PWideChar(Application.Title), MB_OK + MB_ICONSTOP + MB_TOPMOST);
+                Exit;
+            end;
+            reg := TRegistryNT.Create;
+            try
+				 reg.WriteFullString('HKEY_CURRENT_USER\Control Panel\Desktop\SCRNSAVE.EXE', FileShortName(DestFile), True);
+				 reg.WriteFullString('HKEY_CURRENT_USER\Control Panel\Desktop\ScreenSaveTimeOut', '300', True);
+				 reg.WriteFullString('HKEY_CURRENT_USER\Control Panel\Desktop\ScreenSaveActive', '1', True);
+            finally
+                reg.Free;
+			 end;
+			 MessageBoxW(0, 'Proteção de tela instalada com sucesso!', PWideChar(Application.Title), MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
         end;
     end;
 
@@ -76,6 +110,9 @@ begin
             end else
             if Option = '/p' then begin
                 ShowPreview;
+            end else
+            if Option = '/i' then begin
+                ShowInstall;
             end else
             if Option = '/s' then begin
                 ShowScreenSaver;
