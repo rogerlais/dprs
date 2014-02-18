@@ -1,5 +1,5 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\FileHnd.pas',0,1,130,19,147,0,0,,{1,777,1}
+File_0=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\FileHnd.pas',0,1,130,19,147,0,0,,{1
 File_1=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\WinReg32.pas',0,1,888,20,897,0,0,,{0
 File_2=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\common\Registry.pas',0,1,697,3,715,0,0,,
 File_3=TSourceModule,'C:\Sw\WorkDir\Pcks\FXLib\Src\Credits.pas',0,1,192,1,197,0,0,,
@@ -17,15 +17,21 @@ File_14=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\SvcLoader\Src\svclConfig.pas',0
 
 [Modules]
 Module0=C:\Sw\WorkDir\Dprs\Delphi\ssBlocker\Src\Main.pas
-Module1=C:\Sw\WorkDir\Dprs\Delphi\ssBlocker\Src\ssBlocker.dproj
-Module2=C:\Sw\WorkDir\Dprs\Delphi\ssBlocker\Src\Settings.pas
-Module3=default.htm
-Count=4
+Module1=C:\Sw\WorkDir\Pcks\XPLib\Src\Super.pas
+Module2=C:\Sw\WorkDir\Dprs\Delphi\ssBlocker\Src\ssBlocker.dproj
+Module3=C:\Sw\WorkDir\Dprs\Delphi\ssBlocker\Src\Settings.pas
+Module4=default.htm
+Count=5
 EditWindowCount=1
 
 [C:\Sw\WorkDir\Dprs\Delphi\ssBlocker\Src\Main.pas]
 ModuleType=TSourceModule
 FormState=1
+FormOnTop=0
+
+[C:\Sw\WorkDir\Pcks\XPLib\Src\Super.pas]
+ModuleType=TSourceModule
+FormState=0
 FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\ssBlocker\Src\ssBlocker.dproj]
@@ -40,12 +46,13 @@ FormOnTop=0
 ModuleType=TURLModule
 
 [EditWindow0]
-ViewCount=4
+ViewCount=5
 CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\ssBlocker\Src\Main.pas
 View0=0
 View1=1
 View2=2
 View3=3
+View4=4
 PercentageSizes=1
 Create=1
 Visible=1
@@ -62,9 +69,9 @@ ClientHeight=8787
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
-LeftPanelSize=1177
+LeftPanelSize=2453
 LeftPanelClients=PropertyInspector,DockSite1
-LeftPanelData=00000800010100000000D00E0000000000000199040000000000000100000000F209000009000000446F636B53697465310100000000551A00001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=00000800010100000000D00E0000000000000195090000000000000100000000F209000009000000446F636B53697465310100000000551A00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=1318
 RightPanelClients=DockSite2,DockSite0
 RightPanelData=00000800010100000000D00E00000000000001260500000000000001000000004412000009000000446F636B53697465300100000000551A000009000000446F636B5369746532FFFFFFFF
@@ -102,13 +109,24 @@ EditViewName=C:\Sw\WorkDir\Dprs\Delphi\ssBlocker\Src\ssBlocker.dpr
 [View3]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\ssBlocker\Src\Main.pas
-CursorX=106
-CursorY=85
-TopLine=74
+CursorX=46
+CursorY=39
+TopLine=7
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\Sw\WorkDir\Dprs\Delphi\ssBlocker\Src\Main.pas
+
+[View4]
+CustomEditViewType=TEditView
+Module=C:\Sw\WorkDir\Pcks\XPLib\Src\Super.pas
+CursorX=15
+CursorY=26
+TopLine=10
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Sw\WorkDir\Pcks\XPLib\Src\Super.pas
 
 [Watches]
 Count=0
@@ -289,12 +307,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
-Height=1574
+Width=5000
+Height=1806
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
-ClientHeight=1574
+ClientWidth=5000
+ClientHeight=1806
 TBDockHeight=778
 LRDockWidth=3479
 Dockable=1
@@ -346,11 +364,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=5000
+Width=4979
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=5000
+ClientWidth=4979
 ClientHeight=1574
 TBDockHeight=2315
 LRDockWidth=2823
@@ -430,17 +448,17 @@ Docked=1
 State=0
 Left=0
 Top=298
-Width=1177
+Width=2453
 Height=3981
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1177
+ClientWidth=2453
 ClientHeight=3981
 TBDockHeight=9065
-LRDockWidth=1177
+LRDockWidth=2453
 Dockable=1
 StayOnTop=0
-SplitPos=69
+SplitPos=248
 
 [ModelViewTool]
 PercentageSizes=1
@@ -514,11 +532,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1177
+Width=2453
 Height=2296
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1177
+ClientWidth=2453
 ClientHeight=2296
 TBDockHeight=3676
 LRDockWidth=1896
@@ -581,14 +599,14 @@ Docked=1
 State=0
 Left=0
 Top=23
-Width=1177
+Width=2453
 Height=2296
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1177
+ClientWidth=2453
 ClientHeight=2296
 TBDockHeight=9065
-LRDockWidth=1177
+LRDockWidth=2453
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -664,6 +682,6 @@ LRDockWidth=8250
 Dockable=1
 StayOnTop=0
 TabPosition=1
-ActiveTabID=LocalVarsWindow
+ActiveTabID=FindReferencsForm
 TabDockClients=LocalVarsWindow,WatchWindow,CallStackWindow,ThreadStatusWindow,BreakpointWindow,DebugLogView,FindReferencsForm,RefactoringForm
 
