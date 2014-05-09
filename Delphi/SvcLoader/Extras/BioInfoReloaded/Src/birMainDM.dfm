@@ -1,4 +1,4 @@
-object DataModule1: TDataModule1
+object MainDM: TMainDM
   OldCreateOrder = False
   Height = 336
   Width = 436
@@ -29,9 +29,10 @@ object DataModule1: TDataModule1
     Top = 40
     object wdstrngfldBioFilesFULL_FILENAME: TWideStringField
       DisplayLabel = 'Arquivo'
+      DisplayWidth = 255
       FieldName = 'FULL_FILENAME'
       Required = True
-      Size = 43
+      Size = 255
     end
     object wdstrngfldBioFilesCOMPUTERNAME: TWideStringField
       DisplayLabel = 'Computador'
@@ -55,10 +56,13 @@ object DataModule1: TDataModule1
       DisplayLabel = 'Zona'
       FieldName = 'ZONE_ID'
     end
-    object wdstrngfldBioFilesCOMMENT: TWideStringField
-      DisplayLabel = 'Coment'#225'rio'
+    object mfldBioFilesCOMENT: TMemoField
+      FieldName = 'COMENT'
+      BlobType = ftMemo
+    end
+    object mfldBioFilesCOMMENT: TMemoField
       FieldName = 'COMMENT'
-      Size = 150
+      BlobType = ftMemo
     end
   end
   object dsBioFiles: TDataSource
@@ -137,5 +141,14 @@ object DataModule1: TDataModule1
         Name = 'OLD_FULL_FILENAME'
         ParamType = ptUnknown
       end>
+  end
+  object srchflSearchFiles: TJvSearchFiles
+    Options = []
+    FileParams.SearchTypes = [stFileMask]
+    FileParams.FileMasks.Strings = (
+      '*.bio')
+    OnFindFile = srchflSearchFilesFindFile
+    Left = 304
+    Top = 40
   end
 end

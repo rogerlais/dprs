@@ -47,6 +47,7 @@ rem 5 - Ajustar o auto logon
 regedit /v Mesclar_Computador.reg
 
 rem 6 - copiar atalho de desintalação para desktop comum
+-----Criar atalho !!!!!! ao invés de copiar
 copy Prompt_Comando.* C:\DOCUME~1\ALLUSE~1\Desktop /y
 
 rem 7 - copia batch "chama_ponto.bat" de chamada do ponto para inicializar comum
