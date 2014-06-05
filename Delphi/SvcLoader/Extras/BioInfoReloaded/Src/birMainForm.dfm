@@ -16,9 +16,9 @@ object Form1: TForm1
   TextHeight = 13
   object dbgrdMain: TDBGrid
     Left = 0
-    Top = 36
+    Top = 34
     Width = 719
-    Height = 486
+    Height = 488
     Align = alClient
     DataSource = MainDM.dsBioFiles
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
@@ -80,7 +80,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 719
-    Height = 36
+    Height = 34
     ActionManager = actmgrMain
     Caption = 'acttbMainForm'
     ColorMap.HighlightColor = 15660791
@@ -707,6 +707,11 @@ object Form1: TForm1
       item
         Items = <
           item
+            Action = actLocate
+            Caption = 'L&ocalizar'
+            ImageIndex = 1
+          end
+          item
             Action = actConfig
             Caption = '&Configura'#231#245'es'
             ImageIndex = 2
@@ -715,11 +720,6 @@ object Form1: TForm1
             Action = actExportBioFiles
             Caption = '&Exportar arquivos'
             ImageIndex = 3
-          end
-          item
-            Action = actLocate
-            Caption = '&Localizar'
-            ImageIndex = 1
           end>
         ActionBar = acttbMainForm
       end>

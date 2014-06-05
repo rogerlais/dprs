@@ -1,0 +1,27 @@
+Objetivos:
+Montar unidade de rede(documentos)
+Prover ganchos para execução scripts dinamicos
+Alterar o papel de parede para refletir as configurações do computador
+
+
+
+
+[Montar unidade de rede(documentos)]
+- Identificar o computador por seu nome e mapear a unidade de rede relacionada
+- 
+
+[Prover ganchos para ser executar scripts dinamicos]
+- Scripts que podem ser inseridos em pastas, uma para execução sempre na inicialização e outra apenas uma vez até quando obtido sucesso
+- Repetir este gancho para pasta de qualquer usuário <a definir local no perfil deste>
+Ex. 
+for a in always 
+  call a 
+ 
+for b in onetime 
+  call b 
+  del b
+  
+  
+  
+[Alterar o papel de parede para refletir as configurações do computador]
+- Chamada o BGInfo com os parametros salvos no arquivo <>
