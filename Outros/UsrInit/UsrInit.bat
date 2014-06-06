@@ -1,3 +1,4 @@
+REM Author: Roger 20140606
 cls
 @echo "USRINIT - 1.0.2014(PDC,STD,WKS,CAE)"
 @echo off
