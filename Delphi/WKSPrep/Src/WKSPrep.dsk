@@ -1,93 +1,46 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\StrHnd.pas',0,1,10,1,1,0,0,,
-File_1=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdStack.pas',0,1,429,1,446,0,0,,
-File_2=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdStackWindows.pas',0,1,334,1,354,0,0,,
-File_3=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdWinsock2.pas',0,1,6479,1,6498,0,0,,
-File_4=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdWship6.pas',0,1,541,1,556,0,0,,
-File_5=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdGlobal.pas',0,1,5893,1,5914,0,0,,
-File_6=TSourceModule,'C:\Sw\WorkDir\Pcks\WMILib\Src\ActiveDs_TLB.pas',0,1,1284,21,1297,0,0,,
-File_7=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\rtl\win\Ole2.pas',0,1,2214,14,2221,0,0,,
-File_8=TSourceModule,'C:\Sw\WorkDir\Pcks\Jedi\jwscl\source\JwsclKnownSid.pas',0,1,653,36,684,0,0,,
-File_9=TSourceModule,'C:\Sw\WorkDir\Pcks\WinNetLib\Src\LmAccess.pas',0,1,53,94,62,0,0,,{1
-File_10=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\win\Windows.pas',0,1,32513,14,32526,0,0,,
-File_11=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\rtl\win\ActiveX.pas',0,1,3856,14,3863,0,0,,
-File_12=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\SOURCE\WIN32\RTL\SYS\System.pas',0,1,1,70,14,0,0,,
-File_13=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\win\UrlMon.pas',0,1,1944,1,1957,0,0,,
-File_14=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\common\ComObj.pas',0,1,1262,1,1275,0,0,,
+File_0=TSourceModule,'C:\Sw\WorkDir\Pcks\TRE\Src\TREConfig.pas',0,1,71,94,77,0,0,,
+File_1=TSourceModule,'C:\Sw\WorkDir\Pcks\TRE\Src\TREUtils.pas',0,1,93,15,106,0,0,,
+File_2=TSourceModule,'C:\Sw\WorkDir\Pcks\TRE\Src\TREZones.pas',0,1,216,69,11,0,0,,
+File_3=TSourceModule,'C:\Sw\WorkDir\Pcks\WMILib\Src\wmiUtils.pas',0,1,12,1,24,0,0,,
+File_4=TSourceModule,'C:\Sw\WorkDir\Pcks\WMILib\Src\WbemScripting_TLB.pas',0,1,361,29,372,0,0,,
+File_5=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Demos\WMIDemoMainForm.pas',0,1,32,47,42,0,0,,
+File_6=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas',0,1,217,44,227,0,0,,{1,574,30}
+File_7=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepMainForm.pas',0,1,89,94,161,0,0,,
+File_8=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\StrHnd.pas',0,1,10,1,1,0,0,,
+File_9=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdStack.pas',0,1,429,1,446,0,0,,
+File_10=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdStackWindows.pas',0,1,334,1,354,0,0,,
+File_11=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdWinsock2.pas',0,1,6479,1,6498,0,0,,
+File_12=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdWship6.pas',0,1,541,1,556,0,0,,
+File_13=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdGlobal.pas',0,1,5893,1,5914,0,0,,
+File_14=TSourceModule,'C:\Sw\WorkDir\Pcks\WMILib\Src\ActiveDs_TLB.pas',0,1,1284,21,1297,0,0,,
 
 [Modules]
-Module0=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas
-Module1=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepMainForm.pas
+Module0=C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpMainForm.pas
+Module1=C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpController.pas
 Module2=default.htm
-Module3=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\PCTPrep.dproj
-Module4=C:\Sw\WorkDir\Pcks\TRE\Src\TREConfig.pas
-Module5=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Demos\WMIDemoMainForm.pas
-Module6=C:\Sw\WorkDir\Pcks\TRE\Src\TREUtils.pas
-Module7=C:\Sw\WorkDir\Pcks\TRE\Src\TREZones.pas
-Module8=C:\Sw\WorkDir\Pcks\WMILib\Src\wmiUtils.pas
-Module9=C:\Sw\WorkDir\Pcks\WMILib\Src\WbemScripting_TLB.pas
-Count=10
+Count=3
 EditWindowCount=1
 
-[C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepMainForm.pas]
+[C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpMainForm.pas]
 ModuleType=TSourceModule
 FormState=1
 FormOnTop=1
 
+[C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpController.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
 [default.htm]
 ModuleType=TURLModule
 
-[C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\PCTPrep.dproj]
-ModuleType=TBaseProject
-
-[C:\Sw\WorkDir\Pcks\TRE\Src\TREConfig.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Demos\WMIDemoMainForm.pas]
-ModuleType=TSourceModule
-FormState=1
-FormOnTop=0
-
-[C:\Sw\WorkDir\Pcks\TRE\Src\TREUtils.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[C:\Sw\WorkDir\Pcks\TRE\Src\TREZones.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[C:\Sw\WorkDir\Pcks\WMILib\Src\wmiUtils.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
-[C:\Sw\WorkDir\Pcks\WMILib\Src\WbemScripting_TLB.pas]
-ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
-
 [EditWindow0]
-ViewCount=10
-CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas
+ViewCount=3
+CurrentEditView=C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpMainForm.pas
 View0=0
 View1=1
 View2=2
-View3=3
-View4=4
-View5=5
-View6=6
-View7=7
-View8=8
-View9=9
 PercentageSizes=1
 Create=1
 Visible=1
@@ -121,102 +74,25 @@ WelcomePageURL=bds:/default.htm
 
 [View1]
 CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Pcks\WMILib\Src\WbemScripting_TLB.pas
+Module=C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpMainForm.pas
 CursorX=29
-CursorY=372
-TopLine=361
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\Sw\WorkDir\Pcks\WMILib\Src\WbemScripting_TLB.pas
-
-[View2]
-CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepMainForm.pas
-CursorX=94
-CursorY=161
-TopLine=89
+CursorY=24
+TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=Borland.FormDesignerView
 
-[View3]
+[View2]
 CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas
-CursorX=44
-CursorY=227
-TopLine=217
-LeftCol=1
-Elisions=
-Bookmarks={1,574,30}
-EditViewName=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas
-
-[View4]
-CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\PCTPrep.dpr
-CursorX=50
-CursorY=7
+Module=C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpController.pas
+CursorX=73
+CursorY=6
 TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\PCTPrep.dpr
-
-[View5]
-CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Pcks\TRE\Src\TREZones.pas
-CursorX=69
-CursorY=11
-TopLine=216
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\Sw\WorkDir\Pcks\TRE\Src\TREZones.pas
-
-[View6]
-CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Pcks\TRE\Src\TREUtils.pas
-CursorX=15
-CursorY=106
-TopLine=93
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\Sw\WorkDir\Pcks\TRE\Src\TREUtils.pas
-
-[View7]
-CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Pcks\TRE\Src\TREConfig.pas
-CursorX=94
-CursorY=77
-TopLine=71
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\Sw\WorkDir\Pcks\TRE\Src\TREConfig.pas
-
-[View8]
-CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Demos\WMIDemoMainForm.pas
-CursorX=47
-CursorY=42
-TopLine=32
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Demos\WMIDemoMainForm.pas
-
-[View9]
-CustomEditViewType=TEditView
-Module=C:\Sw\WorkDir\Pcks\WMILib\Src\wmiUtils.pas
-CursorX=1
-CursorY=24
-TopLine=12
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\Sw\WorkDir\Pcks\WMILib\Src\wmiUtils.pas
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpController.pas
 
 [Watches]
 Count=0
@@ -243,13 +119,7 @@ Dockable=1
 StayOnTop=0
 
 [Breakpoints]
-Count=6
-Breakpoint0='c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\common\Classes.pas',5504,'',0,0,'',1,0,0,'',1,'','','',0,''
-Breakpoint1='C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas',465,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint2='C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Demos\WMIDemoMainForm.pas',71,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint3='C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepMainForm.pas',77,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint4='C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepMainForm.pas',147,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint5='C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\PCTPrep.dpr',11,'',0,1,'',1,0,0,'',1,'','','',0,''
+Count=0
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -558,8 +428,8 @@ SplitPos=69
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Action,
-ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0
+SelectedItem=Caption,
+ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,BevelEdges=0,Font=0,Margins=0,EditLabel=1,EditLabel.Font=0,EditLabel.Margins=0,Touch=0,GlassFrame=0,HorzScrollBar=0,Padding=0
 
 [ModelViewTool]
 PercentageSizes=1
@@ -759,7 +629,7 @@ LRDockWidth=2755
 Dockable=1
 StayOnTop=0
 TabPosition=1
-ActiveTabID=ToDo List
+ActiveTabID=MessageView
 TabDockClients=MessageView,ToDo List
 
 [DockSite4]
@@ -785,7 +655,4 @@ StayOnTop=0
 TabPosition=1
 ActiveTabID=LocalVarsWindow
 TabDockClients=LocalVarsWindow,WatchWindow,CallStackWindow,ThreadStatusWindow,BreakpointWindow,DebugLogView,FindReferencsForm,RefactoringForm
-
-[ActiveProject]
-ActiveProject=7
 

@@ -1,0 +1,20 @@
+Objetivos:
+- Automatizar o processo de configuração da identidade do computador, bem como ajustar os aplicativos em função da alteração desta identidade.
+
+[Inicialização pelo modo automático]
+1 - Libera-se apenas as opções na ordem direta
+	1.1 - Captura adaptador primário, id da zona e do computador
+	1.2 - Ajuste de endereçamento
+	1.3 - Ajuste de nome
+	1.4 - Ingresso no domínio
+	1.5 - Ajuste dos aplicativos e demais configurações
+	
+	
+	
+[Captura adaptador, zona e ordinal estação]
+1 - Operador informa número da zona e da estação
+2 - Sistema varre os adaptadores do PC e aceita qualquer seleção dos ativos
+3 - Calculado o endereço a partir dos dados acima tenta-se resolver e atingir o mesmo, visando evitar duplicidade
+
+
+Resolve endereço IP da nova identidade, 
