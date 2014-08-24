@@ -44,7 +44,7 @@ var
 implementation
 
 uses
-	 FileHnd, vvConfig, StrHnd, IdEMailAddress, WinNetHnd, AppLog, vvMainForm, Str_Pas;
+	 FileHnd, vvConfig, StrHnd, IdEMailAddress, WinNetHnd, AppLog, vvMainForm, Str_Pas, TREUtils;
 
 {$R *.dfm}
 
@@ -105,11 +105,22 @@ procedure TdtmdMain.InitInfoVersions;
 Rotina de inicialização para a carga dos parametros iniciais e perfil associado
 }
 var
-    baseConfFile : string;
+	 baseConfFile : string;
+	 primaryPC : string;
 begin
-    //Carga dos parametros iniciais
-    baseConfFile := Self.LoadURL(VERSION_URL_FILE);
-    LoadGlobalInfo(baseConfFile);
+	 //Carga dos parametros iniciais
+	 try
+	 baseConfFile := Self.LoadURL(VERSION_URL_FILE);
+	 LoadGlobalInfo(baseConfFile);
+	 except
+		//no erro tenta identificar computador primário e baixar dele
+		{$IFDEF DEBUG}
+		primaryPC:=WinNetHnd.GetComputerName();
+		{$ELSE}
+		primaryPC:=WinNetHnd.GetComputerName();
+		{$ENDIF}
+		primaryPC:=TTREUtils.GetZonePrimaryComputer( primaryPC );
+	 end;
 end;
 
 function TdtmdMain.LoadURL(const url : string) : string;

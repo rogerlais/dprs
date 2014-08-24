@@ -1,8 +1,8 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{4E6BCBDA-6E74-4EB1-BBEC-37B487532B36}</ProjectGuid>
+			<ProjectGuid>{F507F4B6-B6AA-4035-BF1E-3C0667345A50}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
-			<MainSource>VVer.dpr</MainSource>
+			<MainSource>VVerSvc.dpr</MainSource>
 			<Config Condition="'$(Config)'==''">Debug</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
@@ -20,54 +20,39 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
-			<DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
-			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
-			<DCC_DebugInformation>false</DCC_DebugInformation>
-			<DCC_DependencyCheckOutputName>VVer.exe</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>VVerSvc.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
 			<DCC_Platform>x86</DCC_Platform>
-			<DCC_E>false</DCC_E>
-			<DCC_N>false</DCC_N>
-			<DCC_S>false</DCC_S>
-			<DCC_F>false</DCC_F>
-			<DCC_K>false</DCC_K>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_DependencyCheckOutputName>..\Release\VVerSvc.exe</DCC_DependencyCheckOutputName>
 			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
 			<DCC_ExeOutput>..\Release</DCC_ExeOutput>
 			<DCC_BplOutput>..\Release</DCC_BplOutput>
 			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
-			<DCC_DependencyCheckOutputName>..\Release\VVer.exe</DCC_DependencyCheckOutputName>
 			<DCC_DcuOutput>..\Release</DCC_DcuOutput>
 			<DCC_DcpOutput>..\Release</DCC_DcpOutput>
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
-			<DCC_ExeOutput>..\Debug</DCC_ExeOutput>
-			<DCC_Define>DEBUG_ALL;DEBUG;VVer;FileInfo;$(DCC_Define)</DCC_Define>
+			<DCC_DependencyCheckOutputName>..\Debug\VVerSvc.exe</DCC_DependencyCheckOutputName>
+			<DCC_Define>DEBUG;DEBUG_ALL;$(DCC_Define)</DCC_Define>
 			<DCC_BplOutput>..\Debug</DCC_BplOutput>
+			<DCC_ExeOutput>..\Debug</DCC_ExeOutput>
 			<DCC_DcpOutput>..\Debug</DCC_DcpOutput>
 			<DCC_DcuOutput>..\Debug</DCC_DcuOutput>
-			<DCC_DependencyCheckOutputName>..\Debug\VVer.exe</DCC_DependencyCheckOutputName>
 		</PropertyGroup>
 		<ItemGroup>
-			<DelphiCompile Include="VVer.dpr">
+			<DelphiCompile Include="VVerSvc.dpr">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
-			<DCCReference Include="vvMainForm.pas">
-				<Form>Form1</Form>
+			<DCCReference Include="vvSvcDM.pas">
+				<Form>VVerService</Form>
+				<DesignClass>TService</DesignClass>
 			</DCCReference>
-			<DCCReference Include="vvConfig.pas"/>
-			<DCCReference Include="vvMainDataModule.pas">
-				<Form>dtmdMain</Form>
-				<DesignClass>TDataModule</DesignClass>
-			</DCCReference>
-			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREUtils.pas"/>
-			<None Include="..\Docs\Historico.txt"/>
-			<None Include="..\Docs\Requisitos.txt"/>
+			<DCCReference Include="vvsConsts.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -87,7 +72,7 @@
 			<BorlandProject>
 				<Delphi.Personality>
 					<Source>
-						<Source Name="MainSource">VVer.dpr</Source>
+						<Source Name="MainSource">VVerSvc.dpr</Source>
 					</Source>
 					<Parameters>
 						<Parameters Name="UseLauncher">False</Parameters>
@@ -95,12 +80,12 @@
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
 					</Parameters>
 					<VersionInfo>
-						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
-						<VersionInfo Name="MajorVer">2</VersionInfo>
-						<VersionInfo Name="MinorVer">1</VersionInfo>
-						<VersionInfo Name="Release">2012</VersionInfo>
-						<VersionInfo Name="Build">18</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">0</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -110,17 +95,23 @@
 						<VersionInfo Name="CodePage">1252</VersionInfo>
 					</VersionInfo>
 					<VersionInfoKeys>
-						<VersionInfoKeys Name="CompanyName">TRE-PB - COSUP - SESOP</VersionInfoKeys>
-						<VersionInfoKeys Name="FileDescription">Verificador de versões de sistemas eleitorais</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">2.1.2012.18</VersionInfoKeys>
-						<VersionInfoKeys Name="InternalName">VVer</VersionInfoKeys>
-						<VersionInfoKeys Name="LegalCopyright">SESOP</VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
 						<VersionInfoKeys Name="ProductName"/>
-						<VersionInfoKeys Name="ProductVersion">2.1.2012.18</VersionInfoKeys>
-						<VersionInfoKeys Name="Comments">Rogerlais Andrade</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcboffice2k140.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcbofficexp140.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k140.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclofficexp140.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+					</Excluded_Packages>
 				</Delphi.Personality>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>

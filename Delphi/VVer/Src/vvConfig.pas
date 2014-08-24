@@ -9,7 +9,7 @@ unit vvConfig;
 interface
 
 uses
-    Classes, SysUtils, Windows, FileHnd, AppSettings, Contnrs, WinReg32;
+    Classes, SysUtils, Windows, FileHnd, AppSettings, Contnrs, WinReg32, vvsConsts;
 
 type
     TVVUpdateStatus = (usUnknow, usOld, usOK);
@@ -62,7 +62,7 @@ type
 
     TVVConfig = class(TBaseStartSettings)
     private
-        FProfileInfo : TVVProgInfo;
+        _ProfileInfo : TVVProgInfo;
         FProfileName : string;
         function GetGlobalStatus : string;
         function GetInfoText : string;
@@ -71,12 +71,13 @@ type
         function GetSenderAddress : string;
         function GetSenderDescription : string;
         function GetEnsureNotification : boolean;
+        function GetProfileInfo : TVVProgInfo;
     public
         constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
         destructor Destroy; override;
         property GlobalStatus : string read GetGlobalStatus;
         property InfoText : string read GetInfoText;
-        property ProfileInfo : TVVProgInfo read FProfileInfo;
+        property ProfileInfo : TVVProgInfo read GetProfileInfo;
         property AutoMode : boolean read GetAutoMode;
         property ProfileName : string read FProfileName;
         property NotificationList : string read GetNotificationList;
@@ -93,53 +94,58 @@ var
 implementation
 
 uses
-    WinNetHnd, StrHnd, TREUtils, vvMainDataModule, FileInfo;
+    WinNetHnd, StrHnd, TREUtils, vvMainDataModule, FileInfo, TREConsts, JclSysInfo;
 
 procedure LoadGlobalInfo(const Filename : string);
+ ///Monta rotina de carga das configurações iniciais, na ordem:
+ /// 1 - Arquivo local de onde serão carregados os dados remotos
+ ///
+ /// Máquina primária no caminho do repositório
 begin
+    {TODO -oroger -cdsg : Carga dinamica do arquivo de configurações do serviço}
     GlobalInfo := TVVConfig.Create(filename, 'VVer');
 end;
 
 { TVVInfo }
 
 constructor TVVConfig.Create(const FileName, AKeyPrefix : string);
+    ///
+    /// Cria e carrega o perfil deste computador de acordo com o nome do mesmo.
+    /// Monta o nome prefixando o sistema operacional com o tipo da estação
 var
-    profileFilename, profileURL, TargetName : string;
-    compId, ZonId : Integer;
+    profileFilename, TargetName : string;
+    ct : TTREComputerType;
 begin
+    {TODO -oroger -cdsg : Pegar o nome do perfil atraves do AD do controlador de domínio, exceto para os casos onde não houve o mesmo }
+    {TODO -oroger -cdsg : Opção para o caso acima é contato com o servidor configurado para o serviço }
     inherited;
     //Identifica o perfil baseado no ordinal do nome do computador. Para id > 10 -> PCT, cc máquina zona
-      {$IFDEF DEBUG}
-    TargetName := 'ZPB999PDC201';
-      {$ELSE}
-    TargetName := GetComputerName();
-      {$ENDIF}
-
-    try
-        compId := TTREUtils.GetComputerId(TargetName);
-        ZonId  := TTREUtils.GetComputerZone(TargetName);
-    except
-		 on E : Exception do begin
-			raise Exception.CreateFmt('"%s" não representa um nome de computador válido.', [ TargetName ] );
-		 end;
+    if (System.DebugHook <> 0) then begin //Depurando na IDE
+        TargetName := DBG_CLIENT_COMPUTERNAME;
+    end else begin //Execução normal
+        TargetName := GetComputerName();
     end;
-
-    if zonId >= 200 then begin //Assume-se PCT
-        Self.FProfileName := 'NATU';
-    end else begin //Assume-se Maquina zona ou fora do padrao
-		 if (( compId <= 0) or ( compId > 10) ) then begin
-			 Self.FProfileName := 'Outros';
-		 end else begin
-		 	 Self.FProfileName := 'ZE';
-		 end;
+    ct := TTREUtils.GetComputerTypeByName(TargetName);
+    case ct of
+        ctUnknow, ctCentralPDC, ctZonePDC, ctTREWKS : begin
+            Self.FProfileName := 'Outros';
+        end;
+        ctCentralWKS, ctZoneWKS, ctZoneSTD : begin
+            Self.FProfileName := 'ZE';
+        end;
+        ctNATT : begin
+            Self.FProfileName := 'NATT';
+        end;
+        ctNATU : begin
+            Self.FProfileName := 'NATU';
+        end;
+        ctDFE : begin
+            Self.FProfileName := 'DFE';
+        end;
+        ctVirtual : begin
+            Self.FProfileName := 'VM';
+        end;
     end;
-	 profileURL      := Self.ReadString('Profiles\' + Self.ProfileName + '\VerInfo');
-	 if ( profileURL = EmptyStr ) then begin
-		raise Exception.CreateFmt('URL de configurações para o perfil "%s" não definida/carregada no arqquivo de configuração raiz', [ Self.ProfileName ] );
-	 end;
-    profileFilename := dtmdMain.LoadURL(profileURL);
-    //Buscar a entrada correta para a URL do perfil
-    Self.FProfileInfo := TVVProgInfo.Create(profileFilename);
 end;
 
 destructor TVVConfig.Destroy;
@@ -185,12 +191,16 @@ function TVVConfig.GetGlobalStatus : string;
 var
     x : Integer;
 begin
-    Result := 'OK';
-    for x := 0 to Self.FProfileInfo.Count - 1 do begin
-        if not Self.FProfileInfo.Programs[x].isUpdated then begin
-            Result := 'Pendente';
-            Exit;
+    if (Assigned(Self.ProfileInfo)) then begin
+        Result := 'OK';
+        for x := 0 to Self.ProfileInfo.Count - 1 do begin
+            if not Self._ProfileInfo.Programs[x].isUpdated then begin
+                Result := 'Pendente';
+                Exit;
+            end;
         end;
+    end else begin
+        Result := 'Erro!';
     end;
 end;
 
@@ -199,19 +209,23 @@ var
     x : Integer;
     p : TProgItem;
 begin
-    Result := 'Resumo da verficação das versões'#13#10;
-    Result := Result + 'Computador: ' + WinNetHnd.GetComputerName();
-    for x := 0 to Self.FProfileInfo.Count - 1 do begin
-        Result := Result + #13#10;
-        p      := Self.FProfileInfo.Programs[x];
-        Result := Result + 'Sistema: ' + p.Desc + #13#10;
-        Result := Result + 'Versão instalada: ' + p.CurrentVersion + #13#10;
-        Result := Result + 'Versão esperada: ' + p.ExpectedVerEx + #13#10;
-        if p.isUpdated then begin
-            Result := Result + 'Situação: Atualizado'#13#10;
-        end else begin
-            Result := Result + 'Situação: Pendente'#13#10;
+    if (Assigned(Self.ProfileInfo)) then begin
+        Result := 'Resumo da verficação das versões'#13#10;
+        Result := Result + 'Computador: ' + WinNetHnd.GetComputerName();
+        for x := 0 to Self.ProfileInfo.Count - 1 do begin
+            Result := Result + #13#10;
+            p      := Self._ProfileInfo.Programs[x];
+            Result := Result + 'Sistema: ' + p.Desc + #13#10;
+            Result := Result + 'Versão instalada: ' + p.CurrentVersion + #13#10;
+            Result := Result + 'Versão esperada: ' + p.ExpectedVerEx + #13#10;
+            if p.isUpdated then begin
+                Result := Result + 'Situação: Atualizado'#13#10;
+            end else begin
+                Result := Result + 'Situação: Pendente'#13#10;
+            end;
         end;
+    end else begin
+        Result := 'Sem perfil identificado para este computador';
     end;
 end;
 
@@ -219,6 +233,44 @@ function TVVConfig.GetNotificationList : string;
 begin
     {TODO -oroger -cfuture : manifestas a criar }
     Result := Self.ReadString('NotificationList');
+end;
+
+function TVVConfig.GetProfileInfo : TVVProgInfo;
+var
+    profileURL, SOProfilePrefix, profileFilename : string;
+begin
+    if (Assigned(Self._ProfileInfo)) then begin
+        Result := Self._ProfileInfo;
+        Exit;
+    end;
+    //Sufixa o perfil de acordo com o SO encontrado no cliente
+    if (GetWindowsVersion() = wvWin7) then begin
+        SOProfilePrefix := 'W7.';
+    end else begin
+        if (GetWindowsVersion() = wvWinXP) then begin
+            SOProfilePrefix := 'XP.';
+        end else begin
+            //Resolver para caso de SO não identificado
+            SOProfilePrefix := 'XP.';
+        end;
+    end;
+
+    //Tenta com o SO explicito
+    profileURL := Self.ReadString('Profiles\' + SOProfilePrefix + Self.ProfileName + '\VerInfo');
+    if (profileURL = EmptyStr) then begin //Não havendo para o SO explicito, tenta para todos
+        SOProfilePrefix := ''; //Vazio -> todos/qualquer
+        profileURL      := Self.ReadString('Profiles\' + SOProfilePrefix + Self.ProfileName + '\VerInfo');
+        if (profileURL = EmptyStr) then begin //tenta para XP(forçado)
+            SOProfilePrefix := 'XP.';
+            profileURL      := Self.ReadString('Profiles\' + SOProfilePrefix + Self.ProfileName + '\VerInfo');
+        end;
+    end;
+    if (profileURL <> EmptyStr) then begin
+        profileFilename   := dtmdMain.LoadURL(profileURL);
+        //Buscar a entrada correta para a URL do perfil
+        Self._ProfileInfo := TVVProgInfo.Create(profileFilename);
+    end;
+    Result := Self._ProfileInfo;
 end;
 
 function TVVConfig.GetSenderAddress : string;
