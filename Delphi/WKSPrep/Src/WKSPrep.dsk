@@ -1,19 +1,19 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'C:\Sw\WorkDir\Pcks\TRE\Src\TREConfig.pas',0,1,71,94,77,0,0,,
-File_1=TSourceModule,'C:\Sw\WorkDir\Pcks\TRE\Src\TREUtils.pas',0,1,93,15,106,0,0,,
-File_2=TSourceModule,'C:\Sw\WorkDir\Pcks\TRE\Src\TREZones.pas',0,1,216,69,11,0,0,,
-File_3=TSourceModule,'C:\Sw\WorkDir\Pcks\WMILib\Src\wmiUtils.pas',0,1,12,1,24,0,0,,
-File_4=TSourceModule,'C:\Sw\WorkDir\Pcks\WMILib\Src\WbemScripting_TLB.pas',0,1,361,29,372,0,0,,
-File_5=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Demos\WMIDemoMainForm.pas',0,1,32,47,42,0,0,,
-File_6=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas',0,1,217,44,227,0,0,,{1,574,30}
-File_7=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepMainForm.pas',0,1,89,94,161,0,0,,
-File_8=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\StrHnd.pas',0,1,10,1,1,0,0,,
-File_9=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdStack.pas',0,1,429,1,446,0,0,,
-File_10=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdStackWindows.pas',0,1,334,1,354,0,0,,
-File_11=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdWinsock2.pas',0,1,6479,1,6498,0,0,,
-File_12=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdWship6.pas',0,1,541,1,556,0,0,,
-File_13=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdGlobal.pas',0,1,5893,1,5914,0,0,,
-File_14=TSourceModule,'C:\Sw\WorkDir\Pcks\WMILib\Src\ActiveDs_TLB.pas',0,1,1284,21,1297,0,0,,
+File_0=TSourceModule,'C:\Sw\WorkDir\Pcks\TRE\Src\TREUtils.pas',0,1,3,1,1,0,0,,
+File_1=TSourceModule,'C:\Sw\WorkDir\Pcks\TRE\Src\TREUsers.pas',0,1,67,1,1,0,0,,
+File_2=TSourceModule,'C:\Sw\WorkDir\Pcks\TRE\Src\TREConsts.pas',0,1,21,1,1,0,0,,
+File_3=TSourceModule,'C:\Sw\WorkDir\Pcks\TRE\Src\TREZones.pas',0,1,79,69,11,0,0,,
+File_4=TSourceModule,'C:\Sw\WorkDir\Pcks\TRE\Src\TREConfig.pas',0,1,1,1,1,0,0,,
+File_5=TSourceModule,'C:\Sw\WorkDir\Pcks\WMILib\Src\wmiUtils.pas',0,1,12,1,24,0,0,,
+File_6=TSourceModule,'C:\Sw\WorkDir\Pcks\WMILib\Src\WbemScripting_TLB.pas',0,1,361,29,372,0,0,,
+File_7=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Demos\WMIDemoMainForm.pas',0,1,32,47,42,0,0,,
+File_8=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepUtils.pas',0,1,217,44,227,0,0,,{1
+File_9=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\PCTPrep\Src\pctprepMainForm.pas',0,1,89,94,161,0,0,,
+File_10=TSourceModule,'C:\Sw\WorkDir\Pcks\XPLib\Src\StrHnd.pas',0,1,10,1,1,0,0,,
+File_11=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdStack.pas',0,1,429,1,446,0,0,,
+File_12=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdStackWindows.pas',0,1,334,1,354,0,0,,
+File_13=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdWinsock2.pas',0,1,6479,1,6498,0,0,,
+File_14=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Indy\Indy10\System\IdWship6.pas',0,1,541,1,556,0,0,,
 
 [Modules]
 Module0=C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpMainForm.pas
@@ -25,7 +25,7 @@ EditWindowCount=1
 [C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpMainForm.pas]
 ModuleType=TSourceModule
 FormState=1
-FormOnTop=1
+FormOnTop=0
 
 [C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpController.pas]
 ModuleType=TSourceModule
@@ -75,13 +75,13 @@ WelcomePageURL=bds:/default.htm
 [View1]
 CustomEditViewType=TEditView
 Module=C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpMainForm.pas
-CursorX=29
-CursorY=24
+CursorX=58
+CursorY=8
 TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=Borland.FormDesignerView
+EditViewName=C:\Sw\WorkDir\Dprs\Delphi\WKSPrep\Src\wpMainForm.pas
 
 [View2]
 CustomEditViewType=TEditView
@@ -368,11 +368,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=5000
+Width=10000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=5000
+ClientWidth=10000
 ClientHeight=1574
 TBDockHeight=1157
 LRDockWidth=3677
@@ -380,7 +380,7 @@ Dockable=1
 StayOnTop=0
 Column0Width=314
 Column1Width=30
-Column2Width=273
+Column2Width=150
 Column3Width=172
 Column4Width=129
 SortOrder=4
@@ -425,11 +425,6 @@ LRDockWidth=1177
 Dockable=1
 StayOnTop=0
 SplitPos=69
-
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Caption,
-ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,BevelEdges=0,Font=0,Margins=0,EditLabel=1,EditLabel.Font=0,EditLabel.Margins=0,Touch=0,GlassFrame=0,HorzScrollBar=0,Padding=0
 
 [ModelViewTool]
 PercentageSizes=1
