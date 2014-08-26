@@ -23,19 +23,21 @@ type
         function GetPathTempDownload : string;
         function GetNetServicePort : Integer;
         function GetCycleInterval : Integer;
-		 function GetParentServer : string;
-		 function GetDebugLevel : Integer;
-	 protected
+        function GetParentServer : string;
+        function GetDebugLevel : Integer;
+        function GetClientName : string;
+    protected
 
-	 public
-		 property PathServiceLog : string read GetPathServiceLog;
-		 property NotificationSender : string read GetNotificationSender;
-		 property PathLocalInstSeg : string read GetPathLocalInstSeg;
-		 property PathTempDownload : string read GetPathTempDownload;
-		 property NetServicePort : Integer read GetNetServicePort;
-		 property CycleInterval : Integer read GetCycleInterval;
-		 property ParentServer : string read GetParentServer;
-		 property DebugLevel : integer read GetDebugLevel;
+    public
+        property PathServiceLog : string read GetPathServiceLog;
+        property NotificationSender : string read GetNotificationSender;
+        property PathLocalInstSeg : string read GetPathLocalInstSeg;
+        property PathTempDownload : string read GetPathTempDownload;
+        property NetServicePort : Integer read GetNetServicePort;
+        property CycleInterval : Integer read GetCycleInterval;
+        property ParentServer : string read GetParentServer;
+        property DebugLevel : Integer read GetDebugLevel;
+        property ClientName : string read GetClientName;
     end;
 
 var
@@ -44,20 +46,21 @@ var
 implementation
 
 uses
-	 FileHnd, SysUtils, WinNetHnd, AppSettings, TREUtils;
+    FileHnd, SysUtils, WinNetHnd, AppSettings, TREUtils;
 
 const
-    IE_CYCLE_INTERVAL = 'CycleInterval';
-    DV_CYCLE_INTERVAL = 60000;
+    IE_CYCLE_INTERVAL  = 'CycleInterval';
+    DV_CYCLE_INTERVAL  = 60000;
     IE_NOTIFICATION_SENDER = 'NotificationSender';
     DV_NOTIFICATION_SENDER = 'sesop.l@tre-pb.jus.br';
     IE_NOTIFICATION_LIST = 'NotificationList';
     DV_NOTIFICATION_LIST = 'sesop@tre-pb.jus.br';
     IE_ROOT_SERVERNAME = 'RootServerName';          //Nome do computador primario
     DV_ROOT_SERVERNAME = 'vver.tre-pb.gov.br';      //CNAME para o PDC de verificação de versões
-    IE_DEBUG_LEVEL = 'DebugLevel';
+    IE_DEBUG_LEVEL     = 'DebugLevel';
     IE_PATH_LOCAL_INSTSEG = 'LocalInstSeg';
     DV_PATH_LOCAL_INSTSEG = 'D:\Comum\InstSeg\VVer';
+    IE_PATH_LOCAL_TEMP = 'LocalTempDir';
 
     IE_NET_TCP_PORT = 'Common\TCPPort';
     DV_NET_TCP_PORT = 12014;
@@ -75,12 +78,21 @@ var
 begin
     //Instancia de configuração com o mesmo nome do runtime + .ini
     filename    := RemoveFileExtension(ParamStr(0)) + APP_SETTINGS_EXTENSION_FILE_INI;
-	 VVSvcConfig := TVVSConfig.Create(filename, APP_SERVICE_NAME);
-	 TLogFile.GetDefaultLogFile.DebugLevel:=VVSvcConfig.DebugLevel;
+    VVSvcConfig := TVVSConfig.Create(filename, APP_SERVICE_NAME);
+    TLogFile.GetDefaultLogFile.DebugLevel := VVSvcConfig.DebugLevel;
 end;
 
 
 { TVVSConfig }
+
+function TVVSConfig.GetClientName : string;
+begin
+    if (System.DebugHook <> 0) then begin //Depurando na IDE
+        Result := 'Cliente_Debug';
+    end else begin //Execução normal
+        Result := WinNetHnd.GetComputerName();
+    end;
+end;
 
 function TVVSConfig.GetCycleInterval : Integer;
 var
@@ -95,9 +107,9 @@ begin
     end;
 end;
 
-function TVVSConfig.GetDebugLevel: Integer;
+function TVVSConfig.GetDebugLevel : Integer;
 begin
-	 Result := Self.ReadIntegerDefault(IE_DEBUG_LEVEL, 0);
+    Result := Self.ReadIntegerDefault(IE_DEBUG_LEVEL, 0);
 end;
 
 function TVVSConfig.GetNetServicePort : Integer;
@@ -115,14 +127,14 @@ function TVVSConfig.GetParentServer : string;
     /// Nome do servidor pai desta instância. Caso forçado, usará apenas este. Caso vazio busca pelo PC primário, e na falta deste pela URL global de configuração
     /// </summary>
 begin
-	 Result := Self.ReadStringDefault(IE_PARENT_SERVER, DV_PARENT_SERVER);
-	 if (Result = EmptyStr) then begin
-		//Ajusta para o pc primario deste
-		if( System.DebugHook <> 0 )  then begin //Depurando na IDE
-			Result:=TTREUtils.GetZonePrimaryComputer( DBG_CLIENT_COMPUTERNAME );
-		end else begin //Execução normal
-			Result:=TTREUtils.GetZonePrimaryComputer( WinNetHnd.GetComputerName() );
-		end;
+    Result := Self.ReadStringDefault(IE_PARENT_SERVER, DV_PARENT_SERVER);
+    if (Result = EmptyStr) then begin
+		 //Ajusta para o pc primario deste
+		 {$IFDEF DEBUG}
+		 Result := TTREUtils.GetZonePrimaryComputer(DBG_CLIENT_COMPUTERNAME);
+		 {$ELSE}
+		 Result := TTREUtils.GetZonePrimaryComputer(WinNetHnd.GetComputerName());
+		 {$ENDIF}
     end;
 end;
 
@@ -143,6 +155,7 @@ function TVVSConfig.GetPathTempDownload : string;
 begin
     Result := FileHnd.GetTempDir();
     Result := Result + '\VVer'; //Trata-se de diretório a ser criado durante o processo de download
+    Result := Self.ReadStringDefault(IE_PATH_LOCAL_TEMP, Result);
 end;
 
 initialization

@@ -60,8 +60,6 @@
 			<DCCReference Include="vvSvcDM.pas"/>
 			<DCCReference Include="vvConfig.pas"/>
 			<DCCReference Include="vvsFileMgmt.pas"/>
-			<DCCReference Include="..\..\..\..\Pcks\WinSysLib\Src\WinFileNotification.pas"/>
-			<DCCReference Include="..\..\..\..\Pcks\XPLib\Src\XPThreads.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

@@ -10,7 +10,7 @@ interface
 uses
     Windows, Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, IdBaseComponent, IdMessage, IdComponent, IdRawBase,
     IdRawClient, IdIcmpClient, FileInfo, IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient, IdSMTPBase,
-    IdSMTP, XPThreads, ExtCtrls, vvsConfig, vvsServiceThread, WinFileNotification, vvsFileMgmt;
+    IdSMTP, XPThreads, ExtCtrls, vvsConfig, vvsServiceThread, vvsFileMgmt;
 
 type
     TVVerService = class(TService)
@@ -19,27 +19,23 @@ type
         fvInfo :        TFileVersionInfo;
         smtpSender :    TIdSMTP;
         tmrCycleEvent : TTimer;
-        filemonit :     TWinFileSystemMonitor;
         procedure ServiceAfterInstall(Sender : TService);
         procedure ServiceBeforeInstall(Sender : TService);
         procedure ServiceCreate(Sender : TObject);
         procedure ServiceStart(Sender : TService; var Started : boolean);
         procedure ServiceContinue(Sender : TService; var Continued : boolean);
-        procedure filemonitChanged(Sender : TWinFileSystemMonitor; AFolderItem : TFolderItemInfo);
         procedure ServicePause(Sender : TService; var Paused : boolean);
+        procedure tmrCycleEventTimer(Sender : TObject);
     private
         { Private declarations }
         FLastLogCheck :  Word;
         FLastPingReply : boolean;
         FServerThread :  TVVerServerThread;
         FClientThread :  TVVerClientThread;
-        FLocalStorage :  TManagedFolder;
-        FLastHash :      string;
-        FLastUpdate :    TDateTime;
-        procedure LocalStorageMonitoring(GoActive : boolean);
         procedure AddDestinations;
         procedure CheckLogs();
         function isIntranetConnected() : boolean;
+        procedure ServiceThreadPulse();
         function SendMailNotification(const NotificationText : string) : boolean;
     public
         class function LogFilePrefix() : string;
@@ -151,28 +147,18 @@ begin
     end;
 end;
 
+
 destructor TVVerService.Destroy;
 begin
-	 Self.FLocalStorage.Free;
-	 Self.filemonit.IsActive:=False;
-	 if ( Assigned( Self.FServerThread ) ) then begin
-		Self.FServerThread.Terminate;
-		FreeAndNil(Self.FServerThread);
-	 end;
-	 if ( Assigned( Self.FClientThread ) ) then begin
-		Self.FClientThread.Terminate;
-		FreeAndNil( Self.FClientThread);
-	 end;
+    if (Assigned(Self.FServerThread)) then begin
+        Self.FServerThread.Terminate;
+        FreeAndNil(Self.FServerThread);
+    end;
+    if (Assigned(Self.FClientThread)) then begin
+        Self.FClientThread.Terminate;
+        FreeAndNil(Self.FClientThread);
+    end;
     inherited;
-end;
-
-procedure TVVerService.filemonitChanged(Sender : TWinFileSystemMonitor; AFolderItem : TFolderItemInfo);
-begin
-    TLogfile.LogDebug('Alteração: ' + AFolderItem.Name, DBGLEVEL_ULTIMATE);
-    {
-     MessageBoxW(0, PWideChar('Alteração: ' + AFolderItem.Name ), PWideChar(Application.Title),
-         MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
-     }
 end;
 
 function TVVerService.GetServiceController : TServiceController;
@@ -209,25 +195,6 @@ begin
             Break;
         end;
     end;
-end;
-
-procedure TVVerService.LocalStorageMonitoring(GoActive : boolean);
-begin
-    if (not Assigned(Self.FLocalStorage)) then begin
-        //carrega a estrutura de arquivos do repositorio local
-        Self.FLocalStorage := TManagedFolder.Create(VVSvcConfig.PathLocalInstSeg);
-    end else begin
-        if (GoActive and (Self.filemonit.IsActive xor GoActive)) then begin
-            Self.FLocalStorage.Reload();
-		 end;
-	 end;
-	 Self.FLastHash   := Self.FLocalStorage.GlobalHash;
-	 Self.FLastUpdate := Now();
-    Self.filemonit.MonitoredChanges := [ctFileName, ctDirName, ctSize, ctLastWriteTime, ctCreationTime];
-    Self.filemonit.Folder    := VVSvcConfig.PathLocalInstSeg;
-    Self.filemonit.Recursive := True;
-    Self.filemonit.OnFolderChange := Self.filemonitChanged;
-    Self.filemonit.IsActive  := GoActive;
 end;
 
 class function TVVerService.LogFilePrefix : string;
@@ -342,7 +309,6 @@ begin
     if Assigned(Self.FServerThread) then begin
         if Self.FServerThread.Suspended then begin
             TLogFile.LogDebug('Liberando thread de serviço servidor de conexões', DBGLEVEL_ULTIMATE);
-            Self.LocalStorageMonitoring(True);
             Self.FServerThread.Start; //Dispara o thread de serviço
             Sleep(300);
         end;
@@ -465,15 +431,17 @@ begin
 
     TLogFile.LogDebug('Transição de estado durante início do serviço. Estado anterior = ' + msvc, DBGLEVEL_ULTIMATE);
 
-    if (Self.Status in [csStartPending, csStopped]) then begin // veio de parada(não pause)
-        TLogFile.Log('Criando thread de serviço no modo Servidor', lmtInformation);
-        Self.FServerThread      := vvsServiceThread.TVVerServerThread.Create(True);
-        Self.FServerThread.Name := APP_SERVICE_NAME + 'Server'; // Nome de exibição do thread primário servidor
-
-        TLogFile.Log('Criando thread de serviço no modo Cliente', lmtInformation);
-        Self.FClientThread      := vvsServiceThread.TVVerClientThread.Create(True);
-        Self.FClientThread.Name := APP_SERVICE_NAME + 'Client'; // Nome de exibição do thread primário servidor
-
+    try
+        if (Self.Status in [csStartPending, csStopped]) then begin // veio de parada(não pause)
+            TLogFile.Log('Criando thread de serviço no modo Servidor', lmtInformation);
+			 Self.FServerThread := TVVerServerThread.Create(True, APP_SERVICE_NAME + 'Server'); //thread primário servidor
+			 TLogFile.Log('Criando thread de serviço no modo Cliente', lmtInformation);
+			 Self.FClientThread := TVVerClientThread.Create(True, APP_SERVICE_NAME + 'Client'); //thread primário client
+        end;
+    except
+        on E : Exception do begin
+            TLogFile.Log('Erro fatal durante carga dos threads do serviço: ' + E.Message, lmtError);
+        end;
     end;
 
     Self.ServiceContinue(Sender, Started); // Rotinas de resumo do thread de servico
@@ -485,6 +453,26 @@ begin
     end else begin
         TLogFile.Log('Serviço falhou em sua carga.', lmtWarning);
     end;
+end;
+
+procedure TVVerService.ServiceThreadPulse;
+/// Dispara libera os threads de serviço de seu estado de ociosidade
+begin
+
+    if (Assigned(Self.FServerThread) and (not Self.FServerThread.Finished)) then begin
+        Self.FServerThread.Suspended := False;
+    end;
+
+    if (Assigned(Self.FClientThread) and (not Self.FClientThread.Finished)) then begin
+        Self.FClientThread.Suspended := False;
+    end;
+end;
+
+procedure TVVerService.tmrCycleEventTimer(Sender : TObject);
+begin
+    // Realiza a checkagem dos logs a cada mudança de hora
+    Self.CheckLogs;
+    Self.ServiceThreadPulse();
 end;
 
 end.

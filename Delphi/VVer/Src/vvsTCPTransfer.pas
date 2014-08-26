@@ -17,8 +17,8 @@ Cliente: Verde - Enviando, laranja - Sem comunicação com servidor, azul - ocioso
  {TODO -oroger -cdsg : Registrar o encerramento do windows }
 
 uses
-    SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
-    IdTCPServer, AppLog, XPFileEnumerator, IdGlobal, Menus, ExtCtrls, SyncObjs, StreamHnd, ImgList, Controls;
+	 SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
+	 IdTCPServer, AppLog, XPFileEnumerator, IdGlobal, Menus, ExtCtrls, SyncObjs, StreamHnd, ImgList, Controls, vvsConsts;
 
 type
     TThreadStringList = class(TStringList)
@@ -108,26 +108,9 @@ var
 implementation
 
 uses
-	 vvsConfig, FileHnd, StrHnd, vvSvcDM;
+    vvsConfig, FileHnd, StrHnd, vvSvcDM;
 
 {$R *.dfm}
-
-const
-    TOKEN_DELIMITER = #13#10;
-    STR_END_SESSION_SIGNATURE = '=end_session';
-    STR_BEGIN_SESSION_SIGNATURE = '=start_session';
-    STR_OK_PACK     = 'OK';
-    STR_FAIL_HASH   = 'FAIL HASH';
-    STR_FAIL_SIZE   = 'FAIL SIZE';
-
-    II_SERVER_IDLE  = 0;
-    II_SERVER_ERROR = 1;
-    II_SERVER_BUZY  = 2;
-    II_SERVER_OK    = 3;
-    II_CLIENT_IDLE  = 0;
-    II_CLIENT_ERROR = 1;
-    II_CLIENT_BUZY  = 2;
-    II_CLIENT_OK    = 3;
 
 var
     ForcedFormatSettings : TFormatSettings;
@@ -135,12 +118,12 @@ var
 constructor TDMTCPTransfer.Create(AOwner : TComponent);
 begin
     inherited;
-	 Self.FClientSessionList := TThreadStringList.Create;
-	 if ( not Assigned(VVSvcConfig.ProfileInfo) ) then begin
-		Self.TrayIcon.IconIndex := II_CLIENT_ERROR; //indica falha de identificação de perfil
-	 end else begin
-		Self.TrayIcon.IconIndex := II_CLIENT_IDLE; //Nada a se "adivinhar" ainda
-	 end;
+    Self.FClientSessionList := TThreadStringList.Create;
+    if (not Assigned(VVSvcConfig.ProfileInfo)) then begin
+        Self.TrayIcon.IconIndex := II_CLIENT_ERROR; //indica falha de identificação de perfil
+    end else begin
+        Self.TrayIcon.IconIndex := II_CLIENT_IDLE; //Nada a se "adivinhar" ainda
+    end;
 end;
 
 procedure TDMTCPTransfer.DataModuleCreate(Sender : TObject);
@@ -165,8 +148,8 @@ procedure TDMTCPTransfer.EndSession(const SessionName : string);
 var
     idx : Integer;
 begin
-	 //Self.TrayIcon.IconIndex := II_CLIENT_IDLE;
-    Self.FCycleFilesCount   := 0; //zera contador de arquivos para envio
+    //Self.TrayIcon.IconIndex := II_CLIENT_IDLE;
+    Self.FCycleFilesCount := 0; //zera contador de arquivos para envio
     Self.FClientSessionList.Enter;
     try
         idx := Self.FClientSessionList.IndexOf(SessionName);
@@ -186,7 +169,8 @@ begin
     ForcedFormatSettings.DecimalSeparator := '.';
 end;
 
-procedure TDMTCPTransfer.SaveBioFile(const ClientName, Filename, screateDate, saccessDate, smodifiedDate : string; inputStrm : TStream);
+procedure TDMTCPTransfer.SaveBioFile(const ClientName, Filename, screateDate, saccessDate, smodifiedDate : string;
+    inputStrm : TStream);
 
     procedure LSRWriteFile(const Filename : string; src : TStream);
     var
@@ -241,7 +225,7 @@ var
 begin
     if (not Self.tcpclnt.Connected) then begin
         raise ESVCLException.Create('Canal com o servidor não estabelecido antecipadamente');
-	 end;
+    end;
     //Passados obrigatoriamente nesta ordem!!!
     s := AFile.FFilename + TOKEN_DELIMITER +
         FloatToStr(AFile.FCreatedTime, ForcedFormatSettings) + TOKEN_DELIMITER +
@@ -269,7 +253,11 @@ procedure TDMTCPTransfer.StartClient;
  ///</remarks>
 begin
     Self.InitSettings;
-    Self.tcpclnt.ConnectTimeout := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
+    if (System.DebugHook <> 0) then begin //Depurando na IDE
+        Self.tcpclnt.ConnectTimeout := 5000; //Tempo reduzido do abaixo para dinamica de depuração
+    end else begin //Execução normal
+        Self.tcpclnt.ConnectTimeout := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
+	 end;
     Self.tcpclnt.Host      := VVSvcConfig.ParentServer;
     Self.tcpclnt.Port      := VVSvcConfig.NetServicePort;
     Self.tcpclnt.OnDisconnected := tcpclntDisconnected;
@@ -277,7 +265,7 @@ begin
     Self.tcpclnt.ConnectTimeout := 0;
     Self.tcpclnt.IPVersion := Id_IPv4;
     Self.tcpclnt.ReadTimeout := -1;
-	 //Self.TrayIcon.IconIndex := II_CLIENT_IDLE;
+    //Self.TrayIcon.IconIndex := II_CLIENT_IDLE;
     TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)', [VVSvcConfig.NetServicePort, VVSvcConfig.ParentServer]),
         DBGLEVEL_DETAILED);
 end;
@@ -300,7 +288,7 @@ begin
         Self.tcpsrvr.TerminateWaitTime := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
         Self.tcpsrvr.Active      := True;
         Self.tcpsrvr.StartListening;
-		 //Self.TrayIcon.IconIndex := II_SERVER_IDLE; não pode ser alterado pelo inicio do servidor
+        //Self.TrayIcon.IconIndex := II_SERVER_IDLE; não pode ser alterado pelo inicio do servidor
         TLogFile.LogDebug(Format('Escutando na porta: %d', [VVSvcConfig.NetServicePort]), DBGLEVEL_DETAILED);
     except
         on E : Exception do begin
@@ -312,13 +300,14 @@ end;
 
 procedure TDMTCPTransfer.StartSession(const SessionName : string; TotalFilesCount : Integer);
 begin
-	 //Self.TrayIcon.IconIndex := II_CLIENT_BUZY;
-    Self.FCycleFilesCount   := TotalFilesCount;
+    //Self.TrayIcon.IconIndex := II_CLIENT_BUZY;
+    Self.FCycleFilesCount := TotalFilesCount;
     Self.FClientSessionList.Enter;
     try
         try
             if (Self.FClientSessionList.IndexOf(SessionName) <> -1) then begin
-                raise ESVCLException.Create('Sessão iniciada previamente neste módulo');
+				 //raise ESVCLException.Create('Sessão iniciada previamente neste módulo');
+				 Exit;  //Operação anterior ainda em andamento
             end;
             //Envia a abertura de sessão para o servidor
             Self.tcpclnt.Connect;
@@ -395,7 +384,8 @@ begin
     //Criticidade em ReadBytes para o stream, ajustado para 30 segundos
     AContext.Connection.Socket.ReadTimeout := 30000;
     TLogFile.LogDebug(Format('Sessão inciada, cliente: %s', [AContext.Connection.Socket.Binding.PeerIP]), DBGLEVEL_DETAILED);
-    AContext.Connection.IOHandler.AfterAccept; //processamento pos conexao com sucesso
+	 AContext.Connection.IOHandler.AfterAccept; //processamento pos conexao com sucesso
+
     try
         retSignature := AContext.Connection.IOHandler.ReadLn(); //Aguarda a assinatura do cliente para iniciar operação
         if (not TStrHnd.endsWith(retSignature, STR_BEGIN_SESSION_SIGNATURE)) then begin
@@ -431,7 +421,7 @@ begin
 
             inStrm := TMemoryStream.Create();
             try
-                AContext.Connection.IOHandler.ReadStream(inStrm, nFileSize); //Local para o ajuste do ReadTimeout
+				 AContext.Connection.IOHandler.ReadStream(inStrm, nFileSize); //Local para o ajuste do ReadTimeout
             finally
                 if (inStrm.Size = nFileSize) then begin //Recepção ok -> testar integridade
                     retHash := THashHnd.MD5(inStrm);
@@ -475,27 +465,27 @@ var
     hint :      string;
 begin
     if (not Assigned(VVerService)) then begin
-		 rtVersion := '*** VERSÃO DESCONHECIDA ***';
-	 end else begin
-		try
-		 rtVersion := 'Versão: ' + VVerService.fvInfo.FileVersion;
-		except
-			on E : Exception do begin
-			 rtVersion := '*** VERSÃO DESCONHECIDA ***';
-			end;
-		end;
-	 end;
+        rtVersion := '*** VERSÃO DESCONHECIDA ***';
+    end else begin
+        try
+            rtVersion := 'Versão: ' + VVerService.fvInfo.FileVersion;
+        except
+            on E : Exception do begin
+                rtVersion := '*** VERSÃO DESCONHECIDA ***';
+            end;
+        end;
+    end;
     hint := 'SESOP - Verificador de Versões de aplicativos seguros' + #13#10 + rtVersion + #13#10;
     if (Self.tcpsrvr.Bindings.Count > 0) then begin
         Hint := Hint + 'Clientes conectados = ' + IntToStr(Self.tcpsrvr.Bindings.Count) + #13#10;
     end;
     if (Self.tcpclnt.Connected) then begin
-		Hint:= Hint + 'Download em andamento' + #13#10;
-	 end;
-	 if ( not Assigned(VVSvcConfig.ProfileInfo ) ) then begin
-		Hint := Hint + 'Não foi possível identificar perfil deste computador!!!' + #13#10;
+        Hint := Hint + 'Download em andamento' + #13#10;
+    end;
+    if (not Assigned(VVSvcConfig.ProfileInfo)) then begin
+        Hint := Hint + 'Não foi possível identificar perfil deste computador!!!' + #13#10;
 
-	 end;
+    end;
     Self.TrayIcon.Hint := Hint;
 end;
 
@@ -511,7 +501,7 @@ begin
         Self.tcpsrvr.Contexts.UnlockList;
     end;
     if (clientCount > 0) then begin
-		 //Self.TrayIcon.IconIndex := II_SERVER_BUZY;
+        //Self.TrayIcon.IconIndex := II_SERVER_BUZY;
         if (Self.FMaxTrackedClients < clientCount) then begin
             Self.FMaxTrackedClients := clientCount;
             TLogFile.LogDebug(Format('Registro de clientes simultâneos aumentado = %d', [Self.FMaxTrackedClients]),

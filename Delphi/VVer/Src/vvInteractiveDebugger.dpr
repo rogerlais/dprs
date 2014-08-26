@@ -8,9 +8,7 @@ uses
   vvsTCPTransfer in 'vvsTCPTransfer.pas' {DMTCPTransfer: TDataModule},
   vvSvcDM in 'vvSvcDM.pas',
   vvConfig in 'vvConfig.pas',
-  vvsFileMgmt in 'vvsFileMgmt.pas',
-  WinFileNotification in '..\..\..\..\Pcks\WinSysLib\Src\WinFileNotification.pas',
-  XPThreads in '..\..\..\..\Pcks\XPLib\Src\XPThreads.pas';
+  vvsFileMgmt in 'vvsFileMgmt.pas';
 
 {$R *.res}
 

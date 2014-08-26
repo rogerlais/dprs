@@ -8,8 +8,8 @@ unit vvsFileMgmt;
 interface
 
 uses
-    Windows, SysUtils, FileHnd, Generics.Collections, StreamHnd, XPFileEnumerator, Classes;
-
+    Windows, SysUtils, FileHnd, Generics.Collections, StreamHnd, XPFileEnumerator, Classes, WinFileNotification,
+    XMLDoc, XMLIntf, XMLConst, SyncObjs;
 
 type
     TVVSFile = class
@@ -28,12 +28,21 @@ type
 
     TManagedFolder = class(TDictionary<string, TVVSFile>)
     private
-        FRootDir : string;
+        FCriticalSection : TCriticalSection;
+        FRootDir :         string;
+        FMonitor :         TWinFileSystemMonitor;
         function GetGlobalHash : string;
+        function GetMonitored : boolean;
+        procedure SetMonitored(const Value : boolean);
+        procedure DoFilesChange(Sender : TWinFileSystemMonitor; AFolderItem : TFolderItemInfo);
     protected
-
+        procedure Lock;
+        procedure UnLock;
     public
-        constructor Create(ARootDir : string);
+        constructor CreateLocal(const ARootDir : string);
+        constructor CreateRemote(const AData : string);
+        destructor Destroy; override;
+        property Monitored : boolean read GetMonitored write SetMonitored;
         property GlobalHash : string read GetGlobalHash;
         procedure Reload;
     end;
@@ -71,11 +80,60 @@ end;
 
 { TManagedFolder }
 
-constructor TManagedFolder.Create(ARootDir : string);
+constructor TManagedFolder.CreateLocal(const ARootDir : string);
 begin
     inherited Create;
+    Self.FCriticalSection := TCriticalSection.Create;
     Self.FRootDir := ARootDir;
     Self.Reload;
+end;
+
+constructor TManagedFolder.CreateRemote(const AData : string);
+begin
+    inherited Create;
+    Self.FCriticalSection := TCriticalSection.Create;
+     {
+     Self.FRootDir := ARootDir;
+     Self.Reload;
+     }
+end;
+
+destructor TManagedFolder.Destroy;
+begin
+    FreeAndNil(Self.FMonitor);
+    Self.FCriticalSection.Free;
+    inherited;
+end;
+
+procedure TManagedFolder.DoFilesChange(Sender : TWinFileSystemMonitor; AFolderItem : TFolderItemInfo);
+var
+    vf : TVVSFile;
+begin
+    Self.Lock();
+    try
+        {TODO -oroger -cdsg : identifica a mudanca e recarrega dados do arquivo}
+        case AFolderItem.Action of
+            faNew : begin
+                vf := TVVSFile.Create(AFolderItem.Name);
+                Self.Add(AFolderItem.Name, vf);
+            end;
+            faRemoved : begin
+                Self.Remove(AFolderItem.Name); {TODO -oroger -cdsg : Validar destructor do vf nesta chamada}
+            end;
+            faModified : begin
+                vf.Refresh;
+            end;
+            faRenamedOld : begin
+                Self.Remove(AFolderItem.Name); {TODO -oroger -cdsg : Validar destructor do vf nesta chamada}
+            end;
+            faRenamedNew : begin
+                vf := TVVSFile.Create(AFolderItem.Name);
+                Self.Add(AFolderItem.Name, vf);
+            end;
+        end;
+    finally
+        Self.UnLock;
+    end;
 end;
 
 function TManagedFolder.GetGlobalHash : string;
@@ -84,16 +142,30 @@ var
     lst : TStringList;
 begin
     lst := TStringList.Create;
-	 try
-		lst.Sorted:=True; //aumenta a unicidade
-		 for vf in Self.Values do begin
-			lst.add( vf.MD5String );
-		 end;
-		 Result := Lst.Text;
+    try
+        lst.Sorted := True; //aumenta a unicidade
+        for vf in Self.Values do begin
+            lst.add(vf.MD5String);
+        end;
+        Result := Lst.Text;
     finally
         lst.Free;
     end;
 
+end;
+
+function TManagedFolder.GetMonitored : boolean;
+begin
+    if (Assigned(Self.FMonitor)) then begin
+        Result := Self.FMonitor.IsActive;
+    end else begin
+        Result := False;
+    end;
+end;
+
+procedure TManagedFolder.Lock;
+begin
+    Self.FCriticalSection.Acquire;
 end;
 
 procedure TManagedFolder.Reload;
@@ -106,12 +178,38 @@ var
     IFiles : IEnumerable<string>;
     f :      string;
 begin
-    Self.Clear; //Limpa tudo!!!!!
-    IFiles := TDirectory.Entries(Self.FRootDir, '*.*', True, True);
-    for f in IFiles do begin
-        vf := TVVSFile.Create(f);
-        Self.Add(vf.Filename, vf);
+    Self.Lock;
+    try
+        Self.Clear; //Limpa tudo!!!!!
+        IFiles := TDirectory.Entries(Self.FRootDir, '*.*', True, True);
+        for f in IFiles do begin
+            vf := TVVSFile.Create(f);
+            Self.Add(vf.Filename, vf);
+        end;
+    finally
+        self.UnLock;
     end;
+end;
+
+procedure TManagedFolder.SetMonitored(const Value : boolean);
+begin
+    if (Value) then begin
+        if (not Assigned(Self.FMonitor)) then begin
+            Self.FMonitor := TWinFileSystemMonitor.Create(nil);
+            Self.FMonitor.Folder := Self.FRootDir;
+            Self.FMonitor.MonitoredChanges := [ctFileName, ctDirName, ctSize, ctLastWriteTime, ctCreationTime];
+            Self.FMonitor.Recursive := True;
+            Self.FMonitor.OnFolderChange := Self.DoFilesChange;
+            Self.FMonitor.IsActive := Value;
+        end;
+    end else begin
+        FreeAndNil(Self.FMonitor);
+    end;
+end;
+
+procedure TManagedFolder.UnLock;
+begin
+    Self.FCriticalSection.Release;
 end;
 
 end.

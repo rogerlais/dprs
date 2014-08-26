@@ -94,7 +94,7 @@ var
 implementation
 
 uses
-    WinNetHnd, StrHnd, TREUtils, vvMainDataModule, FileInfo, TREConsts, JclSysInfo;
+    WinNetHnd, StrHnd, vvMainDataModule, FileInfo, TREConsts, JclSysInfo, TREUtils;
 
 procedure LoadGlobalInfo(const Filename : string);
  ///Monta rotina de carga das configurações iniciais, na ordem:
@@ -125,7 +125,7 @@ begin
     end else begin //Execução normal
         TargetName := GetComputerName();
     end;
-    ct := TTREUtils.GetComputerTypeByName(TargetName);
+	 ct := TTREUtils.GetComputerTypeByName(TargetName);
     case ct of
         ctUnknow, ctCentralPDC, ctZonePDC, ctTREWKS : begin
             Self.FProfileName := 'Outros';

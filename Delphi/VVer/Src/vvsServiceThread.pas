@@ -8,42 +8,57 @@ unit vvsServiceThread;
 interface
 
 uses
-	 SysUtils, Windows, Classes, XPFileEnumerator, XPThreads, vvsConsts, vvsConfig;
+    SysUtils, Windows, Classes, XPFileEnumerator, XPThreads, vvsConsts, vvsConfig, vvsFileMgmt, IdContext,
+    IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
+    IdTCPServer, AppLog, IdGlobal;
 
 type
 
-	 TVVerClientThread = class(TXPNamedThread)
-	 private
-		 FCycleErrorCount : Integer;
-		 FLastVerification: TDateTime;
-		 procedure DoClientCycle;
-		 function GlobalLocalHash() : string;
-	 public
-		 procedure Execute(); override;
-		 property LastVerification : TDateTime read FLastVerification;
+    TVVerClientThread = class(TXPNamedThread)
+    private
+        FCycleErrorCount :  Integer;
+        FLastVerification : TDateTime;
+        FTempFolder :       TManagedFolder;
+        FSyncFolder :       TManagedFolder;
+        procedure DoClientCycle;
+        function ReadRemoteContent() : string;
+    public
+        ClientName : string;
+        constructor Create(CreateSuspended : boolean; const ThreadName : string); override;
+        procedure DoTerminate; override;
+        procedure Execute(); override;
+        property LastVerification : TDateTime read FLastVerification;
     end;
 
 
     TVVerServerThread = class(TXPNamedThread)
     private
-        //procedure StoreTransmitted(SrcFile : TFileSystemEntry);
+        FPublishingFolder : TManagedFolder;
         procedure DoServerCycle;
-        //procedure CreatePrimaryBackup(const DirName : string);
         procedure StartTCPServer;
         procedure StopTCPServer;
     protected
         procedure DoTerminate(); override;
     public
+        constructor Create(CreateSuspended : boolean; const ThreadName : string); override;
         procedure Execute(); override;
+
     end;
 
 
 implementation
 
 uses
-    vvsTCPTransfer, AppLog, FileHnd, StreamHnd;
+    vvsTCPTransfer, FileHnd, StreamHnd, StrHnd;
 
 { TVVerServiceThread }
+
+constructor TVVerServerThread.Create(CreateSuspended : boolean; const ThreadName : string);
+begin
+    inherited;
+    Self.FPublishingFolder := TManagedFolder.CreateLocal(VVSvcConfig.PathLocalInstSeg);
+    Self.FPublishingFolder.Monitored := True; //remonta lista de arquivos pelos eventos do filesystem
+end;
 
 procedure TVVerServerThread.DoServerCycle;
 begin
@@ -103,13 +118,33 @@ end;
 
 { TClientThread }
 
+constructor TVVerClientThread.Create(CreateSuspended : boolean; const ThreadName : string);
+begin
+    inherited;
+    Self.FTempFolder := TManagedFolder.CreateLocal(VVSvcConfig.PathTempDownload);
+    if (VVSvcConfig.ParentServer <> EmptyStr) then begin
+        Self.FSyncFolder := TManagedFolder.CreateRemote(VVSvcConfig.ParentServer);
+    end;
+end;
+
 procedure TVVerClientThread.DoClientCycle;
 var
-	localHash, remoteHash : string;
+    localHash, remoteHash : string;
 begin
-	 {TODO -oroger -cdsg : Buscar por atualizações}
+    {TODO -oroger -cdsg : Buscar por atualizações}
+    DMTCPTransfer.StartSession(VVSvcConfig.ClientName, 0);
+    try
 
+    finally
+        DMTCPTransfer.EndSession(VVSvcConfig.ClientName);
+    end;
+end;
 
+procedure TVVerClientThread.DoTerminate;
+begin
+    FreeAndNil(Self.FTempFolder);
+    FreeAndNil(Self.FSyncFolder);
+    inherited;
 end;
 
 procedure TVVerClientThread.Execute;
@@ -146,8 +181,9 @@ var
 
 begin
     inherited;
-	 //Repetir os ciclos de acordo com a temporização configurada
-	 //O Thread primário pode enviar notificação da cancelamento que deve ser verificada ao inicio de cada ciclo
+    DMTCPTransfer.StartClient; //configura o tcpclient
+    //Repetir os ciclos de acordo com a temporização configurada
+    //O Thread primário pode enviar notificação da cancelamento que deve ser verificada ao inicio de cada ciclo
     while (not Self.Terminated) do begin
         try
             Self.DoClientCycle;
@@ -162,22 +198,32 @@ begin
     end;
 end;
 
-function TVVerClientThread.GlobalLocalHash : string;
+function TVVerClientThread.ReadRemoteContent : string;
 var
-    path :  string;
-    Files : IEnumerable<TFileSystemEntry>;
-    f :     TFileSystemEntry;
-    ls :    TStringList;
+    lastStr, s : string;
+    csocket :    TIdTCPClient;
 begin
-	 ls := TStringList.Create;
-    try
-        path  := VVSvcConfig.PathLocalInstSeg;
-        Files := TDirectory.FileSystemEntries(path, '*.*', True);
-        for f in Files do begin
-            ls.Add(THashHnd.MD5(f.FullName));
-        end;
-    finally
-        ls.Free;
+    csocket := DMTCPTransfer.tcpclnt;
+    if (not csocket.Connected) then begin
+        raise ESVCLException.Create('Canal com o servidor não estabelecido antecipadamente');
+    end;
+    //Passados obrigatoriamente nesta ordem!!!
+    s := STR_CMD_VERB + STR_VERB_READCONTENT + TOKEN_DELIMITER + 'INSTSEG'; //Verbo de leitura de conteudo da publicação instseg
+    csocket.IOHandler.WriteLn(s); //envia o comando
+    //csocket.IOHandler.WriteFile();
+    Result  := EmptyStr;
+    lastStr := EmptyStr;
+    repeat
+		 s := csocket.IOHandler.ReadLn();
+		 if (TStrHnd.IsPertinent(s, [STR_OK_PACK, STR_FAIL_HASH, STR_FAIL_SIZE, STR_FAIL_VERB], True)) then begin
+			 lastStr := s;
+		 end else begin //Execução normal
+			 Result := Result + s;
+		 end;
+    until (lastStr <> EmptyStr);
+    if (lastStr <> STR_OK_PACK) then begin
+        raise ESVCLException.CreateFmt('Retorno de erro de execução de comando: "%s" resposta="%s".',
+            [STR_VERB_READCONTENT, lastStr]);
     end;
 end;
 

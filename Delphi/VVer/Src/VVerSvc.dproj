@@ -3,7 +3,7 @@
 			<ProjectGuid>{F507F4B6-B6AA-4035-BF1E-3C0667345A50}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>VVerSvc.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">

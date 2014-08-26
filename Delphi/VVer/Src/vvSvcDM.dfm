@@ -50,14 +50,8 @@ object VVerService: TVVerService
   object tmrCycleEvent: TTimer
     Enabled = False
     Interval = 60000
+    OnTimer = tmrCycleEventTimer
     Left = 192
     Top = 28
-  end
-  object filemonit: TWinFileSystemMonitor
-    IsActive = False
-    MonitoredChanges = [ctFileName, ctDirName, ctSize, ctLastWriteTime, ctLastAccessTime, ctCreationTime, ctSecurityAttr]
-    Recursive = True
-    Left = 192
-    Top = 88
   end
 end
