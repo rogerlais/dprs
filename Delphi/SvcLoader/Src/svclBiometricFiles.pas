@@ -25,16 +25,16 @@ type
         procedure ServiceStart(Sender : TService; var Started : boolean);
         procedure ServiceStop(Sender : TService; var Stopped : boolean);
         procedure ServiceContinue(Sender : TService; var Continued : boolean);
-        procedure tmrCycleEventTimer(Sender : TObject);
-        procedure icmpclntMainReply(ASender : TComponent; const AReplyStatus : TReplyStatus);
-    private
-        { Private declarations }
-        FSvcThread :     TXPNamedThread; // Dualidade entre o thread de cliente e de servidor
-        FLastLogCheck :  Word;
-        FLastPingReply : boolean;
-        procedure AddDestinations;
-        procedure CheckLogs();
-        function isIntranetConnected() : boolean;
+		 procedure tmrCycleEventTimer(Sender : TObject);
+		 procedure icmpclntMainReply(ASender : TComponent; const AReplyStatus : TReplyStatus);
+	 private
+		 { Private declarations }
+		 FSvcThread :     TXPNamedThread; // Dualidade entre o thread de cliente e de servidor
+		 FLastLogCheck :  Word;
+		 //FLastPingReply : boolean;
+		 procedure AddDestinations;
+		 procedure CheckLogs();
+		 function isIntranetConnected() : boolean;
     public
         class function LogFilePrefix() : string;
         constructor CreateNew(AOwner : TComponent; Dummy : Integer = 0); override;
@@ -183,7 +183,7 @@ end;
 
 procedure TBioFilesService.icmpclntMainReply(ASender : TComponent; const AReplyStatus : TReplyStatus);
 begin
-    Self.FLastPingReply := Self.FLastPingReply or (AReplyStatus.ReplyStatusType = rsEcho);
+	 Self.FLastPingReply := Self.FLastPingReply or (AReplyStatus.ReplyStatusType = rsEcho);
 end;
 
 function TBioFilesService.isIntranetConnected : boolean;
@@ -198,20 +198,22 @@ begin
     Self.icmpclntMain.PacketSize := 32;
     Self.icmpclntMain.Host := GlobalConfig.ServerName;
     Result := False;
-    Self.FLastPingReply := Result;
-    for x := 0 to 5 do begin
-        try
-            Self.icmpclntMain.Ping();
-        except
-            on E : Exception do begin
-                //Sem tratamento -> espera nova tentativa
-                TLogFile.LogDebug(Format('Sem conectividade com a intranet(%s): %s', [GlobalConfig.ServerName, E.Message]),
-                    DBGLEVEL_ULTIMATE);
-            end;
-        end;
-        Result := Result or Self.FLastPingReply;
-        if (Result) then begin
-            Self.FLastPingReply := False;
+	 //Self.FLastPingReply := Result;
+	 for x := 0 to 5 do begin
+		 try
+			 Self.icmpclntMain.Ping();
+			 Result := (Self.icmpclntMain.ReplyStatus.ReplyStatusType = rsEcho);
+		 except
+			 on E : Exception do begin
+				 //Sem tratamento -> espera nova tentativa
+				 TLogFile.LogDebug(Format('Sem conectividade com a intranet(%s): %s'#13#10'Tentativa(%d)', [GlobalConfig.ServerName, E.Message, x + 1]),
+					 DBGLEVEL_ULTIMATE);
+				 Sleep(1000);
+			 end;
+		 end;
+		 //Result := Result or Self.FLastPingReply;
+		 if (Result) then begin
+			 //Self.FLastPingReply := False;
             Break;
         end;
     end;
