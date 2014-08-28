@@ -7,18 +7,14 @@ unit vvsTCPTransfer;
 
 interface
 
-{TODO -oroger -cdsg : Alternar as cores do icone de acordo com o tipo do computador e a operação, ver tabela abaixo:
-Servidor: Verde - recebendo, azul - ocioso, Laranja - Condição de alerta a ser definida , vermelho - falha qualquer
-Cliente: Verde - Enviando, laranja - Sem comunicação com servidor, azul - ocioso }
 {TODO -oroger -cdsg : Possibilitar pela UI pausar o envio dos dados por x minutos}
-{TODO -oroger -cdsg : Ao receber mensagem de shutdown e havendo arquivos a transmitir, possibilita ao usuário deixar o desligamento a cargo do serviço}
-{TODO -oroger -cdsg : Apenas no servidor possibilitar a importação de arquivos(opção recursivo) de bio informando intervalo de data a igonarar e nome da fonte. podendo ainda moitir a transmissão via transbio }
- {TODO -oroger -cdsg : Limpar caches de imagens do elo na carga do serviço }
- {TODO -oroger -cdsg : Registrar o encerramento do windows }
+{TODO -oroger -cdsg : Ao receber mensagem de shutdown e havendo arquivos a transmitir/receber, possibilita ao usuário deixar o desligamento a cargo do serviço}
+{TODO -oroger -cdsg : Registrar o encerramento do windows }
 
 uses
-	 SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
-	 IdTCPServer, AppLog, XPFileEnumerator, IdGlobal, Menus, ExtCtrls, SyncObjs, StreamHnd, ImgList, Controls, vvsConsts;
+    SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
+    IdTCPServer, AppLog, XPFileEnumerator, IdGlobal, Menus, ExtCtrls, SyncObjs, StreamHnd, ImgList,
+    Controls, vvsConsts, vvsThreadList, HTTPApp;
 
 type
     TThreadStringList = class(TStringList)
@@ -31,7 +27,6 @@ type
         constructor Create;
         destructor Destroy; override;
     end;
-
 
     TTransferFile = class(TObject)
     private
@@ -62,6 +57,28 @@ type
         destructor Destroy; override;
     end;
 
+    TSyncSession = class(TObject)
+    private
+        FSessionName :   string;
+        FContext :       TIdContext;
+        FClientVersion : string;
+        FClientName :    string;
+        function ExecReadContent() : string;
+        function ExecFileDownload() : string;
+    public
+        property ClientName : string read FClientName;
+        property ClientVersion : string read FClientVersion;
+        property SessionName : string read FSessionName;
+        property Context : TIdContext read FContext;
+        {TODO -oroger -cdsg : capturar no construtor todos os eventos do context desejáveis }
+        constructor Create(AContext : TidContext; const AClientName, AClientVersion, ASessionName : string); virtual;
+        function DoExecVerbs() : string;
+    end;
+
+    TSyncSessionServerList = class(TSyncTThreadList<TSyncSession>);
+
+
+
 type
     TDMTCPTransfer = class(TDataModule)
         tcpsrvr :     TIdTCPServer;
@@ -83,8 +100,8 @@ type
     private
         { Private declarations }
         FClientSessionList : TThreadStringList;
+        FServerSessionList : TSyncSessionServerList;
         FSessionFileCount :  Integer;
-        FCycleFilesCount :   Integer;
         FMaxTrackedClients : Integer;
         procedure SaveBioFile(const ClientName, Filename, screateDate, saccessDate, smodifiedDate : string; inputStrm : TStream);
         procedure InitSettings();
@@ -93,7 +110,7 @@ type
         { Public declarations }
         procedure StartServer();
         procedure StartClient();
-        procedure StartSession(const SessionName : string; TotalFilesCount : Integer);
+        procedure StartSession(const SessionName : string);
         procedure EndSession(const SessionName : string);
         procedure StopServer();
         procedure StopClient();
@@ -119,6 +136,7 @@ constructor TDMTCPTransfer.Create(AOwner : TComponent);
 begin
     inherited;
     Self.FClientSessionList := TThreadStringList.Create;
+    Self.FServerSessionList := TSyncSessionServerList.Create;
     if (not Assigned(VVSvcConfig.ProfileInfo)) then begin
         Self.TrayIcon.IconIndex := II_CLIENT_ERROR; //indica falha de identificação de perfil
     end else begin
@@ -141,6 +159,7 @@ end;
 destructor TDMTCPTransfer.Destroy;
 begin
     Self.FClientSessionList.Free;
+    Self.FServerSessionList.Free;
     inherited;
 end;
 
@@ -149,7 +168,6 @@ var
     idx : Integer;
 begin
     //Self.TrayIcon.IconIndex := II_CLIENT_IDLE;
-    Self.FCycleFilesCount := 0; //zera contador de arquivos para envio
     Self.FClientSessionList.Enter;
     try
         idx := Self.FClientSessionList.IndexOf(SessionName);
@@ -240,7 +258,6 @@ begin
         raise ESVCLException.CreateFmt('Retorno de erro de envio: "%s" para arquivo="%s".', [s, AFile.Filename]);
     end else begin
         Inc(Self.FSessionFileCount); //Incrementa contador de trafego(modo cliente)
-        Dec(Self.FCycleFilesCount);  //Decrementa contador de arquivos coletados no ciclo
     end;
 end;
 
@@ -252,21 +269,21 @@ procedure TDMTCPTransfer.StartClient;
  ///
  ///</remarks>
 begin
-    Self.InitSettings;
+    Self.InitSettings();
     if (System.DebugHook <> 0) then begin //Depurando na IDE
         Self.tcpclnt.ConnectTimeout := 5000; //Tempo reduzido do abaixo para dinamica de depuração
     end else begin //Execução normal
         Self.tcpclnt.ConnectTimeout := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
-	 end;
+    end;
     Self.tcpclnt.Host      := VVSvcConfig.ParentServer;
-    Self.tcpclnt.Port      := VVSvcConfig.NetServicePort;
+    Self.tcpclnt.Port      := VVSvcConfig.NetClientPort;
     Self.tcpclnt.OnDisconnected := tcpclntDisconnected;
     Self.tcpclnt.OnConnected := tcpclntConnected;
     Self.tcpclnt.ConnectTimeout := 0;
     Self.tcpclnt.IPVersion := Id_IPv4;
     Self.tcpclnt.ReadTimeout := -1;
     //Self.TrayIcon.IconIndex := II_CLIENT_IDLE;
-    TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)', [VVSvcConfig.NetServicePort, VVSvcConfig.ParentServer]),
+    TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)', [VVSvcConfig.NetClientPort, VVSvcConfig.ParentServer]),
         DBGLEVEL_DETAILED);
 end;
 
@@ -298,27 +315,50 @@ begin
     end;
 end;
 
-procedure TDMTCPTransfer.StartSession(const SessionName : string; TotalFilesCount : Integer);
+procedure TDMTCPTransfer.StartSession(const SessionName : string);
+var
+    msg, ret : string;
+
 begin
-    //Self.TrayIcon.IconIndex := II_CLIENT_BUZY;
-    Self.FCycleFilesCount := TotalFilesCount;
-    Self.FClientSessionList.Enter;
     try
+        Self.FClientSessionList.Enter;
         try
             if (Self.FClientSessionList.IndexOf(SessionName) <> -1) then begin
-				 //raise ESVCLException.Create('Sessão iniciada previamente neste módulo');
-				 Exit;  //Operação anterior ainda em andamento
+                //raise ESVCLException.Create('Sessão iniciada previamente neste módulo');
+                Exit;  //Operação anterior ainda em andamento
             end;
-            //Envia a abertura de sessão para o servidor
-            Self.tcpclnt.Connect;
-            Self.tcpclnt.IOHandler.WriteLn(SessionName + STR_BEGIN_SESSION_SIGNATURE);
+        finally
+            Self.FClientSessionList.Leave;
+        end;
+        //Envia a abertura de sessão para o servidor
+        Self.tcpclnt.Connect;
+        //passa valores obrigatorios para inicio de sessão
+        Self.tcpclnt.IOHandler.WriteLn(STR_BEGIN_SESSION_SIGNATURE + SessionName); //cabecalho da sessão
+        Self.tcpclnt.IOHandler.WriteLn(VVerService.fvInfo.FileVersion); //versão do cliente
+        Self.tcpclnt.IOHandler.WriteLn(VVSvcConfig.ClientName); //Nome do computador cliente
+        Self.tcpclnt.IOHandler.WriteLn(STR_BEGIN_SESSION_SIGNATURE + SessionName); //repete cabecalho da sessão
+        ret := Self.tcpclnt.IOHandler.ReadLn();
+        if (not SameText(ret, STR_OK_PACK)) then begin
+            try
+                msg := EmptyStr;
+                msg := Self.tcpclnt.IOHandler.ReadLn();
+            except
+                on E : Exception do begin
+                    msg := '"' + msg + '"'#13#10 + E.Message;
+                end;
+            end;
+            raise ESVCLException.Create('Sessão não pode ser iniciada: ' + msg);
+        end;
+        try
             Self.FClientSessionList.Add(SessionName);
         finally
             Self.FClientSessionList.Leave;
         end;
     except
         on E : Exception do begin //colocar como registro de depuração, por se tratar de erro comum
-            TLogFile.LogDebug('Falha de comunicação com o servidor de recebimento de arquivos'#13#10 +
+            TLogFile.LogDebug(Format
+                ('Falha de comunicação com o servidor pai desta instância(%s) na porta(%d).'#13#10,
+                [Self.tcpclnt.Host, Self.tcpclnt.Host]) +
                 E.Message, DBGLEVEL_ALERT_ONLY);
             raise;
         end;
@@ -376,78 +416,69 @@ procedure TDMTCPTransfer.tcpsrvrExecute(AContext : TIdContext);
  /// Estudar como proteger o metodo e o timeout da passagem dos dados
  ///</remarks>
 var
-    sfilename, smodifiedDate, saccessDate, screateDate, sFileSize, sHash : string;
-    retSignature, retHash, retClientName : string;
-    inStrm :    TMemoryStream;
+    sFooter, sClientVersion, smodifiedDate, sClientSessionName, sClientName, sFileSize, sHash : string;
+    sHeader, retHash : string;
+    inStrm : TMemoryStream;
     nFileSize : int64;
+    SyncSession : TSyncSession;
+    ret : string;
+
 begin
     //Criticidade em ReadBytes para o stream, ajustado para 30 segundos
     AContext.Connection.Socket.ReadTimeout := 30000;
     TLogFile.LogDebug(Format('Sessão inciada, cliente: %s', [AContext.Connection.Socket.Binding.PeerIP]), DBGLEVEL_DETAILED);
-	 AContext.Connection.IOHandler.AfterAccept; //processamento pos conexao com sucesso
+    AContext.Connection.IOHandler.AfterAccept; //processamento pos conexao com sucesso
 
     try
-        retSignature := AContext.Connection.IOHandler.ReadLn(); //Aguarda a assinatura do cliente para iniciar operação
-        if (not TStrHnd.endsWith(retSignature, STR_BEGIN_SESSION_SIGNATURE)) then begin
+        SyncSession := nil;
+        //***Dados passados para abertura de sessão:
+        //1 - cabecalho da sessão contendo nome da sessão
+        //2 - versão do cliente
+        //3- Nome do computador
+        //4 - fim cabecalho cadeia igual ao inicio
+
+        sHeader := AContext.Connection.IOHandler.ReadLn(); //Aguarda a assinatura do cliente para iniciar operação
+        if (not TStrHnd.startsWith(sHeader, STR_BEGIN_SESSION_SIGNATURE)) then begin
             //Cancela a sessão por falha de protocolo
-            retClientName := EmptyStr;
             TLogFile.LogDebug(
-                Format('Falha de protocolo, cadeia recebida=%s', [retSignature]), DBGLEVEL_ALERT_ONLY);
+                Format('Falha de protocolo, cadeia recebida="%s"', [sHeader]), DBGLEVEL_ALERT_ONLY);
+            AContext.Connection.IOHandler.WriteLn(STR_FAIL_PROTOCOL); //informa e sai
+            Exit;
         end else begin
-            retClientName := Copy(retSignature, 1, Pos(STR_BEGIN_SESSION_SIGNATURE, retSignature) - 1);
+            sClientSessionName := Copy(sHeader, Length(STR_BEGIN_SESSION_SIGNATURE) + 1, Length(sHeader));
         end;
 
-        repeat
-            //Linha incial de dados deve conter os atributos do arquivo(fullname, createdDate, accessDate, modifiedDate, Size )
-            //No inicio da operação, captura as cadeias. Caso a linha possua o token de final de sessão desconecta(o servidor espera uma nova sessão)
-            retSignature := AContext.Connection.IOHandler.ReadLn();
-            if (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)) then begin
-                System.Continue;
-            end;
-            //Dados passados nesta ordem!!!
-            sfilename := retSignature;
-            screateDate := AContext.Connection.IOHandler.ReadLn();
-            saccessDate := AContext.Connection.IOHandler.ReadLn();
-            smodifiedDAte := AContext.Connection.IOHandler.ReadLn();
-            sFileSize := AContext.Connection.IOHandler.ReadLn();
-            sHash := AContext.Connection.IOHandler.ReadLn();
+        //Linha incial de dados deve conter os atributos do arquivo(fullname, createdDate, accessDate, modifiedDate, Size )
+        //No inicio da operação, captura as cadeias. Caso a linha possua o token de final de sessão desconecta(o servidor espera uma nova sessão)
+        sClientVersion := AContext.Connection.IOHandler.ReadLn();
+        sClientName := AContext.Connection.IOHandler.ReadLn();
+        sFooter := AContext.Connection.IOHandler.ReadLn();
+        if (not SameText(sFooter, sHeader)) then begin
+            TLogFile.Log(Format('Falha de protocolo, cadeia recebida="%s"', [sHeader]), lmtWarning);
+            AContext.Connection.IOHandler.WriteLn(STR_FAIL_PROTOCOL); //informa falha e cai fora
+            Exit; //termina sessão frustada
+        end;
 
-            TLogFile.LogDebug(Format(
-                'Recebida cadeia do cliente(%s) ao servidor:'#13#10'arquivo="%s"'#13#10'criação=%s'#13#10 +
-                'acesso=%s'#13#10'Modificação=%s'#13#10'tamanho=%s'#13#10'hash=%s'#13#10,
-                [retClientName, sfilename, smodifiedDate, saccessDate, screateDate, sFileSize, sHash]), DBGLEVEL_DETAILED);
+        {TODO -oroger -cdsg : buscar por duplicidade de sessão}
+        SyncSession := TSyncSession.Create(AContext, sClientName, sClientVersion, sClientSessionName);
+        Self.FServerSessionList.Add(sClientSessionName, SyncSession);
+        {TODO -oroger -cdsg : registrar log de depuração do evento acima}
+        AContext.Connection.IOHandler.WriteLn(STR_OK_PACK); //informa OK e em seguida apto a executar os verbos da sessão
+        ret := SyncSession.DoExecVerbs(); //repete o protocolo até o recebimento de fim de sessão
 
-            nFileSize := StrToInt64(sFileSize); //Tamanho do stream a ser lido pela rede
-
-            inStrm := TMemoryStream.Create();
-            try
-				 AContext.Connection.IOHandler.ReadStream(inStrm, nFileSize); //Local para o ajuste do ReadTimeout
-            finally
-                if (inStrm.Size = nFileSize) then begin //Recepção ok -> testar integridade
-                    retHash := THashHnd.MD5(inStrm);
-                    if (SameText(retHash, sHash)) then begin
-                        AContext.Connection.IOHandler.WriteLn(STR_OK_PACK); //informa OK e em seguida o tamanho do streamer lido
-                        Self.SaveBioFile(retClientName, sfilename, screateDate, saccessDate, smodifiedDAte, inStrm);
-                        //Salva arquivo denominado OK
-                        Inc(Self.FSessionFileCount); //Incrementa contador de trafego(modo servidor)
-                    end else begin
-                        AContext.Connection.IOHandler.WriteLn(STR_FAIL_HASH); //informa OK e em seguida o tamanho do streamer lido
-                    end;
-                end else begin  //Erro de recepção rejeitar arquivo
-                    AContext.Connection.IOHandler.WriteLn(STR_FAIL_SIZE); //informa OK e em seguida o tamanho do streamer lido
-                end;
-                inStrm.Free;
-            end;
-        until (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)); // assinatura de fim de sessão
     finally
         //Finaliza a sessão
         try
+            if (Assigned(SyncSession)) then begin
+                Self.FServerSessionList.Extract(SyncSession);
+                SyncSession.Free;
+            end;
             AContext.Connection.Disconnect;
         finally
-            if (TStrHnd.endsWith(retSignature, STR_END_SESSION_SIGNATURE)) then begin
+            if (TStrHnd.endsWith(sHeader, STR_END_SESSION_SIGNATURE)) then begin
                 TLogFile.LogDebug('Sessão encerrada normalmente', DBGLEVEL_DETAILED);
             end else begin
-                TLogFile.Log(Format('Cliente("%s") desconectado abruptamente', [retClientName]), lmtWarning);
+                TLogFile.Log(Format('Cliente("%s") desconectado abruptamente', [sClientName]), lmtWarning);
             end;
         end;
     end;
@@ -475,7 +506,7 @@ begin
             end;
         end;
     end;
-    hint := 'SESOP - Verificador de Versões de aplicativos seguros' + #13#10 + rtVersion + #13#10;
+    hint := 'SESOP - Verificador de Versões' + #13#10 + rtVersion + #13#10;
     if (Self.tcpsrvr.Bindings.Count > 0) then begin
         Hint := Hint + 'Clientes conectados = ' + IntToStr(Self.tcpsrvr.Bindings.Count) + #13#10;
     end;
@@ -621,6 +652,82 @@ end;
 procedure TThreadStringList.Leave;
 begin
     Self.FLocker.Leave;
+end;
+
+{ TSyncSession }
+
+constructor TSyncSession.Create(AContext : TidContext; const AClientName, AClientVersion, ASessionName : string);
+begin
+    inherited Create;
+    Self.FSessionName := ASessionName;
+    Self.FContext     := AContext;
+    Self.FClientVersion := AClientVersion;
+    Self.FClientName  := AClientName;
+end;
+
+function TSyncSession.DoExecVerbs : string;
+var
+    ret, sVerb, sLine : string;
+    execVerb : TVVSVerbs;
+
+begin
+    repeat
+        sLine := Self.Context.Connection.IOHandler.ReadLn();
+        sVerb := TStrHnd.CopyAfterLast(STR_CMD_VERB, sLine); {TODO -oroger -cdebug : gerar erro}
+        if (sVerb = EmptyStr) then begin
+            Self.Context.Connection.IOHandler.WriteLn(STR_FAIL_PROTOCOL);
+            Self.Context.Connection.IOHandler.WriteLn('Aguardando operação não recebida');
+            Exit;
+        end else begin
+            if (sVerb = STR_VERB_EXIT) then begin
+                Exit;
+            end;
+            try
+                execVerb := String2Verb(sVerb);
+                try
+                    case execVerb of
+                        vvvReadContent : begin //monta xml com versões dos arquivos
+                            ret := Self.ExecReadContent();
+                        end;
+                        vvvFileDownload : begin
+                            ret := Self.ExecFileDownload();
+                        end;
+                    end;
+                    Self.Context.Connection.IOHandler.WriteLn(ret);//envia retorno da operação
+                except
+                    on E : Exception do begin
+                        Self.Context.Connection.IOHandler.WriteLn(STR_FAIL_RETURN);//envia retorno da operação
+                        Self.Context.Connection.IOHandler.WriteLn(HttpEncode(E.Message));//envia retorno da operação
+                    end;
+                end;
+            except
+                on E : Exception do begin
+                    Self.Context.Connection.IOHandler.WriteLn(STR_FAIL_PROTOCOL);
+                    Self.Context.Connection.IOHandler.WriteLn('Operação inválida = "' + sVerb + '"');
+                end;
+            end;
+        end;
+    until (False);
+end;
+
+function TSyncSession.ExecFileDownload : string;
+begin
+end;
+
+function TSyncSession.ExecReadContent : string;
+var
+    pubname : string;
+begin
+    //espera como argumento unico o nome da publicação
+    try
+        pubname := Self.Context.Connection.IOHandler.ReadLn();
+        if (not SameText(pubname, PUBLICATION_INSTSEG)) then begin
+            Result := STR_FAIL_VERB;
+        end;
+    except
+        on E : Exception do Result := STR_FAIL_PROTOCOL;
+    end;
+    Result := STR_OK_PACK;
 end;
 
 end.

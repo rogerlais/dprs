@@ -28,10 +28,9 @@ type
         procedure tmrCycleEventTimer(Sender : TObject);
     private
         { Private declarations }
-        FLastLogCheck :  Word;
-        FLastPingReply : boolean;
-        FServerThread :  TVVerServerThread;
-        FClientThread :  TVVerClientThread;
+        FLastLogCheck : Word;
+        FServerThread : TVVerServerThread;
+        FClientThread : TVVerClientThread;
         procedure AddDestinations;
         procedure CheckLogs();
         function isIntranetConnected() : boolean;
@@ -176,22 +175,21 @@ begin
     Self.icmpclntMain.ProtocolIPv6 := 58;
     Self.icmpclntMain.IPVersion := Id_IPv4;
     Self.icmpclntMain.PacketSize := 32;
-    Self.icmpclntMain.Host := VVSvcConfig.ParentServer;
+    Self.icmpclntMain.Host := VVSvcConfig.RootServer;
     Result := False;
-    Self.FLastPingReply := Result;
     for x := 0 to 5 do begin
         try
             Self.icmpclntMain.Ping();
+            Result := (Self.icmpclntMain.ReplyStatus.ReplyStatusType = rsEcho);
         except
             on E : Exception do begin
                 //Sem tratamento -> espera nova tentativa
-                TLogFile.LogDebug(Format('Sem conectividade com a intranet(%s): %s', [VVSvcConfig.ParentServer, E.Message]),
+                TLogFile.LogDebug(Format('Sem conectividade com a intranet(%s): %s.'#13#10'Tentativa(%d)',
+                    [VVSvcConfig.RootServer, E.Message, x + 1]),
                     DBGLEVEL_ULTIMATE);
             end;
         end;
-        Result := Result or Self.FLastPingReply;
         if (Result) then begin
-            Self.FLastPingReply := False;
             Break;
         end;
     end;
@@ -304,7 +302,7 @@ procedure TVVerService.ServiceContinue(Sender : TService; var Continued : boolea
  /// </remarks>
 begin
     TLogFile.LogDebug('Chamada de ServiceContinue em execução', DBGLEVEL_ULTIMATE);
-
+    Continued := False;
     // Liberação do thread servidor
     if Assigned(Self.FServerThread) then begin
         if Self.FServerThread.Suspended then begin
@@ -314,8 +312,7 @@ begin
         end;
         Continued := (not Self.FServerThread.Finished);
     end else begin
-        Continued := False;
-        TLogFile.Log('Thread de Serviço servidor não criado anteriormente!');
+        Continued := True; //primeiro teste OK
     end;
 
     //Liberação do thread cliente
@@ -325,28 +322,8 @@ begin
             Self.FClientThread.Start; //Dispara o thread de serviço
             Sleep(300);
         end;
-        Continued := (not Self.FClientThread.Finished);
-    end else begin
-        Continued := False;
-        TLogFile.Log('Thread de Serviço cliente não criado anteriormente!');
+        Continued := (not Self.FClientThread.Finished) and Continued; //threads necessarios levantados
     end;
-
-        {
-        // Para de aceitar conexoes se no modo servidor
-       TLogFile.LogDebug('Abrindo conexões de rede', DBGLEVEL_DETAILED);
-       if (GlobalConfig.RunAsServer) then begin
-           try
-               DMTCPTransfer.tcpsrvr.StartListening;
-               Continued := True;
-           except
-               on E : Exception do begin
-                   Continued := False;
-                   TLogFile.Log(Format('Serviço não foi capaz de iniciar escuta na porta:%d'#13#10 + E.Message,
-                       [GlobalConfig.NetServicePort]), lmtError);
-               end;
-            end;
-        end;
-       }
 end;
 
 procedure TVVerService.ServiceCreate(Sender : TObject);
@@ -396,47 +373,35 @@ var
 begin
     try
         Self.CheckLogs(); // proteger chamada ,pois rede pode estar instavel neste momento
-        TLogFile.Log('Iniciando serviço de verificação de versões', lmtInformation);
     except
         on E : Exception do begin
             TLogFile.Log('Checagem de logs falhou.'#13#10 + E.Message, lmtWarning);
         end;
     end;
-    case Self.Status of
-        csStopped : begin
-            msvc := 'csStopped';
-        end;
-        csStartPending : begin
-            msvc := 'csStartPending';
-        end;
-        csStopPending : begin
-            msvc := 'csStopPending';
-        end;
-        csRunning : begin
-            msvc := 'csRunning';
-        end;
-        csContinuePending : begin
-            msvc := 'csContinuePending';
-        end;
-        csPausePending : begin
-            msvc := 'csPausePending';
-        end;
-        csPaused : begin
-            msvc := 'csPaused';
-        end;
-        else begin
-            msvc := 'Estado desconhecido';
-        end
-    end;
+
+    TLogFile.Log('Iniciando serviço de verificação de versões', lmtInformation);
+
+	 msvc:=ServiceStatus2String( Self.Status );
 
     TLogFile.LogDebug('Transição de estado durante início do serviço. Estado anterior = ' + msvc, DBGLEVEL_ULTIMATE);
 
     try
         if (Self.Status in [csStartPending, csStopped]) then begin // veio de parada(não pause)
-            TLogFile.Log('Criando thread de serviço no modo Servidor', lmtInformation);
-			 Self.FServerThread := TVVerServerThread.Create(True, APP_SERVICE_NAME + 'Server'); //thread primário servidor
-			 TLogFile.Log('Criando thread de serviço no modo Cliente', lmtInformation);
-			 Self.FClientThread := TVVerClientThread.Create(True, APP_SERVICE_NAME + 'Client'); //thread primário client
+            //Teste de instância servidora
+            if (VVSvcConfig.PathPublication <> EmptyStr) then begin
+                TLogFile.Log('Criando thread de serviço no modo Servidor', lmtInformation);
+                Self.FServerThread := TVVerServerThread.Create(True, APP_SERVICE_NAME + 'Server'); //thread primário servidor
+            end else begin
+                TLogFile.Log('Instância não funcionará como servidor de publicação', lmtInformation);
+            end;
+            //Teste de instância cliente
+            if (VVSvcConfig.ParentServer <> EmptyStr) then begin
+                TLogFile.Log('Criando thread de serviço no modo Cliente', lmtInformation);
+                Self.FClientThread := TVVerClientThread.Create(True, APP_SERVICE_NAME + 'Client'); //thread primário client
+            end else begin
+                TLogFile.Log('Instância sem servidor pai configurado. Sem fonte de replicação em uso(Thread cliente não será criado)',
+                    lmtInformation);
+            end;
         end;
     except
         on E : Exception do begin

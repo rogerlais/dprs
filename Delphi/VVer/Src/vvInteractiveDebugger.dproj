@@ -37,6 +37,7 @@
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_DebugDCUs>true</DCC_DebugDCUs>
 			<DCC_DependencyCheckOutputName>..\Debug\vvInteractiveDebugger.exe</DCC_DependencyCheckOutputName>
 			<DCC_Define>DEBUG;DEBUG_ALL;$(DCC_Define)</DCC_Define>
 			<DCC_BplOutput>..\Debug</DCC_BplOutput>
@@ -60,6 +61,7 @@
 			<DCCReference Include="vvSvcDM.pas"/>
 			<DCCReference Include="vvConfig.pas"/>
 			<DCCReference Include="vvsFileMgmt.pas"/>
+			<DCCReference Include="vvsThreadList.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

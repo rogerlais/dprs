@@ -9,7 +9,7 @@ interface
 
 uses
     Windows, SysUtils, FileHnd, Generics.Collections, StreamHnd, XPFileEnumerator, Classes, WinFileNotification,
-    XMLDoc, XMLIntf, XMLConst, SyncObjs;
+    XMLDoc, XMLIntf, XMLConst, SyncObjs, DBXJSON, DBXJSONReflect;
 
 type
     TVVSFile = class
@@ -28,7 +28,7 @@ type
 
     TManagedFolder = class(TDictionary<string, TVVSFile>)
     private
-        FCriticalSection : TCriticalSection;
+		 FCriticalSection : TCriticalSection;
         FRootDir :         string;
         FMonitor :         TWinFileSystemMonitor;
         function GetGlobalHash : string;
@@ -43,8 +43,8 @@ type
         constructor CreateRemote(const AData : string);
         destructor Destroy; override;
         property Monitored : boolean read GetMonitored write SetMonitored;
-        property GlobalHash : string read GetGlobalHash;
         procedure Reload;
+		 function ToString() : string; override;
     end;
 
 
@@ -207,9 +207,48 @@ begin
     end;
 end;
 
+function TManagedFolder.ToString : string;
+var
+    m : TJSONMarshal;
+begin
+    {TODO -oroger -cdsg : Tentativa de serializar instancia com sub-objetos dentro}
+    m := TJSONMarshal.Create(TJSONConverter.Create);
+    try
+        (*
+         m.RegisterConverter(TManagedFolder, 'FCriticalSection',
+             function (Data : TObject; Field : string) : TObject
+             begin
+                 Result := TCriticalSection.Create;
+             end);
+
+         *)
+
+        M.RegisterConverter(TCriticalSection,
+            function (Data : TObject) : TObject
+			 begin
+				 Result := TCriticalSection.Create;
+			 end
+			 );
+
+		 m.RegisterConverter(TCriticalSection, 'FSection', function (Data : TObject; Field : string) : TListOfStrings
+			var
+				cs : TCriticalSection;
+			 begin
+				cs := TCriticalSection( Data );
+
+				Result:= TCriticalSection.Create
+			 end);
+
+		 Result := m.Marshal(Self).ToString();
+
+	 finally
+		 m.Free;
+	 end;
+end;
+
 procedure TManagedFolder.UnLock;
 begin
-    Self.FCriticalSection.Release;
+	 Self.FCriticalSection.Release;
 end;
 
 end.

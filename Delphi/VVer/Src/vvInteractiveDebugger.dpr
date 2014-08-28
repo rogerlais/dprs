@@ -8,7 +8,8 @@ uses
   vvsTCPTransfer in 'vvsTCPTransfer.pas' {DMTCPTransfer: TDataModule},
   vvSvcDM in 'vvSvcDM.pas',
   vvConfig in 'vvConfig.pas',
-  vvsFileMgmt in 'vvsFileMgmt.pas';
+  vvsFileMgmt in 'vvsFileMgmt.pas',
+  vvsThreadList in 'vvsThreadList.pas';
 
 {$R *.res}
 

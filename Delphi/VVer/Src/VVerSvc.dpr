@@ -3,7 +3,8 @@ program VVerSvc;
 uses
   SvcMgr,
   vvSvcDM in 'vvSvcDM.pas' {VVerService: TService},
-  vvsConsts in 'vvsConsts.pas';
+  vvsConsts in 'vvsConsts.pas',
+  vvsTCPTransfer in 'vvsTCPTransfer.pas';
 
 {$R *.RES}
 
@@ -25,5 +26,6 @@ begin
   if not Application.DelayInitialize or Application.Installing then
     Application.Initialize;
   Application.CreateForm(TVVerService, VVerService);
+  Application.CreateForm(TDMTCPTransfer, DMTCPTransfer);
   Application.Run;
 end.

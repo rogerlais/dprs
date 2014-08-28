@@ -53,6 +53,7 @@
 				<DesignClass>TService</DesignClass>
 			</DCCReference>
 			<DCCReference Include="vvsConsts.pas"/>
+			<DCCReference Include="vvsTCPTransfer.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -80,12 +81,12 @@
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
 					</Parameters>
 					<VersionInfo>
-						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
 						<VersionInfo Name="MajorVer">1</VersionInfo>
-						<VersionInfo Name="MinorVer">0</VersionInfo>
-						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">0</VersionInfo>
+						<VersionInfo Name="MinorVer">2014</VersionInfo>
+						<VersionInfo Name="Release">10</VersionInfo>
+						<VersionInfo Name="Build">10</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -95,16 +96,16 @@
 						<VersionInfo Name="CodePage">1252</VersionInfo>
 					</VersionInfo>
 					<VersionInfoKeys>
-						<VersionInfoKeys Name="CompanyName"/>
-						<VersionInfoKeys Name="FileDescription"/>
-						<VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
-						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="CompanyName">SESOP</VersionInfoKeys>
+						<VersionInfoKeys Name="FileDescription">Verificador de versões de aplicativos seguros</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.2014.10.10</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName">VVer Service</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalCopyright"/>
 						<VersionInfoKeys Name="LegalTrademarks"/>
 						<VersionInfoKeys Name="OriginalFilename"/>
-						<VersionInfoKeys Name="ProductName"/>
-						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
-						<VersionInfoKeys Name="Comments"/>
+						<VersionInfoKeys Name="ProductName">VVer Service</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.2014.10.10</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments">Rgerlais Andrade</VersionInfoKeys>
 					</VersionInfoKeys>
 					<Excluded_Packages>
 						<Excluded_Packages Name="$(BDS)\bin\bcboffice2k140.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>

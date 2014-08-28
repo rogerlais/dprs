@@ -21,7 +21,7 @@ type
         FTempFolder :       TManagedFolder;
         FSyncFolder :       TManagedFolder;
         procedure DoClientCycle;
-        function ReadRemoteContent() : string;
+        function ReadRemoteContent(const Publication : string ) : string;
     public
         ClientName : string;
         constructor Create(CreateSuspended : boolean; const ThreadName : string); override;
@@ -31,15 +31,15 @@ type
     end;
 
 
-    TVVerServerThread = class(TXPNamedThread)
-    private
-        FPublishingFolder : TManagedFolder;
-        procedure DoServerCycle;
-        procedure StartTCPServer;
-        procedure StopTCPServer;
-    protected
-        procedure DoTerminate(); override;
-    public
+	 TVVerServerThread = class(TXPNamedThread)
+	 private
+		 FPublishingFolder : TManagedFolder;
+		 procedure DoServerCycle;
+		 procedure StartTCPServer;
+		 procedure StopTCPServer;
+	 protected
+		 procedure DoTerminate(); override;
+	 public
         constructor Create(CreateSuspended : boolean; const ThreadName : string); override;
         procedure Execute(); override;
 
@@ -54,9 +54,16 @@ uses
 { TVVerServiceThread }
 
 constructor TVVerServerThread.Create(CreateSuspended : boolean; const ThreadName : string);
+var
+dummy : string;
 begin
-    inherited;
-    Self.FPublishingFolder := TManagedFolder.CreateLocal(VVSvcConfig.PathLocalInstSeg);
+	 if (not ForceDirectories(VVSvcConfig.PathLocalInstSeg)) then begin
+		 raise ESVCLException.CreateFmt('Caminho "%s" usado para repositório local, não pode ser acessado',
+			 [VVSvcConfig.PathLocalInstSeg]);
+	 end;
+	 inherited;
+	 Self.FPublishingFolder := TManagedFolder.CreateLocal(VVSvcConfig.PathLocalInstSeg);
+	 dummy := Self.FPublishingFolder.ToString();
     Self.FPublishingFolder.Monitored := True; //remonta lista de arquivos pelos eventos do filesystem
 end;
 
@@ -67,8 +74,10 @@ end;
 
 procedure TVVerServerThread.DoTerminate;
 begin
-    inherited;
-
+	 //Finaliza o servidor TCP
+	 Self.FPublishingFolder.Monitored:=False;
+	 Self.StartTCPServer;
+	 inherited;
 end;
 
 procedure TVVerServerThread.Execute;
@@ -113,7 +122,7 @@ end;
 
 procedure TVVerServerThread.StopTCPServer;
 begin
-
+	DMTCPTransfer.StopServer;
 end;
 
 { TClientThread }
@@ -124,17 +133,19 @@ begin
     Self.FTempFolder := TManagedFolder.CreateLocal(VVSvcConfig.PathTempDownload);
     if (VVSvcConfig.ParentServer <> EmptyStr) then begin
         Self.FSyncFolder := TManagedFolder.CreateRemote(VVSvcConfig.ParentServer);
+    end else begin
+        raise ESVCLException.CreateFmt('Servidor pai desta instância inválido(%s)', [VVSvcConfig.ParentServer]);
     end;
 end;
 
 procedure TVVerClientThread.DoClientCycle;
 var
-    localHash, remoteHash : string;
+    localHash, remoteHash, response : string;
 begin
-    {TODO -oroger -cdsg : Buscar por atualizações}
-    DMTCPTransfer.StartSession(VVSvcConfig.ClientName, 0);
+	 {TODO -oroger -cdsg : Buscar por atualizações}
+	 DMTCPTransfer.StartSession(VVSvcConfig.ClientName + ' * ' + TimeToStr( Now() ));
     try
-
+        response := Self.ReadRemoteContent( VVSvcConfig.PublicationName );
     finally
         DMTCPTransfer.EndSession(VVSvcConfig.ClientName);
     end;
@@ -181,7 +192,7 @@ var
 
 begin
     inherited;
-    DMTCPTransfer.StartClient; //configura o tcpclient
+    DMTCPTransfer.StartClient(); //configura o tcpclient
     //Repetir os ciclos de acordo com a temporização configurada
     //O Thread primário pode enviar notificação da cancelamento que deve ser verificada ao inicio de cada ciclo
     while (not Self.Terminated) do begin
@@ -198,32 +209,38 @@ begin
     end;
 end;
 
-function TVVerClientThread.ReadRemoteContent : string;
+function TVVerClientThread.ReadRemoteContent( const Publication : string ) : string;
 var
-    lastStr, s : string;
-    csocket :    TIdTCPClient;
+	 lastStr, s : string;
+	 csocket :    TIdTCPClient;
 begin
-    csocket := DMTCPTransfer.tcpclnt;
-    if (not csocket.Connected) then begin
-        raise ESVCLException.Create('Canal com o servidor não estabelecido antecipadamente');
-    end;
-    //Passados obrigatoriamente nesta ordem!!!
-    s := STR_CMD_VERB + STR_VERB_READCONTENT + TOKEN_DELIMITER + 'INSTSEG'; //Verbo de leitura de conteudo da publicação instseg
+	 csocket := DMTCPTransfer.tcpclnt;
+	 if (not csocket.Connected) then begin
+		 raise ESVCLException.Create('Canal com o servidor não estabelecido antecipadamente');
+	 end;
+	 //Passados obrigatoriamente nesta ordem!!!
+	 s := STR_CMD_VERB + Verb2String( vvvReadContent ) + TOKEN_DELIMITER + Publication; //Verbo de leitura de conteudo da publicação
     csocket.IOHandler.WriteLn(s); //envia o comando
-    //csocket.IOHandler.WriteFile();
-    Result  := EmptyStr;
-    lastStr := EmptyStr;
-    repeat
+	 Result  := EmptyStr;
+	 lastStr := EmptyStr;
+	 try
+		 repeat //loop do conteudo xml até recebimento de token de final
+
 		 s := csocket.IOHandler.ReadLn();
-		 if (TStrHnd.IsPertinent(s, [STR_OK_PACK, STR_FAIL_HASH, STR_FAIL_SIZE, STR_FAIL_VERB], True)) then begin
-			 lastStr := s;
-		 end else begin //Execução normal
-			 Result := Result + s;
+			 if (TStrHnd.IsPertinent(s, [STR_OK_PACK, STR_FAIL_HASH, STR_FAIL_SIZE, STR_FAIL_VERB], True)) then begin
+				 lastStr := s;
+			 end else begin //Execução normal
+				 Result := Result + s;
+			 end;
+		 until (lastStr <> EmptyStr);
+		 if (lastStr <> STR_OK_PACK) then begin
+			 raise ESVCLException.CreateFmt('Retorno de erro de execução de comando: "%s" resposta="%s".',
+				 [STR_VERB_READCONTENT, lastStr]);
 		 end;
-    until (lastStr <> EmptyStr);
-    if (lastStr <> STR_OK_PACK) then begin
-        raise ESVCLException.CreateFmt('Retorno de erro de execução de comando: "%s" resposta="%s".',
-            [STR_VERB_READCONTENT, lastStr]);
+	 except
+		 on E : Exception do begin
+			Result := STR_FAIL_RETURN + #13#10 + E.Message;
+        end;
     end;
 end;
 
