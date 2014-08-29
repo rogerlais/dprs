@@ -7,6 +7,10 @@
 {$ENDIF}
 
 
+//Novidade do Delphi 2010
+{$METHODINFO ON}
+
+
 //************** START COMMON PART **************
 
 //Alinhamento de 64 bits ( para os novos processadores e os atuais )

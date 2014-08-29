@@ -56,7 +56,8 @@ begin
     try
 	 	Self.FList.Free;
 	 finally
-		Self.FLock.Free; //Espero que chame antes Self.FLock.Leave;
+       Self.FLock.Leave;
+		Self.FLock.Free;
 	 end;
 	 inherited;
 end;

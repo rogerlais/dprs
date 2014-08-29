@@ -12,9 +12,9 @@ interface
 {TODO -oroger -cdsg : Registrar o encerramento do windows }
 
 uses
-    SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
-    IdTCPServer, AppLog, XPFileEnumerator, IdGlobal, Menus, ExtCtrls, SyncObjs, StreamHnd, ImgList,
-    Controls, vvsConsts, vvsThreadList, HTTPApp;
+	 SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
+	 IdTCPServer, AppLog, XPFileEnumerator, IdGlobal, Menus, ExtCtrls, SyncObjs, StreamHnd, ImgList,
+    Controls, vvsConsts, vvsThreadList, HTTPApp, Dialogs;
 
 type
     TThreadStringList = class(TStringList)
@@ -73,9 +73,9 @@ type
         {TODO -oroger -cdsg : capturar no construtor todos os eventos do context desejáveis }
         constructor Create(AContext : TidContext; const AClientName, AClientVersion, ASessionName : string); virtual;
         function DoExecVerbs() : string;
-    end;
+	 end;
 
-    TSyncSessionServerList = class(TSyncTThreadList<TSyncSession>);
+	 TSyncSessionServerList = class(TSyncTThreadList<TSyncSession>);
 
 
 
@@ -671,7 +671,8 @@ var
     execVerb : TVVSVerbs;
 
 begin
-    repeat
+
+	 repeat
         sLine := Self.Context.Connection.IOHandler.ReadLn();
         sVerb := TStrHnd.CopyAfterLast(STR_CMD_VERB, sLine); {TODO -oroger -cdebug : gerar erro}
         if (sVerb = EmptyStr) then begin

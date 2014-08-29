@@ -40,8 +40,11 @@ type
 	 protected
 		 procedure DoTerminate(); override;
 	 public
-        constructor Create(CreateSuspended : boolean; const ThreadName : string); override;
-        procedure Execute(); override;
+		 constructor Create(CreateSuspended : boolean; const ThreadName : string); override;
+		 procedure Execute(); override;
+
+
+		 procedure TestRemountFileList( const dummy : string );
 
     end;
 
@@ -64,6 +67,7 @@ begin
 	 inherited;
 	 Self.FPublishingFolder := TManagedFolder.CreateLocal(VVSvcConfig.PathLocalInstSeg);
 	 dummy := Self.FPublishingFolder.ToString();
+	 Self.TestRemountFileList( dummy );
     Self.FPublishingFolder.Monitored := True; //remonta lista de arquivos pelos eventos do filesystem
 end;
 
@@ -123,6 +127,22 @@ end;
 procedure TVVerServerThread.StopTCPServer;
 begin
 	DMTCPTransfer.StopServer;
+end;
+
+procedure TVVerServerThread.TestRemountFileList(const dummy: string);
+var
+	tmp : TManagedFolder;
+	ret : string;
+begin
+	tmp := TManagedFolder.CreateRemote(dummy);
+	try
+		ret := tmp.ToString;
+		if ( not SameText( ret, dummy ) ) then begin
+			raise Exception.Create('problemas!!!');
+		end;
+	finally
+    tmp.Free;
+	end;
 end;
 
 { TClientThread }

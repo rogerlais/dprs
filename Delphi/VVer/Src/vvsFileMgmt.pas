@@ -9,9 +9,10 @@ interface
 
 uses
     Windows, SysUtils, FileHnd, Generics.Collections, StreamHnd, XPFileEnumerator, Classes, WinFileNotification,
-    XMLDoc, XMLIntf, XMLConst, SyncObjs, DBXJSON, DBXJSONReflect;
+    XMLIntf, XMLConst, SyncObjs, DBXJSON, DBXJSONReflect;
 
 type
+     {$RTTI EXPLICIT METHODS([]) PROPERTIES([vcPublished]) FIELDS([vcPrivate])}
     TVVSFile = class
     private
         _MD5String : string;
@@ -21,6 +22,7 @@ type
     public
         constructor Create(const FullFilename : string);
         procedure Refresh;
+		 function ToString() : string;
         property Filename : string read FFilename;
         property MD5String : string read GetMD5String;
         property LastWrite : TDateTime read GetLastWrite;
@@ -28,7 +30,7 @@ type
 
     TManagedFolder = class(TDictionary<string, TVVSFile>)
     private
-		 FCriticalSection : TCriticalSection;
+        FCriticalSection : TCriticalSection;
         FRootDir :         string;
         FMonitor :         TWinFileSystemMonitor;
         function GetGlobalHash : string;
@@ -41,17 +43,18 @@ type
     public
         constructor CreateLocal(const ARootDir : string);
         constructor CreateRemote(const AData : string);
-        destructor Destroy; override;
-        property Monitored : boolean read GetMonitored write SetMonitored;
-        procedure Reload;
+		 destructor Destroy; override;
+		 property Monitored : boolean read GetMonitored write SetMonitored;
+		 procedure Reload;
 		 function ToString() : string; override;
-    end;
+	 end;
 
 
 implementation
 
 uses
-    BinHnd;
+	 BinHnd, Str_pas, StrHnd, jclAnsiStrings;
+
 
 { TVVSFile }
 
@@ -78,6 +81,32 @@ begin
 
 end;
 
+function TVVSFile.ToString : string;
+var
+    m : TJSONMarshal;
+    AsString : TJSONObject;  //Serialized for of object
+begin
+    m := TJSONMarshal.Create(TJSONConverter.Create);
+	 try
+		m.RegisterConverter( Self.ClassType, 'FFilename', function(Data: TObject; Field: string): string
+		var
+			v : string;
+		begin
+			v:=TVVSFile( Data ).FFilename;
+			{$IF CompilerVersion <> 21.00}
+			//Para esta versão havia erro na recuperação da cadeia contendo caracter "\"
+			---***** A linha abaixo deve ser revista de acordo com a implementação json do compilador
+			{$IFEND}
+			Result := jclAnsiStrings.StrStringToEscaped( v );
+		end
+		);
+        AsString := TJSONObject(m.Marshal(self));
+        Result   := AsString.ToString;
+    finally
+        m.Free;
+    end;
+end;
+
 { TManagedFolder }
 
 constructor TManagedFolder.CreateLocal(const ARootDir : string);
@@ -89,13 +118,39 @@ begin
 end;
 
 constructor TManagedFolder.CreateRemote(const AData : string);
+var
+    f :     TVVSFile;
+    Lines : TStringList;
+    s :     string;
+    unm :   TJSONUnMarshal;
+    SerialFile : TJSONObject;  //Serialized for of object
+    buf :   TBytes;
+    jPair : TJSONPair;
 begin
     inherited Create;
     Self.FCriticalSection := TCriticalSection.Create;
-     {
-     Self.FRootDir := ARootDir;
-     Self.Reload;
-     }
+    Lines := TStringList.Create();
+    try
+        unm := TJSONUnMarshal.Create();
+        try
+            Lines.Text := AData;
+            for s in Lines do begin
+				 try
+					 SerialFile := TJSONObject.Create;
+					 //SerialFile.Parse (TEncoding.ASCII.GetBytes(s), 0);
+					 SerialFile.Parse (TEncoding.UTF8.GetBytes(s), 0);
+					 f := unm.Unmarshal(SerialFile) as TVVSFile;
+					 Self.Add(f.Filename, f);
+                finally
+                    SerialFile.Free;
+                end;
+            end;
+        finally
+            unm.Free;
+        end;
+    finally
+        Lines.Free;
+    end;
 end;
 
 destructor TManagedFolder.Destroy;
@@ -209,46 +264,18 @@ end;
 
 function TManagedFolder.ToString : string;
 var
-    m : TJSONMarshal;
+    x : Integer;
+    f : TVVSFile;
 begin
-    {TODO -oroger -cdsg : Tentativa de serializar instancia com sub-objetos dentro}
-    m := TJSONMarshal.Create(TJSONConverter.Create);
-    try
-        (*
-         m.RegisterConverter(TManagedFolder, 'FCriticalSection',
-             function (Data : TObject; Field : string) : TObject
-             begin
-                 Result := TCriticalSection.Create;
-             end);
-
-         *)
-
-        M.RegisterConverter(TCriticalSection,
-            function (Data : TObject) : TObject
-			 begin
-				 Result := TCriticalSection.Create;
-			 end
-			 );
-
-		 m.RegisterConverter(TCriticalSection, 'FSection', function (Data : TObject; Field : string) : TListOfStrings
-			var
-				cs : TCriticalSection;
-			 begin
-				cs := TCriticalSection( Data );
-
-				Result:= TCriticalSection.Create
-			 end);
-
-		 Result := m.Marshal(Self).ToString();
-
-	 finally
-		 m.Free;
-	 end;
+    Result := EmptyStr;
+    for f in Self.Values do begin
+        Result := Result + f.ToString() + #13#10;
+    end;
 end;
 
 procedure TManagedFolder.UnLock;
 begin
-	 Self.FCriticalSection.Release;
+    Self.FCriticalSection.Release;
 end;
 
 end.
