@@ -1,5 +1,5 @@
 {$IFDEF vvConfig}
-     {$DEFINE DEBUG_UNIT}
+	  {$DEFINE DEBUG_UNIT}
 {$ENDIF}
 {$I VVer.inc}
 {$TYPEINFO OFF}
@@ -31,7 +31,7 @@ type
         function GetIsUpdated : boolean;
         function GetCurrentVersionEx : string;
         function ReadVersionEntry(const Entry : string) : string;
-        function GetCurrentVersionDisplay : string;
+		 function GetCurrentVersionDisplay : string;
     public
         constructor Create(const ADesc, AHive, AVerKey, AVerKeyEx, AExpectedVer, AExpectedVerEx, ADownloadURL : string);
         property Desc : string read FDesc;
@@ -60,41 +60,46 @@ type
         property Count : Integer read GetCount;
     end;
 
-    TVVConfig = class(TBaseStartSettings)
-    private
-        _ProfileInfo : TVVProgInfo;
-        FProfileName : string;
-        function GetGlobalStatus : string;
-        function GetInfoText : string;
-        function GetAutoMode : boolean;
-        function GetNotificationList : string;
-        function GetSenderAddress : string;
-        function GetSenderDescription : string;
-        function GetEnsureNotification : boolean;
-        function GetProfileInfo : TVVProgInfo;
-    public
-        constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
-        destructor Destroy; override;
-        property GlobalStatus : string read GetGlobalStatus;
-        property InfoText : string read GetInfoText;
-        property ProfileInfo : TVVProgInfo read GetProfileInfo;
-        property AutoMode : boolean read GetAutoMode;
-        property ProfileName : string read FProfileName;
-        property NotificationList : string read GetNotificationList;
-        property SenderAddress : string read GetSenderAddress;
-        property SenderDescription : string read GetSenderDescription;
-        property EnsureNotification : boolean read GetEnsureNotification;
-    end;
+	 TVVConfig = class(TBaseStartSettings)
+	 private
+		 _ProfileInfo : TVVProgInfo;
+		 FProfileName : string;
+		 function GetGlobalStatus : string;
+		 function GetClientName : string;
+		 function GetInfoText : string;
+		 function GetAutoMode : boolean;
+		 function GetNotificationList : string;
+		 function GetSenderAddress : string;
+		 function GetSenderDescription : string;
+		 function GetEnsureNotification : boolean;
+		 function GetProfileInfo : TVVProgInfo;
+	 public
+		 constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
+		 destructor Destroy; override;
+		 property GlobalStatus : string read GetGlobalStatus;
+		 property InfoText : string read GetInfoText;
+		 property ProfileInfo : TVVProgInfo read GetProfileInfo;
+		 property AutoMode : boolean read GetAutoMode;
+		 property ProfileName : string read FProfileName;
+		 property NotificationList : string read GetNotificationList;
+		 property SenderAddress : string read GetSenderAddress;
+		 property SenderDescription : string read GetSenderDescription;
+		 property EnsureNotification : boolean read GetEnsureNotification;
+		 property ClientName : string read GetClientName;
+	 end;
 
 procedure LoadGlobalInfo(const Filename : string);
 
 var
-    GlobalInfo : TVVConfig = nil;
+	 GlobalInfo : TVVConfig = nil;
 
 implementation
 
 uses
-    WinNetHnd, StrHnd, vvMainDataModule, FileInfo, TREConsts, JclSysInfo, TREUtils;
+	 WinNetHnd, StrHnd, vvMainDataModule, FileInfo, TREConsts, JclSysInfo, TREUtils;
+
+const
+	IE_DEBUG_CLIENT_NAME = 'Debug\ClientName'; //nome forçado para depuração deste cliente
 
 procedure LoadGlobalInfo(const Filename : string);
  ///Monta rotina de carga das configurações iniciais, na ordem:
@@ -113,22 +118,17 @@ constructor TVVConfig.Create(const FileName, AKeyPrefix : string);
     /// Cria e carrega o perfil deste computador de acordo com o nome do mesmo.
     /// Monta o nome prefixando o sistema operacional com o tipo da estação
 var
-    profileFilename, TargetName : string;
-    ct : TTREComputerType;
+	 profileFilename : string;
+	 ct : TTREComputerType;
 begin
-    {TODO -oroger -cdsg : Pegar o nome do perfil atraves do AD do controlador de domínio, exceto para os casos onde não houve o mesmo }
-    {TODO -oroger -cdsg : Opção para o caso acima é contato com o servidor configurado para o serviço }
-    inherited;
-    //Identifica o perfil baseado no ordinal do nome do computador. Para id > 10 -> PCT, cc máquina zona
-    if (System.DebugHook <> 0) then begin //Depurando na IDE
-        TargetName := DBG_CLIENT_COMPUTERNAME;
-    end else begin //Execução normal
-        TargetName := GetComputerName();
-    end;
-	 ct := TTREUtils.GetComputerTypeByName(TargetName);
+	 {TODO -oroger -cdsg : Pegar o nome do perfil atraves do AD do controlador de domínio, exceto para os casos onde não houve o mesmo }
+	 {TODO -oroger -cdsg : Opção para o caso acima é contato com o servidor configurado para o serviço }
+	 inherited;
+	 //Identifica o perfil baseado no ordinal do nome do computador. Para id > 10 -> PCT, cc máquina zona
+	 ct := TTREUtils.GetComputerTypeByName( Self.ClientName );
     case ct of
         ctUnknow, ctCentralPDC, ctZonePDC, ctTREWKS : begin
-            Self.FProfileName := 'Outros';
+			 Self.FProfileName := 'Outros';
         end;
         ctCentralWKS, ctZoneWKS, ctZoneSTD : begin
             Self.FProfileName := 'ZE';
@@ -152,12 +152,20 @@ destructor TVVConfig.Destroy;
 var
     tmpDir : string;
 begin
-    //Testa se arquivo foi gerado em temporario
-    tmpDir := FileHnd.GetTempDir;
-    if TStrHnd.startsWith(Self.FIni.FileName, tmpDir) then begin
-        DeleteFile(PWideChar(Self.FIni.FileName));
-    end;
-    inherited;
+	 //Testa se arquivo foi gerado em temporario
+	 tmpDir := FileHnd.GetTempDir;
+	 if TStrHnd.startsWith(Self.FIni.FileName, tmpDir) then begin
+		 DeleteFile(PWideChar(Self.FIni.FileName));
+	 end;
+	 inherited;
+end;
+
+function TVVConfig.GetClientName : string;
+begin
+	 Result := Self.ReadString( IE_DEBUG_CLIENT_NAME );
+	 if (Result = EmptyStr) then begin
+		 Result := WinNetHnd.GetComputerName();
+	 end;
 end;
 
 function TVVConfig.GetAutoMode : boolean;
@@ -219,7 +227,7 @@ begin
             Result := Result + 'Versão instalada: ' + p.CurrentVersion + #13#10;
             Result := Result + 'Versão esperada: ' + p.ExpectedVerEx + #13#10;
             if p.isUpdated then begin
-                Result := Result + 'Situação: Atualizado'#13#10;
+				 Result := Result + 'Situação: Atualizado'#13#10;
             end else begin
                 Result := Result + 'Situação: Pendente'#13#10;
             end;
@@ -252,7 +260,7 @@ begin
         end else begin
             //Resolver para caso de SO não identificado
             SOProfilePrefix := 'XP.';
-        end;
+		 end;
     end;
 
     //Tenta com o SO explicito

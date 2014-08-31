@@ -16,8 +16,8 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TVVerService, VVerService);
   Application.CreateForm(TDMTCPTransfer, DMTCPTransfer);
+  Application.CreateForm(TVVerService, VVerService);
   Application.CreateForm(TForm2, Form2);
   Application.Run;
 end.

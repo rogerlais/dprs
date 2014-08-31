@@ -9,7 +9,7 @@ interface
 
 uses
     SysUtils, Windows, Classes, XPFileEnumerator, XPThreads, vvsConsts, vvsConfig, vvsFileMgmt, IdContext,
-    IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
+    IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer, Generics.Collections,
     IdTCPServer, AppLog, IdGlobal;
 
 type
@@ -21,9 +21,7 @@ type
         FTempFolder :       TManagedFolder;
         FSyncFolder :       TManagedFolder;
         procedure DoClientCycle;
-        function ReadRemoteContent(const Publication : string ) : string;
     public
-        ClientName : string;
         constructor Create(CreateSuspended : boolean; const ThreadName : string); override;
         procedure DoTerminate; override;
         procedure Execute(); override;
@@ -31,23 +29,33 @@ type
     end;
 
 
-	 TVVerServerThread = class(TXPNamedThread)
-	 private
-		 FPublishingFolder : TManagedFolder;
-		 procedure DoServerCycle;
-		 procedure StartTCPServer;
-		 procedure StopTCPServer;
-	 protected
-		 procedure DoTerminate(); override;
-	 public
-		 constructor Create(CreateSuspended : boolean; const ThreadName : string); override;
-		 procedure Execute(); override;
-
-
-		 procedure TestRemountFileList( const dummy : string );
-
+    TVVerServerThread = class(TXPNamedThread)
+    private
+        procedure DoServerCycle;
+        procedure StartTCPServer;
+        procedure StopTCPServer;
+    protected
+        procedure DoTerminate(); override;
+    public
+        constructor Create(CreateSuspended : boolean; const ThreadName : string); override;
+        procedure Execute(); override;
     end;
 
+
+    TClientSyncSession = class
+    private
+        FParent : TVVerClientThread;
+        FSocket : TIdTCPClient;
+        function GetCancelled : boolean;
+    protected
+        procedure PostRequest(Args : array of string);
+        function ReadResponse() : string;
+    public
+        constructor Create(AParent : TVVerClientThread; ASocket : TIdTCPClient);
+        property Cancelled : boolean read GetCancelled;
+        function ReadRemoteContent(const PubName : string) : string;
+        function Synch(const PubName : string; LocalFolder, TempFolder : TManagedFolder) : string;
+    end;
 
 implementation
 
@@ -57,31 +65,25 @@ uses
 { TVVerServiceThread }
 
 constructor TVVerServerThread.Create(CreateSuspended : boolean; const ThreadName : string);
-var
-dummy : string;
 begin
-	 if (not ForceDirectories(VVSvcConfig.PathLocalInstSeg)) then begin
-		 raise ESVCLException.CreateFmt('Caminho "%s" usado para repositório local, não pode ser acessado',
-			 [VVSvcConfig.PathLocalInstSeg]);
-	 end;
-	 inherited;
-	 Self.FPublishingFolder := TManagedFolder.CreateLocal(VVSvcConfig.PathLocalInstSeg);
-	 dummy := Self.FPublishingFolder.ToString();
-	 Self.TestRemountFileList( dummy );
-    Self.FPublishingFolder.Monitored := True; //remonta lista de arquivos pelos eventos do filesystem
+    //Self.FInstSegPublication := TVVSPublication.Create( PUBLICATION_INSTSEG, VVSvcConfig.PathLocalInstSeg );
+    if (not ForceDirectories(VVSvcConfig.PathLocalInstSeg)) then begin
+        raise ESVCLException.CreateFmt('Caminho "%s" usado para repositório local, não pode ser acessado',
+            [VVSvcConfig.PathLocalInstSeg]);
+    end;
+    inherited;
 end;
 
 procedure TVVerServerThread.DoServerCycle;
 begin
-    {TODO -oroger -cdsg : Delimitar o que fara o ciclo servidor além de reenvio de logs}
+    {TODO -oroger -cdsg : Delimitar o que fara o ciclo servidor além de reenvio de logs, sugestão para ser o local de atualização de status }
 end;
 
 procedure TVVerServerThread.DoTerminate;
 begin
-	 //Finaliza o servidor TCP
-	 Self.FPublishingFolder.Monitored:=False;
-	 Self.StartTCPServer;
-	 inherited;
+    //Finaliza o servidor TCP
+    Self.StopTCPServer;
+    inherited;
 end;
 
 procedure TVVerServerThread.Execute;
@@ -126,23 +128,7 @@ end;
 
 procedure TVVerServerThread.StopTCPServer;
 begin
-	DMTCPTransfer.StopServer;
-end;
-
-procedure TVVerServerThread.TestRemountFileList(const dummy: string);
-var
-	tmp : TManagedFolder;
-	ret : string;
-begin
-	tmp := TManagedFolder.CreateRemote(dummy);
-	try
-		ret := tmp.ToString;
-		if ( not SameText( ret, dummy ) ) then begin
-			raise Exception.Create('problemas!!!');
-		end;
-	finally
-    tmp.Free;
-	end;
+    DMTCPTransfer.StopServer;
 end;
 
 { TClientThread }
@@ -151,24 +137,20 @@ constructor TVVerClientThread.Create(CreateSuspended : boolean; const ThreadName
 begin
     inherited;
     Self.FTempFolder := TManagedFolder.CreateLocal(VVSvcConfig.PathTempDownload);
-    if (VVSvcConfig.ParentServer <> EmptyStr) then begin
-        Self.FSyncFolder := TManagedFolder.CreateRemote(VVSvcConfig.ParentServer);
-    end else begin
+    if (VVSvcConfig.ParentServer = EmptyStr) then begin
         raise ESVCLException.CreateFmt('Servidor pai desta instância inválido(%s)', [VVSvcConfig.ParentServer]);
     end;
 end;
 
 procedure TVVerClientThread.DoClientCycle;
 var
-    localHash, remoteHash, response : string;
+    clientSession : TClientSyncSession;
 begin
-	 {TODO -oroger -cdsg : Buscar por atualizações}
-	 DMTCPTransfer.StartSession(VVSvcConfig.ClientName + ' * ' + TimeToStr( Now() ));
-    try
-        response := Self.ReadRemoteContent( VVSvcConfig.PublicationName );
-    finally
-        DMTCPTransfer.EndSession(VVSvcConfig.ClientName);
-    end;
+    {TODO -oroger -cdsg : Buscar por atualizações}
+    DMTCPTransfer.StartSession(VVSvcConfig.ClientName + ' * ' + TimeToStr(Now()));
+    clientSession := TClientSyncSession.Create(Self, DMTCPTransfer.tcpclnt);
+    clientSession.Synch(PUBLICATION_INSTSEG, Self.FSyncFolder, Self.FTempFolder);
+    DMTCPTransfer.EndSession(VVSvcConfig.ClientName);
 end;
 
 procedure TVVerClientThread.DoTerminate;
@@ -229,39 +211,100 @@ begin
     end;
 end;
 
-function TVVerClientThread.ReadRemoteContent( const Publication : string ) : string;
-var
-	 lastStr, s : string;
-	 csocket :    TIdTCPClient;
-begin
-	 csocket := DMTCPTransfer.tcpclnt;
-	 if (not csocket.Connected) then begin
-		 raise ESVCLException.Create('Canal com o servidor não estabelecido antecipadamente');
-	 end;
-	 //Passados obrigatoriamente nesta ordem!!!
-	 s := STR_CMD_VERB + Verb2String( vvvReadContent ) + TOKEN_DELIMITER + Publication; //Verbo de leitura de conteudo da publicação
-    csocket.IOHandler.WriteLn(s); //envia o comando
-	 Result  := EmptyStr;
-	 lastStr := EmptyStr;
-	 try
-		 repeat //loop do conteudo xml até recebimento de token de final
 
-		 s := csocket.IOHandler.ReadLn();
-			 if (TStrHnd.IsPertinent(s, [STR_OK_PACK, STR_FAIL_HASH, STR_FAIL_SIZE, STR_FAIL_VERB], True)) then begin
-				 lastStr := s;
-			 end else begin //Execução normal
-				 Result := Result + s;
-			 end;
-		 until (lastStr <> EmptyStr);
-		 if (lastStr <> STR_OK_PACK) then begin
-			 raise ESVCLException.CreateFmt('Retorno de erro de execução de comando: "%s" resposta="%s".',
-				 [STR_VERB_READCONTENT, lastStr]);
-		 end;
-	 except
-		 on E : Exception do begin
-			Result := STR_FAIL_RETURN + #13#10 + E.Message;
+{ TClientSyncSession }
+
+constructor TClientSyncSession.Create(AParent : TVVerClientThread; ASocket : TIdTCPClient);
+begin
+    inherited Create;
+    Self.FParent := AParent;
+    Self.FSocket := ASocket;
+end;
+
+function TClientSyncSession.GetCancelled : boolean;
+begin
+    Result := Self.FParent.Terminated;
+end;
+
+procedure TClientSyncSession.PostRequest(Args : array of string);
+var
+    req, s : string;
+begin
+    req := EmptyStr;
+    for s in Args do begin
+        req := req + s + TOKEN_DELIMITER;
+    end;
+    try
+        Self.FSocket.IOHandler.Write(STR_CMD_VERB + req);
+    except
+        on E : Exception do begin
+            raise ESVCLException.Create('Erro enviando solicitação ao servidor: ' + E.Message);
         end;
     end;
+end;
+
+function TClientSyncSession.ReadRemoteContent(const PubName : string) : string;
+begin
+    try
+        Self.PostRequest([Verb2String(vvvReadContent), PubName]);
+        Result := Self.ReadResponse();
+    except
+        on E : Exception do begin
+            raise ESVCLException.Create('Cliente não pode carregar conteúdo da publicação: ' + PubName + #13#10 + E.Message);
+        end;
+    end;
+end;
+
+function TClientSyncSession.ReadResponse() : string;
+var
+    ret : string;
+begin
+    try
+        Result := Self.FSocket.IOHandler.ReadLn(TEncoding.UTF8); //leitura da resposta em si
+    except
+        on E : Exception do raise ESVCLException.Create('Erro lendo resposta do servidor.' + E.Message);
+    end;
+    try //Leitura da checagem da resposta
+        ret := Self.FSocket.IOHandler.ReadLn(); //codigo de retorno
+        if (TStrHnd.startsWith(ret, STR_FAIL_PREFIX)) then begin
+            raise Exception.Create('O servidor retornou erro para a operação: ' + ret);
+        end;
+    except
+        on E : Exception do {TODO -oroger -cdsg : verificar e garantir o envio recebimento nesta codificação}
+            raise ESVCLException.Create('Resposta de leitura de conteúdo não foi completa ou falha.'#13#10 + E.Message);
+    end;
+end;
+
+function TClientSyncSession.Synch(const PubName : string; LocalFolder, TempFolder : TManagedFolder) : string;
+var
+    remoteFolder : TManagedFolder;
+    slines : string;
+    delta :  TVVSFileList;
+begin
+    try
+        slines := HttpDecode(Self.ReadRemoteContent(PUBLICATION_INSTSEG));
+    except
+        on E : Exception do raise ESVCLException.Create('Operação de sincronismo falhou: ' + E.Message);
+    end;
+
+    try
+        remoteFolder := TManagedFolder.CreateRemote(slines);
+    except
+        on E : Exception do raise ESVCLException.Create('Erro de parser para instância de conteúdo: '#13#10 + E.Message + #13#10 + slines);
+    end;
+
+    try
+        Delta := TVVSFileList.Create;
+        try
+			 remoteFolder.Diff(Self.FParent.FTempFolder, Delta);
+			 --io com o delta
+        finally
+            Delta.Free;
+        end;
+    finally
+        remoteFolder.Free;
+    end;
+
 end;
 
 end.

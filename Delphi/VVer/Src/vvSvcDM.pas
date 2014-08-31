@@ -31,6 +31,7 @@ type
         FLastLogCheck : Word;
         FServerThread : TVVerServerThread;
         FClientThread : TVVerClientThread;
+        procedure InitPublications();
         procedure AddDestinations;
         procedure CheckLogs();
         function isIntranetConnected() : boolean;
@@ -157,12 +158,28 @@ begin
         Self.FClientThread.Terminate;
         FreeAndNil(Self.FClientThread);
     end;
+
+    if (Assigned(GlobalPublication)) then begin
+        FreeAndNil(GlobalPublication);
+    end;
     inherited;
 end;
 
 function TVVerService.GetServiceController : TServiceController;
 begin
     Result := ServiceController;
+end;
+
+procedure TVVerService.InitPublications;
+begin
+    //Inicia as instancias de publicações globais
+    if (not Assigned(vvsFileMgmt.GlobalPublication)) then begin
+        if (ForceDirectories(VVSvcConfig.PathLocalInstSeg)) then begin
+            vvsFileMgmt.GlobalPublication := TVVSPublication.Create(PUBLICATION_INSTSEG, VVSvcConfig.PathLocalInstSeg);
+        end else begin
+            raise ESVCLException.Create('Caminho da publicação INSTSEG inválido: ' + VVSvcConfig.PathLocalInstSeg);
+        end;
+    end;
 end;
 
 function TVVerService.isIntranetConnected : boolean;
@@ -224,7 +241,7 @@ begin
     // Coletar informações de destino de mensagem com possibilidade de macros no mesmo arquivo de configuração
     Self.AddDestinations();
 
-    Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvInfo.FileVersion, WinnetHnd.GetComputerName(),
+    Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvInfo.FileVersion, VVSvcConfig.ClientName,
         FormatDateTime('yyyyMMDDhhmm', Now())]);
     Self.mailMsgNotify.Body.Text := NotificationText + #13#10'****** Arquivo de configuração ******' +
         #13#10 + VVSvcConfig.ToString;
@@ -381,7 +398,7 @@ begin
 
     TLogFile.Log('Iniciando serviço de verificação de versões', lmtInformation);
 
-	 msvc:=ServiceStatus2String( Self.Status );
+    msvc := ServiceStatus2String(Self.Status);
 
     TLogFile.LogDebug('Transição de estado durante início do serviço. Estado anterior = ' + msvc, DBGLEVEL_ULTIMATE);
 
@@ -390,6 +407,7 @@ begin
             //Teste de instância servidora
             if (VVSvcConfig.PathPublication <> EmptyStr) then begin
                 TLogFile.Log('Criando thread de serviço no modo Servidor', lmtInformation);
+                InitPublications();
                 Self.FServerThread := TVVerServerThread.Create(True, APP_SERVICE_NAME + 'Server'); //thread primário servidor
             end else begin
                 TLogFile.Log('Instância não funcionará como servidor de publicação', lmtInformation);

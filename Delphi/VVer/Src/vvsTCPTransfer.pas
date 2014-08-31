@@ -12,12 +12,12 @@ interface
 {TODO -oroger -cdsg : Registrar o encerramento do windows }
 
 uses
-	 SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
-	 IdTCPServer, AppLog, XPFileEnumerator, IdGlobal, Menus, ExtCtrls, SyncObjs, StreamHnd, ImgList,
-    Controls, vvsConsts, vvsThreadList, HTTPApp, Dialogs;
+    SysUtils, Classes, Windows, IdContext, IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer,
+    IdTCPServer, AppLog, XPFileEnumerator, IdGlobal, Menus, ExtCtrls, SyncObjs, StreamHnd, ImgList,
+    Controls, vvsConsts, vvsThreadList, HTTPApp, Dialogs, vvsFileMgmt;
 
 type
-    TThreadStringList = class(TStringList)
+	 TThreadStringList = class(TStringList)
     private
         FLocker : TCriticalSection;
     protected
@@ -57,7 +57,7 @@ type
         destructor Destroy; override;
     end;
 
-    TSyncSession = class(TObject)
+    TServerSyncSession = class(TObject)
     private
         FSessionName :   string;
         FContext :       TIdContext;
@@ -73,10 +73,9 @@ type
         {TODO -oroger -cdsg : capturar no construtor todos os eventos do context desejáveis }
         constructor Create(AContext : TidContext; const AClientName, AClientVersion, ASessionName : string); virtual;
         function DoExecVerbs() : string;
-	 end;
+    end;
 
-	 TSyncSessionServerList = class(TSyncTThreadList<TSyncSession>);
-
+    TSyncSessionServerList = class(TSyncTThreadList<TServerSyncSession>);
 
 
 type
@@ -93,30 +92,30 @@ type
         procedure DataModuleDestroy(Sender : TObject);
         procedure tcpsrvrExecute(AContext : TIdContext);
         procedure tcpsrvrStatus(ASender : TObject; const AStatus : TIdStatus; const AStatusText : string);
-        procedure DataModuleCreate(Sender : TObject);
-        procedure TrayIconMouseMove(Sender : TObject; Shift : TShiftState; X, Y : Integer);
-        procedure tcpsrvrConnect(AContext : TIdContext);
-        procedure tcpsrvrDisconnect(AContext : TIdContext);
-    private
-        { Private declarations }
-        FClientSessionList : TThreadStringList;
-        FServerSessionList : TSyncSessionServerList;
-        FSessionFileCount :  Integer;
-        FMaxTrackedClients : Integer;
-        procedure SaveBioFile(const ClientName, Filename, screateDate, saccessDate, smodifiedDate : string; inputStrm : TStream);
-        procedure InitSettings();
-        procedure UpdateServerTrayStatus();
-    public
-        { Public declarations }
-        procedure StartServer();
-        procedure StartClient();
-        procedure StartSession(const SessionName : string);
-        procedure EndSession(const SessionName : string);
-        procedure StopServer();
-        procedure StopClient();
-        procedure SendFile(AFile : TTransferFile);
-        constructor Create(AOwner : TComponent); override;
-        destructor Destroy; override;
+		 procedure DataModuleCreate(Sender : TObject);
+		 procedure TrayIconMouseMove(Sender : TObject; Shift : TShiftState; X, Y : Integer);
+		 procedure tcpsrvrConnect(AContext : TIdContext);
+		 procedure tcpsrvrDisconnect(AContext : TIdContext);
+	 private
+		 { Private declarations }
+		 FClientSessionList : TThreadStringList;
+		 FServerSessionList : TSyncSessionServerList;
+		 FSessionFileCount :  Integer;
+		 FMaxTrackedClients : Integer;
+		 procedure SaveBioFile(const ClientName, Filename, screateDate, saccessDate, smodifiedDate : string; inputStrm : TStream);
+		 procedure InitSettings();
+		 procedure UpdateServerTrayStatus();
+	 public
+		 { Public declarations }
+		 procedure StartServer();
+		 procedure StartClient();
+		 function StartSession(const SessionName : string) : string;
+		 procedure EndSession(const SessionName : string);
+		 procedure StopServer();
+		 procedure StopClient();
+		 procedure SendFile(AFile : TTransferFile);
+		 constructor Create(AOwner : TComponent); override;
+		 destructor Destroy; override;
     end;
 
 var
@@ -135,9 +134,9 @@ var
 constructor TDMTCPTransfer.Create(AOwner : TComponent);
 begin
     inherited;
-    Self.FClientSessionList := TThreadStringList.Create;
-    Self.FServerSessionList := TSyncSessionServerList.Create;
-    if (not Assigned(VVSvcConfig.ProfileInfo)) then begin
+	 Self.FClientSessionList := TThreadStringList.Create;
+	 Self.FServerSessionList := TSyncSessionServerList.Create;
+	 if (not Assigned(VVSvcConfig.ProfileInfo)) then begin
         Self.TrayIcon.IconIndex := II_CLIENT_ERROR; //indica falha de identificação de perfil
     end else begin
         Self.TrayIcon.IconIndex := II_CLIENT_IDLE; //Nada a se "adivinhar" ainda
@@ -146,21 +145,21 @@ end;
 
 procedure TDMTCPTransfer.DataModuleCreate(Sender : TObject);
 begin
-    Self.tcpclnt.ReadTimeout;
+	 Self.tcpclnt.ReadTimeout;
 end;
 
 procedure TDMTCPTransfer.DataModuleDestroy(Sender : TObject);
 begin
     //Fecha clientes e servidor
-    Self.StopClient;
+    //Self.StopClient;
     Self.StopServer;
 end;
 
 destructor TDMTCPTransfer.Destroy;
 begin
-    Self.FClientSessionList.Free;
-    Self.FServerSessionList.Free;
-    inherited;
+	 Self.FClientSessionList.Free;
+	 Self.FServerSessionList.Free;
+	 inherited;
 end;
 
 procedure TDMTCPTransfer.EndSession(const SessionName : string);
@@ -178,7 +177,7 @@ begin
         Self.FClientSessionList.Leave;
     end;
     //Envia a finalização de sessão para o servidor
-    Self.tcpclnt.IOHandler.WriteLn(SessionName + STR_END_SESSION_SIGNATURE); //Envia msg de fim de sessão
+    Self.tcpclnt.IOHandler.WriteLn(STR_END_SESSION_SIGNATURE + SessionName); //Envia msg de fim de sessão
 end;
 
 procedure TDMTCPTransfer.InitSettings;
@@ -245,8 +244,8 @@ begin
         raise ESVCLException.Create('Canal com o servidor não estabelecido antecipadamente');
     end;
     //Passados obrigatoriamente nesta ordem!!!
-    s := AFile.FFilename + TOKEN_DELIMITER +
-        FloatToStr(AFile.FCreatedTime, ForcedFormatSettings) + TOKEN_DELIMITER +
+	 s := AFile.FFilename + TOKEN_DELIMITER +
+		 FloatToStr(AFile.FCreatedTime, ForcedFormatSettings) + TOKEN_DELIMITER +
         FloatToStr(AFile.FAccesTime, ForcedFormatSettings) + TOKEN_DELIMITER +
         FloatToStr(AFile.FModifiedTime, ForcedFormatSettings) + TOKEN_DELIMITER +
         FloatToStr(AFile.Size, ForcedFormatSettings) + TOKEN_DELIMITER +
@@ -315,10 +314,9 @@ begin
     end;
 end;
 
-procedure TDMTCPTransfer.StartSession(const SessionName : string);
+function TDMTCPTransfer.StartSession(const SessionName : string) : string;
 var
-    msg, ret : string;
-
+    msg : string;
 begin
     try
         Self.FClientSessionList.Enter;
@@ -337,10 +335,9 @@ begin
         Self.tcpclnt.IOHandler.WriteLn(VVerService.fvInfo.FileVersion); //versão do cliente
         Self.tcpclnt.IOHandler.WriteLn(VVSvcConfig.ClientName); //Nome do computador cliente
         Self.tcpclnt.IOHandler.WriteLn(STR_BEGIN_SESSION_SIGNATURE + SessionName); //repete cabecalho da sessão
-        ret := Self.tcpclnt.IOHandler.ReadLn();
-        if (not SameText(ret, STR_OK_PACK)) then begin
+        Result := Self.tcpclnt.IOHandler.ReadLn();
+        if (not SameText(Result, STR_OK_PACK)) then begin
             try
-                msg := EmptyStr;
                 msg := Self.tcpclnt.IOHandler.ReadLn();
             except
                 on E : Exception do begin
@@ -358,7 +355,7 @@ begin
         on E : Exception do begin //colocar como registro de depuração, por se tratar de erro comum
             TLogFile.LogDebug(Format
                 ('Falha de comunicação com o servidor pai desta instância(%s) na porta(%d).'#13#10,
-                [Self.tcpclnt.Host, Self.tcpclnt.Host]) +
+                [Self.tcpclnt.Host, Self.tcpclnt.Port]) +
                 E.Message, DBGLEVEL_ALERT_ONLY);
             raise;
         end;
@@ -420,7 +417,7 @@ var
     sHeader, retHash : string;
     inStrm : TMemoryStream;
     nFileSize : int64;
-    SyncSession : TSyncSession;
+    SyncSession : TServerSyncSession;
     ret : string;
 
 begin
@@ -460,7 +457,7 @@ begin
         end;
 
         {TODO -oroger -cdsg : buscar por duplicidade de sessão}
-        SyncSession := TSyncSession.Create(AContext, sClientName, sClientVersion, sClientSessionName);
+		 SyncSession := TServerSyncSession.Create(AContext, sClientName, sClientVersion, sClientSessionName);
         Self.FServerSessionList.Add(sClientSessionName, SyncSession);
         {TODO -oroger -cdsg : registrar log de depuração do evento acima}
         AContext.Connection.IOHandler.WriteLn(STR_OK_PACK); //informa OK e em seguida apto a executar os verbos da sessão
@@ -471,7 +468,6 @@ begin
         try
             if (Assigned(SyncSession)) then begin
                 Self.FServerSessionList.Extract(SyncSession);
-                SyncSession.Free;
             end;
             AContext.Connection.Disconnect;
         finally
@@ -656,27 +652,28 @@ end;
 
 { TSyncSession }
 
-constructor TSyncSession.Create(AContext : TidContext; const AClientName, AClientVersion, ASessionName : string);
+constructor TServerSyncSession.Create(AContext : TidContext; const AClientName, AClientVersion, ASessionName : string);
 begin
-    inherited Create;
+	 inherited Create;
     Self.FSessionName := ASessionName;
     Self.FContext     := AContext;
     Self.FClientVersion := AClientVersion;
     Self.FClientName  := AClientName;
 end;
 
-function TSyncSession.DoExecVerbs : string;
+function TServerSyncSession.DoExecVerbs : string;
 var
-    ret, sVerb, sLine : string;
-    execVerb : TVVSVerbs;
+    sVerb, sLine : string;
+    execVerb :     TVVSVerbs;
 
 begin
-
-	 repeat
+    Result := STR_OK_PACK;
+    repeat
         sLine := Self.Context.Connection.IOHandler.ReadLn();
         sVerb := TStrHnd.CopyAfterLast(STR_CMD_VERB, sLine); {TODO -oroger -cdebug : gerar erro}
         if (sVerb = EmptyStr) then begin
-            Self.Context.Connection.IOHandler.WriteLn(STR_FAIL_PROTOCOL);
+            Result := STR_FAIL_PROTOCOL;
+            Self.Context.Connection.IOHandler.WriteLn(Result);
             Self.Context.Connection.IOHandler.WriteLn('Aguardando operação não recebida');
             Exit;
         end else begin
@@ -687,48 +684,54 @@ begin
                 execVerb := String2Verb(sVerb);
                 try
                     case execVerb of
-                        vvvReadContent : begin //monta xml com versões dos arquivos
-                            ret := Self.ExecReadContent();
+                        vvvReadContent : begin //monta json com versões dos arquivos
+                            Result := Self.ExecReadContent();
                         end;
                         vvvFileDownload : begin
-                            ret := Self.ExecFileDownload();
+                            Result := Self.ExecFileDownload();
                         end;
                     end;
-                    Self.Context.Connection.IOHandler.WriteLn(ret);//envia retorno da operação
+                    Self.Context.Connection.IOHandler.WriteLn(Result);//envia retorno da operação
                 except
                     on E : Exception do begin
-                        Self.Context.Connection.IOHandler.WriteLn(STR_FAIL_RETURN);//envia retorno da operação
+                        Result := STR_FAIL_RETURN;
+                        Self.Context.Connection.IOHandler.WriteLn(Result);//envia retorno da operação
                         Self.Context.Connection.IOHandler.WriteLn(HttpEncode(E.Message));//envia retorno da operação
+                        Exit;
                     end;
                 end;
             except
                 on E : Exception do begin
-                    Self.Context.Connection.IOHandler.WriteLn(STR_FAIL_PROTOCOL);
+                    Result := STR_FAIL_PROTOCOL;
+                    Self.Context.Connection.IOHandler.WriteLn(Result);
                     Self.Context.Connection.IOHandler.WriteLn('Operação inválida = "' + sVerb + '"');
+                    Exit;
                 end;
             end;
         end;
     until (False);
 end;
 
-function TSyncSession.ExecFileDownload : string;
+function TServerSyncSession.ExecFileDownload : string;
 begin
 end;
 
-function TSyncSession.ExecReadContent : string;
+function TServerSyncSession.ExecReadContent : string;
 var
     pubname : string;
 begin
     //espera como argumento unico o nome da publicação
     try
         pubname := Self.Context.Connection.IOHandler.ReadLn();
-        if (not SameText(pubname, PUBLICATION_INSTSEG)) then begin
+        if (not SameText(pubname, PUBLICATION_INSTSEG)) then begin  //atualmente apenas esta publicação??
             Result := STR_FAIL_VERB;
+		 end else begin
+			Result:=HttpEncode( GlobalPublication.ManagedFolder.ToString() );
         end;
     except
         on E : Exception do Result := STR_FAIL_PROTOCOL;
     end;
-    Result := STR_OK_PACK;
+	 Result := Result + TOKEN_DELIMITER + STR_OK_PACK;
 end;
 
 end.

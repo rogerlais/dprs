@@ -13,9 +13,9 @@ const
     APP_NOTIFICATION_DESCRIPTION = 'SESOP-Serviço de verificação de versões';
 
 type
-	 ESVCLException = class(ELoggedException);
+    ESVCLException = class(ELoggedException);
 
-    TVVSConfig = class(TVVConfig, IFormatter)
+	 TVVSConfig = class(TVVConfig, IFormatter)
     private
         function GetPathServiceLog : string;
         function GetNotificationSender : string;
@@ -23,13 +23,12 @@ type
         function GetPathTempDownload : string;
         function GetNetServicePort : Integer;
         function GetCycleInterval : Integer;
-        function GetParentServer : string;
-        function GetDebugLevel : Integer;
-        function GetClientName : string;
+		 function GetParentServer : string;
+		 function GetDebugLevel : Integer;
         function GetNetClientPort : Integer;
         function GetPathPublication : string;
         function GetRootServer : string;
-    function GetPublicationName: string;
+        function GetPublicationName : string;
     protected
         function FormatLogMsg(const LogMsg : string; LogMessageType : TLogMessageType = lmtError) : string;
     public
@@ -42,10 +41,9 @@ type
         property NetClientPort : Integer read GetNetClientPort;
         property CycleInterval : Integer read GetCycleInterval;
         property ParentServer : string read GetParentServer;
-        property DebugLevel : Integer read GetDebugLevel;
-        property ClientName : string read GetClientName;
-		 property RootServer : string read GetRootServer;
-		 property PublicationName : string read GetPublicationName;
+		 property DebugLevel : Integer read GetDebugLevel;
+        property RootServer : string read GetRootServer;
+        property PublicationName : string read GetPublicationName;
     end;
 
 var
@@ -90,6 +88,8 @@ var
     filename : string;
 begin
     //Instancia de configuração com o mesmo nome do runtime + .ini
+    SysUtils.DecimalSeparator := '.';
+    SysUtils.ThousandSeparator := ',';
     filename    := RemoveFileExtension(ParamStr(0)) + APP_SETTINGS_EXTENSION_FILE_INI;
     VVSvcConfig := TVVSConfig.Create(filename, APP_SERVICE_NAME);
     TLogFile.GetDefaultLogFile.DebugLevel := VVSvcConfig.DebugLevel;
@@ -111,15 +111,6 @@ begin
         end else begin
             Result := 'Thread Class = ' + T.ClassName + #13#10 + Result;
         end;
-    end;
-end;
-
-function TVVSConfig.GetClientName : string;
-begin
-    if (System.DebugHook <> 0) then begin //Depurando na IDE
-        Result := 'Cliente_Debug';
-    end else begin //Execução normal
-        Result := WinNetHnd.GetComputerName();
     end;
 end;
 
@@ -158,17 +149,13 @@ begin
 end;
 
 function TVVSConfig.GetParentServer : string;
-    /// <summary>
-    /// Nome do servidor pai desta instância. Caso forçado, usará apenas este. Caso vazio busca pelo PC primário, e na falta deste pela URL global de configuração
-    /// </summary>
+/// <summary>
+/// Nome do servidor pai desta instância. Caso forçado, usará apenas este. Caso vazio busca pelo PC primário, e na falta deste pela URL global de configuração
+/// </summary>
 begin
     {TODO -oroger -cdsg : alterar o valor padrão para o pc-primario, testar se o mesmo está na rede usando o servidor raiz para o caso de tudo falhar}
     //Calcula valor padrão antes de consultar a persistencia da configuração
-    {$IFDEF DEBUG}
-    Result := TTREUtils.GetZonePrimaryComputer(DBG_CLIENT_COMPUTERNAME);
-    {$ELSE}
-	Result := TTREUtils.GetZonePrimaryComputer(WinNetHnd.GetComputerName());
-	{$ENDIF}
+    Result := TTREUtils.GetZonePrimaryComputer(Self.ClientName);
     if (Result = EmptyStr) then begin
         Result := DV_PARENT_SERVER;
     end else begin
@@ -201,17 +188,17 @@ begin
     Result := Self.ReadStringDefault(IE_PATH_LOCAL_TEMP, Result);
 end;
 
-function TVVSConfig.GetPublicationName: string;
+function TVVSConfig.GetPublicationName : string;
 begin
-	Result := 'INSTSEG'; //Unica publica de interesse
+    Result := 'INSTSEG'; //Unica publica de interesse
 end;
 
 function TVVSConfig.GetRootServer : string;
 begin
-	 Result := Self.ReadStringDefault(IE_ROOT_SERVERNAME, DV_ROOT_SERVERNAME);
-	 if ( Result = EmptyStr ) then begin
-		Result:=DV_ROOT_SERVERNAME;
-	 end;
+    Result := Self.ReadStringDefault(IE_ROOT_SERVERNAME, DV_ROOT_SERVERNAME);
+    if (Result = EmptyStr) then begin
+        Result := DV_ROOT_SERVERNAME;
+    end;
 end;
 
 initialization

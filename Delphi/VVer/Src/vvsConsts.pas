@@ -12,7 +12,6 @@ type
 const
     SUBJECT_TEMPLATE        = 'VVerService - Versão: %s - %s - %s';
     SWITCH_AUTOCONFIG       = 'autoconfig'; //informa que durante as operações de download a janela de interação não será mostrada
-    DBG_CLIENT_COMPUTERNAME = 'ZPB999WKS9999';
 
     PUBLICATION_INSTSEG = 'INSTSEG';
 
@@ -22,12 +21,14 @@ const
     STR_VERB_EXIT        = 'exit';
     STR_END_SESSION_SIGNATURE = 'end_session=';
     STR_BEGIN_SESSION_SIGNATURE = 'start_session=';
-    STR_OK_PACK          = 'OK';
-    STR_FAIL_HASH        = 'FAIL HASH';
-    STR_FAIL_SIZE        = 'FAIL SIZE';
-    STR_FAIL_VERB        = 'FAIL VERB';
-    STR_FAIL_RETURN      = 'FAIL EXECUTION';
-    STR_FAIL_PROTOCOL    = 'FAIL PROTOCOL';
+	 STR_OK_PACK          = 'OK';
+	 STR_FAIL_PREFIX      = 'FAIL';
+	 STR_FAIL_HASH        = STR_FAIL_PREFIX + ' HASH';
+	 STR_FAIL_SIZE        = STR_FAIL_PREFIX + ' SIZE';
+	 STR_FAIL_VERB        = STR_FAIL_PREFIX + ' VERB';
+	 STR_FAIL_RETURN      = STR_FAIL_PREFIX + ' EXECUTION';
+	 STR_FAIL_NET         = STR_FAIL_PREFIX + ' NETWORK';
+    STR_FAIL_PROTOCOL    = STR_FAIL_PREFIX + ' PROTOCOL';
 
     II_SERVER_IDLE  = 0;
     II_SERVER_ERROR = 1;
@@ -35,15 +36,15 @@ const
     II_SERVER_OK    = 3;
     II_CLIENT_IDLE  = 0;
     II_CLIENT_ERROR = 1;
-	 II_CLIENT_BUZY  = 2;
-	 II_CLIENT_OK    = 3;
+    II_CLIENT_BUZY  = 2;
+    II_CLIENT_OK    = 3;
 
 
 function Verb2String(const AVerb : TVVSVerbs) : string;
 function String2Verb(const AVerb : string) : TVVSVerbs;
 function ServiceStatus2String(const AStatus : TCurrentStatus) : string;
-function HTTPEncode(const AStr: AnsiString): AnsiString;
-function HTTPDecode(const AStr: AnsiString): AnsiString;
+function HTTPEncode(const AStr : ansistring) : ansistring;
+function HTTPDecode(const AStr : ansistring) : ansistring;
 
 
 implementation
@@ -75,52 +76,51 @@ begin
                             S   := AnsiChar('$') + Cp^ + Sp^;
                             Rp^ := AnsiChar(StrToInt(string(S)));
                         end else begin
-							 raise Exception.CreateFmt('Erro decodificando %s em %s', [Cp - PAnsiChar(AStr)]);
-						 end;
-					 end;
-				 end;
-				 else begin
-					 Rp^ := Sp^;
-				 end;
-			 end;
-			 Inc(Rp);
-			 Inc(Sp);
-		 end;
-	 except
-		 on E : EConvertError do raise EConvertError.CreateFmt('Caracter "%s" inválido encontrado', [AnsiChar('%') + Cp^ + Sp^, Cp - PAnsiChar(AStr)])
+                            raise Exception.CreateFmt('Erro decodificando %s em %s', [Cp - PAnsiChar(AStr)]);
+                        end;
+                    end;
+                end;
+                else begin
+                    Rp^ := Sp^;
+                end;
+            end;
+            Inc(Rp);
+            Inc(Sp);
+        end;
+    except
+        on E : EConvertError do raise EConvertError.CreateFmt('Caracter "%s" inválido encontrado',
+                [AnsiChar('%') + Cp^ + Sp^, Cp - PAnsiChar(AStr)])
     end;
     SetLength(Result, Rp - PAnsiChar(Result));
 end;
 
 
-function HTTPEncode(const AStr: AnsiString): AnsiString;
-// The NoConversion set contains characters as specificed in RFC 1738 and
-// should not be modified unless the standard changes.
+function HTTPEncode(const AStr : ansistring) : ansistring;
+    // The NoConversion set contains characters as specificed in RFC 1738 and
+    // should not be modified unless the standard changes.
 const
-  NoConversion = ['A'..'Z','a'..'z','*','@','.','_','-',
-				   '0'..'9','$','!','''','(',')'];
+    NoConversion = ['A'..'Z', 'a'..'z', '*', '@', '.', '_', '-',
+        '0'..'9', '$', '!', '''', '(', ')'];
 var
-  Sp, Rp: PAnsiChar;
+    Sp, Rp : PAnsiChar;
 begin
-  SetLength(Result, Length(AStr) * 3);
-  Sp := PAnsiChar(AStr);
-  Rp := PAnsiChar(Result);
-  while Sp^ <> #0 do
-  begin
-	 if Sp^ in NoConversion then
-	   Rp^ := Sp^
-	 else
-	   if Sp^ = ' ' then
-		 Rp^ := '+'
-	   else
-	   begin
-		 FormatBuf(Rp^, 3, AnsiString('%%%.2x'), 6, [Ord(Sp^)]);
-		 Inc(Rp,2);
-	   end;
-	 Inc(Rp);
-	 Inc(Sp);
-  end;
-  SetLength(Result, Rp - PAnsiChar(Result));
+    SetLength(Result, Length(AStr) * 3);
+    Sp := PAnsiChar(AStr);
+    Rp := PAnsiChar(Result);
+    while Sp^ <> #0 do begin
+        if Sp^ in NoConversion then begin
+            Rp^ := Sp^;
+        end else
+        if Sp^ = ' ' then begin
+            Rp^ := '+';
+        end else begin
+            FormatBuf(Rp^, 3, ansistring('%%%.2x'), 6, [Ord(Sp^)]);
+            Inc(Rp, 2);
+        end;
+        Inc(Rp);
+        Inc(Sp);
+    end;
+    SetLength(Result, Rp - PAnsiChar(Result));
 end;
 
 
