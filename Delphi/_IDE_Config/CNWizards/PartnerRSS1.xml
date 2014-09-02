@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" media="screen" href="/~d/styles/rss2full.xsl"?><?xml-stylesheet type="text/css" media="screen" href="http://feeds.feedburner.com/~d/styles/itemcontent.css"?><rss xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0" version="2.0">
+	<channel>
+		<title>DelphiFeeds.com</title>
+		<link>http://www.delphifeeds.com/</link>
+		<description>All Delphi blogs directly from DelphiFeeds.com</description>
+		<language>en-us</language>
+		<managingEditor>team@delphifeeds.com (DelphiFeeds.com Team)</managingEditor>
+		<webMaster>team@delphifeeds.com (DelphiFeeds.com Team)</webMaster>
+		<image>
+			<title>DelphiFeeds.com</title> 
+			<url>http://www.delphifeeds.com/sr/df1.png</url> 
+			<link>http://www.delphifeeds.com/</link> 
+			<width>115</width> 
+			<height>30</height> 
+			<description>DelphiFeeds.com - All Delphi blogs in one place.</description> 
+		</image>
+		<atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" type="application/rss+xml" href="http://feeds.feedburner.com/delphifeeds" /><feedburner:info uri="delphifeeds" /><atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="hub" href="http://pubsubhubbub.appspot.com/" /><feedburner:emailServiceId>delphifeeds</feedburner:emailServiceId><feedburner:feedburnerHostname>http://feedburner.google.com</feedburner:feedburnerHostname><item>
+			<title><![CDATA[Life before Interfaces]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/5N1m72RaV0k/69371</link>
+			<pubDate>Fri, 25 Jun 2010 14:00:00 +0200</pubDate>
+			<author><![CDATA[Chris Bensen (noreply@blogger.com)]]></author>
+			<description>Way way back this is how IUnknown was defined before Delphi added the interface language feature: IUnknown = class public { IUnknown }   function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall; abstract;   function _AddRef: Integer; virtual; stdcall; abstract;   function ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/5N1m72RaV0k" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69371]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69371</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[4 days left - special offers for Delphi, C++Builder, RAD Studio developers!]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/I_L35v4uGjo/69360</link>
+			<pubDate>Fri, 25 Jun 2010 08:01:46 +0200</pubDate>
+			<author><![CDATA[Sip from the Firehose (David Intersimone)]]></author>
+			<description>There are only 4 days left to take advantage of the Delphi, C++Builder and RAD Studio special offers. The last day to take advantage of the offers is June 28, 2010. Following the format of the "Late Show with David Letterman Top Ten list", here are the "number 4" reasons to use Delphi, C++Builder, ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/I_L35v4uGjo" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69360]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69360</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[Useful scripts for MSVC and C++ Builder users …]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/r1Kvdg_92zQ/69338</link>
+			<pubDate>Thu, 24 Jun 2010 12:10:57 +0200</pubDate>
+			<author><![CDATA[JEDI Windows API (Christian Wimmer)]]></author>
+			<description>Assarbad wrote this script some time ago to compile and link C++ projects on the command line easier. I adapted the cmd script for VC++2010 and also for C++ Builder 2009/2010 and now I have been using it for quite some time. So I wanted to give it back to the community. Feel free to use it since it ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/r1Kvdg_92zQ" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69338]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69338</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[5 days left - special offers for Delphi, C++Builder, RAD Studio developers!]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/VWKnX2bDjf0/69325</link>
+			<pubDate>Thu, 24 Jun 2010 08:01:43 +0200</pubDate>
+			<author><![CDATA[Sip from the Firehose (David Intersimone)]]></author>
+			<description>There are only 5 days left to take advantage of the Delphi, C++Builder and RAD Studio special offers. The last day to take advantage of the offers is June 28, 2010. Following the format of the "Late Show with David Letterman Top Ten list", here are the "number 5" reasons to use Delphi, C++Builder, ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/VWKnX2bDjf0" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69325]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69325</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[In search of public outrage]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/K-S9HeCWbBI/69307</link>
+			<pubDate>Wed, 23 Jun 2010 21:26:32 +0200</pubDate>
+			<author><![CDATA[TURBU Tech (Mason Wheeler)]]></author>
+			<description>This one&amp;#8217;s a bit off-topic, and mostly just for those of us from the USA. Remember the 2008 elections?  The world&amp;#8217;s moving so fast these days that that can feel like a long time in the past, but it shouldn&amp;#8217;t be completely out of everyone&amp;#8217;s memory yet.  When Barack Obama ran ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/K-S9HeCWbBI" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69307]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69307</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[Delphi Training in Kuwait]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/hNT1e76w7y0/69294</link>
+			<pubDate>Wed, 23 Jun 2010 14:30:09 +0200</pubDate>
+			<author><![CDATA[Marco's Tech Blog (marcocantu)]]></author>
+			<description>This week (and the next) I'm doing Delphi training to a group of developers in Kuwait City. I'm covering a large number of topics, from migration to Delphi 2010 and Unicode (which is quite relevant for the Arabic alphabet), to web development and web services, to client/server development, to ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/hNT1e76w7y0" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69294]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69294</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[Eyjafjallajökull Photograph]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/jMVLCiiq94w/69296</link>
+			<pubDate>Wed, 23 Jun 2010 14:00:00 +0200</pubDate>
+			<author><![CDATA[Chris Bensen (noreply@blogger.com)]]></author>
+			<description>Lightning streaks across the sky as lava flows from a volcano in Eyjafjallajökull April 17, 2010. Copyright REUTERS/Lucas Jackson  Some amazing photographs have come from the Eyjafjallajökull volcano. The photograph above is one of my favorites so far. Freezing the volcano’s lightning is the story ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/jMVLCiiq94w" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69296]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69296</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[6 days left - special offers for Delphi, C++Builder, RAD Studio developers!]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/MyU7MKIFJKo/69283</link>
+			<pubDate>Wed, 23 Jun 2010 08:01:17 +0200</pubDate>
+			<author><![CDATA[Sip from the Firehose (David Intersimone)]]></author>
+			<description>There are only 6 days left to take advantage of the Delphi, C++Builder and RAD Studio special offers. The last day to take advantage of the offers is June 28, 2010. Following the format of the "Late Show with David Letterman Top Ten list", here are the "number 6" reasons to use Delphi, C++Builder, ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/MyU7MKIFJKo" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69283]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69283</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[hcOPF - Using DataSets for Display Purposes]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/6DKVAQjU-us/69272</link>
+			<pubDate>Tue, 22 Jun 2010 22:13:52 +0200</pubDate>
+			<author><![CDATA[TPersistent.com (Larry Hengen)]]></author>
+			<description>As I&amp;#8217;ve already mentioned, I don&amp;#8217;t think any good OPF should force the developer to choose to implement their entire UI using objects.  Sometimes it&amp;#8217;s easier and requires less CPU time to simply use a dataset. Today I found myself in just that situation.  I needed to add amounts ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/6DKVAQjU-us" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69272]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69272</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[Generics and the Covariance Problem]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/_Th4CsCi9BE/69270</link>
+			<pubDate>Tue, 22 Jun 2010 20:52:37 +0200</pubDate>
+			<author><![CDATA[TURBU Tech (Mason Wheeler)]]></author>
+			<description>Since some version of this question keeps showing up on StackOverflow, and the answer&amp;#8217;s always basically the same, I figured I may as well write up a post on here that people can link to.  Here&amp;#8217;s the question, in simplified form: &amp;#8220;Why can&amp;#8217;t I pass a ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/_Th4CsCi9BE" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69270]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69270</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[Cleaning Touch Screens]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/SG4yLji7QEs/69250</link>
+			<pubDate>Tue, 22 Jun 2010 14:00:00 +0200</pubDate>
+			<author><![CDATA[Chris Bensen (noreply@blogger.com)]]></author>
+			<description>It's really tough cleaning a touch screen monitor when the computer is on.&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/SG4yLji7QEs" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69250]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69250</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[Improvements to RemObjects SDK and Data Abstract for iOS 4]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/qq9Vsj_oOK4/69243</link>
+			<pubDate>Tue, 22 Jun 2010 11:15:01 +0200</pubDate>
+			<author><![CDATA[RemObjects Blogs (marc hoffman)]]></author>
+			<description>   Yesterday, Apple shipped iOS 4, the latest version of its operating system for iPhone and iPod touch. As you&amp;#8217;ve undoubtedly read abut elsewhere in detail, iOS 4 brings with it many improvements for developers, mostly (as far as it affects us) in regards to multi-tasking and background ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/qq9Vsj_oOK4" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69243]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69243</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[7 days left - special offers for Delphi, C++Builder, RAD Studio developers!]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/ExHpul4_S94/69235</link>
+			<pubDate>Tue, 22 Jun 2010 08:01:54 +0200</pubDate>
+			<author><![CDATA[Sip from the Firehose (David Intersimone)]]></author>
+			<description>There are only 7 days left to take advantage of the Delphi, C++Builder and RAD Studio special offers. The last day to take advantage of the offers is June 28, 2010. Following the format of the "Late Show with David Letterman Top Ten list", here are the "number 7" reasons to use Delphi, C++Builder, ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/ExHpul4_S94" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69235]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69235</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[PCRE Workbench - Regular Expression Test Tool - Source Code Delphi Application]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/cji2worV7Ro/69238</link>
+			<pubDate>Tue, 22 Jun 2010 04:48:44 +0200</pubDate>
+			<author><![CDATA[About Delphi Programming]]></author>
+			<description>in Source Code Delphi Apps ::   A regular expression (regex, regexp) is a string that describes or matches a set of strings, according to certain syntax rules. Regular expressions are used as a powerful and convenient way to recognise patterns in text.   PCRE Workbench is a regular expression test ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/cji2worV7Ro" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69238]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69238</feedburner:origLink></item>
+		<item>
+			<title><![CDATA[Porting old Delphi component packages – things I always forget]]></title>
+			<link>http://feedproxy.google.com/~r/delphifeeds/~3/p6W6si_RRwg/69230</link>
+			<pubDate>Tue, 22 Jun 2010 04:00:38 +0200</pubDate>
+			<author><![CDATA[The Wiert Corner (jpluimers)]]></author>
+			<description>I always seem to forget the solution for the error messages about DsgnIntf or DesignIntf.dcu not found when porting old (D# projects) to new (D####) projects. Googling for this always gets a few false hits at the top, so for my memory, here it is: DesignIntf used to be a supplied as a .DCU file, and ...&lt;img src="http://feeds.feedburner.com/~r/delphifeeds/~4/p6W6si_RRwg" height="1" width="1"/&gt;</description>
+			<guid isPermaLink="false"><![CDATA[http://www.delphifeeds.com/go/f/69230]]></guid>
+		<feedburner:origLink>http://www.delphifeeds.com/go/f/69230</feedburner:origLink></item>
+	</channel>
+</rss>

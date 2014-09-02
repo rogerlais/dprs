@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+ <updated>2010-06-10T12:07:01Z</updated>
+ <id>http://code.google.com/feeds/p/cnpack/downloads/basic</id>
+ <title>Downloads for project cnpack on Google Code</title>
+ <link rel="self" type="application/atom+xml;type=feed" href="http://code.google.com/feeds/p/cnpack/downloads/basic"/>
+ <link rel="alternate" type="text/html" href="http://code.google.com/p/cnpack/downloads/list"/>
+ 
+ <entry>
+ <updated>2010-06-10T12:07:01Z</updated>
+ <id>http://code.google.com/feeds/p/cnpack/downloads/basic/CnWizards_0.9.6.576_Unstable.exe</id>
+ <link rel="alternate" type="text/html" href="http://code.google.com/p/cnpack/downloads/detail?name=CnWizards_0.9.6.576_Unstable.exe" />
+ <title>
+ CnWizards_0.9.6.576_Unstable.exe (11.2 MB)
+ </title>
+ <author>
+ <name>liux...@cnpack.org</name>
+ </author>
+ <content type="html">
+&lt;pre&gt;
+CnWizards_0.9.6.576_Unstable: Add Zoom Font Functions. Fix an Extension ASCII Display Problem.
+
+Labels: 
+ Type-Installer
+ OpSys-Windows
+ Featured
+
+&lt;a href=&quot;http://cnpack.googlecode.com/files/CnWizards_0.9.6.576_Unstable.exe&quot;&gt;Download&lt;/a&gt;
+&lt;/pre&gt;
+ </content>
+</entry>
+
+ 
+ <entry>
+ <updated>2010-05-04T11:52:13Z</updated>
+ <id>http://code.google.com/feeds/p/cnpack/downloads/basic/CnWizards_0.9.6.570_Debug.exe</id>
+ <link rel="alternate" type="text/html" href="http://code.google.com/p/cnpack/downloads/detail?name=CnWizards_0.9.6.570_Debug.exe" />
+ <title>
+ CnWizards_0.9.6.570_Debug.exe (14.6 MB)
+ </title>
+ <author>
+ <name>z...@cnpack.org</name>
+ </author>
+ <content type="html">
+&lt;pre&gt;
+CnWizards_0.9.6.570_Debug: Debug version of v0.9.6
+
+Labels: 
+ Type-Installer
+ OpSys-Windows
+
+&lt;a href=&quot;http://cnpack.googlecode.com/files/CnWizards_0.9.6.570_Debug.exe&quot;&gt;Download&lt;/a&gt;
+&lt;/pre&gt;
+ </content>
+</entry>
+
+ 
+ <entry>
+ <updated>2010-05-02T02:43:12Z</updated>
+ <id>http://code.google.com/feeds/p/cnpack/downloads/basic/CnWizards_0.9.6.569.exe</id>
+ <link rel="alternate" type="text/html" href="http://code.google.com/p/cnpack/downloads/detail?name=CnWizards_0.9.6.569.exe" />
+ <title>
+ CnWizards_0.9.6.569.exe (11.2 MB)
+ </title>
+ <author>
+ <name>z...@cnpack.org</name>
+ </author>
+ <content type="html">
+&lt;pre&gt;
+CnWizards_0.9.6.569: Add Feed Reader Wizard. Bugs Fixed.
+
+Labels: 
+ Featured
+ Type-Installer
+ OpSys-Windows
+
+&lt;a href=&quot;http://cnpack.googlecode.com/files/CnWizards_0.9.6.569.exe&quot;&gt;Download&lt;/a&gt;
+&lt;/pre&gt;
+ </content>
+</entry>
+
+ 
+ <entry>
+ <updated>2010-05-01T16:57:29Z</updated>
+ <id>http://code.google.com/feeds/p/cnpack/downloads/basic/cnwizards_0.9.6.569_src.7z</id>
+ <link rel="alternate" type="text/html" href="http://code.google.com/p/cnpack/downloads/detail?name=cnwizards_0.9.6.569_src.7z" />
+ <title>
+ cnwizards_0.9.6.569_src.7z (8.1 MB)
+ </title>
+ <author>
+ <name>z...@cnpack.org</name>
+ </author>
+ <content type="html">
+&lt;pre&gt;
+Source
+
+Labels: 
+ Featured
+ Type-Source
+ OpSys-Windows
+
+&lt;a href=&quot;http://cnpack.googlecode.com/files/cnwizards_0.9.6.569_src.7z&quot;&gt;Download&lt;/a&gt;
+&lt;/pre&gt;
+ </content>
+</entry>
+
+ 
+</feed>

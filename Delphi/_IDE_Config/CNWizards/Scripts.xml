@@ -1,0 +1,6 @@
+<TCnScriptCollection PropFormat="node">
+  <o>
+    <Name>Script1</Name>
+    <RelFileName>Scripts\Script1.pas</RelFileName>
+  </o>
+</TCnScriptCollection>

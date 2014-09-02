@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0">
+	<channel>
+	<title>CnPack RSS</title>
+	<link>http://www.cnpack.org/</link>
+	<description>CnPack RSS</description>
+	<managingEditor>master@cnpack.org</managingEditor>
+	<generator>CnPack Open Source Project</generator>
+   </channel>
+</rss>

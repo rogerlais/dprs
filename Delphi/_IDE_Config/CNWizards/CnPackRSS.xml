@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0">
+	<channel>
+	<title>CnPack Tips</title>
+	<link>http://bbs.cnpack.org/</link>
+	<description>CnPack Tips</description>
+	<managingEditor>master@cnpack.org</managingEditor>
+	<language>utf-8</language>
+	<generator>CnPack Open Source Project</generator>
+	<item>
+		<title>[CnPack] You can press Ctrl+\ to open output execute file of current project in Windows Explorer.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18850&amp;page=2#pid18850</link>
+		<author>zjy</author>
+		<pubDate>Fri, 07 May 2010 15:38:39</pubDate>
+		<category>CnPack</category>
+		<description>You can press Ctrl+\ to open output execute file of current project in Windows Explorer.</description>
+	</item>
+	<item>
+		<title>[CnPack] In Form Designer Float Panel, &quot;Align&quot; series buttons can align the controls in different parents.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18849&amp;page=2#pid18849</link>
+		<author>zjy</author>
+		<pubDate>Fri, 07 May 2010 15:35:51</pubDate>
+		<category>CnPack</category>
+		<description>In Form Designer Float Panel, &quot;Align&quot; series buttons can align the controls in different parents.</description>
+	</item>
+	<item>
+		<title>[CnPack] When you use &quot;Uses Cleaner&quot; to clean a very huge project, you can first open units partly to clean, then open others and continue until all done.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18704&amp;page=2#pid18704</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 13:43:10</pubDate>
+		<category>CnPack</category>
+		<description>When you use &quot;Uses Cleaner&quot; to clean a very huge project, you can first open units partly to clean, then open others and continue until all done.</description>
+	</item>
+	<item>
+		<title>[CnPack] If you want to lock toolbars layout in IDE main form, try to check &quot;Lock ToolBar&quot; menu item in its popup menu.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18703&amp;page=2#pid18703</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 13:31:43</pubDate>
+		<category>CnPack</category>
+		<description>If you want to lock toolbars layout in IDE main form, try to check &quot;Lock ToolBar&quot; menu item in its popup menu.</description>
+	</item>
+	<item>
+		<title>[CnPack] When you create user-defined symbol in Input Helper, you can use &quot;%Year%%Month%%Day%&quot; to get the date time with &quot;20100413&quot; format.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18702&amp;page=2#pid18702</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 13:30:53</pubDate>
+		<category>CnPack</category>
+		<description>When you create user-defined symbol in Input Helper, you can use &quot;%Year%%Month%%Day%&quot; to get the date time with &quot;20100413&quot; format.</description>
+	</item>
+	<item>
+		<title>[CnPack] Popup menu is supported in Input Helper List Window, you can use it to add user-defined symbol, open settings dialog and etc.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18700&amp;page=2#pid18700</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 13:05:33</pubDate>
+		<category>CnPack</category>
+		<description>Popup menu is supported in Input Helper List Window, you can use it to add user-defined symbol, open settings dialog and etc.</description>
+	</item>
+	<item>
+		<title>[CnPack] In some Dual-Core machine, Input Helper may cause exception under Delphi 2007. You can try to turn on the &quot;Set IDE to run in cpu 0 single core&quot; option in &quot;Environment Settings&quot; page of CnWizards Settings Dialog.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18699&amp;page=2#pid18699</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 12:59:16</pubDate>
+		<category>CnPack</category>
+		<description>In some Dual-Core machine, Input Helper may cause exception under Delphi 2007. You can try to turn on the &quot;Set IDE to run in cpu 0 single core&quot; option in &quot;Environment Settings&quot; page of CnWizards Settings Dialog.</description>
+	</item>
+	<item>
+		<title>[CnPack] If you disable the Code Completion of IDE, Input Helper window will be popped when you enter a dot char in editor.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18698&amp;page=2#pid18698</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 12:47:34</pubDate>
+		<category>CnPack</category>
+		<description>If you disable the Code Completion of IDE, Input Helper window will be popped when you enter a dot char in editor.</description>
+	</item>
+	<item>
+		<title>[CnPack] In the Line Number Gutter provided by CnWizards, you can set bookmark by clicking line number. Popup menu is also supported.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18697&amp;page=2#pid18697</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 12:43:23</pubDate>
+		<category>CnPack</category>
+		<description>In the Line Number Gutter provided by CnWizards, you can set bookmark by clicking line number. Popup menu is also supported.</description>
+	</item>
+	<item>
+		<title>[CnPack] When you select a code block, you can press Ctrl+/ to comment or uncomment it. If selection is empty, it changes current line only.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18696&amp;page=2#pid18696</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 12:39:22</pubDate>
+		<category>CnPack</category>
+		<description>When you select a code block, you can press Ctrl+/ to comment or uncomment it. If selection is empty, it changes current line only.</description>
+	</item>
+	<item>
+		<title>[CnPack] When you select a code block, you can press Ctrl+Alt+D to clone a new copy in current position.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18695&amp;page=2#pid18695</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 12:32:49</pubDate>
+		<category>CnPack</category>
+		<description>When you select a code block, you can press Ctrl+Alt+D to clone a new copy in current position.</description>
+	</item>
+	<item>
+		<title>[CnPack] The RSS content from CnPack forum is not realtime, because we must check all post before publishing. If you have any problem, please contact CnPack master.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18694&amp;page=2#pid18694</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 12:28:03</pubDate>
+		<category>CnPack</category>
+		<description>The RSS content from CnPack forum is not realtime, because we must check all post before publishing. If you have any problem, please contact CnPack master.</description>
+	</item>
+	<item>
+		<title>[CnPack] The Feed Reader Wizard displays CnPack tips and other information in the Status Bar of IDE Editor. Also, you can publish your message to CnPack forum by clicking the tips link.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18693&amp;page=2#pid18693</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 12:21:31</pubDate>
+		<category>CnPack</category>
+		<description>The Feed Reader Wizard displays CnPack tips and other information in the Status Bar of IDE Editor. Also, you can publish your message to CnPack forum by clicking the tips link.</description>
+	</item>
+	<item>
+		<title>[CnPack] CnWizards provides CHM help files, you can click &quot;Help&quot; button or press &quot;F1&quot; to open it in most dialog.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18692&amp;page=2#pid18692</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 12:13:54</pubDate>
+		<category>CnPack</category>
+		<description>CnWizards provides CHM help files, you can click &quot;Help&quot; button or press &quot;F1&quot; to open it in most dialog.</description>
+	</item>
+	<item>
+		<title>[CnPack] You can use Tab/Shift+Tab to indent/unindent the selected code block. The default hotkeys provided by IDE are Ctrl+Shift+I/U.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18691&amp;page=2#pid18691</link>
+		<author>zjy</author>
+		<pubDate>Sun, 25 Apr 2010 12:07:13</pubDate>
+		<category>CnPack</category>
+		<description>You can use Tab/Shift+Tab to indent/unindent the selected code block. The default hotkeys provided by IDE are Ctrl+Shift+I/U.</description>
+	</item>
+	<item>
+		<title>[CnPack] CnPack becomes Embarcadero Technology Partner(ETP) in 2009. Let's do it better.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18545&amp;page=2#pid18545</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:14:48</pubDate>
+		<category>CnPack</category>
+		<description>CnPack becomes Embarcadero Technology Partner(ETP) in 2009. Let's do it better.</description>
+	</item>
+	<item>
+		<title>[CnPack] CnWizards will only send IDE Major version number and CnWizards' version number to CnPack server when checking upgrade. We won't gather and send any other information on user's computer. Please see help to get more information.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18544&amp;page=2#pid18544</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:14:02</pubDate>
+		<category>CnPack</category>
+		<description>CnWizards will only send IDE Major version number and CnWizards' version number to CnPack server when checking upgrade. We won't gather and send any other information on user's computer. Please see help to get more information.</description>
+	</item>
+	<item>
+		<title>[CnPack] When the Cusor is at &quot;begin&quot; in Editor, you can Press &quot;Ctrl+,&quot; to Jump to the Matched &quot;end&quot; quickly. Other Block keywords also Supported.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18543&amp;page=2#pid18543</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:13:42</pubDate>
+		<category>CnPack</category>
+		<description>When the Cusor is at &quot;begin&quot; in Editor, you can Press &quot;Ctrl+,&quot; to Jump to the Matched &quot;end&quot; quickly. Other Block keywords also Supported.</description>
+	</item>
+	<item>
+		<title>[CnPack] Current Identifier under Cursor Highlight are Implemented from CnWizards 0.8.9. But it's defaultly disabled. You can change the settings in the Source Highlight Enhancements Setting Dialog.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18542&amp;page=2#pid18542</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:13:35</pubDate>
+		<category>CnPack</category>
+		<description>Current Identifier under Cursor Highlight are Implemented from CnWizards 0.8.9. But it's defaultly disabled. You can change the settings in the Source Highlight Enhancements Setting Dialog.</description>
+	</item>
+	<item>
+		<title>[CnPack] Keyword Highlight and Lines Highlight are Implemented from CnWizards 0.8.8. And the default highlight mode has been changed to &quot;immediately highlight the whole unit&quot;. You can change the settings in the Source Highlight Enhancements Setting Dialog.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18541&amp;page=2#pid18541</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:13:27</pubDate>
+		<category>CnPack</category>
+		<description>Keyword Highlight and Lines Highlight are Implemented from CnWizards 0.8.8. And the default highlight mode has been changed to &quot;immediately highlight the whole unit&quot;. You can change the settings in the Source Highlight Enhancements Setting Dialog.</description>
+	</item>
+	<item>
+		<title>[CnPack] If you want to get a customized verison of CnPack IDE Wizards, which only contains the functions that you want, you can download CnPack IDE Wizards' source code and run cnwizards\Tools\CnCustBuild\CnCustBuild.dpr to generate a customized version. Please see: [url]http://www.cnpack.org/showdetail.php?id=502&amp;lang=en[/url]</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18540&amp;page=1#pid18540</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:13:14</pubDate>
+		<category>CnPack</category>
+		<description>If you want to get a customized verison of CnPack IDE Wizards, which only contains the functions that you want, you can download CnPack IDE Wizards' source code and run cnwizards\Tools\CnCustBuild\CnCustBuild.dpr to generate a customized version. Please see: [url]http://www.cnpack.org/showdetail.php?id=502&amp;lang=en[/url]</description>
+	</item>
+	<item>
+		<title>[CnPack] IDE Config Backup/Restore Tool in CnPack IDE Wizards can also clean IDE Open File history. You can use this tool to clean the open file history in IDE menu.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18539&amp;page=1#pid18539</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:13:02</pubDate>
+		<category>CnPack</category>
+		<description>IDE Config Backup/Restore Tool in CnPack IDE Wizards can also clean IDE Open File history. You can use this tool to clean the open file history in IDE menu.</description>
+	</item>
+	<item>
+		<title>[CnPack] In order to use Code-Insight or Code Input Helper when writing Pascal Script in IDE, you need to add Source and PSDeclEx directories in CnWizards installation destination into Search Path.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18538&amp;page=1#pid18538</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:12:52</pubDate>
+		<category>CnPack</category>
+		<description>In order to use Code-Insight or Code Input Helper when writing Pascal Script in IDE, you need to add Source and PSDeclEx directories in CnWizards installation destination into Search Path.</description>
+	</item>
+	<item>
+		<title>[CnPack] Want to get help to Pascal Script? You can check the content of PSDecl and PSDeclEx directories in CnWizards installation destination. There're also some demos in PSDemo directory.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18537&amp;page=1#pid18537</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:12:33</pubDate>
+		<category>CnPack</category>
+		<description>Want to get help to Pascal Script? You can check the content of PSDecl and PSDeclEx directories in CnWizards installation destination. There're also some demos in PSDemo directory.</description>
+	</item>
+	<item>
+		<title>[CnPack] Pascal Script engine is integrated in CnWizards. You can write a pascal script in IDE Editor and run it by Script Wizard for customization.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18536&amp;page=1#pid18536</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:12:18</pubDate>
+		<category>CnPack</category>
+		<description>Pascal Script engine is integrated in CnWizards. You can write a pascal script in IDE Editor and run it by Script Wizard for customization.</description>
+	</item>
+	<item>
+		<title>[CnPack] There's a CnDebug.pas file in CnWizards' Source directory. It's an interface unit for output debugging information. The debugging information can be recieved and viewed by CnDebugViewer.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18535&amp;page=1#pid18535</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:11:52</pubDate>
+		<category>CnPack</category>
+		<description>There's a CnDebug.pas file in CnWizards' Source directory. It's an interface unit for output debugging information. The debugging information can be recieved and viewed by CnDebugViewer.</description>
+	</item>
+	<item>
+		<title>[CnPack] There's Toggle Var Field Tool in Code Editor Wizard. When you pressing its shortcut, which default is Ctrl+Shift+V, Cursor can jump from procedure to var field to let you add local var. Esc or pressing shortcut again to return.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18534&amp;page=1#pid18534</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:11:43</pubDate>
+		<category>CnPack</category>
+		<description>There's Toggle Var Field Tool in Code Editor Wizard. When you pressing its shortcut, which default is Ctrl+Shift+V, Cursor can jump from procedure to var field to let you add local var. Esc or pressing shortcut again to return.</description>
+	</item>
+	<item>
+		<title>[CnPack] There's Smart Cut/Copy/Paste in Source Editor Enhancement Wizard. &quot;Smart Cut/Copy&quot; Means when Ctrl+X/Ctrl+C Pressed and NO Selection in Editor, the Token or Word under Current Cursor will be Cut/Copied. This Function is Enabled for Default. &quot;Smart Paste&quot; Means when Ctrl+V Pressed and NO Selection in Editor, the Token or Word under Current Cursor will be Replaced by Text in Clipboard. This Function is Disabled for Default.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18533&amp;page=1#pid18533</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:11:30</pubDate>
+		<category>CnPack</category>
+		<description>There's Smart Cut/Copy/Paste in Source Editor Enhancement Wizard. &quot;Smart Cut/Copy&quot; Means when Ctrl+X/Ctrl+C Pressed and NO Selection in Editor, the Token or Word under Current Cursor will be Cut/Copied. This Function is Enabled for Default. &quot;Smart Paste&quot; Means when Ctrl+V Pressed and NO Selection in Editor, the Token or Word under Current Cursor will be Replaced by Text in Clipboard. This Function is Disabled for Default.</description>
+	</item>
+	<item>
+		<title>[CnPack] Pressing Shift+F2 can Disable/Enable Code Input Helper, Right click can get popup menu.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18532&amp;page=1#pid18532</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:11:19</pubDate>
+		<category>CnPack</category>
+		<description>Pressing Shift+F2 can Disable/Enable Code Input Helper, Right click can get popup menu.</description>
+	</item>
+	<item>
+		<title>[CnPack] If You Find an Error or Have an Advice about CnPack IDE Wizards, You can Send a Mail to Our Team through &quot;Bug Report or Suggestion&quot; in the Help Menu.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18531&amp;page=1#pid18531</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:11:11</pubDate>
+		<category>CnPack</category>
+		<description>If You Find an Error or Have an Advice about CnPack IDE Wizards, You can Send a Mail to Our Team through &quot;Bug Report or Suggestion&quot; in the Help Menu.</description>
+	</item>
+	<item>
+		<title>[CnPack] If Some Wizards are not Useful to You, You can Set it to not Created (not Disabled) by Clicking the &quot;Advanced&quot; Button in Configuration Window. Also, Menu Items can be Custom Sorted.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18530&amp;page=1#pid18530</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:11:04</pubDate>
+		<category>CnPack</category>
+		<description>If Some Wizards are not Useful to You, You can Set it to not Created (not Disabled) by Clicking the &quot;Advanced&quot; Button in Configuration Window. Also, Menu Items can be Custom Sorted.</description>
+	</item>
+	<item>
+		<title>[CnPack] CnPack IDE Wizards can be Reinstall. You can Install New Versions Directly without Removing the Old Version. All User Data and Configuration will be Kept.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18529&amp;page=1#pid18529</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:10:56</pubDate>
+		<category>CnPack</category>
+		<description>CnPack IDE Wizards can be Reinstall. You can Install New Versions Directly without Removing the Old Version. All User Data and Configuration will be Kept.</description>
+	</item>
+	<item>
+		<title>[CnPack] If You want to Reinstall CnPack IDE Wizards or Migrate it to Another Computer, You can Use &quot;Config Import/Export&quot; Tool to Restore User Datas.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18528&amp;page=1#pid18528</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:10:29</pubDate>
+		<category>CnPack</category>
+		<description>If You want to Reinstall CnPack IDE Wizards or Migrate it to Another Computer, You can Use &quot;Config Import/Export&quot; Tool to Restore User Datas.</description>
+	</item>
+	<item>
+		<title>[CnPack] When Using MessageBox Visual Designer, If there is NO Quotation Marks in both Sides of Text in Generated Code, Please Uncheck &quot;Text as Variable&quot; and &quot;Title as Variable&quot;.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18527&amp;page=1#pid18527</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:10:22</pubDate>
+		<category>CnPack</category>
+		<description>When Using MessageBox Visual Designer, If there is NO Quotation Marks in both Sides of Text in Generated Code, Please Uncheck &quot;Text as Variable&quot; and &quot;Title as Variable&quot;.</description>
+	</item>
+	<item>
+		<title>[CnPack] Double-Clicking the Tab in Code Editor Window can Close this Unit. In the Popup Menu, You can Close All units expect this Unit. And You can Open this Unit in Windows Explorer.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18526&amp;page=1#pid18526</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:10:14</pubDate>
+		<category>CnPack</category>
+		<description>Double-Clicking the Tab in Code Editor Window can Close this Unit. In the Popup Menu, You can Close All units expect this Unit. And You can Open this Unit in Windows Explorer.</description>
+	</item>
+	<item>
+		<title>[CnPack] There are some Dynamic Property Editors Installed by CnPack IDE Wizards. You can Disable/Enable them in Wizards' Setting Dialog.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18525&amp;page=1#pid18525</link>
+		<author>zjy</author>
+		<pubDate>Mon, 12 Apr 2010 02:10:02</pubDate>
+		<category>CnPack</category>
+		<description>There are some Dynamic Property Editors Installed by CnPack IDE Wizards. You can Disable/Enable them in Wizards' Setting Dialog.</description>
+	</item>
+	<item>
+		<title>[CnPack] When IDE Starting, if Shift is Pressed, A &quot;CnPack IDE Loader&quot; Window will be Displayed. You can set some Wizards to not Created. It's a Debugging Way to Determine Which Wizard is on Error.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18486&amp;page=1#pid18486</link>
+		<author>zjy</author>
+		<pubDate>Sat, 10 Apr 2010 17:43:13</pubDate>
+		<category>CnPack</category>
+		<description>When IDE Starting, if Shift is Pressed, A &quot;CnPack IDE Loader&quot; Window will be Displayed. You can set some Wizards to not Created. It's a Debugging Way to Determine Which Wizard is on Error.</description>
+	</item>
+	<item>
+		<title>[CnPack] CnPack IDE Wizards can Auto Check the Latest Version of Wizards, Ensuring You to Keep to use the Newest Version.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18485&amp;page=1#pid18485</link>
+		<author>zjy</author>
+		<pubDate>Sat, 10 Apr 2010 17:42:52</pubDate>
+		<category>CnPack</category>
+		<description>CnPack IDE Wizards can Auto Check the Latest Version of Wizards, Ensuring You to Keep to use the Newest Version.</description>
+	</item>
+	<item>
+		<title>[CnPack] CnPack IDE Wizards is a Free Plug-in Tools Set in Delphi / C++Builder.</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6434&amp;pid=18484&amp;page=1#pid18484</link>
+		<author>zjy</author>
+		<pubDate>Sat, 10 Apr 2010 17:42:40</pubDate>
+		<category>CnPack</category>
+		<description>CnPack IDE Wizards is a Free Plug-in Tools Set in Delphi / C++Builder.</description>
+	</item>
+	<item>
+		<title>[Tips] Do you need free beautiful icons? Come here:</title>
+		<link>http://bbs.cnpack.org/viewthread.php?tid=6435&amp;pid=19571&amp;page=1#pid19571</link>
+		<author>zjy</author>
+		<pubDate>Thu, 10 Jun 2010 06:48:11</pubDate>
+		<category>Tips</category>
+		<description>[url]http://findicons.com/[/url]
+As its name suggests, FindIcons.com is an icon search engine helps you find free icons. We have the largest searchable free icons database in the world (Found somewhere with more icons than us? Let us know!) and both a sophisticated search filtering and result matching system make it possible for you to get an icon you need for every design task.</description>
+	</item>
+	</channel>
+</rss>
