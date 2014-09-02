@@ -88,6 +88,7 @@
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
 						<Parameters Name="DebugSourceDirs">C:\Sw\WorkDir\Pcks\Externals\jedi\jwapi(2.3)\Win32API\</Parameters>
+						<Parameters Name="RunParams">C:\Sw\WorkDir\Dprs\Delphi\VVer\Debug\ClientInst.ini</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>

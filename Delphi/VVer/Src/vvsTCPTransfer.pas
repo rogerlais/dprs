@@ -64,7 +64,8 @@ type
         FClientVersion : string;
         FClientName :    string;
         function ExecReadContent() : string;
-        function ExecFileDownload() : string;
+		 function ExecFileDownload() : string;
+		 function ExecFileFingerPrint() : string;
     public
         property ClientName : string read FClientName;
         property ClientVersion : string read FClientVersion;
@@ -689,7 +690,10 @@ begin
                         end;
                         vvvFileDownload : begin
                             Result := Self.ExecFileDownload();
-                        end;
+						 end;
+						 vvvFullFingerprint : begin
+                        	Result:= Self.ExecFileFingerPrint();
+						 end;
                     end;
                     Self.Context.Connection.IOHandler.WriteLn(Result);//envia retorno da operação
                 except
@@ -716,21 +720,50 @@ function TServerSyncSession.ExecFileDownload : string;
 begin
 end;
 
+function TServerSyncSession.ExecFileFingerPrint: string;
+var
+	 filename, pubname : string;
+	 vf : TVVSFile;
+begin
+	 //espera como argumento unico o nome da publicação
+	 try
+		 pubname := Self.Context.Connection.IOHandler.ReadLn();
+		 if (not SameText(pubname, PUBLICATION_INSTSEG)) then begin  //atualmente apenas esta publicação??
+			 Result := STR_FAIL_VERB;
+		 end else begin
+			filename := Self.Context.Connection.IOHandler.ReadLn();
+			if ( GlobalPublication.ManagedFolder.TryGetValue( filename, vf ) ) then begin
+				Result:= vf.FingerPrints;
+			end else begin
+            	raise ESVCLException.CreateFmt('Arquivo "%s" não existe na publicação informada.', [ filename ] );
+			end;
+			Assert( ( Result <> EmptyStr ), 'fingerprint nula?' );
+			Result:=HttpEncode( Result );
+		 end;
+	 except
+		 on E : Exception do begin
+			Result := E.Message + TOKEN_DELIMITER + STR_FAIL_PROTOCOL + TOKEN_DELIMITER;
+			Exit;
+		 end
+	 end;
+	 Result := Result + TOKEN_DELIMITER + STR_OK_PACK + TOKEN_DELIMITER; //resposta normal deste método
+end;
+
 function TServerSyncSession.ExecReadContent : string;
 var
-    pubname : string;
+	 pubname : string;
 begin
-    //espera como argumento unico o nome da publicação
-    try
-        pubname := Self.Context.Connection.IOHandler.ReadLn();
-        if (not SameText(pubname, PUBLICATION_INSTSEG)) then begin  //atualmente apenas esta publicação??
-            Result := STR_FAIL_VERB;
+	 //espera como argumento unico o nome da publicação
+	 try
+		 pubname := Self.Context.Connection.IOHandler.ReadLn();
+		 if (not SameText(pubname, PUBLICATION_INSTSEG)) then begin  //atualmente apenas esta publicação??
+			 Result := STR_FAIL_VERB;
 		 end else begin
 			Result:=HttpEncode( GlobalPublication.ManagedFolder.ToString() );
-        end;
-    except
-        on E : Exception do Result := STR_FAIL_PROTOCOL;
-    end;
+		 end;
+	 except
+		 on E : Exception do Result := STR_FAIL_PROTOCOL;
+	 end;
 	 Result := Result + TOKEN_DELIMITER + STR_OK_PACK;
 end;
 

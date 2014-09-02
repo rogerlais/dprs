@@ -1,7 +1,7 @@
 {$IFDEF vvConfig}
-	  {$DEFINE DEBUG_UNIT}
+{$DEFINE DEBUG_UNIT}
 {$ENDIF}
-{$I VVer.inc}
+{$I VVERSvc.inc}
 {$TYPEINFO OFF}
 
 unit vvConfig;
@@ -9,7 +9,7 @@ unit vvConfig;
 interface
 
 uses
-    Classes, SysUtils, Windows, FileHnd, AppSettings, Contnrs, WinReg32, vvsConsts;
+	 Classes, SysUtils, Windows, FileHnd, AppSettings, Contnrs, WinReg32, vvsConsts;
 
 type
     TVVUpdateStatus = (usUnknow, usOld, usOK);
@@ -34,7 +34,7 @@ type
 		 function GetCurrentVersionDisplay : string;
     public
         constructor Create(const ADesc, AHive, AVerKey, AVerKeyEx, AExpectedVer, AExpectedVerEx, ADownloadURL : string);
-        property Desc : string read FDesc;
+		 property Desc : string read FDesc;
         property Hive : string read FHive;
         property VerKey : string read FVerKey;
         property VerKeyEx : string read FVerKeyEx;
@@ -76,6 +76,7 @@ type
 	 public
 		 constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
 		 destructor Destroy; override;
+		 function ToString() : string;
 		 property GlobalStatus : string read GetGlobalStatus;
 		 property InfoText : string read GetInfoText;
 		 property ProfileInfo : TVVProgInfo read GetProfileInfo;
@@ -291,6 +292,11 @@ function TVVConfig.GetSenderDescription : string;
 begin
     {TODO -oroger -cfuture : manifestas a criar }
     Result := Self.ReadStringDefault('SenderDescription', 'SESOP - Seção de Suporte Operacional');
+end;
+
+function TVVConfig.ToString: string;
+begin
+	Result := Self.FIni.ToString;
 end;
 
 { TProgItem }

@@ -33,10 +33,10 @@
 			<Projects Include="Src\VVerSvc.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="..\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj">
+			<Projects Include="Src\vvDebuggerClient.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="Src\vvInteractiveDebugger.dproj">
+			<Projects Include="Src\vvDebuggerServer.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -137,32 +137,32 @@
 		<Target Name="VVerSvc:Make">
 			<MSBuild Targets="Make" Projects="Src\VVerSvc.dproj"/>
 		</Target>
-		<Target Name="SvcLoaderInteractiveDebugger">
-			<MSBuild Projects="..\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj"/>
+		<Target Name="vvDebuggerClient">
+			<MSBuild Projects="Src\vvDebuggerClient.dproj"/>
 		</Target>
-		<Target Name="SvcLoaderInteractiveDebugger:Clean">
-			<MSBuild Targets="Clean" Projects="..\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj"/>
+		<Target Name="vvDebuggerClient:Clean">
+			<MSBuild Targets="Clean" Projects="Src\vvDebuggerClient.dproj"/>
 		</Target>
-		<Target Name="SvcLoaderInteractiveDebugger:Make">
-			<MSBuild Targets="Make" Projects="..\SvcLoader\Src\SvcLoaderInteractiveDebugger.dproj"/>
+		<Target Name="vvDebuggerClient:Make">
+			<MSBuild Targets="Make" Projects="Src\vvDebuggerClient.dproj"/>
 		</Target>
-		<Target Name="vvInteractiveDebugger">
-			<MSBuild Projects="Src\vvInteractiveDebugger.dproj"/>
+		<Target Name="vvDebuggerServer">
+			<MSBuild Projects="Src\vvDebuggerServer.dproj"/>
 		</Target>
-		<Target Name="vvInteractiveDebugger:Clean">
-			<MSBuild Targets="Clean" Projects="Src\vvInteractiveDebugger.dproj"/>
+		<Target Name="vvDebuggerServer:Clean">
+			<MSBuild Targets="Clean" Projects="Src\vvDebuggerServer.dproj"/>
 		</Target>
-		<Target Name="vvInteractiveDebugger:Make">
-			<MSBuild Targets="Make" Projects="Src\vvInteractiveDebugger.dproj"/>
+		<Target Name="vvDebuggerServer:Make">
+			<MSBuild Targets="Make" Projects="Src\vvDebuggerServer.dproj"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="JediApi_DynamicRelease;XPLibD14;StFLibD14;TRELib;WinSysLibD14;INetLibD14;WinNetLibD14;ShellLibD14;VVer;VVerSvc;SvcLoaderInteractiveDebugger;vvInteractiveDebugger"/>
+			<CallTarget Targets="JediApi_DynamicRelease;XPLibD14;StFLibD14;TRELib;WinSysLibD14;INetLibD14;WinNetLibD14;ShellLibD14;VVer;VVerSvc;vvDebuggerClient;vvDebuggerServer"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="JediApi_DynamicRelease:Clean;XPLibD14:Clean;StFLibD14:Clean;TRELib:Clean;WinSysLibD14:Clean;INetLibD14:Clean;WinNetLibD14:Clean;ShellLibD14:Clean;VVer:Clean;VVerSvc:Clean;SvcLoaderInteractiveDebugger:Clean;vvInteractiveDebugger:Clean"/>
+			<CallTarget Targets="JediApi_DynamicRelease:Clean;XPLibD14:Clean;StFLibD14:Clean;TRELib:Clean;WinSysLibD14:Clean;INetLibD14:Clean;WinNetLibD14:Clean;ShellLibD14:Clean;VVer:Clean;VVerSvc:Clean;vvDebuggerClient:Clean;vvDebuggerServer:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="JediApi_DynamicRelease:Make;XPLibD14:Make;StFLibD14:Make;TRELib:Make;WinSysLibD14:Make;INetLibD14:Make;WinNetLibD14:Make;ShellLibD14:Make;VVer:Make;VVerSvc:Make;SvcLoaderInteractiveDebugger:Make;vvInteractiveDebugger:Make"/>
+			<CallTarget Targets="JediApi_DynamicRelease:Make;XPLibD14:Make;StFLibD14:Make;TRELib:Make;WinSysLibD14:Make;INetLibD14:Make;WinNetLibD14:Make;ShellLibD14:Make;VVer:Make;VVerSvc:Make;vvDebuggerClient:Make;vvDebuggerServer:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

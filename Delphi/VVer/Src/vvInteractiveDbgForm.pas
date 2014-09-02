@@ -18,6 +18,7 @@ type
     btnStartClient: TButton;
     procedure btnStartClick(Sender: TObject);
     procedure btnStartClientClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -28,6 +29,9 @@ var
   Form2: TForm2;
 
 implementation
+
+uses
+  vvsConfig;
 
 {$R *.dfm}
 
@@ -48,6 +52,11 @@ begin
 	end else begin
 		VVerService.ServicePause( VVerService, ret);
 	end;
+end;
+
+procedure TForm2.FormCreate(Sender: TObject);
+begin
+	Self.Caption := Self.Caption + Format( ' - Instância( %s )', [ VVSvcConfig.InstanceName ] );
 end;
 
 end.

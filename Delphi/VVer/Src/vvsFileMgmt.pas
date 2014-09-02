@@ -27,15 +27,19 @@ type
 		 function GetLastWrite : TDateTime;
 		 function GetSize: int64;
     	 function GetFullFilename: string;
+    function GetFingerprints: string;
 	 public
 		 constructor Create(AParent : TManagedFolder ; const AFilename : string);
 		 procedure Refresh;
 		 function ToString() : string;
+		 procedure Delete();
 		 property Filename : string read FFilename;
 		 property FullFilename : string read GetFullFilename;
 		 property MD5String : string read GetMD5String;
 		 property LastWrite : TDateTime read GetLastWrite;
 		 property Size : int64 read GetSize;
+		 property Parent : TManagedFolder read FParent;
+		 property FingerPrints : string read GetFingerprints;
 	 end;
 
 	 TVVSFileList = TList<TVVsFile>;
@@ -60,7 +64,7 @@ type
 		 property RootDir : string read FRootDir;
 		 procedure Reload;
 		 function ToString() : string; override;
-		 function Diff( mf : TManagedFolder; List : TVVSFileList ) : boolean;
+		 function Diff( remoteFolder : TManagedFolder; List : TVVSFileList ) : boolean;
 	 end;
 
 	 TVVSPublication = class
@@ -81,7 +85,7 @@ var
 implementation
 
 uses
-	 BinHnd, Str_pas, StrHnd, jclAnsiStrings;
+	 BinHnd, Str_pas, StrHnd, jclAnsiStrings, Applog, vvsConsts, vvsConfig, Math;
 
 
 { TVVSFile }
@@ -94,6 +98,36 @@ begin
 		Self.FFilename := AFilename;
 	end else begin
 		Self.FFilename:= ReplaceSubString( AFilename, Self.FParent.RootDir, '.' );
+	end;
+end;
+
+procedure TVVSFile.Delete;
+begin
+	if ( not DeleteFile( Self.FullFilename ) ) then begin
+		TLogFile.Log( Format( 'Arquivo("%s") não pode ser apagado', [ Self.FullFilename ] ), lmtError );
+	end;
+end;
+
+function TVVSFile.GetFingerprints: string;
+var
+	fs : TFileStream;
+	ms : TMemoryStream;
+	bs : integer;
+begin
+	{TODO -oroger -cdsg : cadeia com os hashs do arquivo em blocos do tamanho da configuração em vigor}
+	Result := EmptyStr;
+	bs:=VVSvcConfig.BlockSize;
+	ms := TMemoryStream.Create;
+	try
+		fs := TFileStream.Create( Self.FullFilename,  fmOpenRead + fmShareDenyWrite );
+		while fs.Position < fs.Size do begin
+			ms.CopyFrom( fs, Math.Min( bs, fs.Size - fs.Position ) );
+			ms.Position := 0;
+			Result := Result + THashHnd.MD5( ms ) + TOKEN_DELIMITER;
+			ms.Position := 0;
+		end;
+	finally
+		ms.Free;
 	end;
 end;
 
@@ -179,26 +213,26 @@ end;
 
 { TManagedFolder }
 
-function TManagedFolder.Diff(mf: TManagedFolder; List: TVVSFileList): boolean;
+function TManagedFolder.Diff(remoteFolder: TManagedFolder; List: TVVSFileList): boolean;
 var
 	locFile, remFile : TVVSFile;
   I: Integer;
 begin
 	List.Clear;
-	for locFile in Self.Values do begin
-		if ( mf.TryGetValue( locFile.Filename, remFile ) ) then begin
+	//varre remotos
+	for remFile in remoteFolder.Values do begin
+		if ( Self.TryGetValue( remFile.Filename, locFile ) ) then begin  //busca na lista local o mesmo nome do remoto
 			if ( remFile.MD5String <> locFile.MD5String ) then begin
 				List.Add( remFile ); //existem e são diferentes
 			end;
 		end else begin
-			//apagar no temporario
-			List.Add( locFile );
+			List.Add( remFile ); //encontrado apenas no remoto -> ser baixado completamente
 		end;
 	end;
 
-	for remFile in mf.Values do begin
-		if ( not mf.TryGetValue( remFile.Filename, locFile ) ) then begin
-			List.Add( remFile ); //existe no remoto baixar completo
+	for locFile in Self.Values do begin
+		if ( not remoteFolder.TryGetValue( locFile.Filename, remFile ) ) then begin
+			List.Add( locFile ); //existe no local apenas -> será apagado(checar parent = local para isso)
 		end;
 	end;
 

@@ -1,3 +1,8 @@
+{$IFDEF vvsConsts}
+{$DEFINE DEBUG_UNIT}
+{$ENDIF}
+{$I VVERSvc.inc}
+
 unit vvsConsts;
 
 interface
@@ -7,7 +12,7 @@ uses
 
 type
     //enumeração deve ser literalmente usada nos verbos(cliente/servidor)
-    TVVSVerbs = (vvvReadContent, vvvFileDownload);
+    TVVSVerbs = (vvvReadContent, vvvFileDownload, vvvFullFingerprint );
 
 const
     SUBJECT_TEMPLATE        = 'VVerService - Versão: %s - %s - %s';

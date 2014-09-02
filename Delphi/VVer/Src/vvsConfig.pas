@@ -1,3 +1,8 @@
+{$IFDEF vvsConfig}
+{$DEFINE DEBUG_UNIT}
+{$ENDIF}
+{$I VVERSvc.inc}
+
 unit vvsConfig;
 
 interface
@@ -15,35 +20,39 @@ const
 type
     ESVCLException = class(ELoggedException);
 
-	 TVVSConfig = class(TVVConfig, IFormatter)
+    TVVSConfig = class(TVVConfig, IFormatter)
     private
-        function GetPathServiceLog : string;
-        function GetNotificationSender : string;
-        function GetPathLocalInstSeg : string;
-        function GetPathTempDownload : string;
-        function GetNetServicePort : Integer;
-        function GetCycleInterval : Integer;
+		 function GetPathServiceLog : string;
+		 function GetNotificationSender : string;
+		 function GetPathLocalInstSeg : string;
+		 function GetPathTempDownload : string;
+		 function GetNetServicePort : Integer;
+		 function GetCycleInterval : Integer;
 		 function GetParentServer : string;
 		 function GetDebugLevel : Integer;
-        function GetNetClientPort : Integer;
-        function GetPathPublication : string;
-        function GetRootServer : string;
-        function GetPublicationName : string;
-    protected
-        function FormatLogMsg(const LogMsg : string; LogMessageType : TLogMessageType = lmtError) : string;
-    public
-        property PathServiceLog : string read GetPathServiceLog;
-        property NotificationSender : string read GetNotificationSender;
-        property PathLocalInstSeg : string read GetPathLocalInstSeg;
-        property PathTempDownload : string read GetPathTempDownload;
-        property PathPublication : string read GetPathPublication;
-        property NetServicePort : Integer read GetNetServicePort;
-        property NetClientPort : Integer read GetNetClientPort;
-        property CycleInterval : Integer read GetCycleInterval;
-        property ParentServer : string read GetParentServer;
+		 function GetNetClientPort : Integer;
+		 function GetPathPublication : string;
+		 function GetRootServer : string;
+		 function GetPublicationName : string;
+		 function GetInstanceName: string;
+		 function GetBlockSize: integer;
+	 protected
+		 function FormatLogMsg(const LogMsg : string; LogMessageType : TLogMessageType = lmtError) : string;
+	 public
+		 property PathServiceLog : string read GetPathServiceLog;
+		 property NotificationSender : string read GetNotificationSender;
+		 property PathLocalInstSeg : string read GetPathLocalInstSeg;
+		 property PathTempDownload : string read GetPathTempDownload;
+		 property PathPublication : string read GetPathPublication;
+		 property NetServicePort : Integer read GetNetServicePort;
+		 property NetClientPort : Integer read GetNetClientPort;
+		 property CycleInterval : Integer read GetCycleInterval;
+		 property ParentServer : string read GetParentServer;
 		 property DebugLevel : Integer read GetDebugLevel;
-        property RootServer : string read GetRootServer;
-        property PublicationName : string read GetPublicationName;
+		 property RootServer : string read GetRootServer;
+		 property PublicationName : string read GetPublicationName;
+		 property InstanceName : string read GetInstanceName;
+		 property BlockSize : integer read GetBlockSize;
     end;
 
 var
@@ -71,6 +80,8 @@ const
     IE_PATH_LOCAL_PUBLICATION = 'LocalPublication';
     DV_PATH_LOCAL_PUBLICATION = '';
 
+	 IE_TRANSFER_BLOCKSIZE = 'BlockSize';
+	 DV_TRANSFER_BLOCKSIZE = 2048;
 
 
     IE_NET_TCP_PORT = 'TCPPort';
@@ -88,10 +99,10 @@ var
     filename : string;
 begin
     //Instancia de configuração com o mesmo nome do runtime + .ini
-    SysUtils.DecimalSeparator := '.';
+    SysUtils.DecimalSeparator  := '.';
     SysUtils.ThousandSeparator := ',';
-    filename    := RemoveFileExtension(ParamStr(0)) + APP_SETTINGS_EXTENSION_FILE_INI;
-    VVSvcConfig := TVVSConfig.Create(filename, APP_SERVICE_NAME);
+	 filename := RemoveFileExtension(ParamStr(0)) + APP_SETTINGS_EXTENSION_FILE_INI;
+	 VVSvcConfig := TVVSConfig.Create(filename, APP_SERVICE_NAME);
     TLogFile.GetDefaultLogFile.DebugLevel := VVSvcConfig.DebugLevel;
     TLogFile.GetDefaultLogFile.Formatter := VVSvcConfig;
 end;
@@ -116,20 +127,39 @@ end;
 
 function TVVSConfig.GetCycleInterval : Integer;
 var
-    dv : TDefaultSettingValue;
+	 dv : TDefaultSettingValue;
 begin
-    dv := TDefaultSettingValue.Create;
-    try
-        dv.AsInteger := DV_CYCLE_INTERVAL;
-        Result := Self.ReadInteger(IE_CYCLE_INTERVAL, dv);
-    finally
-        dv.Free;
-    end;
+	 dv := TDefaultSettingValue.Create;
+	 try
+		 dv.AsInteger := DV_CYCLE_INTERVAL;
+		 Result := Self.ReadInteger(IE_CYCLE_INTERVAL, dv);
+	 finally
+		 dv.Free;
+	 end;
 end;
+
+function TVVSConfig.GetBlockSize: integer;
+var
+	dv : TDefaultSettingValue;
+begin
+	dv := TDefaultSettingValue.Create;
+	try
+		dv.Value := DV_TRANSFER_BLOCKSIZE;
+		Result := Self.ReadInteger( IE_TRANSFER_BLOCKSIZE, dv );
+	finally
+		dv.Free;
+	end;
+end;
+
 
 function TVVSConfig.GetDebugLevel : Integer;
 begin
     Result := Self.ReadIntegerDefault(IE_DEBUG_LEVEL, 0);
+end;
+
+function TVVSConfig.GetInstanceName: string;
+begin
+	result := Self.ReadStringDefault('InstanceName', '');
 end;
 
 function TVVSConfig.GetNetClientPort : Integer;
@@ -149,9 +179,9 @@ begin
 end;
 
 function TVVSConfig.GetParentServer : string;
-/// <summary>
-/// Nome do servidor pai desta instância. Caso forçado, usará apenas este. Caso vazio busca pelo PC primário, e na falta deste pela URL global de configuração
-/// </summary>
+    /// <summary>
+    /// Nome do servidor pai desta instância. Caso forçado, usará apenas este. Caso vazio busca pelo PC primário, e na falta deste pela URL global de configuração
+    /// </summary>
 begin
     {TODO -oroger -cdsg : alterar o valor padrão para o pc-primario, testar se o mesmo está na rede usando o servidor raiz para o caso de tudo falhar}
     //Calcula valor padrão antes de consultar a persistencia da configuração
@@ -175,7 +205,7 @@ end;
 
 function TVVSConfig.GetPathServiceLog : string;
 begin
-    Result := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'Logs']);
+	 Result  := TFileHnd.ConcatPath([ExtractFilePath(ParamStr(0)), 'Logs', Self.InstanceName ]);
 end;
 
 function TVVSConfig.GetPathTempDownload : string;

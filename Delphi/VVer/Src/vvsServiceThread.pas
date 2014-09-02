@@ -10,7 +10,7 @@ interface
 uses
     SysUtils, Windows, Classes, XPFileEnumerator, XPThreads, vvsConsts, vvsConfig, vvsFileMgmt, IdContext,
     IdTCPConnection, IdTCPClient, IdBaseComponent, IdComponent, IdCustomTCPServer, Generics.Collections,
-    IdTCPServer, AppLog, IdGlobal;
+    IdTCPServer, AppLog, IdGlobal, Types;
 
 type
 
@@ -47,14 +47,17 @@ type
         FParent : TVVerClientThread;
         FSocket : TIdTCPClient;
         function GetCancelled : boolean;
+        function ReadFileFirgerPrint(remoteFile : TVVSFile) : TStringDynArray;
     protected
         procedure PostRequest(Args : array of string);
         function ReadResponse() : string;
+        procedure ReadRemoteFile(inFile, outFile : TVVSFile);
     public
         constructor Create(AParent : TVVerClientThread; ASocket : TIdTCPClient);
         property Cancelled : boolean read GetCancelled;
         function ReadRemoteContent(const PubName : string) : string;
         function Synch(const PubName : string; LocalFolder, TempFolder : TManagedFolder) : string;
+        procedure UpdateFile(inFile : TVVSFile);
     end;
 
 implementation
@@ -243,6 +246,32 @@ begin
     end;
 end;
 
+function TClientSyncSession.ReadFileFirgerPrint(remoteFile : TVVSFile) : TStringDynArray;
+var
+    ret : TStringList;
+    I :   Integer;
+begin
+    {TODO -oroger -cdsg : envia pedido para o servidor para calcular o hash segmentado do arquivo remoto}
+    ret := TStringList.Create;
+    try
+        try
+            Self.PostRequest([Verb2String(vvvFullFingerprint), PUBLICATION_INSTSEG, remoteFile.Filename]);
+            ret.Text := Self.ReadResponse();
+            SetLength(Result, ret.Count);
+            for I := 0 to ret.Count - 1 do begin
+                Result[i] := ret.Strings[i];
+            end;
+        except
+            on E : Exception do begin
+                raise ESVCLException.Create('Cliente não pode carregar conteúdo da publicação: ' +
+                    PUBLICATION_INSTSEG + #13#10 + E.Message);
+            end;
+        end;
+    finally
+        ret.Free;
+    end;
+end;
+
 function TClientSyncSession.ReadRemoteContent(const PubName : string) : string;
 begin
     try
@@ -255,12 +284,31 @@ begin
     end;
 end;
 
+procedure TClientSyncSession.ReadRemoteFile(inFile, outFile : TVVSFile);
+var
+    fps : TStringDynArray;
+    blockHash : string;
+    fs :  TFileStream;
+	 lms, rms :  TMemoryStream;
+begin
+	 lms := TMemoryStream.Create;
+	 try
+		 fs := TFileStream.Create( outFile.FullFilename, fmOpenReadWrite + fmShareExclusive);
+		 fps := Self.ReadFileFirgerPrint(inFile);
+		 for blockHash in fps do begin
+              --leitura do local e comparação com o remoto, baixando se necessario
+		 end;
+	 finally
+		lms.Free;
+    end;
+end;
+
 function TClientSyncSession.ReadResponse() : string;
 var
     ret : string;
 begin
     try
-        Result := Self.FSocket.IOHandler.ReadLn(TEncoding.UTF8); //leitura da resposta em si
+        Result := HTTPDecode(Self.FSocket.IOHandler.ReadLn(TEncoding.UTF8)); //leitura da resposta em si
     except
         on E : Exception do raise ESVCLException.Create('Erro lendo resposta do servidor.' + E.Message);
     end;
@@ -280,9 +328,10 @@ var
     remoteFolder : TManagedFolder;
     slines : string;
     delta :  TVVSFileList;
+    f :      TVVSFile;
 begin
     try
-        slines := HttpDecode(Self.ReadRemoteContent(PUBLICATION_INSTSEG));
+        slines := Self.ReadRemoteContent(PUBLICATION_INSTSEG);
     except
         on E : Exception do raise ESVCLException.Create('Operação de sincronismo falhou: ' + E.Message);
     end;
@@ -290,14 +339,25 @@ begin
     try
         remoteFolder := TManagedFolder.CreateRemote(slines);
     except
-        on E : Exception do raise ESVCLException.Create('Erro de parser para instância de conteúdo: '#13#10 + E.Message + #13#10 + slines);
+        on E : Exception do raise ESVCLException.Create('Erro de parser para instância de conteúdo: '#13#10 +
+                E.Message + #13#10 + slines);
     end;
 
     try
         Delta := TVVSFileList.Create;
         try
-			 remoteFolder.Diff(Self.FParent.FTempFolder, Delta);
-			 --io com o delta
+            if (Self.FParent.FTempFolder.Diff(remoteFolder, Delta)) then begin
+                for f in Delta do begin
+                    if (f.Parent = Self.FParent.FTempFolder) then begin
+                        // presenca apenas na pasta local, sem exitir no remoto -> apaga
+                        f.Delete();
+                        f.Parent.Remove(f.Filename);
+                        f.Free;
+                    end else begin
+                        Self.UpdateFile(f);
+                    end;
+                end;
+            end;
         finally
             Delta.Free;
         end;
@@ -305,6 +365,21 @@ begin
         remoteFolder.Free;
     end;
 
+end;
+
+procedure TClientSyncSession.UpdateFile(inFile : TVVSFile);
+var
+    outFile : TVVSFile;
+begin
+    outFile := TVVSFile.Create(Self.FParent.FTempFolder, inFile.Filename); //par para folder local com o remoto
+    try
+        Self.ReadRemoteFile(inFile, outFile);
+    except
+        on E : Exception do begin
+            Self.FParent.FTempFolder.Remove(outFile.Filename);
+            outFile.Free;
+        end;
+    end;
 end;
 
 end.
