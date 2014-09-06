@@ -8,8 +8,11 @@ unit vvsFileMgmt;
 interface
 
 uses
-    Windows, SysUtils, FileHnd, Generics.Collections, StreamHnd, XPFileEnumerator, Classes, WinFileNotification,
-    XMLIntf, XMLConst, SyncObjs, DBXJSON, DBXJSONReflect;
+	 Windows, SysUtils, FileHnd, Generics.Collections, StreamHnd, XPFileEnumerator, Classes, WinFileNotification,
+	 XMLIntf, XMLConst, SyncObjs, DBXJSON, DBXJSONReflect;
+
+const
+	DEFAULT_BLOCKSIZE = 2048;
 
 type
 	  {-$RTTI EXPLICIT METHODS([]) PROPERTIES([vcPublished]) FIELDS([vcPrivate])}
@@ -26,8 +29,8 @@ type
 		 function GetMD5String : string;
 		 function GetLastWrite : TDateTime;
 		 function GetSize: int64;
-    	 function GetFullFilename: string;
-    function GetFingerprints: string;
+		 function GetFullFilename: string;
+		 function GetFingerprints: string;
 	 public
 		 constructor Create(AParent : TManagedFolder ; const AFilename : string);
 		 procedure Refresh;
@@ -44,15 +47,19 @@ type
 
 	 TVVSFileList = TList<TVVsFile>;
 
+	 TVVSPublication = class;
 	 TManagedFolder = class(TDictionary<string, TVVSFile>)
 	 private
 		 FCriticalSection : TCriticalSection;
 		 FRootDir :         string;
 		 FMonitor :         TWinFileSystemMonitor;
+		 FParent: TVVSPublication;
+		 FBlockSize: integer;
 		 function GetGlobalHash : string;
 		 function GetMonitored : boolean;
 		 procedure SetMonitored(const Value : boolean);
 		 procedure DoFilesChange(Sender : TWinFileSystemMonitor; AFolderItem : TFolderItemInfo);
+		 procedure SetBlockSize(const Value: integer);
 	 protected
 		 procedure Lock;
 		 procedure UnLock;
@@ -62,6 +69,8 @@ type
 		 destructor Destroy; override;
 		 property Monitored : boolean read GetMonitored write SetMonitored;
 		 property RootDir : string read FRootDir;
+		 property Parent : TVVSPublication read FParent write FParent;
+		 property BlockSize : integer read FBlockSize write SetBlockSize;
 		 procedure Reload;
 		 function ToString() : string; override;
 		 function Diff( remoteFolder : TManagedFolder; List : TVVSFileList ) : boolean;
@@ -85,7 +94,7 @@ var
 implementation
 
 uses
-	 BinHnd, Str_pas, StrHnd, jclAnsiStrings, Applog, vvsConsts, vvsConfig, Math;
+	 BinHnd, Str_pas, StrHnd, jclAnsiStrings, Applog, vvsConsts, Math, vvSvcDM;
 
 
 { TVVSFile }
@@ -112,20 +121,30 @@ function TVVSFile.GetFingerprints: string;
 var
 	fs : TFileStream;
 	ms : TMemoryStream;
-	bs : integer;
+	bs, lenCycle : integer;
+	h : string;
 begin
 	{TODO -oroger -cdsg : cadeia com os hashs do arquivo em blocos do tamanho da configuração em vigor}
 	Result := EmptyStr;
-	bs:=VVSvcConfig.BlockSize;
+	if ( Assigned( Self.Parent )) then begin
+		bs:=Self.Parent.BlockSize;
+	end else begin
+		bs:= DEFAULT_BLOCKSIZE;
+	end;
 	ms := TMemoryStream.Create;
 	try
 		fs := TFileStream.Create( Self.FullFilename,  fmOpenRead + fmShareDenyWrite );
-		while fs.Position < fs.Size do begin
-			ms.CopyFrom( fs, Math.Min( bs, fs.Size - fs.Position ) );
-			ms.Position := 0;
-			Result := Result + THashHnd.MD5( ms ) + TOKEN_DELIMITER;
-			ms.Position := 0;
-		end;
+		try
+			while fs.Position < fs.Size do begin
+				lenCycle := Math.Min( bs, fs.Size - fs.Position );
+				ms.CopyFrom( fs, lenCycle );
+				ms.Position:=0;
+				h := TVVerService.GetBlockHash(ms, MD5_BLOCK_ALIGNMENT);
+				Result := Result + h + TOKEN_DELIMITER;
+			end;
+		finally
+        	fs.Free;
+       end;
 	finally
 		ms.Free;
 	end;
@@ -194,7 +213,7 @@ begin
 			v:=TVVSFile( Data ).FFilename;
 			{$IF CompilerVersion <> 21.00}
 			//Para esta versão havia erro na recuperação da cadeia contendo caracter "\"
-			---***** A linha abaixo deve ser revista de acordo com a implementação json do compilador
+			---***** Chamada a StrStringToEscaped abaixo deve ser revista de acordo com a implementação json do compilador
 			{$IFEND}
 			Result := jclAnsiStrings.StrStringToEscaped( v );
 		end
@@ -216,7 +235,6 @@ end;
 function TManagedFolder.Diff(remoteFolder: TManagedFolder; List: TVVSFileList): boolean;
 var
 	locFile, remFile : TVVSFile;
-  I: Integer;
 begin
 	List.Clear;
 	//varre remotos
@@ -241,7 +259,8 @@ end;
 
 constructor TManagedFolder.CreateLocal(const ARootDir : string);
 begin
-    inherited Create;
+	 inherited Create;
+	 Self.FBlockSize := DEFAULT_BLOCKSIZE;
     Self.FCriticalSection := TCriticalSection.Create;
     Self.FRootDir := ARootDir;
     Self.Reload;
@@ -256,6 +275,7 @@ var
 	 SerialFile : TJSONObject;  //Serialized for of object
 begin
 	 inherited Create;
+	 Self.FBlockSize := DEFAULT_BLOCKSIZE;
 	 Self.FCriticalSection := TCriticalSection.Create;
 	 Lines := TStringList.Create();
 	 try
@@ -277,8 +297,8 @@ begin
 			*)
 			 Lines.Text := AData;
 			 for s in Lines do begin
+				 SerialFile := TJSONObject.Create;
 				 try
-					 SerialFile := TJSONObject.Create;
 					 //SerialFile.Parse (TEncoding.ASCII.GetBytes(s), 0);
 					 SerialFile.Parse (TEncoding.UTF8.GetBytes(s), 0);
 					 f := unm.Unmarshal(SerialFile) as TVVSFile;
@@ -318,8 +338,10 @@ begin
             faRemoved : begin
                 Self.Remove(AFolderItem.Name); {TODO -oroger -cdsg : Validar destructor do vf nesta chamada}
             end;
-            faModified : begin
-                vf.Refresh;
+			 faModified : begin
+				if ( Self.TryGetValue( AFolderItem.Name, vf ) ) then begin
+					vf.Refresh;
+				end;								 
             end;
             faRenamedOld : begin
                 Self.Remove(AFolderItem.Name); {TODO -oroger -cdsg : Validar destructor do vf nesta chamada}
@@ -349,7 +371,6 @@ begin
     finally
         lst.Free;
     end;
-
 end;
 
 function TManagedFolder.GetMonitored : boolean;
@@ -389,6 +410,12 @@ begin
     end;
 end;
 
+procedure TManagedFolder.SetBlockSize(const Value: integer);
+begin
+	{TODO -oroger -cdsg : ajustar regras de tamanho de bloco}
+   Self.FBlockSize := Value;
+end;
+
 procedure TManagedFolder.SetMonitored(const Value : boolean);
 begin
     if (Value) then begin
@@ -407,12 +434,11 @@ end;
 
 function TManagedFolder.ToString : string;
 var
-    x : Integer;
-    f : TVVSFile;
+	 f : TVVSFile;
 begin
     Result := EmptyStr;
     for f in Self.Values do begin
-        Result := Result + f.ToString() + #13#10;
+		 Result := Result + f.ToString() + TOKEN_DELIMITER; //separadas por quebra de linha para poderem ser remontadas no destino
     end;
 end;
 

@@ -66,6 +66,7 @@
 				<DesignClass>TDataModule</DesignClass>
 			</DCCReference>
 			<DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREUtils.pas"/>
+			<DCCReference Include="vvProgItem.pas"/>
 			<None Include="..\Docs\Historico.txt"/>
 			<None Include="..\Docs\Requisitos.txt"/>
 			<BuildConfiguration Include="Base">

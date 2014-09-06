@@ -37,10 +37,14 @@ type
         function isIntranetConnected() : boolean;
         procedure ServiceThreadPulse();
         function SendMailNotification(const NotificationText : string) : boolean;
+        function GetTitle : string;
     public
         class function LogFilePrefix() : string;
         function GetServiceController : TServiceController; override;
         destructor Destroy; override;
+        property Title : string read GetTitle;
+        class procedure AlignEndStream(AStrm : TStream; AMultSize : Integer);
+        class function GetBlockHash(AStrm : TMemoryStream; ALength : Integer) : string;
         { Public declarations }
     end;
 
@@ -51,7 +55,7 @@ implementation
 
 uses
     WinReg32, FileHnd, AppLog, vvsConsts, XPFileEnumerator, XPTypes, StrHnd, IdGlobal,
-    Str_Pas, IdEMailAddress, WinNetHnd;
+    Str_Pas, IdEMailAddress, WinNetHnd, StreamHnd;
 
 {$R *.DFM}
 
@@ -77,6 +81,26 @@ begin
         end;
     finally
         lst.Free;
+    end;
+end;
+
+class procedure TVVerService.AlignEndStream(AStrm : TStream; AMultSize : Integer);
+///caso o stream não possua tamanho multiplo de AMultSize o complemento é preenchido com zeros
+var
+    pbesta : array of byte;
+    compl :  Integer;
+    delta :  int64;
+begin
+    compl := 0;
+    delta := AStrm.Size mod AMultSize;
+    if (delta <> 0) then begin
+        compl      := AMultSize - delta;
+        AStrm.Size := AStrm.Size + compl;
+    end;
+    compl := AStrm.Size - AStrm.Position;
+    if (compl > 0) then begin
+        SetLength(pbesta, compl + 1);  {TODO -oroger -cdsg : testar se zera conteudo da memoria}
+        AStrm.Write(PByte(pbesta)^, compl);
     end;
 end;
 
@@ -165,9 +189,52 @@ begin
     inherited;
 end;
 
+class function TVVerService.GetBlockHash(AStrm : TMemoryStream; ALength : Integer) : string;
+	 //calcula o hash do bloco
+var
+	 pbesta : array of byte;
+	 compl :  Integer;
+	 oldPos, oldSize, delta : int64;
+begin
+	 oldPos  := AStrm.Position;
+    oldSize := AStrm.Size;
+    try
+        //Ajusta tamanho
+        compl := 0;
+        delta := AStrm.Size mod ALength;
+        if (delta <> 0) then begin //necessita de alinhamento
+            compl      := ALength - delta;
+            AStrm.Size := AStrm.Size + compl;
+        end;
+        //Preenche complemento
+        compl := AStrm.Size - oldPos;
+		 if ( ( compl > 0) and ( AStrm.Position > 0 ) )then begin
+			 SetLength(pbesta, compl + 1);
+			 AStrm.Write(PByte(pbesta)^, compl);
+		 end;
+		 //calcula o hash
+		 Result := THashHnd.MD5(AStrm);
+	 finally
+		 AStrm.Size     := oldSize;
+		 AStrm.Position := oldPos;
+	 end;
+end;
+
 function TVVerService.GetServiceController : TServiceController;
 begin
     Result := ServiceController;
+end;
+
+function TVVerService.GetTitle : string;
+begin
+    if (Application.ServiceCount = 0) then begin
+        Result := 'Aplicativo de depuração desktop';
+    end else begin
+        Result := Application.Title;
+        if (Result = EmptyStr) then begin
+            raise Exception.Create('Informações de versão desta instância não estão completas(Título)');
+        end;
+    end;
 end;
 
 procedure TVVerService.InitPublications;
@@ -228,7 +295,7 @@ begin
     mailMsgNotify.AttachmentEncoding := 'UUE';
     mailMsgNotify.Encoding      := mePlainText;
     mailMsgNotify.From.Address  := VVSvcConfig.NotificationSender;
-    mailMsgNotify.From.Name     := Application.Title;
+    mailMsgNotify.From.Name     := Self.Title;
     mailMsgNotify.From.Text     := Format(' %s <%s>', [Application.Title, VVSvcConfig.NotificationSender]);
     mailMsgNotify.From.Domain   := Str_Pas.GetDelimitedSubStr('@', VVSvcConfig.NotificationSender, 1);
     mailMsgNotify.From.User     := Str_Pas.GetDelimitedSubStr('@', VVSvcConfig.NotificationSender, 0);

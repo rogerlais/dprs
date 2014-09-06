@@ -20,6 +20,7 @@ type
         FLastVerification : TDateTime;
         FTempFolder :       TManagedFolder;
         FSyncFolder :       TManagedFolder;
+        FActiveSession :    boolean;
         procedure DoClientCycle;
     public
         constructor Create(CreateSuspended : boolean; const ThreadName : string); override;
@@ -52,6 +53,8 @@ type
         procedure PostRequest(Args : array of string);
         function ReadResponse() : string;
         procedure ReadRemoteFile(inFile, outFile : TVVSFile);
+        procedure ReadCloseFile(downID : THandle; AStream : TFileStream);
+        procedure ReadStreamSegment(DownID, SegIdx : int64; Strm : TStream; const prevHash : string);
     public
         constructor Create(AParent : TVVerClientThread; ASocket : TIdTCPClient);
         property Cancelled : boolean read GetCancelled;
@@ -63,7 +66,7 @@ type
 implementation
 
 uses
-    vvsTCPTransfer, FileHnd, StreamHnd, StrHnd;
+    vvsTCPTransfer, FileHnd, StreamHnd, StrHnd, Str_pas, Math, vvSvcDM;
 
 { TVVerServiceThread }
 
@@ -139,8 +142,9 @@ end;
 constructor TVVerClientThread.Create(CreateSuspended : boolean; const ThreadName : string);
 begin
     inherited;
-    Self.FTempFolder := TManagedFolder.CreateLocal(VVSvcConfig.PathTempDownload);
-    if (VVSvcConfig.ParentServer = EmptyStr) then begin
+	 Self.FTempFolder := TManagedFolder.CreateLocal(VVSvcConfig.PathTempDownload);
+	 Self.FTempFolder.BlockSize := VVSvcConfig.BlockSize;
+	 if (VVSvcConfig.ParentServer = EmptyStr) then begin
         raise ESVCLException.CreateFmt('Servidor pai desta instância inválido(%s)', [VVSvcConfig.ParentServer]);
     end;
 end;
@@ -149,11 +153,27 @@ procedure TVVerClientThread.DoClientCycle;
 var
     clientSession : TClientSyncSession;
 begin
+    if (Self.FActiveSession) then begin  //aguarda a anterior terminar seu trabalho
+        Exit;
+    end;
     {TODO -oroger -cdsg : Buscar por atualizações}
-    DMTCPTransfer.StartSession(VVSvcConfig.ClientName + ' * ' + TimeToStr(Now()));
-    clientSession := TClientSyncSession.Create(Self, DMTCPTransfer.tcpclnt);
-    clientSession.Synch(PUBLICATION_INSTSEG, Self.FSyncFolder, Self.FTempFolder);
-    DMTCPTransfer.EndSession(VVSvcConfig.ClientName);
+    Self.FActiveSession := True;
+    try
+        DMTCPTransfer.StartSession(VVSvcConfig.ClientName + ' * ' + TimeToStr(Now()));
+        try
+            clientSession := TClientSyncSession.Create(Self, DMTCPTransfer.tcpclnt);
+            try
+                clientSession.Synch(PUBLICATION_INSTSEG, Self.FSyncFolder, Self.FTempFolder);
+                //realiza todas as operações até desejar finalizar conexao
+            finally
+                clientSession.Free;
+            end;
+        finally
+            DMTCPTransfer.EndSession(VVSvcConfig.ClientName);
+        end;
+    finally
+        Self.FActiveSession := False;
+    end;
 end;
 
 procedure TVVerClientThread.DoTerminate;
@@ -238,12 +258,34 @@ begin
         req := req + s + TOKEN_DELIMITER;
     end;
     try
-        Self.FSocket.IOHandler.Write(STR_CMD_VERB + req);
+        Self.FSocket.IOHandler.Write(STR_CMD_VERB + req); //write -> cadeia possui fim de linha
     except
         on E : Exception do begin
             raise ESVCLException.Create('Erro enviando solicitação ao servidor: ' + E.Message);
         end;
     end;
+end;
+
+procedure TClientSyncSession.ReadCloseFile(downID : THandle; AStream : TFileStream);
+ ///Informa o id a ser fechado
+ ///recebe data de criação, modificação, acesso e tamanho total do arquivo
+ /// Este metodo DEVE ser chamado ao final da leitura do arquivo
+var
+    sDate, resp : string;
+    accDate, createDate, modDate : TDateTime;
+    fSize : int64;
+begin
+    Self.PostRequest([Verb2String(vvvFileClose), IntToStr(downID)]);
+    resp    := Self.ReadResponse();
+    sDate   := GetDelimitedSubStr(TOKEN_DELIMITER, resp, 0);
+    createDate := TDateTime(StrToFloatFilter(sDate));
+    sDate   := GetDelimitedSubStr(TOKEN_DELIMITER, resp, 1);
+    modDate := TDateTime(StrToFloatFilter(sDate));
+    sDate   := GetDelimitedSubStr(TOKEN_DELIMITER, resp, 2);
+    accDate := TDateTime(StrToFloatFilter(sDate));
+    fSize   := StrToInt64(GetDelimitedSubStr(TOKEN_DELIMITER, resp, 3));
+    AStream.Size := fSize; //trunca de novo e abaixo de novo
+    SetFileTimeProperties(AStream.Handle, createDate, accDate, modDate);
 end;
 
 function TClientSyncSession.ReadFileFirgerPrint(remoteFile : TVVSFile) : TStringDynArray;
@@ -286,20 +328,68 @@ end;
 
 procedure TClientSyncSession.ReadRemoteFile(inFile, outFile : TVVSFile);
 var
-    fps : TStringDynArray;
-    blockHash : string;
-    fs :  TFileStream;
-	 lms, rms :  TMemoryStream;
+    fps :     TStringDynArray;
+    remoteSegHash, localSegHash, remoteFullHash, pubname, ret : string;
+    outFS :   TFileStream;
+    lms, ms : TMemoryStream;
+    readSize, blockSize, I, downID : Integer;
+    remoteSize : int64;
 begin
-	 lms := TMemoryStream.Create;
-	 try
-		 fs := TFileStream.Create( outFile.FullFilename, fmOpenReadWrite + fmShareExclusive);
-		 fps := Self.ReadFileFirgerPrint(inFile);
-		 for blockHash in fps do begin
-              --leitura do local e comparação com o remoto, baixando se necessario
-		 end;
-	 finally
-		lms.Free;
+    blockSize := VVSvcConfig.BlockSize;
+    lms := TMemoryStream.Create;
+    ms  := TMemoryStream.Create;
+    try
+        if (FileExists(outFile.FullFilename)) then begin
+            outFS := TFileStream.Create(outFile.FullFilename, fmOpenReadWrite + fmShareExclusive);
+        end else begin
+            outFS := TFileStream.Create(outFile.FullFilename, fmCreate + fmShareExclusive);
+        end;
+        try
+            fps := Self.ReadFileFirgerPrint(inFile);
+            if (Assigned(inFile.Parent.Parent)) then begin
+                pubname := inFile.Parent.Parent.Name;
+            end else begin
+                pubname := PUBLICATION_INSTSEG;  //nesta versão força a barra
+            end;
+            Self.PostRequest([Verb2String(vvvFileDownload), pubname, inFile.Filename]);
+            ret    := Self.ReadResponse(); //recebe id do download, hash do arquivo, e seu tamanho
+            downID := StrToInt(GetDelimitedSubStr(TOKEN_DELIMITER, ret, 0));
+            remoteFullHash := GetDelimitedSubStr(TOKEN_DELIMITER, ret, 1);
+            remoteSize := StrToInt64(GetDelimitedSubStr(TOKEN_DELIMITER, ret, 2));
+            localSegHash := EmptyStr;
+            for I := Low(fps) to High(fps) do begin
+
+                //coleta os hashes local e remoto
+                remoteSegHash := fps[I];
+
+                if (outFS.Position < outFS.Size) then begin //arquivo de saida possui dados anteriores
+                    readSize := Math.Min(blockSize, outFS.Size - outFS.Position);
+                    lms.CopyFrom(outFS, readSize);
+                    localSegHash := TVVerService.GetBlockHash(lms, MD5_BLOCK_ALIGNMENT);
+                    lms.Position := 0;
+                    if ((localSegHash = remoteSegHash) and
+                        (I < High(fps))) //sempre carrega segmento final
+                    then begin
+                        system.Continue;
+                    end else begin  //retrocede segmento para ser sobrescrito
+                        outFS.Position := outFS.Position - readSize;
+                    end;
+                end;
+				 Self.ReadStreamSegment(downId, I, ms, remoteSegHash); //realiza a leitura do segmento remoto
+				 ret := Self.FSocket.IOHandler.ReadLn(); //leitura do retorno inutil
+                //TLogFile.LogDebug(Format('Pedindo segmento %d do arquivo %d', [I, downId]), DBGLEVEL_ULTIMATE);
+                ms.Position := 0;
+                outFS.CopyFrom(ms, readSize); {TODO -oroger -cdsg : marcar como ultima alteração}
+                ms.Position := 0; //volta para a nova leitura
+            end;
+            outFS.Size := outFS.Position; //trunca lixo anterior
+            Self.ReadCloseFile(downID, outFS);
+        finally
+            outFS.Free;
+        end;
+    finally
+        lms.Free;
+        ms.Free;
     end;
 end;
 
@@ -314,12 +404,70 @@ begin
     end;
     try //Leitura da checagem da resposta
         ret := Self.FSocket.IOHandler.ReadLn(); //codigo de retorno
-        if (TStrHnd.startsWith(ret, STR_FAIL_PREFIX)) then begin
-            raise Exception.Create('O servidor retornou erro para a operação: ' + ret);
+        if (ret <> STR_OK_PACK) then begin
+            raise Exception.CreateFmt('Operação falhou(%s):'#13#10'%s', [ret, Result]);
         end;
     except
         on E : Exception do {TODO -oroger -cdsg : verificar e garantir o envio recebimento nesta codificação}
             raise ESVCLException.Create('Resposta de leitura de conteúdo não foi completa ou falha.'#13#10 + E.Message);
+    end;
+end;
+
+procedure TClientSyncSession.ReadStreamSegment(DownID, SegIdx : int64; Strm : TStream; const prevHash : string);
+ //baixa stream do servidor
+ //( retorno da operação ) + (bytes no streamer a serem lidos) + (streamer) + (hash do segmento) + (bytes faltantes) + SOK
+var
+	 sRestSize, opRet, calcHash, informHash, sBlockSize, ret : string;
+	 ms : TMemoryStream;
+	 bs, segSize : Integer;
+	   {$HINTS OFF}
+	 //restSize : int64;
+	   {$HINTS ON}
+begin
+	 {TODO -oroger -cdsg : Leitura da consulta de baixa de stream }
+	 bs := VVSvcConfig.BlockSize;
+	 Self.PostRequest([Verb2String(vvvReadSegment), IntToStr(DownID), IntToStr(SegIdx)]);
+	 //Retorno da operação
+	 opRet := Self.FSocket.IOHandler.ReadLn();
+	 if (opRet <> STR_OK_PACK) then begin //recebeu operação ok
+		 raise ESVCLException.CreateFmt('Não foi possível ler segmento %d para identificador %d ', [SegIdx, DownID]);
+	 end;
+
+	 //Leitura do tamanho do bloco
+	 sBlockSize := Self.FSocket.IOHandler.ReadLn(TEncoding.UTF8);
+	 segSize := StrToInt(sBlockSize);
+
+	 ms := TMemoryStream.Create;
+	 try
+		 ms.SetSize(segSize);
+		 ms.Position := 0;
+		 Self.FSocket.IOHandler.Write(ms, segSize);
+		 calcHash := TVVerService.GetBlockHash(ms, MD5_BLOCK_ALIGNMENT);
+		 informHash := Self.FSocket.IOHandler.ReadLn(TEncoding.UTF8);
+		 sRestSize := Self.FSocket.IOHandler.ReadLn(TEncoding.UTF8);
+			{$HINTS OFF}
+		 //restSize := StrToInt64( sRestSize ); //sem no momento
+			{$HINTS ON}
+
+		 //assinatura de OK final
+		 ret := Self.FSocket.IOHandler.ReadLn(TEncoding.UTF8);
+		 if (ret <> STR_OK_PACK) then begin
+			 raise Exception.CreateFmt('Servidor não atendeu corretamente pedido para o segmento %d', [SegIdx]);
+		 end;
+
+		 ms.Position := 0;
+		 if ((calcHash = prevHash) and (prevHash = informHash)) then begin
+			 ms.Position := 0;
+			 Strm.CopyFrom(ms, segSize); //copia a parte do streamer correto(pode ser menor)
+			 ms.Position := 0;
+			 ms.Size     := segSize;
+		 end else begin
+			 raise Exception.CreateFmt(
+				 'Recebidos hashes divergentes para o segmento %d: (recebido=%s, previamente informado=%s, atualmente informado=%s)',
+				 [segIdx, calcHash, prevHash, informHash]);
+        end;
+    finally
+        ms.Free;
     end;
 end;
 
@@ -337,7 +485,8 @@ begin
     end;
 
     try
-        remoteFolder := TManagedFolder.CreateRemote(slines);
+		 remoteFolder := TManagedFolder.CreateRemote(slines);
+		 remoteFolder.BlockSize := VVSvcConfig.BlockSize;
     except
         on E : Exception do raise ESVCLException.Create('Erro de parser para instância de conteúdo: '#13#10 +
                 E.Message + #13#10 + slines);
@@ -378,6 +527,7 @@ begin
         on E : Exception do begin
             Self.FParent.FTempFolder.Remove(outFile.Filename);
             outFile.Free;
+            raise;
         end;
     end;
 end;

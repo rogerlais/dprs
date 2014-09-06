@@ -12,20 +12,22 @@ uses
 
 type
     //enumeração deve ser literalmente usada nos verbos(cliente/servidor)
-    TVVSVerbs = (vvvReadContent, vvvFileDownload, vvvFullFingerprint );
+	 TVVSVerbs = (vvvReadContent, vvvFileDownload, vvvFileClose, vvvFullFingerprint, vvvReadSegment, vvvRegisterStatus, vvvEndSession );
 
 const
-    SUBJECT_TEMPLATE        = 'VVerService - Versão: %s - %s - %s';
-    SWITCH_AUTOCONFIG       = 'autoconfig'; //informa que durante as operações de download a janela de interação não será mostrada
+	 DBG_CLIENT_NAME = 'ZPB999WKS01';
 
-    PUBLICATION_INSTSEG = 'INSTSEG';
+	 SUBJECT_TEMPLATE        = 'VVerService - Versão: %s - %s - %s';
+	 SWITCH_AUTOCONFIG       = 'autoconfig'; //informa que durante as operações de download a janela de interação não será mostrada
 
-    TOKEN_DELIMITER      = #13#10;
-    STR_CMD_VERB         = 'verb=';
-    STR_VERB_READCONTENT = 'readcontent';
-    STR_VERB_EXIT        = 'exit';
-    STR_END_SESSION_SIGNATURE = 'end_session=';
-    STR_BEGIN_SESSION_SIGNATURE = 'start_session=';
+	 PUBLICATION_INSTSEG = 'INSTSEG';
+
+	 MD5_BLOCK_ALIGNMENT = 2048;
+
+	 TOKEN_DELIMITER      = #13#10;
+	 STR_CMD_VERB         = 'verb=';
+	 STR_END_SESSION_SIGNATURE = 'end_session=';
+	 STR_BEGIN_SESSION_SIGNATURE = 'start_session=';
 	 STR_OK_PACK          = 'OK';
 	 STR_FAIL_PREFIX      = 'FAIL';
 	 STR_FAIL_HASH        = STR_FAIL_PREFIX + ' HASH';

@@ -17,7 +17,7 @@ uses
     Controls, vvsConsts, vvsThreadList, HTTPApp, Dialogs, vvsFileMgmt;
 
 type
-	 TThreadStringList = class(TStringList)
+    TThreadStringList = class(TStringList)
     private
         FLocker : TCriticalSection;
     protected
@@ -63,9 +63,13 @@ type
         FContext :       TIdContext;
         FClientVersion : string;
         FClientName :    string;
+        FSessionFileTransfer : TFileStream;
         function ExecReadContent() : string;
-		 function ExecFileDownload() : string;
-		 function ExecFileFingerPrint() : string;
+        function ExecFileDownload() : string;
+        function ExecFileClose() : string;
+        function ExecFileFingerPrint() : string;
+        function ExecRegisterStatus() : string;
+        function ExecReadSegment() : string;
     public
         property ClientName : string read FClientName;
         property ClientVersion : string read FClientVersion;
@@ -73,6 +77,7 @@ type
         property Context : TIdContext read FContext;
         {TODO -oroger -cdsg : capturar no construtor todos os eventos do context desejáveis }
         constructor Create(AContext : TidContext; const AClientName, AClientVersion, ASessionName : string); virtual;
+        destructor Destroy; override;
         function DoExecVerbs() : string;
     end;
 
@@ -93,30 +98,27 @@ type
         procedure DataModuleDestroy(Sender : TObject);
         procedure tcpsrvrExecute(AContext : TIdContext);
         procedure tcpsrvrStatus(ASender : TObject; const AStatus : TIdStatus; const AStatusText : string);
-		 procedure DataModuleCreate(Sender : TObject);
-		 procedure TrayIconMouseMove(Sender : TObject; Shift : TShiftState; X, Y : Integer);
-		 procedure tcpsrvrConnect(AContext : TIdContext);
-		 procedure tcpsrvrDisconnect(AContext : TIdContext);
-	 private
-		 { Private declarations }
-		 FClientSessionList : TThreadStringList;
-		 FServerSessionList : TSyncSessionServerList;
-		 FSessionFileCount :  Integer;
-		 FMaxTrackedClients : Integer;
-		 procedure SaveBioFile(const ClientName, Filename, screateDate, saccessDate, smodifiedDate : string; inputStrm : TStream);
-		 procedure InitSettings();
-		 procedure UpdateServerTrayStatus();
-	 public
-		 { Public declarations }
-		 procedure StartServer();
-		 procedure StartClient();
-		 function StartSession(const SessionName : string) : string;
-		 procedure EndSession(const SessionName : string);
-		 procedure StopServer();
-		 procedure StopClient();
-		 procedure SendFile(AFile : TTransferFile);
-		 constructor Create(AOwner : TComponent); override;
-		 destructor Destroy; override;
+        procedure DataModuleCreate(Sender : TObject);
+        procedure TrayIconMouseMove(Sender : TObject; Shift : TShiftState; X, Y : Integer);
+        procedure tcpsrvrConnect(AContext : TIdContext);
+        procedure tcpsrvrDisconnect(AContext : TIdContext);
+    private
+        { Private declarations }
+        FClientSessionList : TThreadStringList; //Container para a lista de sessões clientes ativas(usada para notificação)
+        FServerSessionList : TSyncSessionServerList;
+        FMaxTrackedClients : Integer;
+        procedure InitSettings();
+        procedure UpdateServerTrayStatus();
+    public
+        { Public declarations }
+        procedure StartServer();
+        procedure StartClient();
+        function StartSession(const SessionName : string) : string;
+        procedure EndSession(const SessionName : string);
+        procedure StopServer();
+        procedure StopClient();
+        constructor Create(AOwner : TComponent); override;
+        destructor Destroy; override;
     end;
 
 var
@@ -125,7 +127,7 @@ var
 implementation
 
 uses
-    vvsConfig, FileHnd, StrHnd, vvSvcDM;
+    vvsConfig, FileHnd, StrHnd, vvSvcDM, Math;
 
 {$R *.dfm}
 
@@ -135,9 +137,9 @@ var
 constructor TDMTCPTransfer.Create(AOwner : TComponent);
 begin
     inherited;
-	 Self.FClientSessionList := TThreadStringList.Create;
-	 Self.FServerSessionList := TSyncSessionServerList.Create;
-	 if (not Assigned(VVSvcConfig.ProfileInfo)) then begin
+    Self.FClientSessionList := TThreadStringList.Create;
+    Self.FServerSessionList := TSyncSessionServerList.Create;
+    if (not Assigned(VVSvcConfig.ProfileInfo)) then begin
         Self.TrayIcon.IconIndex := II_CLIENT_ERROR; //indica falha de identificação de perfil
     end else begin
         Self.TrayIcon.IconIndex := II_CLIENT_IDLE; //Nada a se "adivinhar" ainda
@@ -146,7 +148,9 @@ end;
 
 procedure TDMTCPTransfer.DataModuleCreate(Sender : TObject);
 begin
-	 Self.tcpclnt.ReadTimeout;
+    Self.tcpsrvr.ReuseSocket := rsFalse;
+    Self.tcpclnt.ReuseSocket := rsFalse;
+    Self.tcpclnt.ReadTimeout; {TODO -oroger -cdsg : Pra que isso acima????}
 end;
 
 procedure TDMTCPTransfer.DataModuleDestroy(Sender : TObject);
@@ -158,9 +162,9 @@ end;
 
 destructor TDMTCPTransfer.Destroy;
 begin
-	 Self.FClientSessionList.Free;
-	 Self.FServerSessionList.Free;
-	 inherited;
+    Self.FClientSessionList.Free;
+    Self.FServerSessionList.Free;
+    inherited;
 end;
 
 procedure TDMTCPTransfer.EndSession(const SessionName : string);
@@ -184,81 +188,8 @@ end;
 procedure TDMTCPTransfer.InitSettings;
 begin
     SysUtils.GetLocaleFormatSettings(Windows.LOCALE_SYSTEM_DEFAULT, ForcedFormatSettings);
-    ForcedFormatSettings.DecimalSeparator := '.';
-end;
-
-procedure TDMTCPTransfer.SaveBioFile(const ClientName, Filename, screateDate, saccessDate, smodifiedDate : string;
-    inputStrm : TStream);
-
-    procedure LSRWriteFile(const Filename : string; src : TStream);
-    var
-        fs :   TFileStream;
-        mode : Word;
-    begin
-        src.Position := 0;
-        ForceDirectories(ExtractFilePath(filename));
-        mode := fmShareExclusive;
-        if (not FileExists(filename)) then begin
-            mode := mode + fmCreate;
-        end else begin
-            mode := mode + fmOpenWrite;
-        end;
-        fs := TFileStream.Create(filename, mode);
-        try
-            fs.CopyFrom(src, src.Size);
-        finally
-            fs.Free;
-        end;
-    end;
-
-var
-    createDate, modDate, accDate : TDateTime;
-    lastName, TransbioFileName, BackupFileName : string;
-begin
-    createDate := StrToFloat(screateDate, ForcedFormatSettings);
-    modDate    := StrToFloat(smodifiedDate, ForcedFormatSettings);
-    accDate    := StrToFloat(saccessDate, ForcedFormatSettings);
-    lastName   := ExtractFileName(Filename);
-    TransbioFileName := TFileHnd.ConcatPath([VVSvcConfig.PathLocalInstSeg, lastName]);
-    BackupFileName := TFileHnd.ConcatPath([VVSvcConfig.PathTempDownload, ClientName, FormatDateTime(
-        'YYYY\MM\DD', modDate), lastName]);
-    LSRWriteFile(TransbioFileName, inputStrm);
-    FileHnd.SetFileTimeProperties(TransbioFileName, createDate, accDate, modDate);
-    LSRWriteFile(BackupFileName, inputStrm);
-    FileHnd.SetFileTimeProperties(BackupFileName, createDate, accDate, modDate);
-end;
-
-procedure TDMTCPTransfer.SendFile(AFile : TTransferFile);
- ///<summary>
- ///Envia a instancia passada para o servidor
- ///</summary>
- /// <preconditions>
- /// Socket com o servidor aberto
- /// <preconditions>
- ///<remarks>
- ///
- ///</remarks>
-var
-    s : string;
-begin
-    if (not Self.tcpclnt.Connected) then begin
-        raise ESVCLException.Create('Canal com o servidor não estabelecido antecipadamente');
-    end;
-    //Passados obrigatoriamente nesta ordem!!!
-	 s := AFile.FFilename + TOKEN_DELIMITER +
-		 FloatToStr(AFile.FCreatedTime, ForcedFormatSettings) + TOKEN_DELIMITER +
-        FloatToStr(AFile.FAccesTime, ForcedFormatSettings) + TOKEN_DELIMITER +
-        FloatToStr(AFile.FModifiedTime, ForcedFormatSettings) + TOKEN_DELIMITER +
-        FloatToStr(AFile.Size, ForcedFormatSettings) + TOKEN_DELIMITER +
-        AFile.Hash;
-    Self.tcpclnt.IOHandler.WriteLn(s);
-    Self.tcpclnt.IOHandler.WriteFile(AFile.Filename);
-    s := Self.tcpclnt.IOHandler.ReadLn();
-    if (s <> STR_OK_PACK) then begin
-        raise ESVCLException.CreateFmt('Retorno de erro de envio: "%s" para arquivo="%s".', [s, AFile.Filename]);
-    end else begin
-        Inc(Self.FSessionFileCount); //Incrementa contador de trafego(modo cliente)
-    end;
+    ForcedFormatSettings.DecimalSeparator  := '.';
+    ForcedFormatSettings.ThousandSeparator := ' ';
 end;
 
 procedure TDMTCPTransfer.StartClient;
@@ -279,9 +210,9 @@ begin
     Self.tcpclnt.Port      := VVSvcConfig.NetClientPort;
     Self.tcpclnt.OnDisconnected := tcpclntDisconnected;
     Self.tcpclnt.OnConnected := tcpclntConnected;
-    Self.tcpclnt.ConnectTimeout := 0;
+    Self.tcpclnt.ConnectTimeout := 0; {TODO -oroger -cdsg : deixar configuravel este e ReadTimerout}
     Self.tcpclnt.IPVersion := Id_IPv4;
-    Self.tcpclnt.ReadTimeout := -1;
+    Self.tcpclnt.ReadTimeout := 0;  //usa o valor dado por  IdTimeoutDefault
     //Self.TrayIcon.IconIndex := II_CLIENT_IDLE;
     TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)', [VVSvcConfig.NetClientPort, VVSvcConfig.ParentServer]),
         DBGLEVEL_DETAILED);
@@ -347,6 +278,7 @@ begin
             end;
             raise ESVCLException.Create('Sessão não pode ser iniciada: ' + msg);
         end;
+        Self.FClientSessionList.Enter;
         try
             Self.FClientSessionList.Add(SessionName);
         finally
@@ -458,24 +390,28 @@ begin
         end;
 
         {TODO -oroger -cdsg : buscar por duplicidade de sessão}
-		 SyncSession := TServerSyncSession.Create(AContext, sClientName, sClientVersion, sClientSessionName);
-        Self.FServerSessionList.Add(sClientSessionName, SyncSession);
-        {TODO -oroger -cdsg : registrar log de depuração do evento acima}
-        AContext.Connection.IOHandler.WriteLn(STR_OK_PACK); //informa OK e em seguida apto a executar os verbos da sessão
-        ret := SyncSession.DoExecVerbs(); //repete o protocolo até o recebimento de fim de sessão
-
-    finally
-        //Finaliza a sessão
+        SyncSession := TServerSyncSession.Create(AContext, sClientName, sClientVersion, sClientSessionName);
         try
-            if (Assigned(SyncSession)) then begin
+            Self.FServerSessionList.Add(sClientSessionName, SyncSession);
+            try
+                {TODO -oroger -cdsg : registrar log de depuração do evento acima}
+                AContext.Connection.IOHandler.WriteLn(STR_OK_PACK); //informa OK e em seguida apto a executar os verbos da sessão
+                ret := SyncSession.DoExecVerbs(); //repete o protocolo até o recebimento de fim de sessão
+            finally
                 Self.FServerSessionList.Extract(SyncSession);
             end;
-            AContext.Connection.Disconnect;
         finally
-            if (TStrHnd.endsWith(sHeader, STR_END_SESSION_SIGNATURE)) then begin
+            SyncSession.Free; //finaliza a sessão de sincronismo
+        end;
+    finally
+        try
+            AContext.Connection.Disconnect; //Finaliza a sessão
+        finally
+            if (ret = STR_OK_PACK) then begin
                 TLogFile.LogDebug('Sessão encerrada normalmente', DBGLEVEL_DETAILED);
             end else begin
-                TLogFile.Log(Format('Cliente("%s") desconectado abruptamente', [sClientName]), lmtWarning);
+                TLogFile.Log(Format('Cliente("%s") desconectado abruptamente com o seguinte retorno("%s")',
+                    [sClientName, ret]), lmtWarning);
             end;
         end;
     end;
@@ -655,18 +591,25 @@ end;
 
 constructor TServerSyncSession.Create(AContext : TidContext; const AClientName, AClientVersion, ASessionName : string);
 begin
-	 inherited Create;
+    inherited Create;
     Self.FSessionName := ASessionName;
     Self.FContext     := AContext;
     Self.FClientVersion := AClientVersion;
     Self.FClientName  := AClientName;
 end;
 
+destructor TServerSyncSession.Destroy;
+begin
+    if (Assigned(Self.FSessionFileTransfer)) then begin
+        FreeAndNil(Self.FSessionFileTransfer);
+    end;
+    inherited;
+end;
+
 function TServerSyncSession.DoExecVerbs : string;
 var
     sVerb, sLine : string;
     execVerb :     TVVSVerbs;
-
 begin
     Result := STR_OK_PACK;
     repeat
@@ -678,9 +621,6 @@ begin
             Self.Context.Connection.IOHandler.WriteLn('Aguardando operação não recebida');
             Exit;
         end else begin
-            if (sVerb = STR_VERB_EXIT) then begin
-                Exit;
-            end;
             try
                 execVerb := String2Verb(sVerb);
                 try
@@ -690,10 +630,27 @@ begin
                         end;
                         vvvFileDownload : begin
                             Result := Self.ExecFileDownload();
-						 end;
-						 vvvFullFingerprint : begin
-                        	Result:= Self.ExecFileFingerPrint();
-						 end;
+                        end;
+                        vvvFileClose : begin
+                            Result := Self.ExecFileClose();
+                        end;
+                        vvvFullFingerprint : begin
+                            Result := Self.ExecFileFingerPrint();
+                        end;
+                        vvvReadSegment : begin
+                            Self.ExecReadSegment();
+                            Result := STR_OK_PACK;
+                        end;
+                        vvvRegisterStatus : begin
+                            Result := Self.ExecRegisterStatus();
+                        end;
+                        vvvEndSession : begin
+                            Result := STR_OK_PACK;
+                            Exit; //termina o ciclo sem postar nada para o cliente
+                        end;
+                        else begin
+                            Result := STR_FAIL_VERB;
+                        end;
                     end;
                     Self.Context.Connection.IOHandler.WriteLn(Result);//envia retorno da operação
                 except
@@ -716,55 +673,208 @@ begin
     until (False);
 end;
 
-function TServerSyncSession.ExecFileDownload : string;
+function TServerSyncSession.ExecFileClose : string;
+    //Le o Id do download e o fecha
+    //envia data de criação, modificação, acesso
+var
+    outId : string;
+    vf :    TVVSFile;
+    hnd :   cardinal;
+    modDate, createDate, accDate : TDateTime;
 begin
+    Result := EmptyStr;
+    try
+        outId := Self.Context.Connection.IOHandler.ReadLn();
+        hnd   := StrToInt(outId);
+        if (hnd = Self.FSessionFileTransfer.Handle) then begin
+            //leitura das datas do arquivo
+            TFileHnd.FileTimeProperties(Self.FSessionFileTransfer.Handle, createDate, accDate, modDate);
+            Result := FloatToStr(createDate) + TOKEN_DELIMITER + FloatToStr(modDate) + TOKEN_DELIMITER + FloatToStr(accDate) +
+                TOKEN_DELIMITER + IntToStr(Self.FSessionFileTransfer.Size);
+            FreeAndNil(Self.FSessionFileTransfer);
+        end else begin
+            {TODO -oroger -cdsg : gerar erro}
+            raise Exception.CreateFmt('Falha no fechamento do arquivo corrente da sessão. Id interno = %d, ID solicitado = %d',
+                [Self.FSessionFileTransfer.Handle, hnd]);
+        end;
+    except
+        on E : Exception do begin
+            Result := HTTPEncode(E.Message) + TOKEN_DELIMITER + STR_FAIL_PROTOCOL;
+            Exit;
+        end
+    end;
+    Result := HTTPEncode(Result) + TOKEN_DELIMITER + STR_OK_PACK; //resposta normal deste método
 end;
 
-function TServerSyncSession.ExecFileFingerPrint: string;
+function TServerSyncSession.ExecFileDownload : string;
+    //Le publicação e nome do arquivo
+    //envia id do download, hash do arquivo, e seu tamanho
 var
-	 filename, pubname : string;
-	 vf : TVVSFile;
+    pubName, clientFilename, filename, outId : string;
+    vf : TVVSFile;
 begin
-	 //espera como argumento unico o nome da publicação
-	 try
-		 pubname := Self.Context.Connection.IOHandler.ReadLn();
-		 if (not SameText(pubname, PUBLICATION_INSTSEG)) then begin  //atualmente apenas esta publicação??
-			 Result := STR_FAIL_VERB;
-		 end else begin
-			filename := Self.Context.Connection.IOHandler.ReadLn();
-			if ( GlobalPublication.ManagedFolder.TryGetValue( filename, vf ) ) then begin
-				Result:= vf.FingerPrints;
-			end else begin
-            	raise ESVCLException.CreateFmt('Arquivo "%s" não existe na publicação informada.', [ filename ] );
-			end;
-			Assert( ( Result <> EmptyStr ), 'fingerprint nula?' );
-			Result:=HttpEncode( Result );
-		 end;
-	 except
-		 on E : Exception do begin
-			Result := E.Message + TOKEN_DELIMITER + STR_FAIL_PROTOCOL + TOKEN_DELIMITER;
-			Exit;
-		 end
-	 end;
-	 Result := Result + TOKEN_DELIMITER + STR_OK_PACK + TOKEN_DELIMITER; //resposta normal deste método
+    Result := EmptyStr;
+    try
+        pubname := Self.Context.Connection.IOHandler.ReadLn();
+        if (not SameText(pubname, PUBLICATION_INSTSEG)) then begin  //atualmente apenas esta publicação??
+            Result := STR_FAIL_VERB;
+        end else begin
+            clientFilename := Self.Context.Connection.IOHandler.ReadLn();
+            if (GlobalPublication.ManagedFolder.TryGetValue(clientFilename, vf)) then begin
+                Assert(not Assigned(Self.FSessionFileTransfer), 'Sessão já abriu arquivo anteriomente');
+                Self.FSessionFileTransfer := TFileStream.Create(vf.FullFilename, fmOpenRead); //captura stream para transferencia
+                Result := IntToStr(Self.FSessionFileTransfer.Handle) + TOKEN_DELIMITER + //Id do download
+                    vf.MD5String + TOKEN_DELIMITER + //hash total do arquivo
+                    IntToStr(vf.Size); //tamanho total do arquivo
+            end else begin
+                raise ESVCLException.CreateFmt('Arquivo "%s" não existe na publicação informada.', [filename]);
+            end;
+        end;
+    except
+        on E : Exception do begin
+            Result := HTTPEncode(E.Message) + TOKEN_DELIMITER + STR_FAIL_PROTOCOL;
+            Exit;
+        end
+    end;
+    Result := HttpEncode(Result) + TOKEN_DELIMITER + STR_OK_PACK; //resposta normal deste método
+end;
+
+function TServerSyncSession.ExecFileFingerPrint : string;
+var
+    filename, pubname : string;
+    vf : TVVSFile;
+begin
+    //espera como argumento unico o nome da publicação
+    try
+        pubname := Self.Context.Connection.IOHandler.ReadLn();
+        if (not SameText(pubname, PUBLICATION_INSTSEG)) then begin  //atualmente apenas esta publicação??
+            Result := HttpEncode('Publicação inválida solicitada') + TOKEN_DELIMITER + STR_FAIL_VERB;
+            Exit;
+        end else begin
+            filename := Self.Context.Connection.IOHandler.ReadLn();
+            if (GlobalPublication.ManagedFolder.TryGetValue(filename, vf)) then begin
+                Result := vf.FingerPrints;
+            end else begin
+                raise ESVCLException.CreateFmt('Arquivo "%s" não existe na publicação informada.', [filename]);
+            end;
+            Assert((Result <> EmptyStr), 'fingerprint nula?');
+        end;
+    except
+        on E : Exception do begin
+            Result := HTTPEncode(E.Message) + TOKEN_DELIMITER + STR_FAIL_PROTOCOL;
+            Exit;
+        end
+    end;
+    Result := HttpEncode(Result) + TOKEN_DELIMITER + STR_OK_PACK; //resposta normal deste método
 end;
 
 function TServerSyncSession.ExecReadContent : string;
 var
-	 pubname : string;
+    pubname : string;
 begin
-	 //espera como argumento unico o nome da publicação
-	 try
-		 pubname := Self.Context.Connection.IOHandler.ReadLn();
-		 if (not SameText(pubname, PUBLICATION_INSTSEG)) then begin  //atualmente apenas esta publicação??
-			 Result := STR_FAIL_VERB;
-		 end else begin
-			Result:=HttpEncode( GlobalPublication.ManagedFolder.ToString() );
-		 end;
-	 except
-		 on E : Exception do Result := STR_FAIL_PROTOCOL;
-	 end;
-	 Result := Result + TOKEN_DELIMITER + STR_OK_PACK;
+    //espera como argumento unico o nome da publicação
+    try
+        pubname := Self.Context.Connection.IOHandler.ReadLn();
+        if (not SameText(pubname, PUBLICATION_INSTSEG)) then begin  //atualmente apenas esta publicação??
+            Result := STR_FAIL_VERB;
+        end else begin
+            Result := GlobalPublication.ManagedFolder.ToString();
+        end;
+    except
+        on E : Exception do begin
+            Result := HttpEncode(E.Message) + TOKEN_DELIMITER + STR_FAIL_PROTOCOL;
+            Exit;
+        end;
+    end;
+    Result := HttpEncode(Result) + TOKEN_DELIMITER + STR_OK_PACK;
+end;
+
+function TServerSyncSession.ExecReadSegment : string;
+    //espera como argumento unico o handle do arquivo aberto e o ordinal do mesmo. IMPORTANTE TODOS DEVEM POSSUIR O MESMO TAMANDO DE BLOCO
+    //a resposta enviada será
+    //(bytes no streamer a serem lidos) + SOK parcial + (streamer) + (hash caculado do segmento ) + (bytes faltantes) + SOK
+var
+    downID : THandle;
+    jumpBytes, segNumber : int64;
+    segHash, intRead : string;
+    ms :     TMemoryStream;
+    bs :     Integer;
+begin
+    //espera como argumento unico o handle do arquivo aberto e o ordinal do mesmo. IMPORTANTE TODOS DEVEM POSSUIR O MESMO TAMANDO DE BLOCO
+    bs := VVSvcConfig.BlockSize;
+    try
+        Assert(Assigned(Self.FSessionFileTransfer), 'Arquivo para transferencia não alocado anteriormente nesta sessão');
+        intRead := Self.Context.Connection.IOHandler.ReadLn();
+        try
+            downId := StrToInt(intRead);
+        except
+            on E : Exception do begin
+                raise Exception.CreateFmt('Valor recebido("%s") para identificador do arquivo inválido', [intRead]);
+            end;
+        end;
+
+        intRead := Self.Context.Connection.IOHandler.ReadLn();
+        try
+            segNumber := StrToInt64(intRead);
+        except
+            on E : Exception do begin
+                raise Exception.CreateFmt('Valor recebido("%s") para segmento do arquivo inválido', [intRead]);
+            end;
+        end;
+
+        {TODO -oroger -cdsg : colocar a checagem do handle do arquivo}
+
+        jumpBytes := bs * segNumber;
+        Self.FSessionFileTransfer.Position := jumpBytes;
+        ms := TMemoryStream.Create;
+        try
+            jumpBytes := Math.Min(bs, self.FSessionFileTransfer.Size - Self.FSessionFileTransfer.Position);
+            ms.CopyFrom(Self.FSessionFileTransfer, jumpBytes);
+            ms.Position := 0;
+            segHash     := TVVerService.GetBlockHash(ms, MD5_BLOCK_ALIGNMENT);
+            //informa que operação pode ser iniciada
+            Self.Context.Connection.IOHandler.WriteLn(STR_OK_PACK);
+            //informa que serão enviados jumpBytes no streamer
+            Self.Context.Connection.IOHandler.WriteLn(IntToStr(jumpBytes));
+            //Escreve o streamer
+            ms.Position := 0;
+            Self.Context.Connection.IOHandler.Write(ms);
+            //Escreve hash calculado do lado do servidor no momento
+            Self.Context.Connection.IOHandler.WriteLn(segHash);
+            //Escreve bytes faltantes
+            Result := (IntToStr(Self.FSessionFileTransfer.Size - Self.FSessionFileTransfer.Position));
+        finally
+            ms.Free;
+        end;
+    except
+        on E : Exception do begin
+            Result := HTTPEncode(E.Message) + TOKEN_DELIMITER + STR_FAIL_PROTOCOL;
+            Exit;
+        end
+    end;
+    Result := HttpEncode(Result) + TOKEN_DELIMITER + STR_OK_PACK; //resposta normal deste método quanto falta
+end;
+
+function TServerSyncSession.ExecRegisterStatus : string;
+    //leitura do status do cliente
+    //grava retorno da operação
+var
+    Data : string;
+    filename : string;
+    sl : TStringList;
+begin
+    Data     := Self.Context.Connection.IOHandler.ReadLn();
+    filename := VVSvcConfig.PathRegClients;
+    ForceDirectories(filename);
+    filename := TFileHnd.ConcatPath([filename, Self.FClientName + '.txt']);
+    sl := TStringList.Create;
+    try
+        sl.Text := HTTPDecode(Data);
+        sl.SaveToFile(filename);
+    finally
+        sl.Free;
+    end;
+    Result := HTTPEncode('OK') + TOKEN_DELIMITER + STR_OK_PACK;
 end;
 
 end.

@@ -9,46 +9,18 @@ unit vvConfig;
 interface
 
 uses
-	 Classes, SysUtils, Windows, FileHnd, AppSettings, Contnrs, WinReg32, vvsConsts;
+    Classes, SysUtils, Windows, FileHnd, AppSettings, Contnrs, WinReg32, vvsConsts, vvProgItem, IdBaseComponent, IdComponent,
+    IdTCPConnection, IdTCPClient, IdHTTP;
+
+
+const
+    STR_DEFAULT_NET_INSTSEG = '<default>';
+    VERSION_INFO_FILENAME   = 'VVER.ini';
+
 
 type
-    TVVUpdateStatus = (usUnknow, usOld, usOK);
 
-    TProgItem = class
-    private
-        FUpdateStatus :   TVVUpdateStatus;
-        FVerKey :         string;
-        FExpectedVerEx :  string;
-        FExpectedVer :    string;
-        FHive :           string;
-        FDesc :           string;
-        FVerKeyEx :       string;
-        _CurrentVersion : string;
-        _CurrentVersionEX : string;
-        FDownloadURL :    string;
-        function GetCurrentVersion : string;
-        function GetExpectedVerEx : string;
-        function GetIsUpdated : boolean;
-        function GetCurrentVersionEx : string;
-        function ReadVersionEntry(const Entry : string) : string;
-		 function GetCurrentVersionDisplay : string;
-    public
-        constructor Create(const ADesc, AHive, AVerKey, AVerKeyEx, AExpectedVer, AExpectedVerEx, ADownloadURL : string);
-		 property Desc : string read FDesc;
-        property Hive : string read FHive;
-        property VerKey : string read FVerKey;
-        property VerKeyEx : string read FVerKeyEx;
-        property ExpectedVer : string read FExpectedVer;
-        property ExpectedVerEx : string read GetExpectedVerEx;
-        property CurrentVersion : string read GetCurrentVersion;
-        property CurrentVersionDisplay : string read GetCurrentVersionDisplay;
-        property CurrentVersionEx : string read GetCurrentVersionEx;
-        property isUpdated : boolean read GetIsUpdated;
-        property UpdateStatus : TVVUpdateStatus read FUpdateStatus;
-        property DownloadURL : string read FDownloadURL;
-    end;
-
-    TVVProgInfo = class(TBaseStartSettings)
+    TVVProfileInfo = class(TBaseStartSettings)
     private
         FProgList : TObjectList;
         function GetPrograms(index : Integer) : TProgItem;
@@ -60,47 +32,94 @@ type
         property Count : Integer read GetCount;
     end;
 
-	 TVVConfig = class(TBaseStartSettings)
-	 private
-		 _ProfileInfo : TVVProgInfo;
-		 FProfileName : string;
-		 function GetGlobalStatus : string;
-		 function GetClientName : string;
-		 function GetInfoText : string;
-		 function GetAutoMode : boolean;
-		 function GetNotificationList : string;
-		 function GetSenderAddress : string;
-		 function GetSenderDescription : string;
-		 function GetEnsureNotification : boolean;
-		 function GetProfileInfo : TVVProgInfo;
-	 public
-		 constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
-		 destructor Destroy; override;
-		 function ToString() : string;
-		 property GlobalStatus : string read GetGlobalStatus;
-		 property InfoText : string read GetInfoText;
-		 property ProfileInfo : TVVProgInfo read GetProfileInfo;
-		 property AutoMode : boolean read GetAutoMode;
-		 property ProfileName : string read FProfileName;
-		 property NotificationList : string read GetNotificationList;
-		 property SenderAddress : string read GetSenderAddress;
-		 property SenderDescription : string read GetSenderDescription;
-		 property EnsureNotification : boolean read GetEnsureNotification;
-		 property ClientName : string read GetClientName;
-	 end;
+    TVVStartupConfig = class(TBaseStartSettings)
+    private
+        FHTTPLoader :  TIdHTTP;
+        FProfileName : string;
+        function GetGlobalStatus : string;
+        function GetClientName : string;
+        function GetInfoText : string;
+        function GetAutoMode : boolean;
+        function GetNotificationList : string;
+        function GetSenderAddress : string;
+        function GetSenderDescription : string;
+        function GetEnsureNotification : boolean;
+        procedure InitDownloader();
+        function GetCycleInterval : Integer;
+        function GetIsUpdated : TVVUpdateStatus;
+        function GetLocalRepositoryPath : string;
+        function GetIsPrimaryPC : boolean;
+        function GetPrimaryPC : string;
+        function GetRootBaseConfigFilename : string;
+        function GetRemoteRepositoryPath : string;
+        function GetLocalUNC : string;
+        function GetRegisterServer : string;
+    function GetNetClientPort: integer;
+    protected
+        _ProfileInfo : TVVProfileInfo;
+        function GetProfileInfo : TVVProfileInfo; virtual;
+    public
+        constructor Create(const FileName : string; const AKeyPrefix : string = ''); override;
+        destructor Destroy; override;
+        function ToString() : string;
+        function LoadHTTPContent(const URL, DestFilename : string) : boolean;
+        procedure InitInfoVersions(const filename : string);
+
+        property GlobalStatus : string read GetGlobalStatus;
+        property InfoText : string read GetInfoText;
+        property ProfileInfo : TVVProfileInfo read GetProfileInfo;
+        property AutoMode : boolean read GetAutoMode;
+        property ProfileName : string read FProfileName;
+        property NotificationList : string read GetNotificationList;
+        property SenderAddress : string read GetSenderAddress;
+        property SenderDescription : string read GetSenderDescription;
+        property EnsureNotification : boolean read GetEnsureNotification;
+        property ClientName : string read GetClientName;
+        property CycleInterval : Integer read GetCycleInterval;
+		 property UpdateStatus : TVVUpdateStatus read GetIsUpdated;
+        property LocalRepositoryPath : string read GetLocalRepositoryPath;
+        property IsPrimaryPC : boolean read GetIsPrimaryPC;
+        property PrimaryPC : string read GetPrimaryPC;
+        property RootBaseConfigFilename : string read GetRootBaseConfigFilename;
+        property RemoteRepositoryPath : string read GetRemoteRepositoryPath;
+        property LocalUNC : string read GetLocalUNC;
+		 property RegisterServer : string read GetRegisterServer;
+		 property NetClientPort : integer read GetNetClientPort;
+    end;
 
 procedure LoadGlobalInfo(const Filename : string);
 
 var
-	 GlobalInfo : TVVConfig = nil;
+    GlobalInfo : TVVStartupConfig = nil;
+
 
 implementation
 
 uses
-	 WinNetHnd, StrHnd, vvMainDataModule, FileInfo, TREConsts, JclSysInfo, TREUtils;
+    WinNetHnd, StrHnd, vvMainDataModule, FileInfo, TREConsts, JclSysInfo, TREUtils;
 
 const
-	IE_DEBUG_CLIENT_NAME = 'Debug\ClientName'; //nome forçado para depuração deste cliente
+    IE_DEBUG_CLIENT_NAME = 'Debug\ClientName'; //nome forçado para depuração deste cliente
+
+    IE_NOTIFICATION_LIST = 'NotificationList';
+    DV_NOTIFICATION_LIST = 'sesop.l@tre-pb.jus.br';
+
+    IE_CYCLE_INTERVAL = 'CycleInterval';
+    DV_CYCLE_INTERVAL = 60000;
+
+    IE_LOCAL_REPOSITORY = 'InstSegPath';
+    DV_LOCAL_REPOSITORY = 'D:\Comum\InstSeg\VVer';
+
+    IE_REMOTE_REPOSITORY = 'NetInstSeg';
+    DV_REMOTE_REPOSITORY = STR_DEFAULT_NET_INSTSEG;
+
+    IE_VERSION_SERVER = 'VersionServer';
+    DV_VERSION_SERVER = 'vver.tre-pb.gov.br';
+
+	     IE_NET_TCP_PORT = 'TCPPort';
+    DV_NET_TCP_PORT = 12014;
+
+
 
 procedure LoadGlobalInfo(const Filename : string);
  ///Monta rotina de carga das configurações iniciais, na ordem:
@@ -109,27 +128,38 @@ procedure LoadGlobalInfo(const Filename : string);
  /// Máquina primária no caminho do repositório
 begin
     {TODO -oroger -cdsg : Carga dinamica do arquivo de configurações do serviço}
-    GlobalInfo := TVVConfig.Create(filename, 'VVer');
+    GlobalInfo := TVVStartupConfig.Create(filename, 'VVer');
 end;
 
 { TVVInfo }
 
-constructor TVVConfig.Create(const FileName, AKeyPrefix : string);
+constructor TVVStartupConfig.Create(const FileName, AKeyPrefix : string);
     ///
     /// Cria e carrega o perfil deste computador de acordo com o nome do mesmo.
     /// Monta o nome prefixando o sistema operacional com o tipo da estação
 var
-	 profileFilename : string;
-	 ct : TTREComputerType;
+    localStartupConfFile, profileFilename : string;
+    ct : TTREComputerType;
 begin
-	 {TODO -oroger -cdsg : Pegar o nome do perfil atraves do AD do controlador de domínio, exceto para os casos onde não houve o mesmo }
-	 {TODO -oroger -cdsg : Opção para o caso acima é contato com o servidor configurado para o serviço }
-	 inherited;
-	 //Identifica o perfil baseado no ordinal do nome do computador. Para id > 10 -> PCT, cc máquina zona
-	 ct := TTREUtils.GetComputerTypeByName( Self.ClientName );
+    {TODO -oroger -cdsg : Pegar o nome do perfil atraves do AD do controlador de domínio, exceto para os casos onde não houve o mesmo }
+    {TODO -oroger -cdsg : Opção para o caso acima é contato com o servidor configurado para o serviço }
+    inherited;
+
+    Self.InitDownloader();
+
+
+    //impede salvamento de valores padrao
+     {$IFDEF DEBUG}
+    Self.AutoCreate := True;
+     {$ELSE}
+	 Self.AutoCreate := False;
+	 {$ENDIF}
+
+    //Identifica o perfil baseado no ordinal do nome do computador. Para id > 10 -> PCT, cc máquina zona
+    ct := TTREUtils.GetComputerTypeByName(Self.ClientName);
     case ct of
         ctUnknow, ctCentralPDC, ctZonePDC, ctTREWKS : begin
-			 Self.FProfileName := 'Outros';
+            Self.FProfileName := 'Outros';
         end;
         ctCentralWKS, ctZoneWKS, ctZoneSTD : begin
             Self.FProfileName := 'ZE';
@@ -149,27 +179,37 @@ begin
     end;
 end;
 
-destructor TVVConfig.Destroy;
+destructor TVVStartupConfig.Destroy;
 var
     tmpDir : string;
 begin
-	 //Testa se arquivo foi gerado em temporario
-	 tmpDir := FileHnd.GetTempDir;
-	 if TStrHnd.startsWith(Self.FIni.FileName, tmpDir) then begin
-		 DeleteFile(PWideChar(Self.FIni.FileName));
-	 end;
-	 inherited;
+    //Testa se arquivo foi gerado em temporario
+    Self.FHTTPLoader.Free;
+    tmpDir := FileHnd.GetTempDir;
+    if TStrHnd.startsWith(Self.FIni.FileName, tmpDir) then begin
+        DeleteFile(PWideChar(Self.FIni.FileName));
+    end;
+    inherited;
 end;
 
-function TVVConfig.GetClientName : string;
+function TVVStartupConfig.GetClientName : string;
 begin
-	 Result := Self.ReadString( IE_DEBUG_CLIENT_NAME );
-	 if (Result = EmptyStr) then begin
-		 Result := WinNetHnd.GetComputerName();
-	 end;
+    Result := Self.ReadString(IE_DEBUG_CLIENT_NAME);
+    if (Result = EmptyStr) then begin
+        if (System.DebugHook <> 0) then begin
+            Result := DBG_CLIENT_NAME;
+        end else begin
+            Result := WinNetHnd.GetComputerName();
+        end;
+    end;
 end;
 
-function TVVConfig.GetAutoMode : boolean;
+function TVVStartupConfig.GetCycleInterval : Integer;
+begin
+    Result := ReadIntegerDefault(IE_CYCLE_INTERVAL, DV_CYCLE_INTERVAL);
+end;
+
+function TVVStartupConfig.GetAutoMode : boolean;
 var
     x : Integer;
 begin
@@ -183,7 +223,7 @@ begin
     end;
 end;
 
-function TVVConfig.GetEnsureNotification : boolean;
+function TVVStartupConfig.GetEnsureNotification : boolean;
 var
     enDefault : TDefaultSettingValue;
 begin
@@ -196,7 +236,7 @@ begin
     end;
 end;
 
-function TVVConfig.GetGlobalStatus : string;
+function TVVStartupConfig.GetGlobalStatus : string;
 var
     x : Integer;
 begin
@@ -213,7 +253,7 @@ begin
     end;
 end;
 
-function TVVConfig.GetInfoText : string;
+function TVVStartupConfig.GetInfoText : string;
 var
     x : Integer;
     p : TProgItem;
@@ -228,7 +268,7 @@ begin
             Result := Result + 'Versão instalada: ' + p.CurrentVersion + #13#10;
             Result := Result + 'Versão esperada: ' + p.ExpectedVerEx + #13#10;
             if p.isUpdated then begin
-				 Result := Result + 'Situação: Atualizado'#13#10;
+                Result := Result + 'Situação: Atualizado'#13#10;
             end else begin
                 Result := Result + 'Situação: Pendente'#13#10;
             end;
@@ -238,13 +278,73 @@ begin
     end;
 end;
 
-function TVVConfig.GetNotificationList : string;
+function TVVStartupConfig.GetIsPrimaryPC : boolean;
 begin
-    {TODO -oroger -cfuture : manifestas a criar }
-    Result := Self.ReadString('NotificationList');
+    Result := SameText(Self.ClientName, Self.PrimaryPC);
 end;
 
-function TVVConfig.GetProfileInfo : TVVProgInfo;
+function TVVStartupConfig.GetIsUpdated : TVVUpdateStatus;
+var
+    prof : TVVProfileInfo;
+    p :    TProgItem;
+    I :    Integer;
+begin
+    {TODO -oroger -cdsg : Varre configurações para indicar atualizações}
+    if (Assigned(Self.ProfileInfo)) then begin
+        prof   := Self.ProfileInfo;
+        Result := usOK;
+        try
+            for I := 0 to prof.Count - 1 do begin
+                p := prof.Programs[I];
+                case p.UpdateStatus of
+                    usUnknow : begin
+                        Result := usUnknow;
+                    end;
+                    usOld : begin
+                        Result := usOld;
+                        Exit;
+                    end;
+                end;
+            end;
+        except
+            on E : Exception do Result := usUnknow;
+        end;
+    end else begin
+        Result := usUnknow;
+    end;
+end;
+
+function TVVStartupConfig.GetLocalRepositoryPath : string;
+    //local para armazenamento local dos arquivos
+begin
+    Result := Self.ReadStringDefault(IE_LOCAL_REPOSITORY, DV_LOCAL_REPOSITORY);
+end;
+
+function TVVStartupConfig.GetLocalUNC : string;
+begin
+    if (System.DebugHook <> 0) then begin
+        Result := '\\' + WinNetHnd.GetComputerName() + '\Documentos\suporte\publico\espelho';
+    end else begin
+        Result := '\\' + Self.PrimaryPC + '\Documentos\suporte\publico\espelho';
+    end;
+end;
+
+function TVVStartupConfig.GetNetClientPort: integer;
+begin
+    Result := Self.ReadIntegerDefault(IE_NET_TCP_PORT, DV_NET_TCP_PORT);
+end;
+
+function TVVStartupConfig.GetNotificationList : string;
+begin
+    Result := Self.ReadStringDefault(IE_NOTIFICATION_LIST, DV_NOTIFICATION_LIST);
+end;
+
+function TVVStartupConfig.GetPrimaryPC : string;
+begin
+    Result := TTREUtils.GetZonePrimaryComputer(Self.ClientName);
+end;
+
+function TVVStartupConfig.GetProfileInfo : TVVProfileInfo;
 var
     profileURL, SOProfilePrefix, profileFilename : string;
 begin
@@ -252,142 +352,131 @@ begin
         Result := Self._ProfileInfo;
         Exit;
     end;
-    //Sufixa o perfil de acordo com o SO encontrado no cliente
-    if (GetWindowsVersion() = wvWin7) then begin
-        SOProfilePrefix := 'W7.';
-    end else begin
-        if (GetWindowsVersion() = wvWinXP) then begin
-            SOProfilePrefix := 'XP.';
-        end else begin
-            //Resolver para caso de SO não identificado
-            SOProfilePrefix := 'XP.';
-		 end;
-    end;
-
     //Tenta com o SO explicito
-    profileURL := Self.ReadString('Profiles\' + SOProfilePrefix + Self.ProfileName + '\VerInfo');
-    if (profileURL = EmptyStr) then begin //Não havendo para o SO explicito, tenta para todos
-        SOProfilePrefix := ''; //Vazio -> todos/qualquer
-        profileURL      := Self.ReadString('Profiles\' + SOProfilePrefix + Self.ProfileName + '\VerInfo');
-        if (profileURL = EmptyStr) then begin //tenta para XP(forçado)
-            SOProfilePrefix := 'XP.';
-            profileURL      := Self.ReadString('Profiles\' + SOProfilePrefix + Self.ProfileName + '\VerInfo');
-        end;
-    end;
+    profileURL := Self.ReadString('Profiles\' + Self.ProfileName + '\VerInfo');
     if (profileURL <> EmptyStr) then begin
         profileFilename   := dtmdMain.LoadURL(profileURL);
         //Buscar a entrada correta para a URL do perfil
-        Self._ProfileInfo := TVVProgInfo.Create(profileFilename);
+        Self._ProfileInfo := TVVProfileInfo.Create(profileFilename);
     end;
     Result := Self._ProfileInfo;
 end;
 
-function TVVConfig.GetSenderAddress : string;
+function TVVStartupConfig.GetRegisterServer : string;
+begin
+    Result := Self.ReadStringDefault(IE_VERSION_SERVER, DV_VERSION_SERVER);
+end;
+
+function TVVStartupConfig.GetRemoteRepositoryPath : string;
+    //local para baixar todos os arquivos
+begin
+    Result := Self.ReadStringDefault(IE_REMOTE_REPOSITORY, DV_REMOTE_REPOSITORY);
+    if (SameText(Result, DV_REMOTE_REPOSITORY)) then begin
+        Result := Self.LocalUNC;
+    end;
+end;
+
+function TVVStartupConfig.GetRootBaseConfigFilename : string;
+begin
+    if (not Self.IsPrimaryPC) then begin
+        raise Exception.Create('Atributo acessível apenas por máquinas primárias');
+    end;
+    Result := VERSION_URL_FILE;
+end;
+
+function TVVStartupConfig.GetSenderAddress : string;
 begin
     {TODO -oroger -cfuture : manifestas a criar }
     Result := Self.ReadStringDefault('SenderAddress', 'sesop@tre-pb.gov.br');
 end;
 
-function TVVConfig.GetSenderDescription : string;
+function TVVStartupConfig.GetSenderDescription : string;
 begin
     {TODO -oroger -cfuture : manifestas a criar }
     Result := Self.ReadStringDefault('SenderDescription', 'SESOP - Seção de Suporte Operacional');
 end;
 
-function TVVConfig.ToString: string;
+procedure TVVStartupConfig.InitDownloader;
 begin
-	Result := Self.FIni.ToString;
+    Self.FHTTPLoader := TIdHTTP.Create(nil);
+    Self.FHTTPLoader.AllowCookies := True;
+    Self.FHTTPLoader.ProxyParams.BasicAuthentication := False;
+    Self.FHTTPLoader.ProxyParams.ProxyPort := 0;
+    Self.FHTTPLoader.Request.ContentLength := -1;
+    Self.FHTTPLoader.Request.Accept := 'text/html, */*';
+    Self.FHTTPLoader.Request.BasicAuthentication := False;
+    Self.FHTTPLoader.Request.UserAgent := 'Mozilla/3.0 (compatible; Indy Library)';
+    Self.FHTTPLoader.HTTPOptions := [hoForceEncodeParams];
 end;
 
-{ TProgItem }
-
-constructor TProgItem.Create(const ADesc, AHive, AVerKey, AVerKeyEx, AExpectedVer, AExpectedVerEx, ADownloadURL : string);
+procedure TVVStartupConfig.InitInfoVersions(const filename : string);
+{{
+Rotina de inicialização para a carga dos parametros iniciais e perfil associado
+}
 begin
-    Self.FUpdateStatus := usUnknow;
-    Self.FVerKey   := AVerKey;
-    Self.FExpectedVerEx := AExpectedVerEx;
-    Self.FExpectedVer := AExpectedVer;
-    Self.FHive     := AHive;
-    Self.FDesc     := ADesc;
-    Self.FVerKeyEx := AVerKeyEx;
-    Self.FDownloadURL := ADownloadURL;
+    LoadGlobalInfo(Filename);
 end;
 
-function TProgItem.GetCurrentVersion : string;
+function TVVStartupConfig.LoadHTTPContent(const URL, DestFilename : string) : boolean;
 var
-    Entry : string;
+    MemStream :  TMemoryStream;
+    FileStream : TFileStream;
 begin
-    if (Self._CurrentVersion = EmptyStr) then begin
-        Entry := TFileHnd.ConcatPath([Self.FHive, Self.FVerKey]);
-        Self._CurrentVersion := Self.ReadVersionEntry(Entry);
-    end;
-    Result := Self._CurrentVersion;
-end;
-
-function TProgItem.GetCurrentVersionDisplay : string;
-begin
-    Result := Self.CurrentVersionEx;
-    if Result = EmptyStr then begin
-        Result := 'Não identificada';
-    end;
-end;
-
-function TProgItem.GetCurrentVersionEx : string;
-var
-    Entry : string;
-begin
-    if (Self._CurrentVersionEX = EmptyStr) then begin
-        Entry := TFileHnd.ConcatPath([Self.FHive, Self.FVerKeyEx]);
-        Self._CurrentVersionEX := Self.ReadVersionEntry(Entry);
-        if Self._CurrentVersionEX = EmptyStr then begin
-            Self._CurrentVersionEX := Self.CurrentVersion;
-        end;
-    end;
-    Result := Self._CurrentVersionEX;
-end;
-
-function TProgItem.GetExpectedVerEx : string;
-begin
-    //Para o caso de não atribuido vai o valor da versão simples
-    if Self.FExpectedVerEx <> EmptyStr then begin
-        Result := Self.FExpectedVerEx;
-    end else begin
-        Result := Self.FExpectedVer;
-    end;
-end;
-
-function TProgItem.GetIsUpdated : boolean;
-begin
-    //Comparar o valor da versão atual com a esperada
-    if Self.FUpdateStatus = usUnknow then begin
-        if FileInfo.TVersionInfo.CompareTo(Self.CurrentVersion, Self.ExpectedVerEx) <= 0 then begin
-            Self.FUpdateStatus := usOK;
-        end else begin
-            Self.FUpdateStatus := usOld;
-        end;
-    end;
-    Result := (Self.UpdateStatus = usOK);
-end;
-
-function TProgItem.ReadVersionEntry(const Entry : string) : string;
-var
-    reg : TRegistryNT;
-begin
-    //Leitura das entradas vinculadas para retorno da versão instalada
-    reg := TRegistryNT.Create;
+    Result := False;
     try
-        if not (reg.ReadFullString(Entry, Result)) then begin
-            Result := EmptyStr;
+        MemStream := TMemoryStream.Create;
+        try
+            try
+                Self.FHTTPLoader.Get(url, MemStream);
+            except
+                on E : Exception do begin //Verifica possibilidade de uso do arquivo localmente disposto
+                    Exit;
+                end;
+            end;
+            //Verifica a escrita para atualizar informações de versões
+            MemStream.Position := 0;
+            if not TFileHnd.IsWritable(DestFilename) then begin
+                ForceDirectories(TFileHnd.ParentDir(DestFilename));
+                if (not TFileHnd.IsWritable(DestFilename)) then begin
+                    Exit;
+                end;
+            end;
+            if FileExists(DestFilename) then begin
+                FileStream := TFileStream.Create(DestFilename, fmOpenWrite);
+            end else begin
+                FileStream := TFileStream.Create(DestFilename, fmCreate);
+            end;
+            try
+                MemStream.SaveToStream(FileStream);
+            finally
+                FileStream.Free;
+            end;
+        finally
+            MemStream.Free;
         end;
+    except
+        on E : Exception do begin
+            raise Exception.CreateFmt('Erro lendo recurso externo(%s) para %s'#13#10'%s', [url, DestFilename, E.Message]);
+        end;
+    end;
+end;
+
+function TVVStartupConfig.ToString : string;
+var
+    Lines : TStringList;
+begin
+    Lines := TStringList.Create;
+    try
+        Lines.LoadFromFile(Self.FIni.FileName);
+        Result := Lines.Text;
     finally
-        Self._CurrentVersion := Result;
-        reg.Free;
+        Lines.Free;
     end;
 end;
 
 { TVVProgInfo }
 
-constructor TVVProgInfo.Create(const Filename, AKeyPrefix : string);
+constructor TVVProfileInfo.Create(const Filename, AKeyPrefix : string);
 var
     progs : TStringList;
     x :     Integer;
@@ -423,12 +512,12 @@ begin
     end;
 end;
 
-function TVVProgInfo.GetPrograms(index : Integer) : TProgItem;
+function TVVProfileInfo.GetPrograms(index : Integer) : TProgItem;
 begin
     Result := TProgItem(Self.FProgList.Items[index]);
 end;
 
-destructor TVVProgInfo.Destroy;
+destructor TVVProfileInfo.Destroy;
 var
     tmpDir : string;
 begin
@@ -440,7 +529,7 @@ begin
     inherited;
 end;
 
-function TVVProgInfo.GetCount : Integer;
+function TVVProfileInfo.GetCount : Integer;
 begin
     Result := Self.FProgList.Count;
 end;

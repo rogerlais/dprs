@@ -43,7 +43,7 @@ var
 implementation
 
 uses
-    WinNetHnd, FileHnd, vvMainDataModule, AppLog, ShellAPI, CommCtrl;
+    WinNetHnd, FileHnd, vvMainDataModule, AppLog, ShellAPI, CommCtrl, vvProgItem;
 
 {$R *.dfm}
 
@@ -72,7 +72,7 @@ end;
 
 procedure TForm1.FormCloseQuery(Sender : TObject; var CanClose : boolean);
 begin
-    if Self.btnNotifSESOP.Enabled and GlobalInfo.EnsureNotification then begin
+	 if Self.btnNotifSESOP.Enabled and GlobalInfo.EnsureNotification then begin
         //para o caso da notificação ser desejada, mas não enviada
         Self.btnNotifSESOPClick(nil); //Passa Sender nulo para não informar do sucesso do envio
     end;
@@ -104,7 +104,7 @@ begin
         try
             try
                 dtmdMain.InitInfoVersions();
-                Self.lblProfile.Caption := GlobalInfo.ProfileName;
+                Self.lblProfile.Caption :=  GlobalInfo.ProfileName;
             except
                 on E : Exception do begin
                     AppFatalError('Erro carregando informações de controle de versões'#13#10 + E.Message);
