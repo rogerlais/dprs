@@ -10,7 +10,7 @@ interface
 uses
     Windows, Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, IdBaseComponent, IdMessage, IdComponent, IdRawBase,
     IdRawClient, IdIcmpClient, FileInfo, IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient, IdSMTPBase,
-    IdSMTP, XPThreads, ExtCtrls, vvsConfig, vvsServiceThread, vvsFileMgmt;
+    IdSMTP, XPThreads, ExtCtrls, vvsServiceThread, vvsFileMgmt;
 
 type
     TVVerService = class(TService)
@@ -55,7 +55,7 @@ implementation
 
 uses
     WinReg32, FileHnd, AppLog, vvsConsts, XPFileEnumerator, XPTypes, StrHnd, IdGlobal,
-    Str_Pas, IdEMailAddress, WinNetHnd, StreamHnd;
+    Str_Pas, IdEMailAddress, WinNetHnd, StreamHnd, vvConfig;
 
 {$R *.DFM}
 
@@ -73,7 +73,7 @@ begin
     lst := TStringList.Create;
     try
         lst.Delimiter     := ';';
-        lst.DelimitedText := VVSvcConfig.NotificationList;
+		 lst.DelimitedText := GlobalInfo.NotificationList;
         for x := 0 to lst.Count - 1 do begin
             dst      := Self.mailMsgNotify.Recipients.Add();
             dst.Address := lst.Strings[x];
@@ -125,7 +125,7 @@ begin
     currLogName := AppLog.TLogFile.GetDefaultLogFile.FileName;
     GetLocalTime(lt);
     if (Self.FLastLogCheck <> lt.wHour) then begin
-        newLogName := TFileHnd.ConcatPath([VVSvcConfig.PathServiceLog, TVVerService.LogFilePrefix() +
+        newLogName := TFileHnd.ConcatPath([GlobalInfo.PathServiceLog, TVVerService.LogFilePrefix() +
             FormatDateTime('YYYYMMDD', Now())]) + '.log';
         if (currLogName <> newLogName) then begin
             AppLog.TLogFile.GetDefaultLogFile.FileName := newLogName;
@@ -134,7 +134,7 @@ begin
         Self.FLastLogCheck := lt.wHour; //Registra a mudanca de hora
     end;
     // filtra arquivos referentes apenas a este runtime
-    Files := TDirectory.FileSystemEntries(VVSvcConfig.PathServiceLog, TVVerService.LogFilePrefix + '*.log', False);
+	 Files := TDirectory.FileSystemEntries(GlobalInfo.PathServiceLog, TVVerService.LogFilePrefix + '*.log', False);
     for f in Files do begin
         if (not Sametext(f.FullName, currLogName)) then begin // Pula o arquivo em uso no momento como saida de log
             logText := TXPStringList.Create;
@@ -155,7 +155,7 @@ begin
                 end;
                 // mover arquivo para a pasta de enviados applog
                 if (sentOK) then begin
-                    sentPath := VVSvcConfig.PathServiceLog + '\Sent\';
+                    sentPath := GlobalInfo.PathServiceLog + '\Sent\';
                     ForceDirectories(sentPath);
                     sentPath := sentPath + f.Name;
                     sentPath := TFileHnd.NextFamilyFilename(sentPath);
@@ -190,34 +190,8 @@ begin
 end;
 
 class function TVVerService.GetBlockHash(AStrm : TMemoryStream; ALength : Integer) : string;
-	 //calcula o hash do bloco
-var
-	 pbesta : array of byte;
-	 compl :  Integer;
-	 oldPos, oldSize, delta : int64;
 begin
-	 oldPos  := AStrm.Position;
-    oldSize := AStrm.Size;
-    try
-        //Ajusta tamanho
-        compl := 0;
-        delta := AStrm.Size mod ALength;
-        if (delta <> 0) then begin //necessita de alinhamento
-            compl      := ALength - delta;
-            AStrm.Size := AStrm.Size + compl;
-        end;
-        //Preenche complemento
-        compl := AStrm.Size - oldPos;
-		 if ( ( compl > 0) and ( AStrm.Position > 0 ) )then begin
-			 SetLength(pbesta, compl + 1);
-			 AStrm.Write(PByte(pbesta)^, compl);
-		 end;
-		 //calcula o hash
-		 Result := THashHnd.MD5(AStrm);
-	 finally
-		 AStrm.Size     := oldSize;
-		 AStrm.Position := oldPos;
-	 end;
+	raise Exception.Create('Usar rotina da classe de configuração agora');
 end;
 
 function TVVerService.GetServiceController : TServiceController;
@@ -241,10 +215,10 @@ procedure TVVerService.InitPublications;
 begin
     //Inicia as instancias de publicações globais
     if (not Assigned(vvsFileMgmt.GlobalPublication)) then begin
-        if (ForceDirectories(VVSvcConfig.PathLocalInstSeg)) then begin
-            vvsFileMgmt.GlobalPublication := TVVSPublication.Create(PUBLICATION_INSTSEG, VVSvcConfig.PathLocalInstSeg);
-        end else begin
-            raise ESVCLException.Create('Caminho da publicação INSTSEG inválido: ' + VVSvcConfig.PathLocalInstSeg);
+		 if (ForceDirectories(GlobalInfo.LocalRepositoryPath)) then begin
+			 vvsFileMgmt.GlobalPublication := TVVSPublication.Create(PUBLICATION_INSTSEG, GlobalInfo.LocalRepositoryPath);
+		 end else begin
+			 raise Exception.Create('Caminho da publicação INSTSEG inválido: ' + GlobalInfo.LocalRepositoryPath );
         end;
     end;
 end;
@@ -259,7 +233,7 @@ begin
     Self.icmpclntMain.ProtocolIPv6 := 58;
     Self.icmpclntMain.IPVersion := Id_IPv4;
     Self.icmpclntMain.PacketSize := 32;
-    Self.icmpclntMain.Host := VVSvcConfig.RootServer;
+    Self.icmpclntMain.Host := GlobalInfo.RootServer;
     Result := False;
     for x := 0 to 5 do begin
         try

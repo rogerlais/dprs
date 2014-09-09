@@ -4,12 +4,14 @@
 {$I VVERSvc.inc}
 {$TYPEINFO OFF}
 
+
 unit vvConfig;
 
 interface
 
 uses
-    Classes, SysUtils, Windows, FileHnd, AppSettings, Contnrs, WinReg32, vvsConsts, vvProgItem, IdBaseComponent, IdComponent,
+    Classes, SysUtils, Windows, FileHnd, AppSettings, Contnrs, AppLog, WinReg32, vvsConsts, vvProgItem,
+    IdBaseComponent, IdComponent,
     IdTCPConnection, IdTCPClient, IdHTTP;
 
 
@@ -19,6 +21,7 @@ const
 
 
 type
+    EVVMonitorException = class(ELoggedException);
 
     TVVProfileInfo = class(TBaseStartSettings)
     private
@@ -54,7 +57,9 @@ type
         function GetRemoteRepositoryPath : string;
         function GetLocalUNC : string;
         function GetRegisterServer : string;
-    function GetNetClientPort: integer;
+        function GetNetClientPort : Integer;
+        function GetPathServiceLog : string;
+        function GetDebugLevel : Integer;
     protected
         _ProfileInfo : TVVProfileInfo;
         function GetProfileInfo : TVVProfileInfo; virtual;
@@ -63,8 +68,7 @@ type
         destructor Destroy; override;
         function ToString() : string;
         function LoadHTTPContent(const URL, DestFilename : string) : boolean;
-        procedure InitInfoVersions(const filename : string);
-
+        class function GetBlockHash(AStrm : TMemoryStream; ALength : Integer) : string;
         property GlobalStatus : string read GetGlobalStatus;
         property InfoText : string read GetInfoText;
         property ProfileInfo : TVVProfileInfo read GetProfileInfo;
@@ -76,18 +80,18 @@ type
         property EnsureNotification : boolean read GetEnsureNotification;
         property ClientName : string read GetClientName;
         property CycleInterval : Integer read GetCycleInterval;
-		 property UpdateStatus : TVVUpdateStatus read GetIsUpdated;
+        property UpdateStatus : TVVUpdateStatus read GetIsUpdated;
         property LocalRepositoryPath : string read GetLocalRepositoryPath;
         property IsPrimaryPC : boolean read GetIsPrimaryPC;
         property PrimaryPC : string read GetPrimaryPC;
         property RootBaseConfigFilename : string read GetRootBaseConfigFilename;
         property RemoteRepositoryPath : string read GetRemoteRepositoryPath;
         property LocalUNC : string read GetLocalUNC;
-		 property RegisterServer : string read GetRegisterServer;
-		 property NetClientPort : integer read GetNetClientPort;
+        property RegisterServer : string read GetRegisterServer;
+        property NetClientPort : Integer read GetNetClientPort;
+        property PathServiceLog : string read GetPathServiceLog;
+        property DebugLevel : Integer read GetDebugLevel;
     end;
-
-procedure LoadGlobalInfo(const Filename : string);
 
 var
     GlobalInfo : TVVStartupConfig = nil;
@@ -96,7 +100,7 @@ var
 implementation
 
 uses
-    WinNetHnd, StrHnd, vvMainDataModule, FileInfo, TREConsts, JclSysInfo, TREUtils;
+    WinNetHnd, StrHnd, vvMainDataModule, FileInfo, TREConsts, JclSysInfo, TREUtils, StreamHnd;
 
 const
     IE_DEBUG_CLIENT_NAME = 'Debug\ClientName'; //nome forçado para depuração deste cliente
@@ -108,7 +112,7 @@ const
     DV_CYCLE_INTERVAL = 60000;
 
     IE_LOCAL_REPOSITORY = 'InstSegPath';
-    DV_LOCAL_REPOSITORY = 'D:\Comum\InstSeg\VVer';
+    DV_LOCAL_REPOSITORY = 'D:\Comum\InstSeg';
 
     IE_REMOTE_REPOSITORY = 'NetInstSeg';
     DV_REMOTE_REPOSITORY = STR_DEFAULT_NET_INSTSEG;
@@ -116,20 +120,16 @@ const
     IE_VERSION_SERVER = 'VersionServer';
     DV_VERSION_SERVER = 'vver.tre-pb.gov.br';
 
-	     IE_NET_TCP_PORT = 'TCPPort';
+    IE_NET_TCP_PORT = 'TCPPort';
     DV_NET_TCP_PORT = 12014;
 
+    IE_DEBUG_LEVEL = 'Debug\DebugLevel';
+	{$IFDEF DEBUG}
+	 DV_DEBUG_LEVEL = 10;
+	{$ELSE}
+	DV_DEBUG_LEVEL = 0;
+	{$ENDIF}
 
-
-procedure LoadGlobalInfo(const Filename : string);
- ///Monta rotina de carga das configurações iniciais, na ordem:
- /// 1 - Arquivo local de onde serão carregados os dados remotos
- ///
- /// Máquina primária no caminho do repositório
-begin
-    {TODO -oroger -cdsg : Carga dinamica do arquivo de configurações do serviço}
-    GlobalInfo := TVVStartupConfig.Create(filename, 'VVer');
-end;
 
 { TVVInfo }
 
@@ -177,6 +177,16 @@ begin
             Self.FProfileName := 'VM';
         end;
     end;
+    if (GetWindowsVersion() = wvWin7) then begin
+        Self.FProfileName := 'W7.' + Self.FProfileName;
+    end else begin
+        if (GetWindowsVersion() = wvWinXP) then begin
+            Self.FProfileName := 'XP.' + Self.FProfileName;
+        end else begin
+            //Resolver para caso de SO não identificado
+            Self.FProfileName := 'Outros.' + Self.FProfileName;
+        end;
+    end;
 end;
 
 destructor TVVStartupConfig.Destroy;
@@ -209,6 +219,11 @@ begin
     Result := ReadIntegerDefault(IE_CYCLE_INTERVAL, DV_CYCLE_INTERVAL);
 end;
 
+function TVVStartupConfig.GetDebugLevel : Integer;
+begin
+    Result := Self.ReadIntegerDefault(IE_DEBUG_LEVEL, DV_DEBUG_LEVEL );
+end;
+
 function TVVStartupConfig.GetAutoMode : boolean;
 var
     x : Integer;
@@ -220,6 +235,37 @@ begin
             Result := True;
             Exit;
         end;
+    end;
+end;
+
+class function TVVStartupConfig.GetBlockHash(AStrm : TMemoryStream; ALength : Integer) : string;
+    //calcula o hash do bloco
+var
+    pbesta : array of byte;
+    compl :  Integer;
+    oldPos, oldSize, delta : int64;
+begin
+    oldPos  := AStrm.Position;
+    oldSize := AStrm.Size;
+    try
+        //Ajusta tamanho
+        compl := 0;
+        delta := AStrm.Size mod ALength;
+        if (delta <> 0) then begin //necessita de alinhamento
+            compl      := ALength - delta;
+            AStrm.Size := AStrm.Size + compl;
+        end;
+        //Preenche complemento
+        compl := AStrm.Size - oldPos;
+        if ((compl > 0) and (AStrm.Position > 0)) then begin
+            SetLength(pbesta, compl + 1);
+            AStrm.Write(PByte(pbesta)^, compl);
+        end;
+        //calcula o hash
+        Result := THashHnd.MD5(AStrm);
+    finally
+        AStrm.Size     := oldSize;
+        AStrm.Position := oldPos;
     end;
 end;
 
@@ -329,7 +375,7 @@ begin
     end;
 end;
 
-function TVVStartupConfig.GetNetClientPort: integer;
+function TVVStartupConfig.GetNetClientPort : Integer;
 begin
     Result := Self.ReadIntegerDefault(IE_NET_TCP_PORT, DV_NET_TCP_PORT);
 end;
@@ -337,6 +383,11 @@ end;
 function TVVStartupConfig.GetNotificationList : string;
 begin
     Result := Self.ReadStringDefault(IE_NOTIFICATION_LIST, DV_NOTIFICATION_LIST);
+end;
+
+function TVVStartupConfig.GetPathServiceLog : string;
+begin
+    Result := TFileHnd.ConcatPath([ParamStr(0), 'Logs']);
 end;
 
 function TVVStartupConfig.GetPrimaryPC : string;
@@ -348,16 +399,23 @@ function TVVStartupConfig.GetProfileInfo : TVVProfileInfo;
 var
     profileURL, SOProfilePrefix, profileFilename : string;
 begin
-    if (Assigned(Self._ProfileInfo)) then begin
-        Result := Self._ProfileInfo;
-        Exit;
-    end;
-    //Tenta com o SO explicito
-    profileURL := Self.ReadString('Profiles\' + Self.ProfileName + '\VerInfo');
-    if (profileURL <> EmptyStr) then begin
-        profileFilename   := dtmdMain.LoadURL(profileURL);
-        //Buscar a entrada correta para a URL do perfil
-        Self._ProfileInfo := TVVProfileInfo.Create(profileFilename);
+    if (not Assigned(Self._ProfileInfo)) then begin
+        //Tenta com o SO explicito
+        profileURL := Self.ReadString('Profiles\' + Self.ProfileName + '\VerInfo');
+        if (profileURL <> EmptyStr) then begin
+            profileFilename := TStrHnd.CopyAfterLast('/', profileURL);
+            profileFilename := TFileHnd.ConcatPath([Self.LocalRepositoryPath, profileFilename]);
+
+            TLogFile.LogDebug('Baixando perfil remoto em ' + profileURL, DBGLEVEL_DETAILED);
+            if (not Self.LoadHTTPContent(profileURL, profileFilename)) then begin
+                if (not FileExists(profileFilename)) then begin
+                    raise EVVMonitorException.CreateFmt('Arquivo para o perfil %s não pode ser obtido e salvo em %s',
+                        [Self.ProfileName, profileFilename]);
+                end;
+            end;
+            //Buscar a entrada correta para a URL do perfil
+            Self._ProfileInfo := TVVProfileInfo.Create(profileFilename);
+        end;
     end;
     Result := Self._ProfileInfo;
 end;
@@ -378,9 +436,6 @@ end;
 
 function TVVStartupConfig.GetRootBaseConfigFilename : string;
 begin
-    if (not Self.IsPrimaryPC) then begin
-        raise Exception.Create('Atributo acessível apenas por máquinas primárias');
-    end;
     Result := VERSION_URL_FILE;
 end;
 
@@ -409,36 +464,22 @@ begin
     Self.FHTTPLoader.HTTPOptions := [hoForceEncodeParams];
 end;
 
-procedure TVVStartupConfig.InitInfoVersions(const filename : string);
-{{
-Rotina de inicialização para a carga dos parametros iniciais e perfil associado
-}
-begin
-    LoadGlobalInfo(Filename);
-end;
-
 function TVVStartupConfig.LoadHTTPContent(const URL, DestFilename : string) : boolean;
 var
     MemStream :  TMemoryStream;
     FileStream : TFileStream;
 begin
-    Result := False;
+    Result := True;
     try
         MemStream := TMemoryStream.Create;
         try
-            try
-                Self.FHTTPLoader.Get(url, MemStream);
-            except
-                on E : Exception do begin //Verifica possibilidade de uso do arquivo localmente disposto
-                    Exit;
-                end;
-            end;
+            Self.FHTTPLoader.Get(url, MemStream);
             //Verifica a escrita para atualizar informações de versões
             MemStream.Position := 0;
             if not TFileHnd.IsWritable(DestFilename) then begin
                 ForceDirectories(TFileHnd.ParentDir(DestFilename));
                 if (not TFileHnd.IsWritable(DestFilename)) then begin
-                    Exit;
+                    raise EVVMonitorException.CreateFmt('Falha salvando arquivo de configuração atualizado em %s', [DestFilename]);
                 end;
             end;
             if FileExists(DestFilename) then begin
@@ -448,6 +489,7 @@ begin
             end;
             try
                 MemStream.SaveToStream(FileStream);
+                FileStream.Size := FileStream.Position; //trunca o excesso
             finally
                 FileStream.Free;
             end;
@@ -456,7 +498,9 @@ begin
         end;
     except
         on E : Exception do begin
-            raise Exception.CreateFmt('Erro lendo recurso externo(%s) para %s'#13#10'%s', [url, DestFilename, E.Message]);
+            Result := False;
+            TLogFile.Log(Format('Recurso localizado em %s não pode ser carregado para %s'#13#10'%s',
+                [URL, DestFilename, E.Message]), lmtError);
         end;
     end;
 end;

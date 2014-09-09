@@ -4,7 +4,7 @@ unit vvProgItem;
 interface
 
 uses
-	SysUtils, Classes;
+    SysUtils, Classes;
 
 type
     TVVUpdateStatus = (usUnknow, usOld, usOK);
@@ -46,7 +46,7 @@ type
 implementation
 
 uses
-	FileHnd, WinReg32, FileInfo;
+    FileHnd, WinReg32, FileInfo, Windows, AppLog;
 
 
 { TProgItem }
@@ -76,9 +76,15 @@ end;
 
 function TProgItem.GetCurrentVersionDisplay : string;
 begin
-    Result := Self.CurrentVersionEx;
-    if Result = EmptyStr then begin
-        Result := 'Não identificada';
+    try
+        Result := Self.CurrentVersionEx;
+        if Result = EmptyStr then begin
+            Result := 'Não identificada';
+        end;
+    except
+        on E : Exception do begin
+            TLogFile.LogDebug('Leitura da informação falhou' + E.Message, DBGLEVEL_NONE);
+        end;
     end;
 end;
 
@@ -88,6 +94,9 @@ var
 begin
     if (Self._CurrentVersionEX = EmptyStr) then begin
         Entry := TFileHnd.ConcatPath([Self.FHive, Self.FVerKeyEx]);
+
+        TLogFile.LogDebug('Lendo ' + Self.FHive + '  e ' + Self.FVerKeyEx, DBGLEVEL_NONE);
+
         Self._CurrentVersionEX := Self.ReadVersionEntry(Entry);
         if Self._CurrentVersionEX = EmptyStr then begin
             Self._CurrentVersionEX := Self.CurrentVersion;
@@ -125,12 +134,12 @@ var
 begin
     //Leitura das entradas vinculadas para retorno da versão instalada
     reg := TRegistryNT.Create;
-    try
-        if not (reg.ReadFullString(Entry, Result)) then begin
-            Result := EmptyStr;
-        end;
-    finally
-        Self._CurrentVersion := Result;
+	 try
+		if ( not reg.ReadFullString( Entry, Result )) then begin
+       	TLogFile.Log( 'Erro lendo entrada: ' + Entry + #13#10 + SysErrorMessage( GetLastError ) );
+		end;
+	 finally
+		 Self._CurrentVersion := Result;
         reg.Free;
     end;
 end;

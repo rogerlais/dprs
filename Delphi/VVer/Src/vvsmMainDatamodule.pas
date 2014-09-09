@@ -32,11 +32,12 @@ type
         procedure tcpclntConnected(Sender : TObject);
     private
         { Private declarations }
-        FStartTime :   TDateTime;
-        FLasOKSended : TDateTime;
-        FLastStatus :  TVVUpdateStatus;
+        FStartTime :          TDateTime;
+        FLastRegisterSended : TDateTime;
+        FLastStatus :         TVVUpdateStatus;
+        FDownloadExecuted :   boolean;
         function GlobalStatusStr() : string;
-        procedure InitStartupConfig;
+        procedure InitVersionsConfig;
         procedure LoadGlobalInfo(const Filename : string);
         procedure EndSession();
         procedure StartSession();
@@ -66,7 +67,7 @@ uses
     FileHnd, StrHnd, IdContext, IdCustomTCPServer,
     IdTCPServer,
     IdEMailAddress, WinNetHnd, AppLog, vvMainForm, Str_Pas, TREUtils, XPFileEnumerator,
-    vvsConsts, IdGlobal, Rtti, TypInfo;
+    vvsConsts, IdGlobal, Rtti, TypInfo, Masks, Windows, ShellFilesHnd, JclSysInfo, Dialogs;
 
 const
     ICON_UPDATED     = 0;
@@ -83,17 +84,35 @@ procedure TVVSMMainDM.DataModuleCreate(Sender : TObject);
 begin
     Self.FStartTime := Now();
 
+    if (FindCmdLineSwitch('shortcut')) then begin
+        try
+            if (GetWindowsVersion() = wvWin7) then begin   {TODO -oroger -cfuture : matar arquivo antigo}
+                TShellHnd.CreateShellShortCut(ParamStr(0), 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\VVerMonitor.lnk',
+                    ParamStr(0), 0);
+            end else begin
+                TShellHnd.CreateShellShortCut(ParamStr(0),
+                    'C:\Documents and Settings\All Users\Menu Iniciar\Programas\Inicializar\VVerMonitor.lnk', ParamStr(0), 0);
+            end;
+        except
+            on E : Exception do begin
+                MessageDlg('Erro de atalho: ' + E.Message, mtError, [mbOK], 0);
+            end;
+        end;
+        //Termina a aplicação
+        Application.Terminate;
+    end;
+
     //carrega as informações de versão
     try
-        Self.InitStartupConfig();
+        Self.InitVersionsConfig();
     except
         on E : Exception do begin
-            AppLog.AppFatalError('Erro carregando configurações base: '#13#10 + E.Message, 2, True );
+            AppLog.AppFatalError('Erro carregando configurações base: '#13#10 + E.Message, 2, True);
         end;
     end;
     //Inicia componentes internos
     Self.tmrTrigger.Enabled  := True;
-	 Self.tmrTrigger.Interval := GlobalInfo.CycleInterval;
+    Self.tmrTrigger.Interval := GlobalInfo.CycleInterval;
     Self.tmrTrigger.OnTimer  := Self.tmrTriggerTimer;
 
     Application.ShowMainForm := False;
@@ -117,36 +136,47 @@ begin
     end;
 end;
 
-procedure TVVSMMainDM.InitStartupConfig;
+procedure TVVSMMainDM.InitVersionsConfig;
 {{
 Rotina de inicialização para a carga dos parametros iniciais e perfil associado
 }
 var
     baseCfgURL, remoteConfFile, localConfFile, sURLContent : string;
-    sl : TStringList;
+    sl :  TStringList;
+    ret : Integer;
 begin
-	TLogFile.LogDebug( 'Iniciando configurações do aplicativo', DBGLEVEL_ULTIMATE );
-	 localConfFile := TFileHnd.ConcatPath([GlobalInfo.LocalRepositoryPath, VERSION_INFO_FILENAME]); //caminho local
-	 //Sempre ser carregado por este caminho
-	 //tenta atualizar arquivo de configuração base
-	 if (GlobalInfo.IsPrimaryPC) then begin
-		 baseCfgURL  := GlobalInfo.RootBaseConfigFilename; //arquivo base
-		 {TODO -oroger -cdsg : baixar versão atual do arquivo de configuração antes de usar a local }
-		 if ( not GlobalInfo.LoadHTTPContent( baseCfgURL, localConfFile ) ) then begin
-			if ( not FileExists( localConfFile ) ) then begin
-				raise Exception.CreateFmt('Arquivo (%s) de configuração inicial não pode ser carregado', [ localConfFile ]);
-			end;
-		 end;
-	 end else begin  //tenta atualizar a partir do pc primario
-		 remoteConfFile := TFileHnd.ConcatPath([GlobalInfo.RemoteRepositoryPath, VERSION_INFO_FILENAME]);
+    GlobalInfo := TVVStartupConfig.Create(SysUtils.ChangeFileExt(ParamStr(0), '.ini'), APP_CONFIG_KEYPREFIX);
+    TLogFile.GetDefaultLogFile.DebugLevel := GlobalInfo.DebugLevel;
+    TLogFile.LogDebug('Iniciando configurações do aplicativo', DBGLEVEL_ULTIMATE);
+    localConfFile := TFileHnd.ConcatPath([GlobalInfo.LocalRepositoryPath, VERSION_INFO_FILENAME]); //caminho local
+
+
+    baseCfgURL := GlobalInfo.RootBaseConfigFilename; //arquivo base
+
+    {TODO -oroger -cdsg : baixar versão atual do arquivo de configuração antes de usar a local }
+    TLogFile.LogDebug('Baixando startup remoto em ' + baseCfgURL, DBGLEVEL_DETAILED);
+    if (not GlobalInfo.LoadHTTPContent(baseCfgURL, localConfFile)) then begin
         //Sempre ser carregado por este caminho
-        ForceDirectories(GlobalInfo.LocalRepositoryPath);
-        FileCopy(remoteConfFile, localConfFile, True);
+        //tenta atualizar arquivo de configuração base
+        if (not GlobalInfo.IsPrimaryPC) then begin
+            remoteConfFile := TFileHnd.ConcatPath([GlobalInfo.RemoteRepositoryPath, VERSION_INFO_FILENAME]);
+            //Sempre ser carregado por este caminho
+            ForceDirectories(GlobalInfo.LocalRepositoryPath);
+            ret := FileHnd.FileCopyEx(remoteConfFile, localConfFile, True);
+            if (ret <> ERROR_SUCCESS) then begin
+                raise Exception.CreateFmt('Arquivo (%s) de configuração inicial não pode ser carregado'#13#10'%s',
+                    [localConfFile, SysErrorMessage(ret)]);
+            end;
+        end;
     end;
+
     if (not FileExists(localConfFile)) then begin
         raise Exception.Create('Arquivo de configuração base não encontrado');
-	 end;
-	 GlobalInfo.InitInfoVersions( localConfFile ); // VersionConfig := TVVConfig.Create(filename, 'VVer'); //carrega o arquivo de versões atualizado/valido
+    end;
+    //Alterna para a configuração carregada
+    FreeAndNil(GlobalInfo);
+    GlobalInfo := TVVStartupConfig.Create(localConfFile, APP_CONFIG_KEYPREFIX);
+    // VersionConfig := TVVConfig.Create(filename, 'VVer'); //carrega o arquivo de versões atualizado/valido
 end;
 
 procedure TVVSMMainDM.InitSettings;
@@ -195,8 +225,8 @@ var
 begin
     //Calcula valor a postar
     Data := EmptyStr;
-	 for I := 0 to GlobalInfo.ProfileInfo.Count - 1 do begin
-		 p := GlobalInfo.ProfileInfo.Programs[I];
+    for I := 0 to GlobalInfo.ProfileInfo.Count - 1 do begin
+        p := GlobalInfo.ProfileInfo.Programs[I];
         if (not p.isUpdated) then begin
             Data := Data + p.Desc + '[' +
                 GetEnumName(TypeInfo(TVVUpdateStatus), Integer(p.UpdateStatus)) + ']' + TOKEN_DELIMITER;
@@ -207,8 +237,8 @@ begin
     Self.PostRequest([Verb2String(vvvRegisterStatus), HTTPEncode(Data)]);
     Data := Self.ReadResponse();
     if (SameText(Data, STR_OK_PACK)) then begin
-        Self.FLasOKSended := Now();
-        Self.FLastStatus  := CurrentStatus;
+        Self.FLastRegisterSended := Now();
+        Self.FLastStatus := CurrentStatus;
     end;
 
 end;
@@ -238,7 +268,7 @@ end;
 
 procedure TVVSMMainDM.RegisterStatusServer(CurrentStatus : TVVUpdateStatus);
 begin
-    if ((Self.FLasOKSended <> 0) and (Self.FLastStatus = CurrentStatus)) then begin
+    if ((Self.FLastRegisterSended <> 0) and (Self.FLastStatus = CurrentStatus)) then begin
         Exit;
     end;
     try
@@ -270,10 +300,10 @@ begin
     Self.TrayIcon.Visible := True;
     case StatusOK of
         usUnknow : begin
-            Self.TrayIcon.IconIndex := ICON_UPDATED;
+            Self.TrayIcon.IconIndex := ICON_UNKNOW;
         end;
         usOld : begin
-            Self.TrayIcon.IconIndex := ICON_UNKNOW;
+            Self.TrayIcon.IconIndex := ICON_NOT_UPDATED;
         end;
         usOK : begin
             Self.TrayIcon.IconIndex := ICON_UPDATED;
@@ -285,14 +315,14 @@ procedure TVVSMMainDM.StartClient;
 begin
     Self.InitSettings();
 
-	 Self.tcpclntRegister.Host      := GlobalInfo.RegisterServer;
-	 Self.tcpclntRegister.Port      := GlobalInfo.NetClientPort;
-	 Self.tcpclntRegister.OnDisconnected := tcpclntDisconnected;
-	 Self.tcpclntRegister.OnConnected := tcpclntConnected;
-	 Self.tcpclntRegister.ConnectTimeout := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
-	 Self.tcpclntRegister.IPVersion := Id_IPv4;
-	 Self.tcpclntRegister.ReadTimeout := 0;  //usa o valor dado por  IdTimeoutDefault
-	 //Self.TrayIcon.IconIndex := II_CLIENT_IDLE;
+    Self.tcpclntRegister.Host      := GlobalInfo.RegisterServer;
+    Self.tcpclntRegister.Port      := GlobalInfo.NetClientPort;
+    Self.tcpclntRegister.OnDisconnected := tcpclntDisconnected;
+    Self.tcpclntRegister.OnConnected := tcpclntConnected;
+    Self.tcpclntRegister.ConnectTimeout := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
+    Self.tcpclntRegister.IPVersion := Id_IPv4;
+    Self.tcpclntRegister.ReadTimeout := 0;  //usa o valor dado por  IdTimeoutDefault
+    //Self.TrayIcon.IconIndex := II_CLIENT_IDLE;
     TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)', [GlobalInfo.NetClientPort, GlobalInfo.RegisterServer]),
         DBGLEVEL_DETAILED);
 end;
@@ -302,7 +332,7 @@ var
     SessionName, ret, msg : string;
 begin
     try
-		 SessionName := GlobalInfo.ClientName;
+        SessionName := GlobalInfo.ClientName;
         //Envia a abertura de sessão para o servidor
         Self.tcpclntRegister.Connect;
         //passa valores obrigatorios para inicio de sessão
@@ -369,17 +399,24 @@ end;
 
 procedure TVVSMMainDM.TrayIconMouseMove(Sender : TObject; Shift : TShiftState; X, Y : Integer);
 var
-    rtVersion : string;
-    hint :      string;
+    rtVersion :    string;
+    hint, status : string;
 begin
     rtVersion := 'Versão: ' + Self.fvVersion.FileVersion;
     hint      := 'SESOP - VVER Monitor' + #13#10 + rtVersion + #13#10;
-    //if (Assigned(VVMConfig.VersionConfig)) then begin
     hint      := Hint + 'Perfil = ' + GlobalInfo.ProfileName + #13#10;
-    //end else begin
-    //     hint := Hint + 'Perfil = ' + 'Indeterminado' + #13#10;
-    //end;
-    hint      := Hint + 'Status dos sistemas = ' + Self.GlobalStatusStr;
+    try
+        if (Self.FDownloadExecuted) then begin
+            status := 'Logar-se como instalador e atualizar.';
+        end else begin
+            status := Self.GlobalStatusStr;
+        end;
+    except
+        on E : Exception do begin
+            status := 'Indeterminado';
+        end;
+    end;
+    hint := Hint + 'Status dos sistemas = ' + status;
     Self.TrayIcon.Hint := Hint;
 end;
 
@@ -392,23 +429,47 @@ var
 }
     dest, src : TManagedFolder;
     list : TVVSFileList;
-    f : TVVsFile;
+    f :    TVVsFile;
     newName : string;
+    mask : TMask;
+    ret :  Integer;
 begin
-	 dest := TManagedFolder.CreateLocal(GlobalInfo.LocalRepositoryPath);
+    TLogFile.LogDebug('Iniciando processo de atualização', DBGLEVEL_DETAILED);
+    dest := TManagedFolder.CreateLocal(GlobalInfo.LocalRepositoryPath);
     src  := TManagedFolder.CreateLocal(GlobalInfo.RemoteRepositoryPath);
     list := TVVSFileList.Create;
+    mask := TMask.Create('*.cvc');
     try
         dest.Diff(src, list);
         for f in list do begin
-            if (f.Parent = dest) then begin
-                f.Delete;
+            if (TStrHnd.endsWith(f.FullFilename, '.')) then begin
+                TLogFile.LogDebug(Format('Ignorando entrada de arquivo para %s', [f.FullFilename]), DBGLEVEL_DETAILED);
+            end;
+			 if ( f.Parent = dest ) then begin
+				 TLogFile.LogDebug(Format('Operação de apagmento de %s', [f.FullFilename]), DBGLEVEL_DETAILED);
+				 if ( not Mask.Matches(f.FullFilename) ) then begin
+					f.Delete;
+				 end;
             end else begin
-                newName := TFileHnd.ConcatPath([dest.RootDir, Copy(f.Filename, 2, Length(f.Filename))]);
-                FileCopy(f.FullFilename, newName, True);
+                if (not f.IsDirectory) then begin
+                    newName := TFileHnd.ConcatPath([dest.RootDir, Copy(f.Filename, 2, Length(f.Filename))]);
+                    try
+                        TLogFile.LogDebug(Format('Copiando %s para %s', [f.FullFilename, newName]), DBGLEVEL_DETAILED);
+                        ret := FileHnd.FileCopyEx(f.FullFilename, newName, True);
+                        if (ret <> ERROR_SUCCESS) then begin
+                            raise Exception.CreateFmt('Erro copiando %s para %s.'#13#10'%s ', [f.FullFilename, newName, SysErrorMessage(ret)]);
+                        end;
+                    except
+                        on E : Exception do begin
+							 raise Exception.CreateFmt('Falha copiando %s para %s'#13#10'%s', [f.FullFilename, newName, E.Message ]);
+                        end;
+                    end;
+                end;
             end;
         end;
+        Self.FDownloadExecuted := True;
     finally
+        Mask.Free;
         list.Free;
     end;
 end;

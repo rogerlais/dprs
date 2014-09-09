@@ -7,8 +7,7 @@ uses
   vvConfig in 'vvConfig.pas',
   vvsFileMgmt in 'vvsFileMgmt.pas',
   vvProgItem in 'vvProgItem.pas',
-  vvsConsts in 'vvsConsts.pas',
-  vvsConfig in 'vvsConfig.pas';
+  vvsConsts in 'vvsConsts.pas';
 
 {$R *.res}
 

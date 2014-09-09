@@ -3,7 +3,7 @@ object VVMMonitorMainForm: TVVMMonitorMainForm
   Top = 0
   Caption = 'Verificador de vers'#245'es'
   ClientHeight = 359
-  ClientWidth = 481
+  ClientWidth = 632
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,12 +15,12 @@ object VVMMonitorMainForm: TVVMMonitorMainForm
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   DesignSize = (
-    481
+    632
     359)
   PixelsPerInch = 96
   TextHeight = 13
   object btnOK: TBitBtn
-    Left = 193
+    Left = 269
     Top = 293
     Width = 100
     Height = 57
@@ -37,7 +37,7 @@ object VVMMonitorMainForm: TVVMMonitorMainForm
   object grdList: TListView
     Left = 8
     Top = 57
-    Width = 465
+    Width = 616
     Height = 230
     Anchors = [akLeft, akTop, akRight, akBottom]
     Columns = <>
@@ -56,18 +56,28 @@ object VVMMonitorMainForm: TVVMMonitorMainForm
     OnClick = grdListClick
   end
   object pnlLog: TPanel
-    Left = 76
-    Top = 100
-    Width = 321
-    Height = 129
+    Left = 55
+    Top = 92
+    Width = 517
+    Height = 173
     Caption = '....'
+    ShowCaption = False
     TabOrder = 2
     Visible = False
+    object lblStatus: TLabel
+      Left = 32
+      Top = 24
+      Width = 457
+      Height = 121
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'Carregando informa'#231#245'es das vers'#245'es'#13#10'Aguarde...'
+    end
   end
   object pnlTop: TPanel
     Left = 0
     Top = 0
-    Width = 481
+    Width = 632
     Height = 51
     Align = alTop
     TabOrder = 0

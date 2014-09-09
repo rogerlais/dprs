@@ -10,16 +10,8 @@ interface
 
 uses
     SysUtils, Classes, IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, IdMessage,
-    IdExplicitTLSClientServerBase,
-    IdMessageClient, IdSMTPBase, IdSMTP, IdMailBox, FileInfo, Forms;
-
-
-const
-	 {$IFDEF DEBUG}
-	 VERSION_URL_FILE = 'http://arquivos/setores/sesop/AppData/Tests/VerificadorVersoes/VVer.ini';
-	 {$ELSE}
-	 VERSION_URL_FILE = 'http://arquivos/setores/sesop/AppData/VerificadorVersoes/VVer.ini';
-	 {$ENDIF}
+	 IdExplicitTLSClientServerBase, vvsConsts,
+	 IdMessageClient, IdSMTPBase, IdSMTP, IdMailBox, FileInfo, Forms;
 
 type
     TdtmdMain = class(TDataModule)
@@ -33,8 +25,6 @@ type
         procedure AddDestinations();
     public
         { Public declarations }
-        function LoadURL(const url : string) : string;
-        procedure InitInfoVersions();
         procedure SendNotification();
     end;
 
@@ -84,90 +74,11 @@ begin
 	 end;
 	 if (autoMode) then begin
 		Application.ShowMainForm := False;
-		 try
-			 Self.InitInfoVersions();
-		 except
-			 on E : Exception do begin
-				 AppFatalError('Erro carregando informações de controle de versões'#13#10 + E.Message, 1, False);
-				 Exit;
-			 end;
-		 end;
 		 //Envio da notificação
 		 Self.SendNotification();
 		 Application.Terminate;
 	 end else begin
 		Application.CreateForm(TForm1, Form1);
-    end;
-end;
-
-procedure TdtmdMain.InitInfoVersions;
-{{
-Rotina de inicialização para a carga dos parametros iniciais e perfil associado
-}
-var
-	 baseConfFile : string;
-	 primaryPC : string;
-begin
-	 //Carga dos parametros iniciais
-	 try
-	 baseConfFile := Self.LoadURL(VERSION_URL_FILE);
-	 LoadGlobalInfo(baseConfFile);
-	 except
-		//no erro tenta identificar computador primário e baixar dele
-		{$IFDEF DEBUG}
-		primaryPC:=WinNetHnd.GetComputerName();
-		{$ELSE}
-		primaryPC:=WinNetHnd.GetComputerName();
-		{$ENDIF}
-		primaryPC:=TTREUtils.GetZonePrimaryComputer( primaryPC );
-	 end;
-end;
-
-function TdtmdMain.LoadURL(const url : string) : string;
-{{
-Recebe a URL e tenta salvar seu conteúdo com o mesmo nome na pasta do executável. Caso isso não seja possível será usado o temporário
-}
-var
-    MemStream :  TMemoryStream;
-    FileStream : TFileStream;
-begin
-    Result := TFileHnd.ChangeFileName(ParamStr(0), TStrHnd.CopyAfterLast('/', url)); //Nome final do arquivo
-    try
-        MemStream := TMemoryStream.Create;
-        try
-            try
-                Self.httpLoader.Get(url, MemStream);
-            except
-                on E : Exception do begin //Verifica possibilidade de uso do arquivo localmente disposto
-                    if FileExists(Result) then begin
-                        Exit;
-                    end else begin
-                        raise; //Erro irrecuperável
-                    end;
-                end;
-            end;
-            //Verifica a escrita para atualizar informações de versões
-            MemStream.Position := 0;
-            if not TFileHnd.IsWritable(Result) then begin
-                Result := FileHnd.CreateTempFileName('SESOPVVER', 1);
-            end;
-            if FileExists(Result) then begin
-                FileStream := TFileStream.Create(Result, fmOpenWrite);
-            end else begin
-                FileStream := TFileStream.Create(Result, fmCreate);
-            end;
-            try
-                MemStream.SaveToStream(FileStream);
-            finally
-                FileStream.Free;
-            end;
-        finally
-            MemStream.Free;
-        end;
-    except
-        on E : Exception do begin
-            raise Exception.CreateFmt('Erro lendo arquivo de informações sobre versões:'#13#10'%s'#13#10'%s', [url, E.Message]);
-        end;
     end;
 end;
 

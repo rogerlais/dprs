@@ -31,11 +31,12 @@ type
 		 function GetSize: int64;
 		 function GetFullFilename: string;
 		 function GetFingerprints: string;
+    function GetIsDirectory: Boolean;
 	 public
 		 constructor Create(AParent : TManagedFolder ; const AFilename : string);
 		 procedure Refresh;
 		 function ToString() : string;
-		 procedure Delete();
+		 function Delete() : Integer;
 		 property Filename : string read FFilename;
 		 property FullFilename : string read GetFullFilename;
 		 property MD5String : string read GetMD5String;
@@ -43,6 +44,7 @@ type
 		 property Size : int64 read GetSize;
 		 property Parent : TManagedFolder read FParent;
 		 property FingerPrints : string read GetFingerprints;
+		 property IsDirectory : Boolean read GetIsDirectory;
 	 end;
 
 	 TVVSFileList = TList<TVVsFile>;
@@ -94,7 +96,7 @@ var
 implementation
 
 uses
-	 BinHnd, Str_pas, StrHnd, jclAnsiStrings, Applog, vvsConsts, Math, vvSvcDM;
+	 BinHnd, Str_pas, StrHnd, jclAnsiStrings, Applog, vvsConsts, Math, vvConfig;
 
 
 { TVVSFile }
@@ -110,10 +112,19 @@ begin
 	end;
 end;
 
-procedure TVVSFile.Delete;
+function TVVSFile.Delete : Integer;
 begin
-	if ( not DeleteFile( Self.FullFilename ) ) then begin
-		TLogFile.Log( Format( 'Arquivo("%s") não pode ser apagado', [ Self.FullFilename ] ), lmtError );
+	Result := ERROR_SUCCESS;
+	if ( TStrHnd.endsWith( Self.Filename, '.' ) or TStrHnd.endsWith( Self.Filename, '..') ) then begin
+		Exit;
+	end;
+	if ( DirectoryExists( Self.FullFilename ) ) then begin
+			Result:=TFileHnd.RmDir( Self.FullFilename );
+	end else begin
+		if ( not DeleteFile( Self.FullFilename ) ) then begin
+			Result := GetLastError();
+			TLogFile.Log( Format( 'Arquivo("%s") não pode ser apagado' + #13#10 + '%s', [ Self.FullFilename, SysErrorMessage( Result ) ] ), lmtError );
+		end;
 	end;
 end;
 
@@ -139,7 +150,7 @@ begin
 				lenCycle := Math.Min( bs, fs.Size - fs.Position );
 				ms.CopyFrom( fs, lenCycle );
 				ms.Position:=0;
-				h := TVVerService.GetBlockHash(ms, MD5_BLOCK_ALIGNMENT);
+				h := TVVStartupConfig.GetBlockHash(ms, MD5_BLOCK_ALIGNMENT);
 				Result := Result + h + TOKEN_DELIMITER;
 			end;
 		finally
@@ -163,6 +174,11 @@ begin
 	end;
 end;
 
+function TVVSFile.GetIsDirectory: Boolean;
+begin
+	Result:=DirectoryExists( Self.FullFilename );
+end;
+
 function TVVSFile.GetLastWrite : TDateTime;
 begin
 	if ( Self._LastWrite = 0 ) then begin
@@ -173,7 +189,10 @@ end;
 
 function TVVSFile.GetMD5String : string;
 begin
-    if (Self._MD5String = EmptyStr) then begin
+	 if ( Self.isDirectory ) then begin
+		raise Exception.Create('Operação não permitida para diretório: ' + Self.FullFilename );
+	 end;
+	 if (Self._MD5String = EmptyStr) then begin
 		 Self._MD5String := THashHnd.MD5(Self.FullFilename);
     end;
     Result := Self._MD5String;
@@ -237,10 +256,11 @@ var
 	locFile, remFile : TVVSFile;
 begin
 	List.Clear;
+	TLogFile.LogDebug( 'Iniciando diferença entre arquivos', DBGLEVEL_DETAILED );
 	//varre remotos
 	for remFile in remoteFolder.Values do begin
 		if ( Self.TryGetValue( remFile.Filename, locFile ) ) then begin  //busca na lista local o mesmo nome do remoto
-			if ( remFile.MD5String <> locFile.MD5String ) then begin
+			if ( (not remFile.IsDirectory ) and (remFile.MD5String <> locFile.MD5String) ) then begin
 				List.Add( remFile ); //existem e são diferentes
 			end;
 		end else begin
@@ -253,7 +273,7 @@ begin
 			List.Add( locFile ); //existe no local apenas -> será apagado(checar parent = local para isso)
 		end;
 	end;
-
+	TLogFile.LogDebug( 'Finalizando diferença entre arquivos', DBGLEVEL_DETAILED );
 	Result := (List.Count > 0);
 end;
 

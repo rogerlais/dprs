@@ -12,30 +12,44 @@ uses
 
 type
     //enumeração deve ser literalmente usada nos verbos(cliente/servidor)
-	 TVVSVerbs = (vvvReadContent, vvvFileDownload, vvvFileClose, vvvFullFingerprint, vvvReadSegment, vvvRegisterStatus, vvvEndSession );
+    TVVSVerbs = (vvvReadContent, vvvFileDownload, vvvFileClose, vvvFullFingerprint, vvvReadSegment,
+        vvvRegisterStatus, vvvEndSession);
 
 const
-	 DBG_CLIENT_NAME = 'ZPB999WKS01';
+	 {$IFDEF DEBUG}
+	 VERSION_URL_FILE = 'http://arquivos/setores/sesop/AppData/Tests/VerificadorVersoes/VVer.ini';
+	 {$ELSE}
+	 VERSION_URL_FILE = 'http://arquivos/setores/sesop/AppData/VerificadorVersoes/VVer.ini';
+	 {$ENDIF}
 
-	 SUBJECT_TEMPLATE        = 'VVerService - Versão: %s - %s - %s';
-	 SWITCH_AUTOCONFIG       = 'autoconfig'; //informa que durante as operações de download a janela de interação não será mostrada
+    APP_CONFIG_KEYPREFIX    = 'VVER';
+    APP_SERVICE_NAME        = 'VVerService';
+    APP_SERVICE_KEY         = 'VVerSvc';
+    APP_SERVICE_DISPLAYNAME = 'SESOP Verificador de versões';
+    APP_SERVICE_GROUP       = 'SESOPSvcGroup';
+    APP_NOTIFICATION_DESCRIPTION = 'SESOP-Serviço de verificação de versões';
 
-	 PUBLICATION_INSTSEG = 'INSTSEG';
+    DBG_CLIENT_NAME = 'ZPB999WKS01';
 
-	 MD5_BLOCK_ALIGNMENT = 2048;
+    SUBJECT_TEMPLATE  = 'VVerService - Versão: %s - %s - %s';
+    SWITCH_AUTOCONFIG = 'autoconfig'; //informa que durante as operações de download a janela de interação não será mostrada
 
-	 TOKEN_DELIMITER      = #13#10;
-	 STR_CMD_VERB         = 'verb=';
-	 STR_END_SESSION_SIGNATURE = 'end_session=';
-	 STR_BEGIN_SESSION_SIGNATURE = 'start_session=';
-	 STR_OK_PACK          = 'OK';
-	 STR_FAIL_PREFIX      = 'FAIL';
-	 STR_FAIL_HASH        = STR_FAIL_PREFIX + ' HASH';
-	 STR_FAIL_SIZE        = STR_FAIL_PREFIX + ' SIZE';
-	 STR_FAIL_VERB        = STR_FAIL_PREFIX + ' VERB';
-	 STR_FAIL_RETURN      = STR_FAIL_PREFIX + ' EXECUTION';
-	 STR_FAIL_NET         = STR_FAIL_PREFIX + ' NETWORK';
-    STR_FAIL_PROTOCOL    = STR_FAIL_PREFIX + ' PROTOCOL';
+    PUBLICATION_INSTSEG = 'INSTSEG';
+
+    MD5_BLOCK_ALIGNMENT = 2048;
+
+    TOKEN_DELIMITER   = #13#10;
+    STR_CMD_VERB      = 'verb=';
+    STR_END_SESSION_SIGNATURE = 'end_session=';
+    STR_BEGIN_SESSION_SIGNATURE = 'start_session=';
+    STR_OK_PACK       = 'OK';
+    STR_FAIL_PREFIX   = 'FAIL';
+    STR_FAIL_HASH     = STR_FAIL_PREFIX + ' HASH';
+    STR_FAIL_SIZE     = STR_FAIL_PREFIX + ' SIZE';
+    STR_FAIL_VERB     = STR_FAIL_PREFIX + ' VERB';
+    STR_FAIL_RETURN   = STR_FAIL_PREFIX + ' EXECUTION';
+    STR_FAIL_NET      = STR_FAIL_PREFIX + ' NETWORK';
+    STR_FAIL_PROTOCOL = STR_FAIL_PREFIX + ' PROTOCOL';
 
     II_SERVER_IDLE  = 0;
     II_SERVER_ERROR = 1;

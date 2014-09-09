@@ -5,7 +5,7 @@ object Form1: TForm1
   BorderStyle = bsSingle
   Caption = 'Verificador de Vers'#245'es 2010 T1'
   ClientHeight = 338
-  ClientWidth = 563
+  ClientWidth = 634
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -43,12 +43,12 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
-    563
+    634
     338)
   PixelsPerInch = 96
   TextHeight = 13
   object btnOK: TBitBtn
-    Left = 97
+    Left = 116
     Top = 273
     Width = 100
     Height = 57
@@ -59,13 +59,14 @@ object Form1: TForm1
     Layout = blGlyphTop
     ParentDoubleBuffered = False
     Spacing = 0
-    TabOrder = 0
+    TabOrder = 3
     OnClick = btnOKClick
+    ExplicitLeft = 97
   end
   object grdList: TListView
     Left = 8
     Top = 57
-    Width = 551
+    Width = 622
     Height = 205
     Anchors = [akLeft, akTop, akRight, akBottom]
     Columns = <>
@@ -78,14 +79,15 @@ object Form1: TForm1
     ReadOnly = True
     RowSelect = True
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 1
     ViewStyle = vsReport
     OnAdvancedCustomDrawItem = grdListAdvancedCustomDrawItem
     OnClick = grdListDblClick
     OnDblClick = grdListDblClick
+    ExplicitWidth = 551
   end
   object btnNotifSESOP: TBitBtn
-    Left = 221
+    Left = 255
     Top = 273
     Width = 100
     Height = 58
@@ -153,25 +155,27 @@ object Form1: TForm1
     ModalResult = 6
     ParentDoubleBuffered = False
     Spacing = 0
-    TabOrder = 1
+    TabOrder = 4
     OnClick = btnNotifSESOPClick
+    ExplicitLeft = 221
   end
   object pnlLog: TPanel
     Left = 116
     Top = 108
     Width = 321
     Height = 129
-    Caption = '....'
-    TabOrder = 3
+    Caption = 'Carregando informa'#231#245'es. aguarde....'
+    TabOrder = 2
     Visible = False
   end
   object pnlTop: TPanel
     Left = 0
     Top = 0
-    Width = 563
+    Width = 634
     Height = 51
     Align = alTop
-    TabOrder = 4
+    TabOrder = 0
+    ExplicitWidth = 563
     object lblMainLabel: TLabel
       Left = 8
       Top = 10
@@ -201,7 +205,7 @@ object Form1: TForm1
     end
   end
   object btnChangeProfile: TBitBtn
-    Left = 345
+    Left = 395
     Top = 272
     Width = 100
     Height = 58
@@ -291,5 +295,6 @@ object Form1: TForm1
     Spacing = 0
     TabOrder = 5
     OnClick = btnChangeProfileClick
+    ExplicitLeft = 345
   end
 end

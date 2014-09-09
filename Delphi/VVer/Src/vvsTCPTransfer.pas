@@ -127,7 +127,7 @@ var
 implementation
 
 uses
-    vvsConfig, FileHnd, StrHnd, vvSvcDM, Math;
+    FileHnd, StrHnd, vvSvcDM, Math;
 
 {$R *.dfm}
 

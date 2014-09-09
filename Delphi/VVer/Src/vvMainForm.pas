@@ -43,7 +43,7 @@ var
 implementation
 
 uses
-    WinNetHnd, FileHnd, vvMainDataModule, AppLog, ShellAPI, CommCtrl, vvProgItem;
+    WinNetHnd, FileHnd, vvMainDataModule, AppLog, ShellAPI, CommCtrl, vvProgItem, vvsConsts;
 
 {$R *.dfm}
 
@@ -100,44 +100,50 @@ begin
         {TODO -oroger -cdsg : Transformar constante em campo dinamico }
         Self.pnlLog.Caption := 'Carregando informações sobre versões em:'#13#10 + VERSION_URL_FILE;
         Self.pnlLog.Refresh;
-        Application.ProcessMessages;
-        try
-            try
-                dtmdMain.InitInfoVersions();
-                Self.lblProfile.Caption :=  GlobalInfo.ProfileName;
-            except
-                on E : Exception do begin
-                    AppFatalError('Erro carregando informações de controle de versões'#13#10 + E.Message);
-                    Exit;
-                end;
-            end;
+		 Application.ProcessMessages;
+		 try
+		 try
+			 try
+				 Self.lblProfile.Caption :=  GlobalInfo.ProfileName;
+			 except
+				 on E : Exception do begin
+					 AppFatalError('Erro carregando informações de controle de versões'#13#10 + E.Message);
+					 Exit;
+				 end;
+			 end;
 
-            //;;Self.grdList.RowCount  := GlobalInfo.ProfileInfo.Count + 1;
-            //;;Self.grdList.ColCount  := 3;
-            //;Self.grdList.FixedRows := 1;
-            lstCol := Self.grdList.Columns.Add;
-            lstCol.Caption := 'Descrição';
-            lstCol.Width := ColumnHeaderWidth;
-            lstCol := Self.grdList.Columns.Add;
-            lstCol.Caption := 'Versão Instalada';
-            lstCol.Width := ColumnHeaderWidth;
-            lstCol := Self.grdList.Columns.Add;
-            lstCol.Caption := 'Versão Esperada';
-            lstCol.Width := ColumnHeaderWidth;
+			 //;;Self.grdList.RowCount  := GlobalInfo.ProfileInfo.Count + 1;
+			 //;;Self.grdList.ColCount  := 3;
+			 //;Self.grdList.FixedRows := 1;
+			 lstCol := Self.grdList.Columns.Add;
+			 lstCol.Caption := 'Descrição';
+			 lstCol.Width := ColumnHeaderWidth;
+			 lstCol := Self.grdList.Columns.Add;
+			 lstCol.Caption := 'Versão Instalada';
+			 lstCol.Width := ColumnHeaderWidth;
+			 lstCol := Self.grdList.Columns.Add;
+			 lstCol.Caption := 'Versão Esperada';
+			 lstCol.Width := ColumnHeaderWidth;
 
-            for x := 1 to GlobalInfo.ProfileInfo.Count do begin
-                p := GlobalInfo.ProfileInfo.Programs[x - 1];
-                //Atribuição da exibição
-                lstItem := Self.grdList.Items.Add;
-                lstItem.Caption := p.Desc;
-                lstItem.SubItems.Add(p.CurrentVersionDisplay);
-                lstItem.SubItems.Add(p.ExpectedVerEx);
-                lstItem.Data := p;
-            end;
-        finally
-            Self.pnlLog.Visible := False;
+			 for x := 1 to GlobalInfo.ProfileInfo.Count do begin
+				 p := GlobalInfo.ProfileInfo.Programs[x - 1];
+				 //Atribuição da exibição
+				 lstItem := Self.grdList.Items.Add;
+				 lstItem.Caption := p.Desc;
+				 lstItem.SubItems.Add(p.CurrentVersionDisplay);
+				 lstItem.SubItems.Add(p.ExpectedVerEx);
+				 lstItem.Data := p;
+			 end;
+		 finally
+			 Self.pnlLog.Visible := False;
+		 end;
+		 except
+			on E : Exception do begin
+				Self.pnlLog.Visible := True;
+				Self.pnlLog.Caption := 'Informações das versões não puderam ser carregadas';
+			end;
         end;
-    end;
+	 end;
 end;
 
 procedure TForm1.grdListDblClick(Sender : TObject);

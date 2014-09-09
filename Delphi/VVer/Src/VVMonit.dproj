@@ -3,7 +3,7 @@
 			<ProjectGuid>{891C1172-5AC5-4B6A-82FE-57CC57F7D661}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>VVMonit.dpr</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -59,7 +59,6 @@
 			<DCCReference Include="vvsFileMgmt.pas"/>
 			<DCCReference Include="vvProgItem.pas"/>
 			<DCCReference Include="vvsConsts.pas"/>
-			<DCCReference Include="vvsConfig.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
