@@ -15,18 +15,19 @@ type
         lblMainLabel : TLabel;
         lblProfLabel : TLabel;
         lblProfile :   TLabel;
-		 lblStatus: TLabel;
-		 procedure FormCreate(Sender : TObject);
-		 procedure btnOKClick(Sender : TObject);
-		 procedure FormActivate(Sender : TObject);
-		 procedure grdListAdvancedCustomDrawItem(Sender : TCustomListView; Item : TListItem; State : TCustomDrawState;
-			 Stage : TCustomDrawStage; var DefaultDraw : boolean);
-		 procedure grdListClick(Sender : TObject);
-		 procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-	 private
-		 { Private declarations }
-		 FSessionClosure : boolean;
-		 procedure CheckMessage(var Msg: TMsg; var Handled: Boolean);
+        lblStatus :    TLabel;
+        procedure FormCreate(Sender : TObject);
+        procedure btnOKClick(Sender : TObject);
+        procedure FormActivate(Sender : TObject);
+        procedure grdListAdvancedCustomDrawItem(Sender : TCustomListView; Item : TListItem; State : TCustomDrawState;
+            Stage : TCustomDrawStage; var DefaultDraw : boolean);
+        procedure grdListClick(Sender : TObject);
+        procedure FormCloseQuery(Sender : TObject; var CanClose : boolean);
+    private
+        { Private declarations }
+        FSessionClosure : boolean;
+    protected
+        procedure WMQueryEndSession(var Msg : TWMQueryEndSession); message WM_QUERYENDSESSION;
     public
         { Public declarations }
     end;
@@ -39,18 +40,11 @@ implementation
 {$R *.dfm}
 
 uses
-	 vvsmMainDatamodule, vvConfig, vvProgItem, AppLog;
+    vvsmMainDatamodule, vvConfig, vvProgItem, AppLog;
 
 procedure TVVMMonitorMainForm.btnOKClick(Sender : TObject);
 begin
     Self.Close;
-end;
-
-procedure TVVMMonitorMainForm.CheckMessage(var Msg: TMsg; var Handled: Boolean);
-begin
-	if ( Msg.message = WM_QUERYENDSESSION ) then begin
-   	Self.FSessionClosure := True;
-	end;
 end;
 
 procedure TVVMMonitorMainForm.FormActivate(Sender : TObject);
@@ -63,9 +57,9 @@ var
 begin
     if not Self.pnlLog.Visible then begin //Visibilidade do painel indica carga de todos os parametros
         {TODO -oroger -cdsg : Transformar constante em campo dinamico }
-		 Self.lblStatus.Caption := 'Carregando informações sobre versões em:'#13#10 + GlobalInfo.ProfileName;
-		 Self.lblProfile.Caption := GlobalInfo.ProfileName;
-		 Self.pnlLog.Refresh;
+        Self.lblStatus.Caption  := 'Carregando informações sobre versões em:'#13#10 + GlobalInfo.ProfileName;
+        Self.lblProfile.Caption := GlobalInfo.ProfileName;
+        Self.pnlLog.Refresh;
         Application.ProcessMessages;
         try
             //;;Self.grdList.RowCount  := GlobalInfo.ProfileInfo.Count + 1;
@@ -81,12 +75,12 @@ begin
             lstCol.Caption := 'Versão Esperada';
             lstCol.Width := ColumnHeaderWidth;
 
-            TLogfile.LogDebug( 'Carregando items para exibição', DBGLEVEL_ULTIMATE );
+            TLogfile.LogDebug('Carregando items para exibição', DBGLEVEL_ULTIMATE);
             Self.grdList.Items.BeginUpdate;
-			 try
-				if ( not Assigned( GlobalInfo.ProfileInfo )) then begin
-                   raise Exception.Create('Informações das versões para este perfil não puderam ser obtidas');
-				end;
+            try
+                if (not Assigned(GlobalInfo.ProfileInfo)) then begin
+                    raise Exception.Create('Informações das versões para este perfil não puderam ser obtidas');
+                end;
                 Self.grdList.Items.Clear;
                 for x := 1 to GlobalInfo.ProfileInfo.Count do begin
                     p := GlobalInfo.ProfileInfo.Programs[x - 1];
@@ -98,28 +92,27 @@ begin
                     lstItem.Data := p;
                 end;
             finally
-				 Self.grdList.Items.EndUpdate;
-				 Self.pnlLog.Visible := False;
-			 end;
-		 except
-			on E : Exception do begin
-				Self.pnlLog.Visible := True;
-				Self.lblStatus.Caption := 'Informações de versões não puderam ser carregadas.'#13#10 +  E.Message;
-			end;
+                Self.grdList.Items.EndUpdate;
+                Self.pnlLog.Visible := False;
+            end;
+        except
+            on E : Exception do begin
+                Self.pnlLog.Visible    := True;
+                Self.lblStatus.Caption := 'Informações de versões não puderam ser carregadas.'#13#10 + E.Message;
+            end;
         end;
     end;
 end;
 
-procedure TVVMMonitorMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TVVMMonitorMainForm.FormCloseQuery(Sender : TObject; var CanClose : boolean);
 begin
-	Self.Visible := False;
-	CanClose := Self.FSessionClosure;
+    Self.Visible := False;
+    CanClose     := Self.FSessionClosure;
 end;
 
 procedure TVVMMonitorMainForm.FormCreate(Sender : TObject);
 begin
-	Application.OnMessage := Self.CheckMessage;
-	 TLogfile.LogDebug( 'Carregando perfil para este computador', DBGLEVEL_ULTIMATE );
+	 TLogfile.LogDebug('Carregando perfil para este computador', DBGLEVEL_ULTIMATE);
     Application.Title := 'VVerMonitor - Verificador de Aplicações seguras - ' + VVSMMainDM.fvVersion.FileVersion;
     Self.lblMainLabel.Caption := 'SESOP - Verificador de Aplicações Seguras(SiS)';
       {$IFDEF DEBUG}
@@ -129,8 +122,8 @@ begin
 	 {$ENDIF}
 
     if (System.DebugHook <> 0) then begin
-		 Self.Show(); {TODO -oroger -cdsg : mostrar acima das outras}
-		 //VVSMMainDM.tmrTriggerTimer(Self); //atualizar status
+        Self.Show(); {TODO -oroger -cdsg : mostrar acima das outras}
+        //VVSMMainDM.tmrTriggerTimer(Self); //atualizar status
     end;
 end;
 
@@ -169,6 +162,15 @@ begin
         end;
     end;
 
+end;
+
+procedure TVVMMonitorMainForm.WMQueryEndSession(var Msg : TWMQueryEndSession);
+const
+    ABORT_WINDOWS_SHUTDOWN    = 0;
+    CONTINUE_WINDOWS_SHUTDOWN = 1;
+begin
+    Self.FSessionClosure := True;
+    Msg.Result := CONTINUE_WINDOWS_SHUTDOWN;
 end;
 
 end.

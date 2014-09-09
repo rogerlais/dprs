@@ -127,7 +127,7 @@ var
 implementation
 
 uses
-    FileHnd, StrHnd, vvSvcDM, Math;
+    FileHnd, StrHnd, vvSvcDM, Math, vvConfig;
 
 {$R *.dfm}
 
@@ -139,7 +139,7 @@ begin
     inherited;
     Self.FClientSessionList := TThreadStringList.Create;
     Self.FServerSessionList := TSyncSessionServerList.Create;
-    if (not Assigned(VVSvcConfig.ProfileInfo)) then begin
+    if (not Assigned(GlobalInfo.ProfileInfo)) then begin
         Self.TrayIcon.IconIndex := II_CLIENT_ERROR; //indica falha de identificação de perfil
     end else begin
         Self.TrayIcon.IconIndex := II_CLIENT_IDLE; //Nada a se "adivinhar" ainda
@@ -206,16 +206,15 @@ begin
     end else begin //Execução normal
         Self.tcpclnt.ConnectTimeout := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
     end;
-    Self.tcpclnt.Host      := VVSvcConfig.ParentServer;
-    Self.tcpclnt.Port      := VVSvcConfig.NetClientPort;
+	 Self.tcpclnt.Host      := GlobalInfo.PublicationParentServer;
+    Self.tcpclnt.Port      := GlobalInfo.NetClientPort;
     Self.tcpclnt.OnDisconnected := tcpclntDisconnected;
     Self.tcpclnt.OnConnected := tcpclntConnected;
     Self.tcpclnt.ConnectTimeout := 0; {TODO -oroger -cdsg : deixar configuravel este e ReadTimerout}
     Self.tcpclnt.IPVersion := Id_IPv4;
     Self.tcpclnt.ReadTimeout := 0;  //usa o valor dado por  IdTimeoutDefault
     //Self.TrayIcon.IconIndex := II_CLIENT_IDLE;
-    TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)', [VVSvcConfig.NetClientPort, VVSvcConfig.ParentServer]),
-        DBGLEVEL_DETAILED);
+	 TLogFile.LogDebug(Format('Falando na porta:(%d) - Servidor:(%s)', [Self.tcpclnt.Port, Self.tcpclnt.Host]), DBGLEVEL_DETAILED);
 end;
 
 
@@ -231,17 +230,16 @@ begin
     try
         Self.InitSettings;
         Self.tcpsrvr.OnStatus    := tcpsrvrStatus;
-        Self.tcpsrvr.DefaultPort := VVSvcConfig.NetServicePort;
+        Self.tcpsrvr.DefaultPort := GlobalInfo.NetClientPort;
         Self.tcpsrvr.OnExecute   := tcpsrvrExecute;
         Self.tcpsrvr.TerminateWaitTime := 65000; //Tempo superior ao limite de novo ciclo de todos os clientes
         Self.tcpsrvr.Active      := True;
-        Self.tcpsrvr.StartListening;
-        //Self.TrayIcon.IconIndex := II_SERVER_IDLE; não pode ser alterado pelo inicio do servidor
-        TLogFile.LogDebug(Format('Escutando na porta: %d', [VVSvcConfig.NetServicePort]), DBGLEVEL_DETAILED);
+		 Self.tcpsrvr.StartListening;
+		 TLogFile.LogDebug(Format('Escutando na porta: %d', [ Self.tcpsrvr.DefaultPort ]), DBGLEVEL_DETAILED);
     except
         on E : Exception do begin
-            TLogFile.Log(Format('Erro fatal abrindo porta %d.'#13#10'%s', [VVSvcConfig.NetServicePort, E.Message]), lmtError);
-            raise E;
+			 TLogFile.Log(Format('Erro fatal abrindo porta %d.'#13#10'%s', [Self.tcpsrvr.DefaultPort , E.Message]), lmtError);
+			 raise E;
         end;
     end;
 end;
@@ -265,7 +263,7 @@ begin
         //passa valores obrigatorios para inicio de sessão
         Self.tcpclnt.IOHandler.WriteLn(STR_BEGIN_SESSION_SIGNATURE + SessionName); //cabecalho da sessão
         Self.tcpclnt.IOHandler.WriteLn(VVerService.fvInfo.FileVersion); //versão do cliente
-        Self.tcpclnt.IOHandler.WriteLn(VVSvcConfig.ClientName); //Nome do computador cliente
+		 Self.tcpclnt.IOHandler.WriteLn(GlobalInfo.ClientName); //Nome do computador cliente
         Self.tcpclnt.IOHandler.WriteLn(STR_BEGIN_SESSION_SIGNATURE + SessionName); //repete cabecalho da sessão
         Result := Self.tcpclnt.IOHandler.ReadLn();
         if (not SameText(Result, STR_OK_PACK)) then begin
@@ -276,7 +274,7 @@ begin
                     msg := '"' + msg + '"'#13#10 + E.Message;
                 end;
             end;
-            raise ESVCLException.Create('Sessão não pode ser iniciada: ' + msg);
+            raise EVVException.Create('Sessão não pode ser iniciada: ' + msg);
         end;
         Self.FClientSessionList.Enter;
         try
@@ -446,7 +444,7 @@ begin
     if (Self.tcpclnt.Connected) then begin
         Hint := Hint + 'Download em andamento' + #13#10;
     end;
-    if (not Assigned(VVSvcConfig.ProfileInfo)) then begin
+    if (not Assigned(GlobalInfo.ProfileInfo)) then begin
         Hint := Hint + 'Não foi possível identificar perfil deste computador!!!' + #13#10;
 
     end;
@@ -727,7 +725,7 @@ begin
                     vf.MD5String + TOKEN_DELIMITER + //hash total do arquivo
                     IntToStr(vf.Size); //tamanho total do arquivo
             end else begin
-                raise ESVCLException.CreateFmt('Arquivo "%s" não existe na publicação informada.', [filename]);
+                raise EVVException.CreateFmt('Arquivo "%s" não existe na publicação informada.', [filename]);
             end;
         end;
     except
@@ -755,7 +753,7 @@ begin
             if (GlobalPublication.ManagedFolder.TryGetValue(filename, vf)) then begin
                 Result := vf.FingerPrints;
             end else begin
-                raise ESVCLException.CreateFmt('Arquivo "%s" não existe na publicação informada.', [filename]);
+                raise EVVException.CreateFmt('Arquivo "%s" não existe na publicação informada.', [filename]);
             end;
             Assert((Result <> EmptyStr), 'fingerprint nula?');
         end;
@@ -801,7 +799,7 @@ var
     bs :     Integer;
 begin
     //espera como argumento unico o handle do arquivo aberto e o ordinal do mesmo. IMPORTANTE TODOS DEVEM POSSUIR O MESMO TAMANDO DE BLOCO
-    bs := VVSvcConfig.BlockSize;
+    bs := GlobalInfo.BlockSize;
     try
         Assert(Assigned(Self.FSessionFileTransfer), 'Arquivo para transferencia não alocado anteriormente nesta sessão');
         intRead := Self.Context.Connection.IOHandler.ReadLn();

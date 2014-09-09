@@ -16,12 +16,14 @@ uses
 
 
 const
-    STR_DEFAULT_NET_INSTSEG = '<default>';
+    STR_DEFAULT_VALUE       = '<default>';
+    STR_DEFAULT_NET_INSTSEG = STR_DEFAULT_VALUE;
     VERSION_INFO_FILENAME   = 'VVER.ini';
 
 
 type
-    EVVMonitorException = class(ELoggedException);
+    EVVException = class(ELoggedException);
+    EVVMonitorException = class(EVVException);
 
     TVVProfileInfo = class(TBaseStartSettings)
     private
@@ -60,6 +62,9 @@ type
         function GetNetClientPort : Integer;
         function GetPathServiceLog : string;
         function GetDebugLevel : Integer;
+        function GetPublicationInstSegPath : string;
+        function GetPublicationParentServer : string;
+        function GetPublicationRootServer : string;
     protected
         _ProfileInfo : TVVProfileInfo;
         function GetProfileInfo : TVVProfileInfo; virtual;
@@ -91,6 +96,9 @@ type
         property NetClientPort : Integer read GetNetClientPort;
         property PathServiceLog : string read GetPathServiceLog;
         property DebugLevel : Integer read GetDebugLevel;
+        property PublicationInstSegPath : string read GetPublicationInstSegPath;
+        property PublicationParentServer : string read GetPublicationParentServer;
+        property PublicationRootServer : string read GetPublicationRootServer;
     end;
 
 var
@@ -124,12 +132,19 @@ const
     DV_NET_TCP_PORT = 12014;
 
     IE_DEBUG_LEVEL = 'Debug\DebugLevel';
-	{$IFDEF DEBUG}
-	 DV_DEBUG_LEVEL = 10;
-	{$ELSE}
+    {$IFDEF DEBUG}
+    DV_DEBUG_LEVEL = 10;
+    {$ELSE}
 	DV_DEBUG_LEVEL = 0;
 	{$ENDIF}
 
+
+    IE_PUBLICATION_PATH_INSTSEG = 'InstSegPubPath';
+    DV_PUBLICATION_PATH_INSTSEG = 'D:\Comum\Instseg';
+    IE_PUB_PARENT_SERVER = 'DSync\ParentServer';
+    DV_PUB_PARENT_SERVER = STR_DEFAULT_VALUE;
+    IE_PUB_ROOT_SERVER   = 'DSync\RootServer';
+    DV_PUB_ROOT_SERVER   = DV_VERSION_SERVER;
 
 { TVVInfo }
 
@@ -221,7 +236,7 @@ end;
 
 function TVVStartupConfig.GetDebugLevel : Integer;
 begin
-    Result := Self.ReadIntegerDefault(IE_DEBUG_LEVEL, DV_DEBUG_LEVEL );
+    Result := Self.ReadIntegerDefault(IE_DEBUG_LEVEL, DV_DEBUG_LEVEL);
 end;
 
 function TVVStartupConfig.GetAutoMode : boolean;
@@ -418,6 +433,30 @@ begin
         end;
     end;
     Result := Self._ProfileInfo;
+end;
+
+function TVVStartupConfig.GetPublicationInstSegPath : string;
+    //Caminho da publicação InstSeg(a unica ao momento)
+begin
+    Result := Self.ReadStringDefault(IE_PUBLICATION_PATH_INSTSEG, DV_PUBLICATION_PATH_INSTSEG);
+end;
+
+function TVVStartupConfig.GetPublicationParentServer : string;
+begin
+    Result := Self.ReadStringDefault(IE_PUB_PARENT_SERVER, DV_PUB_PARENT_SERVER);
+    if (SameText(Result, STR_DEFAULT_VALUE)) then begin
+        if (Self.IsPrimaryPC) then begin
+            Result := Self.RegisterServer;
+        end else begin
+
+        end;
+
+    end;
+end;
+
+function TVVStartupConfig.GetPublicationRootServer : string;
+begin
+    Result := Self.ReadStringDefault(IE_PUB_ROOT_SERVER, DV_PUB_ROOT_SERVER);
 end;
 
 function TVVStartupConfig.GetRegisterServer : string;

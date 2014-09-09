@@ -233,7 +233,7 @@ begin
     Self.icmpclntMain.ProtocolIPv6 := 58;
     Self.icmpclntMain.IPVersion := Id_IPv4;
     Self.icmpclntMain.PacketSize := 32;
-    Self.icmpclntMain.Host := GlobalInfo.RootServer;
+    Self.icmpclntMain.Host := GlobalInfo.RegisterServer;
     Result := False;
     for x := 0 to 5 do begin
         try
@@ -243,7 +243,7 @@ begin
             on E : Exception do begin
                 //Sem tratamento -> espera nova tentativa
                 TLogFile.LogDebug(Format('Sem conectividade com a intranet(%s): %s.'#13#10'Tentativa(%d)',
-                    [VVSvcConfig.RootServer, E.Message, x + 1]),
+					 [GlobalInfo.RegisterServer, E.Message, x + 1]),
                     DBGLEVEL_ULTIMATE);
             end;
         end;
@@ -268,33 +268,33 @@ begin
     mailMsgNotify.ConvertPreamble := True;
     mailMsgNotify.AttachmentEncoding := 'UUE';
     mailMsgNotify.Encoding      := mePlainText;
-    mailMsgNotify.From.Address  := VVSvcConfig.NotificationSender;
-    mailMsgNotify.From.Name     := Self.Title;
-    mailMsgNotify.From.Text     := Format(' %s <%s>', [Application.Title, VVSvcConfig.NotificationSender]);
-    mailMsgNotify.From.Domain   := Str_Pas.GetDelimitedSubStr('@', VVSvcConfig.NotificationSender, 1);
-    mailMsgNotify.From.User     := Str_Pas.GetDelimitedSubStr('@', VVSvcConfig.NotificationSender, 0);
-    mailMsgNotify.Sender.Address := VVSvcConfig.NotificationSender;
-    mailMsgNotify.Sender.Name   := APP_NOTIFICATION_DESCRIPTION;
-    mailMsgNotify.Sender.Text   := Format('"%s" <%s>', [APP_NOTIFICATION_DESCRIPTION, VVSvcConfig.NotificationSender]);
-    mailMsgNotify.Sender.Domain := mailMsgNotify.From.Domain;
-    mailMsgNotify.Sender.User   := mailMsgNotify.From.User;
+	 mailMsgNotify.From.Address  := GlobalInfo.SenderAddress;
+	 mailMsgNotify.From.Name     := Self.Title;
+	 mailMsgNotify.From.Text     := Format(' %s <%s>', [Application.Title, GlobalInfo.SenderAddress]);
+	 mailMsgNotify.From.Domain   := Str_Pas.GetDelimitedSubStr('@', GlobalInfo.SenderAddress, 1);
+	 mailMsgNotify.From.User     := Str_Pas.GetDelimitedSubStr('@', GlobalInfo.SenderAddress, 0);
+	 mailMsgNotify.Sender.Address := GlobalInfo.SenderAddress;
+	 mailMsgNotify.Sender.Name   := APP_NOTIFICATION_DESCRIPTION;
+	 mailMsgNotify.Sender.Text   := Format('"%s" <%s>', [APP_NOTIFICATION_DESCRIPTION, GlobalInfo.SenderAddress]);
+	 mailMsgNotify.Sender.Domain := mailMsgNotify.From.Domain;
+	 mailMsgNotify.Sender.User   := mailMsgNotify.From.User;
 
-    // Coletar informações de destino de mensagem com possibilidade de macros no mesmo arquivo de configuração
-    Self.AddDestinations();
+	 // Coletar informações de destino de mensagem com possibilidade de macros no mesmo arquivo de configuração
+	 Self.AddDestinations();
 
-    Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvInfo.FileVersion, VVSvcConfig.ClientName,
-        FormatDateTime('yyyyMMDDhhmm', Now())]);
-    Self.mailMsgNotify.Body.Text := NotificationText + #13#10'****** Arquivo de configuração ******' +
-        #13#10 + VVSvcConfig.ToString;
-    //insere arquivo de configuração ao final
-    try
-        Self.smtpSender.Connect;
-        Self.smtpSender.Send(Self.mailMsgNotify);
-        Self.smtpSender.Disconnect(True);
-        Result := True;
-    except
-        on E : Exception do begin
-            raise ESVCLException.Create('Falha enviando notificação: ' + E.Message);
+	 Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvInfo.FileVersion, GlobalInfo.ClientName,
+		 FormatDateTime('yyyyMMDDhhmm', Now())]);
+	 Self.mailMsgNotify.Body.Text := NotificationText + #13#10'****** Arquivo de configuração ******' +
+		 #13#10 + GlobalInfo.ToString;
+	 //insere arquivo de configuração ao final
+	 try
+		 Self.smtpSender.Connect;
+		 Self.smtpSender.Send(Self.mailMsgNotify);
+		 Self.smtpSender.Disconnect(True);
+		 Result := True;
+	 except
+		 on E : Exception do begin
+			 raise EVVException.Create('Falha enviando notificação: ' + E.Message);
         end;
     end;
 end;
@@ -446,7 +446,7 @@ begin
     try
         if (Self.Status in [csStartPending, csStopped]) then begin // veio de parada(não pause)
             //Teste de instância servidora
-            if (VVSvcConfig.PathPublication <> EmptyStr) then begin
+            if (GlobalInfo.PublicationInstSegPath <> EmptyStr) then begin
                 TLogFile.Log('Criando thread de serviço no modo Servidor', lmtInformation);
                 InitPublications();
                 Self.FServerThread := TVVerServerThread.Create(True, APP_SERVICE_NAME + 'Server'); //thread primário servidor
@@ -454,7 +454,7 @@ begin
                 TLogFile.Log('Instância não funcionará como servidor de publicação', lmtInformation);
             end;
             //Teste de instância cliente
-            if (VVSvcConfig.ParentServer <> EmptyStr) then begin
+            if (GlobalInfo.PublicationParentServer <> EmptyStr) then begin
                 TLogFile.Log('Criando thread de serviço no modo Cliente', lmtInformation);
                 Self.FClientThread := TVVerClientThread.Create(True, APP_SERVICE_NAME + 'Client'); //thread primário client
             end else begin
@@ -470,7 +470,7 @@ begin
 
     Self.ServiceContinue(Sender, Started); // Rotinas de resumo do thread de servico
     if (Started) then begin
-        Self.tmrCycleEvent.Interval := VVSvcConfig.CycleInterval;
+        Self.tmrCycleEvent.Interval := GlobalInfo.CycleInterval;
         Self.tmrCycleEvent.Enabled  := True; // Liberar disparo de liberação de thread de serviço
         TLogFile.Log('Serviço ' + Self.Name + ' - Versão: ' + Self.fvInfo.FileVersion + ' - iniciado com sucesso.',
             lmtInformation);
