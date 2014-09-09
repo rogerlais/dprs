@@ -1,0 +1,98 @@
+1 - Instalar IDE
+	1.1 - Executar o instalador com a inclusão dos arquivos da MSDN/Win api
+	1.2 - Colocar ao final do path os valores, na ordem:
+	C:\Sw\WorkDir\Lib\BDS\Win32\Release
+	C:\Sw\WorkDir\Lib\BDS\Win64\Release
+	1.3 - Remover o caminho do path para evitar confusões:
+	C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl 
+	C:\Users\Public\Documents\Embarcadero\Studio\14.0\Bpl\Win64
+	Ao final teremos algo similar a C:\Program Files (x86)\CollabNet;C:\Program Files (x86)\Embarcadero\Studio\14.0\bin;C:\Program Files (x86)\Embarcadero\Studio\14.0\bin64;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;C:\Program Files\TortoiseSVN\bin;C:\Sw\WorkDir\Lib\BDS\Win32\Release;C:\Sw\WorkDir\Lib\BDS\Win64\Release
+	1.4 - Alterar o atalho de modo a incluir -np ao final, isso impede chamar a página de conteúdo, onde a Embardero pode complicar
+	
+2 - Opções de ambiente
+	2.1 - Autosave para: arquivos e projetos
+	2.2 - Ativar a compilação de projetos modificados
+
+3 - Ajustar as variáveis de ambiente da IDE
+	3.1 - DLib = C:\Sw\WorkDir\Lib\BDS
+	3.2 - Dprs = C:\Sw\WorkDir\Dprs\Delphi
+	3.3 - Pcks = C:\Sw\WorkDir\Pcks
+	
+4 - Delphi Options
+	4.1 - Library
+		4.1.1 - Para TODAS as plataformas win32 e win64			
+			Debug DCU path = $(BDSLIB)\$(Platform)\debug;$(DLib)\$(Platform)\debug
+		4.1.2 - Para a plataforma Win32
+			Package output directory(bpl) = $(DLib)\Win32\Release 
+			DCP output directory = $(DLib)\Win64\DCP
+			HPP output directory = $(DLib)\Win32\HPP
+		4.1.3 - Para a plataforma Win64
+			Package output directory(bpl) = $(DLib)\Win64\Release 
+			DCP output directory = $(DLib)\Win64\DCP
+			HPP output directory = $(DLib)\Win64\HPP
+	4.2 - C++ Options
+		4.2.1 - Para a plataforma Win32
+			Library Path = $(DLib)\Win32\Release
+		4.2.2 - Para a plataforma Win64
+			Library Path = $(DLib)\Win64\Release
+			BPI/LIB output directory = $(BDSCOMMONDIR)\DCP\$(PLATFORM)\$(Config) , mantido para estudo posterior
+
+
+5 - Editor options
+	5.1 - Source Options
+		5.1.1 - Use tab char = on
+		5.1.2 - Optimal fill = on
+		5.1.3 - Highlight current line = off
+
+	5.2 - Color = Twlight
+	5.3 - Display
+		Right Margin = 132
+
+6 - Ferramentas adicionais
+	6.1 - CNWizards(CNPack) = Com padrões, caso apenas XE6 presente
+		6.1.1 - Abrir a IDE e ajustar cnpack/options/Environment/User preferences para o caminho C:\Sw\WorkDir\Dprs\Delphi\_IDE_Config\CNWizards. Assim teremos controle de versão e distribuição dos ajustes para todos os computadores.
+	
+7 - Instalação dos pacotes
+	7.1 - Baixar(via VCS-SVN) todos os fontes necessários
+	7.2 - Instalação
+		7.2.1 - JCL - Instalar a JCL com os seguintes parâmetros, chamando o bat como administrador
+			C:\Sw\WorkDir\Lib\BDS\Win64\Release
+			C:\Sw\WorkDir\Lib\BDS\Win64\DCP
+			C:\Sw\WorkDir\Lib\BDS\Win64\HPP
+			Nota: Sempre informar para não manter as configurações anteriores
+		7.2.2 - JVCL idem JCL com os parametros:
+			7.2.2.1 - Win32
+				Build packages = on
+				Verbose = on
+			7.2.2.2 - Win64
+				IDE Registration = on
+				Clean JVCL component palettes = on
+				Build packages = on
+				Verbose compiler output = on
+				HPP dir = C:\Sw\WorkDir\Lib\BDS\Win32\HPP
+		7.2.3 - JWAPI(2.3)
+			7.2.3.1 - Abrir grupo $(Pcks)\Externals\jedi\jwapi(2.3)\Packages\bds14\_PackageProjectGroup_Delphi.groupproj 
+			7.2.3.1 - Editar o pacote C:\Sw\WorkDir\Pcks\Externals\jedi\jwapi(2.3)\Packages\bds14\JediApi_DynamicRelease.dproj , visto como JediApi_DynamicRelease.dproj apenas
+			7.2.3.1 - Criar a plataforma Win64
+			7.2.3.1 - Apontar os caminhos para os locais corretos, usando o modelo $(DLib)\$(Platform)\$(Config) para todos os targets. 
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

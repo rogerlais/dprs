@@ -2425,7 +2425,7 @@ object VVSMMainDM: TVVSMMainDM
       OnClick = Mostrar1Click
     end
     object Atualizar1: TMenuItem
-      Caption = 'Atualizar'
+      Caption = 'Atualizar Informa'#231#245'es'
       OnClick = Atualizar1Click
     end
     object Sair1: TMenuItem
