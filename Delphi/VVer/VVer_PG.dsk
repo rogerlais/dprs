@@ -1,5 +1,5 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvsFileMgmt.pas',0,1,215,2,248,0,0,,{1,121,53}
+File_0=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvsFileMgmt.pas',0,1,215,2,248,0,0,,{1
 File_1=TSourceModule,'C:\Sw\WorkDir\Dprs\Delphi\VVer\Src\vvProgItem.pas',0,1,103,82,137,0,0,,
 File_2=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\Source\Win32\vcl\Forms.pas',0,1,557,123,586,0,0,,
 File_3=TSourceModule,'c:\arquivos de programas\embarcadero\rad studio\7.0\source\Win32\rtl\win\Messages.pas',0,1,1650,21,1667,0,0,,
@@ -397,11 +397,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4979
+Width=5000
 Height=1574
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4979
+ClientWidth=5000
 ClientHeight=1574
 TBDockHeight=2315
 LRDockWidth=2823
@@ -715,9 +715,9 @@ LRDockWidth=8250
 Dockable=1
 StayOnTop=0
 TabPosition=1
-ActiveTabID=FindReferencsForm
+ActiveTabID=LocalVarsWindow
 TabDockClients=LocalVarsWindow,WatchWindow,CallStackWindow,ThreadStatusWindow,BreakpointWindow,DebugLogView,FindReferencsForm,RefactoringForm
 
 [ActiveProject]
-ActiveProject=11
+ActiveProject=13
 
