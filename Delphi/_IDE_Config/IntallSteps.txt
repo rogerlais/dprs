@@ -24,8 +24,8 @@
 			Debug DCU path = $(BDSLIB)\$(Platform)\debug;$(DLib)\$(Platform)\debug
 		4.1.2 - Para a plataforma Win32
 			Package output directory(bpl) = $(DLib)\Win32\Release 
-			DCP output directory = $(DLib)\Win64\DCP
-			HPP output directory = $(DLib)\Win32\HPP
+			DCP output directory = $(Dlib)\$(platform)\Release
+			HPP output directory = $(Dlib)\$(platform)\Release
 		4.1.3 - Para a plataforma Win64
 			Package output directory(bpl) = $(DLib)\Win64\Release 
 			DCP output directory = $(DLib)\Win64\DCP
@@ -57,8 +57,8 @@
 	7.2 - Instalação
 		7.2.1 - JCL - Instalar a JCL com os seguintes parâmetros, chamando o bat como administrador
 			C:\Sw\WorkDir\Lib\BDS\Win64\Release
-			C:\Sw\WorkDir\Lib\BDS\Win64\DCP
-			C:\Sw\WorkDir\Lib\BDS\Win64\HPP
+			C:\Sw\WorkDir\Lib\BDS\Win64\Release
+			C:\Sw\WorkDir\Lib\BDS\Win64\Release
 			Nota: Sempre informar para não manter as configurações anteriores
 		7.2.2 - JVCL idem JCL com os parametros:
 			7.2.2.1 - Win32
@@ -69,7 +69,7 @@
 				Clean JVCL component palettes = on
 				Build packages = on
 				Verbose compiler output = on
-				HPP dir = C:\Sw\WorkDir\Lib\BDS\Win32\HPP
+				HPP dir = C:\Sw\WorkDir\Lib\BDS\Win32\Release
 		7.2.3 - JWAPI(2.3)
 			7.2.3.1 - Abrir grupo $(Pcks)\Externals\jedi\jwapi(2.3)\Packages\bds14\_PackageProjectGroup_Delphi.groupproj 
 			7.2.3.1 - Editar o pacote C:\Sw\WorkDir\Pcks\Externals\jedi\jwapi(2.3)\Packages\bds14\JediApi_DynamicRelease.dproj , visto como JediApi_DynamicRelease.dproj apenas
