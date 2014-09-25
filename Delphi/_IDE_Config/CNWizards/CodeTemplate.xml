@@ -1,36 +1,5 @@
 <Symbols PropFormat="node">
   <Item>
-    <Name>#fulldoc</Name>
-    <Kind>skTemplate</Kind>
-    <Description>roger - Fully XML Documentation</Description>
-    <Text>/// &lt;summary&gt;
-/// |
-/// &lt;/summary&gt;
-%ArgList:/// &lt;param name="$n"&gt;&lt;/param&gt;
-%%RetType:/// &lt;returns&gt;&lt;/returns&gt;%</Text>
-    <ScopeRate>15</ScopeRate>
-    <AutoIndent>1</AutoIndent>
-    <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>1</ForPascal>
-    <ForCpp>0</ForCpp>
-  </Item>
-  <Item>
-    <Name>#ifDD</Name>
-    <Kind>skTemplate</Kind>
-    <Description>roger - Conditional Compiler Directive</Description>
-    <Text>{$IFDEF DEBUG}
-|
-{$ELSE}
-|
-{$ENDIF}
-</Text>
-    <ScopeRate>15</ScopeRate>
-    <AutoIndent>1</AutoIndent>
-    <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>1</ForPascal>
-    <ForCpp>0</ForCpp>
-  </Item>
-  <Item>
     <Name>//a</Name>
     <Kind>skComment</Kind>
     <Description>// Added by</Description>
@@ -80,6 +49,17 @@
     <Description>{ TODO }</Description>
     <Text>{ TODO -o%User% -c : | %DateTime% }</Text>
     <ScopeRate>0</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
+    <Name>/rasrev</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - comment revision</Description>
+    <Text> Modified by %User% %DateTime% -</Text>
+    <ScopeRate>15</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
     <ForPascal>1</ForPascal>
@@ -255,21 +235,6 @@ end;</Text>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
-    <Name>ifd</Name>
-    <Kind>skTemplate</Kind>
-    <Description>roger - Debugger Test</Description>
-    <Text>if( System.DebugHook &lt;&gt; 0 )  then begin //Depurando na IDE
-|
-end else begin //Execução normal
-
-end;</Text>
-    <ScopeRate>15</ScopeRate>
-    <AutoIndent>1</AutoIndent>
-    <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>1</ForPascal>
-    <ForCpp>0</ForCpp>
-  </Item>
-  <Item>
     <Name>pr</Name>
     <Kind>skTemplate</Kind>
     <Description>procedure ();</Description>
@@ -386,7 +351,53 @@ end;</Text>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
-    <Name>uh</Name>
+    <Name>rasfulldoc</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - Fully XML Documentation</Description>
+    <Text>/// &lt;summary&gt;
+/// |
+/// &lt;/summary&gt;
+%ArgList:/// &lt;param name="$n"&gt;&lt;/param&gt;
+%%RetType:/// &lt;returns&gt;&lt;/returns&gt;%</Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
+    <Name>rasifd</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - Debugger Test</Description>
+    <Text>if( System.DebugHook &lt;&gt; 0 )  then begin //Depurando na IDE
+|
+end else begin //Execução normal
+
+end;</Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
+    <Name>rasifDD</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - Conditional Compiler Directive</Description>
+    <Text>{$IFDEF DEBUG}
+|
+{$ELSE}
+|
+{$ENDIF}
+</Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
+    <Name>rasuh</Name>
     <Kind>skTemplate</Kind>
     <Description>Roger - Unit Header</Description>
     <Text>{$IFDEF %Unit%}

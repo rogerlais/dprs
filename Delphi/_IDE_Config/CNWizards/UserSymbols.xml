@@ -8,7 +8,7 @@
     <ScopeRate>15</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>0</ForPascal>
+    <ForPascal>1</ForPascal>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
@@ -19,7 +19,7 @@
     <ScopeRate>15</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>0</ForPascal>
+    <ForPascal>1</ForPascal>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
@@ -32,7 +32,7 @@ end;</Text>
     <ScopeRate>15</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>0</ForPascal>
+    <ForPascal>1</ForPascal>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
@@ -48,7 +48,7 @@ end;</Text>
     <ScopeRate>10</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>0</ForPascal>
+    <ForPascal>1</ForPascal>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
@@ -59,20 +59,20 @@ end;</Text>
     <ScopeRate>15</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>0</ForPascal>
+    <ForPascal>1</ForPascal>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
     <Name>if</Name>
     <Kind>skTemplate</Kind>
     <Description>roger - short if block</Description>
-    <Text>if (|) then begin
-    |
+    <Text>if ( | ) then begin
+    
 end;</Text>
     <ScopeRate>10</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>0</ForPascal>
+    <ForPascal>1</ForPascal>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
@@ -85,7 +85,7 @@ end;</Text>
     <ScopeRate>10</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>0</ForPascal>
+    <ForPascal>1</ForPascal>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
@@ -100,7 +100,20 @@ end;</Text>
     <ScopeRate>10</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>0</ForPascal>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
+    <Name>raswarn</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - Remove warnings comuns</Description>
+    <Text>{$WARN UNSAFE_TYPE|UNSAFE_CODE OFF}
+
+{$WARN UNSAFE_TYPE|UNSAFE_CODE ON}</Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
@@ -112,11 +125,11 @@ try
   |
 finally
   %Object%.Free;
-end;  // try</Text>
+end;  </Text>
     <ScopeRate>15</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>0</ForPascal>
+    <ForPascal>1</ForPascal>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
@@ -127,7 +140,7 @@ end;  // try</Text>
     <ScopeRate>15</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>0</ForPascal>
+    <ForPascal>1</ForPascal>
     <ForCpp>0</ForCpp>
   </Item>
 </Symbols>

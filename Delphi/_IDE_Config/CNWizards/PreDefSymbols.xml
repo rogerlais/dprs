@@ -564,11 +564,12 @@
   <Item>
     <Name>if</Name>
     <Kind>skKeyword</Kind>
+    <Description>roger - reinsercao maluca</Description>
     <Text>if</Text>
-    <ScopeRate>20</ScopeRate>
+    <ScopeRate>15</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>0</ForPascal>
+    <ForPascal>1</ForPascal>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>

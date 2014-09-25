@@ -304,4 +304,15 @@
     <ForPascal>0</ForPascal>
     <ForCpp>0</ForCpp>
   </Item>
+  <Item>
+    <Name>rasrev</Name>
+    <Kind>skComment</Kind>
+    <Description>roger - revision comment</Description>
+    <Text> Modified by %User% %DateTime% - </Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
 </Symbols>
