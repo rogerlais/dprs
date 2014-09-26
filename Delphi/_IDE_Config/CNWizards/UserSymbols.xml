@@ -104,6 +104,21 @@ end;</Text>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
+    <Name>rasdefbdsXE6</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - directive for XE6 only</Description>
+    <Text>{$IFDEF VER270}
+|
+{$ELSEIF}
+
+{$ENDIF}</Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
     <Name>raswarn</Name>
     <Kind>skTemplate</Kind>
     <Description>roger - Remove warnings comuns</Description>
