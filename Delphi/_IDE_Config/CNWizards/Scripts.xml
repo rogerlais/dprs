@@ -1,6 +1,7 @@
 <TCnScriptCollection PropFormat="node">
   <o>
     <Name>Script1</Name>
-    <RelFileName>Scripts\Script1.pas</RelFileName>
+    <Comment>Comentar bloco XML Format</Comment>
+    <RelFileName>Scripts\teste1.pas</RelFileName>
   </o>
 </TCnScriptCollection>
