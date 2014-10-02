@@ -41,7 +41,7 @@
 			HPP output directory = $(DLib)\Win64\HPP
 	4.2 - C++ Options
 		4.2.1 - Para a plataforma Win32
-			Library Path = $(DLib)\Win32\Release
+			Library Path = $(DLib)\Win32\Release + $(DLib)\Win32\DCP
 		4.2.2 - Para a plataforma Win64
 			Library Path = $(DLib)\Win64\Release
 			BPI/LIB output directory = $(BDSCOMMONDIR)\DCP\$(PLATFORM)\$(Config) , mantido para estudo posterior
