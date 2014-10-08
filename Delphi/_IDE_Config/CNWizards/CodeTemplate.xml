@@ -397,6 +397,17 @@ end;</Text>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
+    <Name>rasmdo</Name>
+    <Kind>skTemplate</Kind>
+    <Description>Message Dialog OK</Description>
+    <Text>MessageDlg('|',  mtInformation, [mbOK], 0);</Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
     <Name>rasuh</Name>
     <Kind>skTemplate</Kind>
     <Description>Roger - Unit Header</Description>
