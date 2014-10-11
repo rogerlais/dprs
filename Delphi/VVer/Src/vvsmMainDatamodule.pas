@@ -3,18 +3,17 @@ unit vvsmMainDatamodule;
 interface
 
 uses
-    SysUtils, Classes, FileInfo, ExtCtrls, ImgList, Controls, Menus, Forms, vvsFileMgmt, IdBaseComponent, IdComponent,
-    IdTCPConnection, IdTCPClient, vvConfig, IdHTTP, vvProgItem;
+	SysUtils, Classes, ExtCtrls, ImgList, Controls, Menus, Forms, vvsFileMgmt, IdBaseComponent, IdComponent,
+	IdTCPConnection, IdTCPClient, vvConfig, IdHTTP, vvProgItem, FileInfo;
 
 const
-    STR_DEFAULT_NET_INSTSEG = '<default>';
-    VERSION_INFO_FILENAME   = 'VVER.ini';
+	STR_DEFAULT_NET_INSTSEG = '<default>';
+	VERSION_INFO_FILENAME   = 'VVER.ini';
 
 
 type
-    TVVSMMainDM = class(TDataModule)
-        fvVersion :       TFileVersionInfo;
-        TrayIcon :        TTrayIcon;
+	TVVSMMainDM = class(TDataModule)
+		TrayIcon :        TTrayIcon;
         tmrTrigger :      TTimer;
         ilIcons :         TImageList;
         pmMenuTray :      TPopupMenu;
@@ -67,7 +66,7 @@ uses
     FileHnd, StrHnd, IdContext, IdCustomTCPServer,
     IdTCPServer,
     IdEMailAddress, WinNetHnd, AppLog, vvMainForm, Str_Pas, TREUtils, XPFileEnumerator,
-    vvsConsts, IdGlobal, Rtti, TypInfo, Masks, Windows, ShellFilesHnd, JclSysInfo, Dialogs;
+	vvsConsts, IdGlobal, Rtti, TypInfo, Masks, Windows, ShellFilesHnd, JclSysInfo, Dialogs, FileInfo;
 
 const
     ICON_UPDATED     = 0;
@@ -181,8 +180,8 @@ end;
 
 procedure TVVSMMainDM.InitSettings;
 begin
-    SysUtils.DecimalSeparator  := '.';
-    SysUtils.ThousandSeparator := ' ';
+	TStrConv.FormatSettings.DecimalSeparator  := '.';
+	TStrConv.FormatSettings.ThousandSeparator := ' ';
 end;
 
 procedure TVVSMMainDM.LoadGlobalInfo(const Filename : string);
@@ -248,14 +247,14 @@ var
     ret : string;
 begin
     try
-        Result := HTTPDecode(Self.tcpclntRegister.IOHandler.ReadLn(TEncoding.UTF8)); //leitura da resposta em si
+		Result := HTTPDecode(Self.tcpclntRegister.IOHandler.ReadLn( nil )); //leitura da resposta em si
     except
         on E : Exception do begin
             raise Exception.Create('Erro lendo resposta do servidor.' + E.Message);
         end;
     end;
     try //Leitura da checagem da resposta
-        ret := Self.tcpclntRegister.IOHandler.ReadLn(); //codigo de retorno
+		ret := Self.tcpclntRegister.IOHandler.ReadLn(nil); //codigo de retorno
         if (ret <> STR_OK_PACK) then begin
             raise Exception.CreateFmt('Operação falhou(%s):'#13#10'%s', [ret, Result]);
         end;

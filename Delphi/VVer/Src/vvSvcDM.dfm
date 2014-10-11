@@ -33,7 +33,6 @@ object VVerService: TVVerService
     Protocol = 1
     ProtocolIPv6 = 58
     IPVersion = Id_IPv4
-    PacketSize = 32
     Left = 120
     Top = 32
   end

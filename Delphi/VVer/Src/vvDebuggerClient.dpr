@@ -9,7 +9,8 @@ uses
   vvSvcDM in 'vvSvcDM.pas',
   vvConfig in 'vvConfig.pas',
   vvsFileMgmt in 'vvsFileMgmt.pas',
-  vvsThreadList in 'vvsThreadList.pas';
+  vvsThreadList in 'vvsThreadList.pas',
+  FileInfo in '..\..\..\..\Pcks\WinSysLib\Src\FileInfo.pas';
 
 {$R *.res}
 

@@ -46,7 +46,7 @@ type
 implementation
 
 uses
-    FileHnd, WinReg32, FileInfo, Windows, AppLog;
+    FileHnd, WinReg32, Windows, AppLog, FileInfo;
 
 
 { TProgItem }
