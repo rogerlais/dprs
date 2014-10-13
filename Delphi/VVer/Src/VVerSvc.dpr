@@ -4,8 +4,7 @@ uses
   SvcMgr,
   vvSvcDM in 'vvSvcDM.pas' {VVerService: TService},
   vvsConsts in 'vvsConsts.pas',
-  vvsTCPTransfer in 'vvsTCPTransfer.pas',
-  FileInfo in '..\..\..\..\Pcks\WinSysLib\Src\FileInfo.pas';
+  vvsTCPTransfer in 'vvsTCPTransfer.pas';
 
 {$R *.RES}
 

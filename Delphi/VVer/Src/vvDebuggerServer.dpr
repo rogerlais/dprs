@@ -9,8 +9,7 @@ uses
   vvSvcDM in 'vvSvcDM.pas',
   vvConfig in 'vvConfig.pas',
   vvsFileMgmt in 'vvsFileMgmt.pas',
-  vvsThreadList in 'vvsThreadList.pas',
-  StreamHnd in '..\..\..\..\Pcks\StfLib\Src\StreamHnd.pas';
+  vvsThreadList in 'vvsThreadList.pas';
 
 {$R *.res}
 

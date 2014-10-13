@@ -140,9 +140,10 @@ begin
 		end;
 	 finally
 		 Self._CurrentVersion := Result;
-        reg.Free;
-    end;
+		reg.Free;
+	end;
 end;
 
 
 end.
+

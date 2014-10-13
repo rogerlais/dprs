@@ -65,6 +65,7 @@ type
         function GetPublicationInstSegPath : string;
         function GetPublicationParentServer : string;
         function GetPublicationRootServer : string;
+    function GetBlockSize: Integer;
     protected
         _ProfileInfo : TVVProfileInfo;
         function GetProfileInfo : TVVProfileInfo; virtual;
@@ -74,7 +75,8 @@ type
         function ToString() : string;
         function LoadHTTPContent(const URL, DestFilename : string) : boolean;
         class function GetBlockHash(AStrm : TMemoryStream; ALength : Integer) : string;
-        property GlobalStatus : string read GetGlobalStatus;
+		property GlobalStatus : string read GetGlobalStatus;
+		property BlockSize : Integer read GetBlockSize;
         property InfoText : string read GetInfoText;
         property ProfileInfo : TVVProfileInfo read GetProfileInfo;
         property AutoMode : boolean read GetAutoMode;
@@ -116,10 +118,13 @@ const
     IE_NOTIFICATION_LIST = 'NotificationList';
     DV_NOTIFICATION_LIST = 'sesop.l@tre-pb.jus.br';
 
-    IE_CYCLE_INTERVAL = 'CycleInterval';
-    DV_CYCLE_INTERVAL = 60000;
+	IE_CYCLE_INTERVAL = 'CycleInterval';
+	DV_CYCLE_INTERVAL = 60000;
 
-    IE_LOCAL_REPOSITORY = 'InstSegPath';
+	IE_BLOCK_SIZE = 'BlockSize';
+	DV_BLOCK_SIZE = 4096;
+
+	IE_LOCAL_REPOSITORY = 'InstSegPath';
     DV_LOCAL_REPOSITORY = 'D:\Comum\InstSeg';
 
     IE_REMOTE_REPOSITORY = 'NetInstSeg';
@@ -231,7 +236,7 @@ end;
 
 function TVVStartupConfig.GetCycleInterval : Integer;
 begin
-    Result := ReadIntegerDefault(IE_CYCLE_INTERVAL, DV_CYCLE_INTERVAL);
+	Result := ReadIntegerDefault(IE_CYCLE_INTERVAL, DV_CYCLE_INTERVAL);
 end;
 
 function TVVStartupConfig.GetDebugLevel : Integer;
@@ -241,16 +246,16 @@ end;
 
 function TVVStartupConfig.GetAutoMode : boolean;
 var
-    x : Integer;
+	x : Integer;
 begin
-    //Identifica o modo de operação
-    Result := False;
-    for x := 0 to ParamCount do begin
-        if SameText(ParamStr(x), '/auto') then begin
-            Result := True;
-            Exit;
-        end;
-    end;
+	//Identifica o modo de operação
+	Result := False;
+	for x := 0 to ParamCount do begin
+		if SameText(ParamStr(x), '/auto') then begin
+			Result := True;
+			Exit;
+		end;
+	end;
 end;
 
 class function TVVStartupConfig.GetBlockHash(AStrm : TMemoryStream; ALength : Integer) : string;
@@ -282,6 +287,11 @@ begin
         AStrm.Size     := oldSize;
         AStrm.Position := oldPos;
     end;
+end;
+
+function TVVStartupConfig.GetBlockSize: Integer;
+begin
+	Result:= Self.ReadIntegerDefault( 	IE_BLOCK_SIZE , DV_BLOCK_SIZE );
 end;
 
 function TVVStartupConfig.GetEnsureNotification : boolean;

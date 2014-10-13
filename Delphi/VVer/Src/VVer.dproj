@@ -100,9 +100,7 @@
             <Form>dtmdMain</Form>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\..\..\..\Pcks\TRE\Src\TREUtils.pas"/>
         <DCCReference Include="vvProgItem.pas"/>
-        <DCCReference Include="..\..\..\..\Pcks\WinSysLib\Src\FileInfo.pas"/>
         <None Include="..\Docs\Historico.txt"/>
         <None Include="..\Docs\Requisitos.txt"/>
         <BuildConfiguration Include="Debug">

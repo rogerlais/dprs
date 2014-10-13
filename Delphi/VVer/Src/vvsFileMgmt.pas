@@ -36,7 +36,7 @@ type
 	public
 		constructor Create(AParent: TManagedFolder; const AFilename: string);
 		procedure Refresh;
-		function ToString(): string;
+		function ToString(): string; override;
 		function Delete(): Integer;
 		property Filename: string read FFilename;
 		property FullFilename: string read GetFullFilename;

@@ -3,10 +3,6 @@ object VVSMMainDM: TVVSMMainDM
   OnCreate = DataModuleCreate
   Height = 316
   Width = 647
-  object fvVersion: TFileVersionInfo
-    Left = 114
-    Top = 144
-  end
   object TrayIcon: TTrayIcon
     BalloonTitle = 'SESOP - Service Loader'
     BalloonTimeout = 1000
@@ -35,7 +31,7 @@ object VVSMMainDM: TVVSMMainDM
     Left = 270
     Top = 144
     Bitmap = {
-      494C010104000900100030003000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010104000900140030003000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000C00000006000000001002000000000000020
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2440,6 +2436,10 @@ object VVSMMainDM: TVVSMMainDM
     Port = 0
     ReadTimeout = -1
     Left = 192
+    Top = 144
+  end
+  object fvVersion: TFileVersionInfo
+    Left = 122
     Top = 144
   end
 end

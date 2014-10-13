@@ -66,6 +66,9 @@ function HTTPDecode(const AStr: AnsiString): AnsiString;
 
 implementation
 
+uses
+  System.AnsiStrings;
+
 function HTTPDecode(const AStr: AnsiString): AnsiString;
 var
 	Sp, Rp, Cp: PAnsiChar;
@@ -130,7 +133,7 @@ begin
 		end else if Sp^ = ' ' then begin
 			Rp^ := '+';
 		end else begin
-			FormatBuf(Rp^, 3, AnsiString('%%%.2x'), 6, [Ord(Sp^)]);
+			System.AnsiStrings.FormatBuf(Rp^, 3, AnsiString('%%%.2x'), 6, [Ord(Sp^)]);
 			Inc(Rp, 2);
 		end;
 		Inc(Rp);

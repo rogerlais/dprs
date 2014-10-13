@@ -21,6 +21,7 @@ type
         Atualizar1 :      TMenuItem;
         Sair1 :           TMenuItem;
         tcpclntRegister : TIdTCPClient;
+        fvVersion: TFileVersionInfo;
         procedure TrayIconMouseMove(Sender : TObject; Shift : TShiftState; X, Y : Integer);
         procedure DataModuleCreate(Sender : TObject);
         procedure tmrTriggerTimer(Sender : TObject);
@@ -66,7 +67,7 @@ uses
     FileHnd, StrHnd, IdContext, IdCustomTCPServer,
     IdTCPServer,
     IdEMailAddress, WinNetHnd, AppLog, vvMainForm, Str_Pas, TREUtils, XPFileEnumerator,
-	vvsConsts, IdGlobal, Rtti, TypInfo, Masks, Windows, ShellFilesHnd, JclSysInfo, Dialogs, FileInfo;
+	vvsConsts, IdGlobal, Rtti, TypInfo, Masks, Windows, ShellFilesHnd, JclSysInfo, Dialogs, XP.StrConverters, system.UITypes;
 
 const
     ICON_UPDATED     = 0;
@@ -118,8 +119,6 @@ begin
 end;
 
 procedure TVVSMMainDM.EndSession;
-var
-    idx : Integer;
 begin
     //Envia a finalização de sessão para o servidor
     Self.tcpclntRegister.IOHandler.WriteLn(STR_END_SESSION_SIGNATURE + GlobalInfo.ClientName); //Envia msg de fim de sessão
@@ -161,7 +160,7 @@ begin
             remoteConfFile := TFileHnd.ConcatPath([GlobalInfo.RemoteRepositoryPath, VERSION_INFO_FILENAME]);
             //Sempre ser carregado por este caminho
             ForceDirectories(GlobalInfo.LocalRepositoryPath);
-            ret := FileHnd.FileCopyEx(remoteConfFile, localConfFile, True);
+            ret := TFileHnd.CopyFile(remoteConfFile, localConfFile, True, True);
             if (ret <> ERROR_SUCCESS) then begin
                 raise Exception.CreateFmt('Arquivo (%s) de configuração inicial não pode ser carregado'#13#10'%s',
                     [localConfFile, SysErrorMessage(ret)]);
@@ -179,9 +178,14 @@ begin
 end;
 
 procedure TVVSMMainDM.InitSettings;
+var
+	FS : TFormatSettings;
 begin
-	TStrConv.FormatSettings.DecimalSeparator  := '.';
-	TStrConv.FormatSettings.ThousandSeparator := ' ';
+	{TODO -oroger -cdsg : Checar se há impacto nos separadores regionais }
+	FS := TStrConv.FormatSettings^;
+	FS.DecimalSeparator  := '.';
+	FS.ThousandSeparator := ' ';
+	TStrConv.AdjustFormatSettings( FS );
 end;
 
 procedure TVVSMMainDM.LoadGlobalInfo(const Filename : string);
@@ -335,7 +339,7 @@ begin
         //Envia a abertura de sessão para o servidor
         Self.tcpclntRegister.Connect;
         //passa valores obrigatorios para inicio de sessão
-        Self.tcpclntRegister.IOHandler.WriteLn(STR_BEGIN_SESSION_SIGNATURE + SessionName); //cabecalho da sessão
+		Self.tcpclntRegister.IOHandler.WriteLn(STR_BEGIN_SESSION_SIGNATURE + SessionName); //cabecalho da sessão
         Self.tcpclntRegister.IOHandler.WriteLn(Self.fvVersion.FileVersion); //versão do cliente
         Self.tcpclntRegister.IOHandler.WriteLn(GlobalInfo.ClientName); //Nome do computador cliente
         Self.tcpclntRegister.IOHandler.WriteLn(STR_BEGIN_SESSION_SIGNATURE + SessionName); //repete cabecalho da sessão

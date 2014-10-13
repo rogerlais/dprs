@@ -102,7 +102,6 @@
         <DCCReference Include="vvConfig.pas"/>
         <DCCReference Include="vvsFileMgmt.pas"/>
         <DCCReference Include="vvsThreadList.pas"/>
-        <DCCReference Include="..\..\..\..\Pcks\WinSysLib\Src\FileInfo.pas"/>
         <None Include="vvDebuggerClient.todo"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
