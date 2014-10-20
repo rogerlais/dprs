@@ -215,10 +215,10 @@ procedure TVVerService.InitPublications;
 begin
     //Inicia as instancias de publicações globais
     if (not Assigned(vvsFileMgmt.GlobalPublication)) then begin
-		 if (ForceDirectories(GlobalInfo.LocalRepositoryPath)) then begin
-			 vvsFileMgmt.GlobalPublication := TVVSPublication.Create(PUBLICATION_INSTSEG, GlobalInfo.LocalRepositoryPath);
+		 if (ForceDirectories(GlobalInfo.PathLocalRepository)) then begin
+			 vvsFileMgmt.GlobalPublication := TVVSPublication.Create(PUBLICATION_INSTSEG, GlobalInfo.PathLocalRepository);
 		 end else begin
-			 raise Exception.Create('Caminho da publicação INSTSEG inválido: ' + GlobalInfo.LocalRepositoryPath );
+			 raise Exception.Create('Caminho da publicação INSTSEG inválido: ' + GlobalInfo.PathLocalRepository);
         end;
     end;
 end;
@@ -446,7 +446,7 @@ begin
     try
         if (Self.Status in [csStartPending, csStopped]) then begin // veio de parada(não pause)
             //Teste de instância servidora
-            if (GlobalInfo.PublicationInstSegPath <> EmptyStr) then begin
+            if (GlobalInfo.PathPublicationInstSeg <> EmptyStr) then begin
                 TLogFile.Log('Criando thread de serviço no modo Servidor', lmtInformation);
                 InitPublications();
                 Self.FServerThread := TVVerServerThread.Create(True, APP_SERVICE_NAME + 'Server'); //thread primário servidor

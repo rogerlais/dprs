@@ -232,6 +232,18 @@
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
+    <Name>///rasrev</Name>
+    <Kind>skComment</Kind>
+    <Description>roger - Revision Code XML</Description>
+    <Text>Revision - %Year%%Month%%Day% - %User%
+</Text>
+    <ScopeRate>13</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>0</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
     <Name>///remarks</Name>
     <Kind>skComment</Kind>
     <Description>Remarks in XML style.</Description>
@@ -250,18 +262,6 @@
     <Kind>skComment</Kind>
     <Description>Returns in XML style.</Description>
     <Text>/// &lt;returns&gt;|&lt;/returns&gt;</Text>
-    <ScopeRate>13</ScopeRate>
-    <AutoIndent>1</AutoIndent>
-    <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>0</ForPascal>
-    <ForCpp>0</ForCpp>
-  </Item>
-  <Item>
-    <Name>///rev</Name>
-    <Kind>skComment</Kind>
-    <Description>Roger - Revision Code</Description>
-    <Text>Revision - %Year%%Month%%Day% - %User%
-</Text>
     <ScopeRate>13</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
@@ -308,7 +308,7 @@
     <Name>rasrev</Name>
     <Kind>skComment</Kind>
     <Description>roger - revision comment</Description>
-    <Text> Modified by %User% %DateTime% - </Text>
+    <Text>Revision - %Year%%Month%%Day% - %User%</Text>
     <ScopeRate>15</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>

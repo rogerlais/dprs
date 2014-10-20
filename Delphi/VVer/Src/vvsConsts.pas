@@ -1,7 +1,7 @@
 {$IFDEF vvsConsts}
 {$DEFINE DEBUG_UNIT}
 {$ENDIF}
-{$I VVERSvc.inc}
+{$I VVer.inc}
 unit vvsConsts;
 
 interface
@@ -67,14 +67,14 @@ function HTTPDecode(const AStr: AnsiString): AnsiString;
 implementation
 
 uses
-  System.AnsiStrings;
+	System.AnsiStrings;
 
 function HTTPDecode(const AStr: AnsiString): AnsiString;
 var
 	Sp, Rp, Cp: PAnsiChar;
 	S         : AnsiString;
 begin
-	{$WARN EXPLICIT_STRING_CAST OFF}
+	{$WARN EXPLICIT_STRING_CAST OFF} {$WARN UNSAFE_CODE OFF}
 	SetLength(Result, Length(AStr));
 	Sp := PAnsiChar(AStr);
 	Rp := PAnsiChar(Result);
@@ -113,7 +113,7 @@ begin
 			raise EConvertError.CreateFmt('Caracter "%s" inválido encontrado', [AnsiChar('%') + Cp^ + Sp^, Cp - PAnsiChar(AStr)])
 	end;
 	SetLength(Result, Rp - PAnsiChar(Result));
-	{$WARN EXPLICIT_STRING_CAST ON}
+	{$WARN EXPLICIT_STRING_CAST ON}  {$WARN UNSAFE_CODE ON}
 end;
 
 function HTTPEncode(const AStr: AnsiString): AnsiString;
@@ -127,6 +127,7 @@ begin
 	SetLength(Result, Length(AStr) * 3);
 	Sp := PAnsiChar(AStr);
 	Rp := PAnsiChar(Result);
+	{$WARN UNSAFE_CODE OFF}
 	while Sp^ <> #0 do begin
 		if Sp^ in NoConversion then begin
 			Rp^ := Sp^;
@@ -140,6 +141,7 @@ begin
 		Inc(Sp);
 	end;
 	SetLength(Result, Rp - PAnsiChar(Result));
+	{$WARN UNSAFE_CODE ON}
 end;
 
 function ServiceStatus2String(const AStatus: TCurrentStatus): string;

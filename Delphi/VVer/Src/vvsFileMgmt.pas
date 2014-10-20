@@ -1,7 +1,7 @@
 {$IFDEF vvsFileMgmt}
 {$DEFINE DEBUG_UNIT}
 {$ENDIF}
-{$I VVERSvc.inc}
+{$I VVer.inc}
 unit vvsFileMgmt;
 
 interface
@@ -25,7 +25,7 @@ type
 		_Size     : int64;
 		FFilename : string;
 		[JSONMarshalled(false)]
-		[JSONUnMarshalled(false)]
+		//[JSONUnMarshalled(false)]
 		FParent: TManagedFolder;
 		function GetMD5String: string;
 		function GetLastWrite: TDateTime;
@@ -233,7 +233,9 @@ begin
 			begin
 				v := TVVSFile(Data).FFilename;
 				{ TODO -oroger -curgente : Para esta versão havia erro na recuperação da cadeia contendo caracter "\" Verificar bug com XE6 }
+				{$WARN IMPLICIT_STRING_CAST_LOSS OFF} {$WARN IMPLICIT_STRING_CAST OFF}
 				Result := jclAnsiStrings.StrStringToEscaped(v);
+				{$WARN IMPLICIT_STRING_CAST_LOSS ON} {$WARN IMPLICIT_STRING_CAST ON}
 			end);
 		//Registra conversor para anular instancia de FParent(sempre ajustada no Unmarshalling)
 		m.RegisterConverter(Self.ClassType, 'FParent',

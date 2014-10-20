@@ -47,6 +47,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <DCC_UNSAFE_TYPE>true</DCC_UNSAFE_TYPE>
         <VerInfo_Release>2014</VerInfo_Release>
         <SanitizedProjectName>VVMonit</SanitizedProjectName>
@@ -59,7 +60,6 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Build>12</VerInfo_Build>
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
-        <Icon_MainIcon>VVMonit_Icon2.ico</Icon_MainIcon>
         <VerInfo_Locale>1046</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=SESOP;FileDescription=VVer Monitor;FileVersion=0.1.2014.12;InternalName=VVMonit;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Verificador de Versões;ProductVersion=0.1.2014.12;Comments=Rogerlais Andrade</VerInfo_Keys>
         <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
@@ -77,13 +77,11 @@
         <DCC_UNSAFE_VOID_POINTER>true</DCC_UNSAFE_VOID_POINTER>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <VerInfo_Release>0</VerInfo_Release>
         <VerInfo_MinorVer>0</VerInfo_MinorVer>
-        <VerInfo_MajorVer>1</VerInfo_MajorVer>
-        <VerInfo_Build>0</VerInfo_Build>
+        <VerInfo_Build>14</VerInfo_Build>
         <DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=0.0.2014.14;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=0.0.2014.14;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <Icon_MainIcon>VVMonit_Icon2.ico</Icon_MainIcon>
@@ -109,12 +107,10 @@
         <DCC_Define>DEBUG;DEBUG_ALL;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <VerInfo_Release>0</VerInfo_Release>
-        <VerInfo_MinorVer>0</VerInfo_MinorVer>
-        <VerInfo_MajorVer>1</VerInfo_MajorVer>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Build>0</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_MinorVer>0</VerInfo_MinorVer>
+        <VerInfo_Build>14</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=SESOP;FileDescription=Verificador de Versões(Módulo Monitor);FileVersion=0.0.2014.14;InternalName=VVerMonit;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=0.0.2014.14;Comments=Rogerlais Andrade</VerInfo_Keys>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">

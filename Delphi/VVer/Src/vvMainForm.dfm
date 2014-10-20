@@ -54,10 +54,9 @@ object Form1: TForm1
     Height = 57
     Anchors = []
     Caption = '&Fechar'
-    DoubleBuffered = True
     Kind = bkOK
     Layout = blGlyphTop
-    ParentDoubleBuffered = False
+    NumGlyphs = 2
     Spacing = 0
     TabOrder = 3
     OnClick = btnOKClick
@@ -94,7 +93,6 @@ object Form1: TForm1
     Anchors = []
     Caption = '&Notificar'
     Default = True
-    DoubleBuffered = True
     Glyph.Data = {
       C6060000424DC60600000000000036000000280000001C000000140000000100
       18000000000090060000C40E0000C40E00000000000000000000000000000000
@@ -153,7 +151,6 @@ object Form1: TForm1
       00000000000000000000}
     Layout = blGlyphTop
     ModalResult = 6
-    ParentDoubleBuffered = False
     Spacing = 0
     TabOrder = 4
     OnClick = btnNotifSESOPClick
@@ -212,7 +209,6 @@ object Form1: TForm1
     Anchors = []
     Caption = 'For'#231'ar &Perfil'
     Default = True
-    DoubleBuffered = True
     Glyph.Data = {
       66090000424D660900000000000036000000280000001C0000001C0000000100
       18000000000030090000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -291,7 +287,6 @@ object Form1: TForm1
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFF}
     Layout = blGlyphTop
-    ParentDoubleBuffered = False
     Spacing = 0
     TabOrder = 5
     OnClick = btnChangeProfileClick

@@ -26,10 +26,9 @@ object VVMMonitorMainForm: TVVMMonitorMainForm
     Height = 57
     Anchors = []
     Caption = '&Fechar'
-    DoubleBuffered = True
     Kind = bkOK
     Layout = blGlyphTop
-    ParentDoubleBuffered = False
+    NumGlyphs = 2
     Spacing = 0
     TabOrder = 3
     OnClick = btnOKClick

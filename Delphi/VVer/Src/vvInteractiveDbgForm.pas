@@ -31,7 +31,7 @@ var
 implementation
 
 uses
-  vvsConfig;
+  vvConfig;
 
 {$R *.dfm}
 
@@ -56,7 +56,7 @@ end;
 
 procedure TForm2.FormCreate(Sender: TObject);
 begin
-	Self.Caption := Self.Caption + Format( ' - Instância( %s )', [ VVSvcConfig.InstanceName ] );
+	Self.Caption := Self.Caption + Format( ' - Instância( %s )', [ GlobalInfo.InstanceName ] );
 end;
 
 end.

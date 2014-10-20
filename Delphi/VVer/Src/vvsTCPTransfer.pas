@@ -862,7 +862,7 @@ var
     sl : TStringList;
 begin
     Data     := Self.Context.Connection.IOHandler.ReadLn();
-    filename := VVSvcConfig.PathRegClients;
+	filename := GlobalInfo.PathClientInfo;
     ForceDirectories(filename);
     filename := TFileHnd.ConcatPath([filename, Self.FClientName + '.txt']);
     sl := TStringList.Create;

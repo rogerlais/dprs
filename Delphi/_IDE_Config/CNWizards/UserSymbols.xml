@@ -23,12 +23,10 @@
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
-    <Name>beg</Name>
+    <Name>/rasrev</Name>
     <Kind>skTemplate</Kind>
-    <Description>begin..end;</Description>
-    <Text>begin
-  |
-end;</Text>
+    <Description>roger - comment revision</Description>
+    <Text>Revision - %Year%%Month%%Day% - %User%</Text>
     <ScopeRate>15</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
@@ -36,26 +34,12 @@ end;</Text>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
-    <Name>compver</Name>
+    <Name>beg</Name>
     <Kind>skTemplate</Kind>
-    <Description>roger - compiler check version</Description>
-    <Text>{$IF CompilerVersion &gt;= 21.00}
-|
-{$ELSE}
-
-{$IFEND}
-</Text>
-    <ScopeRate>10</ScopeRate>
-    <AutoIndent>1</AutoIndent>
-    <AlwaysDisp>0</AlwaysDisp>
-    <ForPascal>1</ForPascal>
-    <ForCpp>0</ForCpp>
-  </Item>
-  <Item>
-    <Name>debugdir</Name>
-    <Kind>skTemplate</Kind>
-    <Description>roger - Debug Conditional Compiler directive</Description>
-    <Text>debugdir</Text>
+    <Description>begin..end;</Description>
+    <Text>begin
+  |
+end;</Text>
     <ScopeRate>15</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>
@@ -104,6 +88,22 @@ end;</Text>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
+    <Name>rascompver</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - compiler check version</Description>
+    <Text>{$IF CompilerVersion &gt;= 21.00}
+|
+{$ELSE}
+
+{$IFEND}
+</Text>
+    <ScopeRate>10</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
     <Name>rasdefbdsXE6</Name>
     <Kind>skTemplate</Kind>
     <Description>roger - directive for XE6 only</Description>
@@ -119,12 +119,95 @@ end;</Text>
     <ForCpp>0</ForCpp>
   </Item>
   <Item>
+    <Name>rasfulldoc</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - Fully XML Documentation</Description>
+    <Text>/// &lt;summary&gt;
+/// |
+/// &lt;/summary&gt;
+%ArgList:/// &lt;param name="$n"&gt;&lt;/param&gt;
+%%RetType:/// &lt;returns&gt;&lt;/returns&gt;%
+</Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
+    <Name>rasifd</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - Debugger Test</Description>
+    <Text>if( System.DebugHook &lt;&gt; 0 )  then begin //Depurando na IDE
+|
+end else begin //Execução normal
+
+end;
+</Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
+    <Name>rasifDD</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - Conditional Compiler Directive DEBUG</Description>
+    <Text>{$IFDEF DEBUG}
+|
+{$ELSE}
+|
+{$ENDIF}
+</Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
+    <Name>rasmdo</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - Message Dialog OK</Description>
+    <Text>MessageDlg('|',  mtInformation, [mbOK], 0);</Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
+    <Name>rasrev</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - comment revision</Description>
+    <Text>Revision - %Year%%Month%%Day% - %User%</Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
+    <Name>rasuh</Name>
+    <Kind>skTemplate</Kind>
+    <Description>roger - unit header</Description>
+    <Text>{$IFDEF %Unit%}
+    {$DEFINE DEBUG_UNIT}
+{$ENDIF}
+{$I %ProjectName%.inc}
+//Criado em %Year%%Month%%Day% por %User%</Text>
+    <ScopeRate>15</ScopeRate>
+    <AutoIndent>1</AutoIndent>
+    <AlwaysDisp>0</AlwaysDisp>
+    <ForPascal>1</ForPascal>
+    <ForCpp>0</ForCpp>
+  </Item>
+  <Item>
     <Name>raswarn</Name>
     <Kind>skTemplate</Kind>
     <Description>roger - Remove warnings comuns</Description>
-    <Text>{$WARN UNSAFE_TYPE|UNSAFE_CODE OFF}
-
-{$WARN UNSAFE_TYPE|UNSAFE_CODE ON}</Text>
+    <Text>{$WARN UNSAFE_TYPE|UNSAFE_CODE OFF}</Text>
     <ScopeRate>15</ScopeRate>
     <AutoIndent>1</AutoIndent>
     <AlwaysDisp>0</AlwaysDisp>

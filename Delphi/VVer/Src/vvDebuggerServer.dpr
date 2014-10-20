@@ -3,7 +3,6 @@ program vvDebuggerServer;
 uses
   Forms,
   vvInteractiveDbgForm in 'vvInteractiveDbgForm.pas' {Form2},
-  vvsConfig in 'vvsConfig.pas',
   vvsServiceThread in 'vvsServiceThread.pas',
   vvsTCPTransfer in 'vvsTCPTransfer.pas' {DMTCPTransfer: TDataModule},
   vvSvcDM in 'vvSvcDM.pas',
