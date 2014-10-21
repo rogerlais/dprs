@@ -8,7 +8,8 @@ uses
   vvSvcDM in 'vvSvcDM.pas',
   vvConfig in 'vvConfig.pas',
   vvsFileMgmt in 'vvsFileMgmt.pas',
-  vvsThreadList in 'vvsThreadList.pas';
+  vvsThreadList in 'vvsThreadList.pas',
+  vvSvcStatus in 'vvSvcStatus.pas';
 
 {$R *.res}
 

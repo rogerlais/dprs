@@ -38,9 +38,8 @@ type
 implementation
 
 uses
-    svclConfig, FileHnd, AppLog, svclUtils, WinNetHnd, WinReg32, AppSettings, JclSysInfo, svclBiometricFiles;
+	svclConfig, FileHnd, AppLog, svclUtils, WinNetHnd, WinReg32, AppSettings, JclSysInfo, svclBiometricFiles;
 
-{ TTransBioThread }
 procedure TTransBioThread.CopyBioFile(const Source, Dest, Fase, ErrMsg : string; ToMove : boolean);
 //ErrMsg DEVE conter exatamente 4 tokens para string
 var
@@ -312,7 +311,6 @@ begin
     end;
 end;
 
-{TTransBioServerThread}
 procedure TTransBioServerThread.DoServerCycle;
  ///Inicia novo ciclo de operação do servidor
  ///Para o caso do computador primário o serviço executa o caso de uso "CreatePrimaryBackup"
@@ -393,7 +391,7 @@ procedure TTransBioServerThread.StoreTransmitted(SrcFile : TFileSystemEntry);
  ///
 var
     DestPath, FullDateStr, sy, sm, sd : string;
-    dummy, FileCreateTime : TDateTime;
+	dummy, FileCreateTime : TDateTime;
 begin
     TFileHnd.FileTimeProperties(SrcFile.FullName, FileCreateTime, dummy, dummy);
     FullDateStr := FormatDateTime('YYYYMMDD', FileCreateTime);

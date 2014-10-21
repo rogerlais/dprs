@@ -27,6 +27,9 @@
         <Projects Include="..\..\..\Pcks\ShellLib\Src\ShellLibD20.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Src\VVer.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="Src\VVMonit.dproj">
             <Dependencies/>
         </Projects>
@@ -37,9 +40,6 @@
             <Dependencies/>
         </Projects>
         <Projects Include="Src\vvDebuggerServer.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="Src\VVer.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -122,6 +122,15 @@
     <Target Name="ShellLibD20:Make">
         <MSBuild Projects="..\..\..\Pcks\ShellLib\Src\ShellLibD20.dproj" Targets="Make"/>
     </Target>
+    <Target Name="VVer">
+        <MSBuild Projects="Src\VVer.dproj"/>
+    </Target>
+    <Target Name="VVer:Clean">
+        <MSBuild Projects="Src\VVer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VVer:Make">
+        <MSBuild Projects="Src\VVer.dproj" Targets="Make"/>
+    </Target>
     <Target Name="VVMonit">
         <MSBuild Projects="Src\VVMonit.dproj"/>
     </Target>
@@ -158,23 +167,14 @@
     <Target Name="vvDebuggerServer:Make">
         <MSBuild Projects="Src\vvDebuggerServer.dproj" Targets="Make"/>
     </Target>
-    <Target Name="VVer">
-        <MSBuild Projects="Src\VVer.dproj"/>
-    </Target>
-    <Target Name="VVer:Clean">
-        <MSBuild Projects="Src\VVer.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="VVer:Make">
-        <MSBuild Projects="Src\VVer.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="JediApi_DynamicRelease;XPLibD20;StFLibD20;WinSysLibD20;TRELibD20;INetLibD20;WinNetLibD20;ShellLibD20;VVMonit;VVerSvc;vvDebuggerClient;vvDebuggerServer;VVer"/>
+        <CallTarget Targets="JediApi_DynamicRelease;XPLibD20;StFLibD20;WinSysLibD20;TRELibD20;INetLibD20;WinNetLibD20;ShellLibD20;VVer;VVMonit;VVerSvc;vvDebuggerClient;vvDebuggerServer"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="JediApi_DynamicRelease:Clean;XPLibD20:Clean;StFLibD20:Clean;WinSysLibD20:Clean;TRELibD20:Clean;INetLibD20:Clean;WinNetLibD20:Clean;ShellLibD20:Clean;VVMonit:Clean;VVerSvc:Clean;vvDebuggerClient:Clean;vvDebuggerServer:Clean;VVer:Clean"/>
+        <CallTarget Targets="JediApi_DynamicRelease:Clean;XPLibD20:Clean;StFLibD20:Clean;WinSysLibD20:Clean;TRELibD20:Clean;INetLibD20:Clean;WinNetLibD20:Clean;ShellLibD20:Clean;VVer:Clean;VVMonit:Clean;VVerSvc:Clean;vvDebuggerClient:Clean;vvDebuggerServer:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="JediApi_DynamicRelease:Make;XPLibD20:Make;StFLibD20:Make;WinSysLibD20:Make;TRELibD20:Make;INetLibD20:Make;WinNetLibD20:Make;ShellLibD20:Make;VVMonit:Make;VVerSvc:Make;vvDebuggerClient:Make;vvDebuggerServer:Make;VVer:Make"/>
+        <CallTarget Targets="JediApi_DynamicRelease:Make;XPLibD20:Make;StFLibD20:Make;WinSysLibD20:Make;TRELibD20:Make;INetLibD20:Make;WinNetLibD20:Make;ShellLibD20:Make;VVer:Make;VVMonit:Make;VVerSvc:Make;vvDebuggerClient:Make;vvDebuggerServer:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

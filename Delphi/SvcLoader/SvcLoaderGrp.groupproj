@@ -1,168 +1,156 @@
-﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-		<PropertyGroup>
-			<ProjectGuid>{8CE3A465-0698-4FC4-9BBB-1F7731BBFB86}</ProjectGuid>
-		</PropertyGroup>
-		<ItemGroup>
-			<Projects Include="Docs\SvcMDL.tgproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="..\..\..\Pcks\XPLib\Src\XPLibD14.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="..\..\..\Pcks\StFLib\Src\StFLibD14.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="..\..\..\Pcks\TRE\Src\TRELib.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="Src\SvcLoaderInteractiveDebugger.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="Demos\PrivilegeTest\Src\PrivilegeTest.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="Demos\TCPFileTransfer\DemoTCPFileTransferServer.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="Extras\BioInfoReloaded\Src\bir.dproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="Src\SvcLoader.dproj">
-				<Dependencies/>
-			</Projects>
-		</ItemGroup>
-		<ProjectExtensions>
-			<Borland.Personality>Default.Personality.12</Borland.Personality>
-			<Borland.ProjectType/>
-			<BorlandProject>
-				<Default.Personality/>
-			</BorlandProject>
-		</ProjectExtensions>
-		<Target Name="SvcMDL">
-			<MSBuild Projects="Docs\SvcMDL.tgproj"/>
-		</Target>
-		<Target Name="SvcMDL:Clean">
-			<MSBuild Targets="Clean" Projects="Docs\SvcMDL.tgproj"/>
-		</Target>
-		<Target Name="SvcMDL:Make">
-			<MSBuild Targets="Make" Projects="Docs\SvcMDL.tgproj"/>
-		</Target>
-		<Target Name="XPLibD14">
-			<MSBuild Projects="..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
-		</Target>
-		<Target Name="XPLibD14:Clean">
-			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
-		</Target>
-		<Target Name="XPLibD14:Make">
-			<MSBuild Targets="Make" Projects="..\..\..\Pcks\XPLib\Src\XPLibD14.dproj"/>
-		</Target>
-		<Target Name="WinSysLibD14">
-			<MSBuild Projects="..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj"/>
-		</Target>
-		<Target Name="WinSysLibD14:Clean">
-			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj"/>
-		</Target>
-		<Target Name="WinSysLibD14:Make">
-			<MSBuild Targets="Make" Projects="..\..\..\Pcks\WinSysLib\Src\WinSysLibD14.dproj"/>
-		</Target>
-		<Target Name="StFLibD14">
-			<MSBuild Projects="..\..\..\Pcks\StFLib\Src\StFLibD14.dproj"/>
-		</Target>
-		<Target Name="StFLibD14:Clean">
-			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\StFLib\Src\StFLibD14.dproj"/>
-		</Target>
-		<Target Name="StFLibD14:Make">
-			<MSBuild Targets="Make" Projects="..\..\..\Pcks\StFLib\Src\StFLibD14.dproj"/>
-		</Target>
-		<Target Name="TRELib">
-			<MSBuild Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
-		</Target>
-		<Target Name="TRELib:Clean">
-			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
-		</Target>
-		<Target Name="TRELib:Make">
-			<MSBuild Targets="Make" Projects="..\..\..\Pcks\TRE\Src\TRELib.dproj"/>
-		</Target>
-		<Target Name="WinNetLibD14">
-			<MSBuild Projects="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj"/>
-		</Target>
-		<Target Name="WinNetLibD14:Clean">
-			<MSBuild Targets="Clean" Projects="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj"/>
-		</Target>
-		<Target Name="WinNetLibD14:Make">
-			<MSBuild Targets="Make" Projects="..\..\..\Pcks\WinNetLib\Src\WinNetLibD14.dproj"/>
-		</Target>
-		<Target Name="SvcLoaderInteractiveDebugger">
-			<MSBuild Projects="Src\SvcLoaderInteractiveDebugger.dproj"/>
-		</Target>
-		<Target Name="SvcLoaderInteractiveDebugger:Clean">
-			<MSBuild Targets="Clean" Projects="Src\SvcLoaderInteractiveDebugger.dproj"/>
-		</Target>
-		<Target Name="SvcLoaderInteractiveDebugger:Make">
-			<MSBuild Targets="Make" Projects="Src\SvcLoaderInteractiveDebugger.dproj"/>
-		</Target>
-		<Target Name="PrivilegeTest">
-			<MSBuild Projects="Demos\PrivilegeTest\Src\PrivilegeTest.dproj"/>
-		</Target>
-		<Target Name="PrivilegeTest:Clean">
-			<MSBuild Targets="Clean" Projects="Demos\PrivilegeTest\Src\PrivilegeTest.dproj"/>
-		</Target>
-		<Target Name="PrivilegeTest:Make">
-			<MSBuild Targets="Make" Projects="Demos\PrivilegeTest\Src\PrivilegeTest.dproj"/>
-		</Target>
-		<Target Name="DemoTCPFileTransferServer">
-			<MSBuild Projects="Demos\TCPFileTransfer\DemoTCPFileTransferServer.dproj"/>
-		</Target>
-		<Target Name="DemoTCPFileTransferServer:Clean">
-			<MSBuild Targets="Clean" Projects="Demos\TCPFileTransfer\DemoTCPFileTransferServer.dproj"/>
-		</Target>
-		<Target Name="DemoTCPFileTransferServer:Make">
-			<MSBuild Targets="Make" Projects="Demos\TCPFileTransfer\DemoTCPFileTransferServer.dproj"/>
-		</Target>
-		<Target Name="DemoTCPFileTransfer">
-			<MSBuild Projects="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj"/>
-		</Target>
-		<Target Name="DemoTCPFileTransfer:Clean">
-			<MSBuild Targets="Clean" Projects="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj"/>
-		</Target>
-		<Target Name="DemoTCPFileTransfer:Make">
-			<MSBuild Targets="Make" Projects="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj"/>
-		</Target>
-		<Target Name="bir">
-			<MSBuild Projects="Extras\BioInfoReloaded\Src\bir.dproj"/>
-		</Target>
-		<Target Name="bir:Clean">
-			<MSBuild Targets="Clean" Projects="Extras\BioInfoReloaded\Src\bir.dproj"/>
-		</Target>
-		<Target Name="bir:Make">
-			<MSBuild Targets="Make" Projects="Extras\BioInfoReloaded\Src\bir.dproj"/>
-		</Target>
-		<Target Name="SvcLoader">
-			<MSBuild Projects="Src\SvcLoader.dproj"/>
-		</Target>
-		<Target Name="SvcLoader:Clean">
-			<MSBuild Targets="Clean" Projects="Src\SvcLoader.dproj"/>
-		</Target>
-		<Target Name="SvcLoader:Make">
-			<MSBuild Targets="Make" Projects="Src\SvcLoader.dproj"/>
-		</Target>
-		<Target Name="Build">
-			<CallTarget Targets="SvcMDL;XPLibD14;WinSysLibD14;StFLibD14;TRELib;WinNetLibD14;SvcLoaderInteractiveDebugger;PrivilegeTest;DemoTCPFileTransferServer;DemoTCPFileTransfer;bir;SvcLoader"/>
-		</Target>
-		<Target Name="Clean">
-			<CallTarget Targets="SvcMDL:Clean;XPLibD14:Clean;WinSysLibD14:Clean;StFLibD14:Clean;TRELib:Clean;WinNetLibD14:Clean;SvcLoaderInteractiveDebugger:Clean;PrivilegeTest:Clean;DemoTCPFileTransferServer:Clean;DemoTCPFileTransfer:Clean;bir:Clean;SvcLoader:Clean"/>
-		</Target>
-		<Target Name="Make">
-			<CallTarget Targets="SvcMDL:Make;XPLibD14:Make;WinSysLibD14:Make;StFLibD14:Make;TRELib:Make;WinNetLibD14:Make;SvcLoaderInteractiveDebugger:Make;PrivilegeTest:Make;DemoTCPFileTransferServer:Make;DemoTCPFileTransfer:Make;bir:Make;SvcLoader:Make"/>
-		</Target>
-		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
-	</Project>
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{8CE3A465-0698-4FC4-9BBB-1F7731BBFB86}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="..\..\..\Pcks\XPLib\Src\XPLibD20.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\..\..\Pcks\WinSysLib\Src\WinSysLibD20.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\..\..\Pcks\StFLib\Src\StFLibD20.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\..\..\Pcks\TRE\Src\TRELibD20.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\..\..\Pcks\WinNetLib\Src\WinNetLibD20.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Src\SvcLoaderInteractiveDebugger.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demos\PrivilegeTest\Src\PrivilegeTest.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demos\TCPFileTransfer\DemoTCPFileTransferServer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Extras\BioInfoReloaded\Src\bir.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Src\SvcLoader.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="XPLibD20">
+        <MSBuild Projects="..\..\..\Pcks\XPLib\Src\XPLibD20.dproj"/>
+    </Target>
+    <Target Name="XPLibD20:Clean">
+        <MSBuild Projects="..\..\..\Pcks\XPLib\Src\XPLibD20.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="XPLibD20:Make">
+        <MSBuild Projects="..\..\..\Pcks\XPLib\Src\XPLibD20.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="WinSysLibD20">
+        <MSBuild Projects="..\..\..\Pcks\WinSysLib\Src\WinSysLibD20.dproj"/>
+    </Target>
+    <Target Name="WinSysLibD20:Clean">
+        <MSBuild Projects="..\..\..\Pcks\WinSysLib\Src\WinSysLibD20.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="WinSysLibD20:Make">
+        <MSBuild Projects="..\..\..\Pcks\WinSysLib\Src\WinSysLibD20.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="StFLibD20">
+        <MSBuild Projects="..\..\..\Pcks\StFLib\Src\StFLibD20.dproj"/>
+    </Target>
+    <Target Name="StFLibD20:Clean">
+        <MSBuild Projects="..\..\..\Pcks\StFLib\Src\StFLibD20.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="StFLibD20:Make">
+        <MSBuild Projects="..\..\..\Pcks\StFLib\Src\StFLibD20.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TRELibD20">
+        <MSBuild Projects="..\..\..\Pcks\TRE\Src\TRELibD20.dproj"/>
+    </Target>
+    <Target Name="TRELibD20:Clean">
+        <MSBuild Projects="..\..\..\Pcks\TRE\Src\TRELibD20.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TRELibD20:Make">
+        <MSBuild Projects="..\..\..\Pcks\TRE\Src\TRELibD20.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="WinNetLibD20">
+        <MSBuild Projects="..\..\..\Pcks\WinNetLib\Src\WinNetLibD20.dproj"/>
+    </Target>
+    <Target Name="WinNetLibD20:Clean">
+        <MSBuild Projects="..\..\..\Pcks\WinNetLib\Src\WinNetLibD20.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="WinNetLibD20:Make">
+        <MSBuild Projects="..\..\..\Pcks\WinNetLib\Src\WinNetLibD20.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SvcLoaderInteractiveDebugger">
+        <MSBuild Projects="Src\SvcLoaderInteractiveDebugger.dproj"/>
+    </Target>
+    <Target Name="SvcLoaderInteractiveDebugger:Clean">
+        <MSBuild Projects="Src\SvcLoaderInteractiveDebugger.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SvcLoaderInteractiveDebugger:Make">
+        <MSBuild Projects="Src\SvcLoaderInteractiveDebugger.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PrivilegeTest">
+        <MSBuild Projects="Demos\PrivilegeTest\Src\PrivilegeTest.dproj"/>
+    </Target>
+    <Target Name="PrivilegeTest:Clean">
+        <MSBuild Projects="Demos\PrivilegeTest\Src\PrivilegeTest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PrivilegeTest:Make">
+        <MSBuild Projects="Demos\PrivilegeTest\Src\PrivilegeTest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DemoTCPFileTransferServer">
+        <MSBuild Projects="Demos\TCPFileTransfer\DemoTCPFileTransferServer.dproj"/>
+    </Target>
+    <Target Name="DemoTCPFileTransferServer:Clean">
+        <MSBuild Projects="Demos\TCPFileTransfer\DemoTCPFileTransferServer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DemoTCPFileTransferServer:Make">
+        <MSBuild Projects="Demos\TCPFileTransfer\DemoTCPFileTransferServer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DemoTCPFileTransfer">
+        <MSBuild Projects="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj"/>
+    </Target>
+    <Target Name="DemoTCPFileTransfer:Clean">
+        <MSBuild Projects="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DemoTCPFileTransfer:Make">
+        <MSBuild Projects="Demos\TCPFileTransfer\DemoTCPFileTransfer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bir">
+        <MSBuild Projects="Extras\BioInfoReloaded\Src\bir.dproj"/>
+    </Target>
+    <Target Name="bir:Clean">
+        <MSBuild Projects="Extras\BioInfoReloaded\Src\bir.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bir:Make">
+        <MSBuild Projects="Extras\BioInfoReloaded\Src\bir.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SvcLoader">
+        <MSBuild Projects="Src\SvcLoader.dproj"/>
+    </Target>
+    <Target Name="SvcLoader:Clean">
+        <MSBuild Projects="Src\SvcLoader.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SvcLoader:Make">
+        <MSBuild Projects="Src\SvcLoader.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="XPLibD20;WinSysLibD20;StFLibD20;TRELibD20;WinNetLibD20;SvcLoaderInteractiveDebugger;PrivilegeTest;DemoTCPFileTransferServer;DemoTCPFileTransfer;bir;SvcLoader"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="XPLibD20:Clean;WinSysLibD20:Clean;StFLibD20:Clean;TRELibD20:Clean;WinNetLibD20:Clean;SvcLoaderInteractiveDebugger:Clean;PrivilegeTest:Clean;DemoTCPFileTransferServer:Clean;DemoTCPFileTransfer:Clean;bir:Clean;SvcLoader:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="XPLibD20:Make;WinSysLibD20:Make;StFLibD20:Make;TRELibD20:Make;WinNetLibD20:Make;SvcLoaderInteractiveDebugger:Make;PrivilegeTest:Make;DemoTCPFileTransferServer:Make;DemoTCPFileTransfer:Make;bir:Make;SvcLoader:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

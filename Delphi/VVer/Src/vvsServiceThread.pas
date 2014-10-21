@@ -329,9 +329,8 @@ var
 	outFS                                                    : TFileStream;
 	lms, ms                                                  : TMemoryStream;
 	readSize, BlockSize, I, downID                           : Integer;
-	remoteSize                                               : int64;
 begin
-	BlockSize := GlobalInfo.BlockSize;
+	BlockSize := GlobalInfo.BlockSize; //tamanho dos blocos de rede
 	lms       := TMemoryStream.Create;
 	ms        := TMemoryStream.Create;
 	try
@@ -351,13 +350,9 @@ begin
 			ret            := Self.ReadResponse(); //recebe id do download, hash do arquivo, e seu tamanho
 			downID         := StrToInt(GetDelimitedSubStr(TOKEN_DELIMITER, ret, 0));
 			remoteFullHash := GetDelimitedSubStr(TOKEN_DELIMITER, ret, 1);
-			remoteSize     := StrToInt64(GetDelimitedSubStr(TOKEN_DELIMITER, ret, 2));
 			localSegHash   := EmptyStr;
 			for I          := low(fps) to high(fps) do begin
-
-				//coleta os hashes local e remoto
-				remoteSegHash := fps[I];
-
+				remoteSegHash := fps[I]; //coleta os hashes local e remoto
 				if (outFS.Position < outFS.Size) then begin //arquivo de saida possui dados anteriores
 					readSize := Math.Min(BlockSize, outFS.Size - outFS.Position);
 					lms.CopyFrom(outFS, readSize);
@@ -369,6 +364,8 @@ begin
 					end else begin //retrocede segmento para ser sobrescrito
 						outFS.Position := outFS.Position - readSize;
 					end;
+				end else begin
+					readSize:=BlockSize;
 				end;
 				Self.ReadStreamSegment(downID, I, ms, remoteSegHash); //realiza a leitura do segmento remoto
 				ret := Self.FSocket.IOHandler.ReadLn();               //leitura do retorno inutil
@@ -392,6 +389,7 @@ function TClientSyncSession.ReadResponse(): string;
 var
 	ret: string;
 begin
+	{$WARN IMPLICIT_STRING_CAST OFF} {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
 	try
 		Result := HTTPDecode(Self.FSocket.IOHandler.ReadLn(nil)); //leitura da resposta em si
 	except
@@ -407,6 +405,7 @@ begin
 		on E: Exception do { TODO -oroger -cdsg : verificar e garantir o envio recebimento nesta codificação }
 			raise EVVException.Create('Resposta de leitura de conteúdo não foi completa ou falha.'#13#10 + E.Message);
 	end;
+	{$WARN IMPLICIT_STRING_CAST ON} {$WARN IMPLICIT_STRING_CAST_LOSS ON}
 end;
 
 procedure TClientSyncSession.ReadStreamSegment(downID, SegIdx: int64; Strm: TStream; const prevHash: string);
@@ -415,13 +414,12 @@ procedure TClientSyncSession.ReadStreamSegment(downID, SegIdx: int64; Strm: TStr
 var
 	sRestSize, opRet, calcHash, informHash, sBlockSize, ret: string;
 	ms                                                     : TMemoryStream;
-	bs, segSize                                            : Integer;
+	segSize                                            : Integer;
 	{$HINTS OFF}
 	//restSize : int64;
 	{$HINTS ON}
 begin
 	{ TODO -oroger -cdsg : Leitura da consulta de baixa de stream }
-	bs := GlobalInfo.BlockSize;
 	Self.PostRequest([Verb2String(vvvReadSegment), IntToStr(downID), IntToStr(SegIdx)]);
 	//Retorno da operação
 	opRet := Self.FSocket.IOHandler.ReadLn();

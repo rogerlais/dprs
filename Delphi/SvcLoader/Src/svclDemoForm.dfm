@@ -19,8 +19,6 @@ object Form1: TForm1
     Width = 75
     Height = 25
     Caption = 'btnStart'
-    DoubleBuffered = True
-    ParentDoubleBuffered = False
     TabOrder = 1
     OnClick = btnStartClick
   end
@@ -30,8 +28,6 @@ object Form1: TForm1
     Width = 75
     Height = 25
     Caption = 'btnPause'
-    DoubleBuffered = True
-    ParentDoubleBuffered = False
     TabOrder = 2
   end
   object btnStop: TBitBtn
@@ -40,8 +36,6 @@ object Form1: TForm1
     Width = 75
     Height = 25
     Caption = 'btnStop'
-    DoubleBuffered = True
-    ParentDoubleBuffered = False
     TabOrder = 4
     OnClick = btnStopClick
   end
@@ -51,8 +45,6 @@ object Form1: TForm1
     Width = 75
     Height = 25
     Caption = 'btnClose'
-    DoubleBuffered = True
-    ParentDoubleBuffered = False
     TabOrder = 0
     OnClick = btnCloseClick
   end
@@ -62,8 +54,6 @@ object Form1: TForm1
     Width = 75
     Height = 25
     Caption = 'Edit Config'
-    DoubleBuffered = True
-    ParentDoubleBuffered = False
     TabOrder = 3
     OnClick = btnEditConfigClick
   end

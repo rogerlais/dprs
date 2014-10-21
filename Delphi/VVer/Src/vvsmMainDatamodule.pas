@@ -39,6 +39,7 @@ type
 		FLastRegisterSended: TDateTime;
 		FLastStatus        : TVVUpdateStatus;
 		FDownloadExecuted  : boolean;
+		FPassCount         : Integer;
 		function GlobalStatusStr(): string;
 		procedure InitVersionsConfig;
 		procedure EndSession();
@@ -81,17 +82,20 @@ begin
 end;
 
 procedure TVVSMMainDM.DataModuleCreate(Sender: TObject);
+var
+	filename: string;
 begin
 	Self.FStartTime := Now();
 	if (FindCmdLineSwitch('shortcut')) then begin
 		try
-			if (GetWindowsVersion() = wvWin7) then begin { TODO -oroger -cfuture : matar arquivo antigo }
-				TShellHnd.CreateShellShortCut(ParamStr(0),
-					'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\VVerMonitor.lnk', ParamStr(0), 0);
+			if (GetWindowsVersion() = wvWin7) then begin //matar arquivo antigo
+				filename := 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\VVerMonitor.lnk';
+
 			end else begin
-				TShellHnd.CreateShellShortCut(ParamStr(0),
-					'C:\Documents and Settings\All Users\Menu Iniciar\Programas\Inicializar\VVerMonitor.lnk', ParamStr(0), 0);
+				filename := 'C:\Documents and Settings\All Users\Menu Iniciar\Programas\Inicializar\VVerMonitor.lnk';
 			end;
+			DeleteFile(PWideChar(filename));
+			TShellHnd.CreateShellShortCut(ParamStr(0), filename, ParamStr(0), 0);
 		except
 			on E: Exception do begin
 				MessageDlg('Erro de atalho: ' + E.Message, mtError, [mbOK], 0);
@@ -99,21 +103,21 @@ begin
 		end;
 		//Termina a aplicação
 		Application.Terminate;
-	end;
-
-	//carrega as informações de versão
-	try
-		Self.InitVersionsConfig();
-	except
-		on E: Exception do begin
-			AppLog.AppFatalError('Erro carregando configurações base: '#13#10 + E.Message, 2, True);
+	end else begin
+		//carrega as informações de versão
+		try
+			Self.InitVersionsConfig();
+		except
+			on E: Exception do begin
+				AppLog.AppFatalError('Erro carregando configurações base: '#13#10 + E.Message, 2, True);
+			end;
 		end;
+		//Inicia componentes internos
+		Self.tmrTrigger.Enabled  := True;
+		Self.tmrTrigger.Interval := GlobalInfo.CycleInterval;
+		Self.tmrTrigger.OnTimer  := Self.tmrTriggerTimer;
+		Application.ShowMainForm := False;
 	end;
-	//Inicia componentes internos
-	Self.tmrTrigger.Enabled  := True;
-	Self.tmrTrigger.Interval := GlobalInfo.CycleInterval;
-	Self.tmrTrigger.OnTimer  := Self.tmrTriggerTimer;
-	Application.ShowMainForm := False;
 end;
 
 procedure TVVSMMainDM.EndSession;
@@ -123,8 +127,8 @@ begin
 end;
 
 function TVVSMMainDM.GlobalStatusStr: string;
+///retorna cadeia com o status das aplicações
 begin
-	{ TODO -oroger -cdsg : retorna cadeia com o status das aplicações }
 	if (GlobalInfo.UpdateStatus = usOK) then begin
 		Result := 'Atualizados';
 	end else begin
@@ -174,7 +178,6 @@ procedure TVVSMMainDM.InitSettings;
 var
 	FS: TFormatSettings;
 begin
-	{ TODO -oroger -cdsg : Checar se há impacto nos separadores regionais }
 	{$WARN UNSAFE_CODE OFF}
 	FS                   := TStrConv.FormatSettings^;
 	FS.DecimalSeparator  := '.';
@@ -236,15 +239,16 @@ var
 	ret: string;
 begin
 	try
-		{$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+		{$WARN IMPLICIT_STRING_CAST_LOSS OFF} {$WARN IMPLICIT_STRING_CAST OFF}
 		Result := HTTPDecode(Self.tcpclntRegister.IOHandler.ReadLn(nil)); //leitura da resposta em si
-		{$WARN IMPLICIT_STRING_CAST_LOSS ON}
+		{$WARN IMPLICIT_STRING_CAST_LOSS ON} {$WARN IMPLICIT_STRING_CAST ON}
 	except
 		on E: Exception do begin
 			raise Exception.Create('Erro lendo resposta do servidor.' + E.Message);
 		end;
 	end;
-	try                                                    //Leitura da checagem da resposta
+	try
+		//Leitura da checagem da resposta
 		ret := Self.tcpclntRegister.IOHandler.ReadLn(nil); //codigo de retorno
 		if (ret <> STR_OK_PACK) then begin
 			raise Exception.CreateFmt('Operação falhou(%s):'#13#10'%s', [ret, Result]);
@@ -376,13 +380,15 @@ end;
 procedure TVVSMMainDM.tmrTriggerTimer(Sender: TObject);
 //A cada ciclo:
 //1 - remonta-se a comparação
-//2 Incrementa contador de instancia para atingir 10 e verifica-se a notificação ao servidor
+//2 - Incrementa contador de instancia para atingir 10 e verifica-se a notificação ao servidor
 var
 	bUpd: TVVUpdateStatus;
 begin
-	{ TODO -oroger -cdsg : verifica se a carencia foi ultrapassada }
-	{ TODO -oroger -cdsg : repete o ciclo de comparações }
-	--parada
+	Inc(Self.FPassCount);
+	if ((Self.FPassCount div 100) = 0) then begin
+		Self.InitVersionsConfig; //recarrega configurações
+		Self.FPassCount := 0;    //evita estouro
+	end;
 	bUpd := GlobalInfo.UpdateStatus;
 	VVSMMainDM.ShowNotification(bUpd); //atualiza icone de status
 	Self.RegisterStatusServer(usOld);
@@ -438,7 +444,7 @@ begin
 				end;
 			end else begin
 				if (not f.IsDirectory) then begin
-					newName := TFileHnd.ConcatPath([dest.RootDir, Copy(f.Filename, 2, Length(f.Filename))]);
+					newName := TFileHnd.ConcatPath([dest.RootDir, Copy(f.filename, 2, Length(f.filename))]);
 					try
 						TLogFile.LogDebug(Format('Copiando %s para %s', [f.FullFilename, newName]), DBGLEVEL_DETAILED);
 						ret := TFileHnd.CopyFile(f.FullFilename, newName, True, True);

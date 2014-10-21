@@ -108,6 +108,7 @@
         <DCCReference Include="vvConfig.pas"/>
         <DCCReference Include="vvsFileMgmt.pas"/>
         <DCCReference Include="vvsThreadList.pas"/>
+        <DCCReference Include="vvSvcStatus.pas"/>
         <None Include="vvDebuggerServer.todo"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
