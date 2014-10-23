@@ -1,7 +1,7 @@
 {$IFDEF vvsThreadList}
 {$DEFINE DEBUG_UNIT}
 {$ENDIF}
-{$I VVerSvc.inc}
+{$I VVer.inc}
 unit vvsThreadList;
 
 interface

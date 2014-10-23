@@ -69,10 +69,10 @@
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <DCC_UNSAFE_CAST>true</DCC_UNSAFE_CAST>
         <DCC_Platform>x86</DCC_Platform>
-        <DCC_ExeOutput>..\$(Config)\$(Platform)</DCC_ExeOutput>
-        <DCC_DcuOutput>..\$(Config)\$(Platform)</DCC_DcuOutput>
-        <DCC_BplOutput>..\$(Config)\$(Platform)</DCC_BplOutput>
-        <DCC_DcpOutput>..\$(Config)\$(Platform)</DCC_DcpOutput>
+        <DCC_ExeOutput>..\$(Config)</DCC_ExeOutput>
+        <DCC_DcuOutput>..\$(Config)</DCC_DcuOutput>
+        <DCC_BplOutput>..\$(Config)</DCC_BplOutput>
+        <DCC_DcpOutput>..\$(Config)</DCC_DcpOutput>
         <DCC_DebugInformation>0</DCC_DebugInformation>
         <DCC_UNSAFE_VOID_POINTER>true</DCC_UNSAFE_VOID_POINTER>
     </PropertyGroup>

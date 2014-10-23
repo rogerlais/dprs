@@ -281,7 +281,7 @@ end;
 constructor TManagedFolder.CreateLocal(const ARootDir: string);
 begin
 	inherited Create;
-	Self.FBlockSize       := DEFAULT_BLOCKSIZE;
+	Self.FBlockSize       := GlobalInfo.BlockSize;
 	Self.FCriticalSection := TCriticalSection.Create;
 	Self.FRootDir         := ARootDir;
 	Self.Reload;

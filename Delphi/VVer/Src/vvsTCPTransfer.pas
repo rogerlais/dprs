@@ -1,7 +1,7 @@
 {$IFDEF svclTCPTransfer}
 {$DEFINE DEBUG_UNIT}
 {$ENDIF}
-{$I VVerSvc.inc}
+{$I VVer.inc}
 unit vvsTCPTransfer;
 
 interface
@@ -105,7 +105,7 @@ type
 		FClientSessionList: TThreadStringList; //Container para a lista de sessões clientes ativas(usada para notificação)
 		FServerSessionList: TSyncSessionServerList;
 		FMaxTrackedClients: Integer;
-		FIPCStatus : TIPCStatus;
+		FIPCStatus        : TIPCStatus;
 		procedure UpdateServerTrayStatus();
 	public
 		{ Public declarations }
@@ -132,9 +132,9 @@ uses
 constructor TDMTCPTransfer.Create(AOwner: TComponent);
 begin
 	inherited;
-	Self.FIPCStatus := TIPCStatus.Create;
-	Self.FClientSessionList := TThreadStringList.Create;
-	Self.FServerSessionList := TSyncSessionServerList.Create;
+	Self.FIPCStatus              := TIPCStatus.Create;
+	Self.FClientSessionList      := TThreadStringList.Create;
+	Self.FServerSessionList      := TSyncSessionServerList.Create;
 	Self.FIPCStatus.RuningStatus := rsUnknow;
 end;
 
@@ -661,7 +661,7 @@ var
 	hnd                         : cardinal;
 	modDate, createDate, accDate: TDateTime;
 begin
-{$WARN IMPLICIT_STRING_CAST OFF} {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+	{$WARN IMPLICIT_STRING_CAST OFF} {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
 	Result := EmptyStr;
 	try
 		outId := Self.Context.Connection.IOHandler.ReadLn();
@@ -691,8 +691,8 @@ function TServerSyncSession.ExecFileDownload: string;
 //Le publicação e nome do arquivo
 //envia id do download, hash do arquivo, e seu tamanho
 var
-	pubName, clientFilename, Filename, outId: string;
-	vf                                      : TVVSFile;
+	pubName, clientFilename, Filename: string;
+	vf                               : TVVSFile;
 begin
 	{$WARN IMPLICIT_STRING_CAST OFF} {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
 	Result := EmptyStr;

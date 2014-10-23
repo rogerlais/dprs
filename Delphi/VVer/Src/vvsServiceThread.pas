@@ -1,7 +1,7 @@
 {$IFDEF vvsServiceThread}
 {$DEFINE DEBUG_UNIT}
 {$ENDIF}
-{$I VVERSvc.inc}
+{$I VVer.inc}
 unit vvsServiceThread;
 
 interface
@@ -347,12 +347,12 @@ begin
 				PubName := PUBLICATION_INSTSEG; //nesta versão força a barra
 			end;
 			Self.PostRequest([Verb2String(vvvFileDownload), PubName, inFile.Filename]);
-			ret            := Self.ReadResponse(); //recebe id do download, hash do arquivo, e seu tamanho
-			downID         := StrToInt(GetDelimitedSubStr(TOKEN_DELIMITER, ret, 0));
-			remoteFullHash := GetDelimitedSubStr(TOKEN_DELIMITER, ret, 1);
-			localSegHash   := EmptyStr;
-			for I          := low(fps) to high(fps) do begin
-				remoteSegHash := fps[I]; //coleta os hashes local e remoto
+			ret               := Self.ReadResponse(); //recebe id do download, hash do arquivo, e seu tamanho
+			downID            := StrToInt(GetDelimitedSubStr(TOKEN_DELIMITER, ret, 0));
+			remoteFullHash    := GetDelimitedSubStr(TOKEN_DELIMITER, ret, 1);
+			localSegHash      := EmptyStr;
+			for I             := low(fps) to high(fps) do begin
+				remoteSegHash := fps[I];                    //coleta os hashes local e remoto
 				if (outFS.Position < outFS.Size) then begin //arquivo de saida possui dados anteriores
 					readSize := Math.Min(BlockSize, outFS.Size - outFS.Position);
 					lms.CopyFrom(outFS, readSize);
@@ -365,7 +365,7 @@ begin
 						outFS.Position := outFS.Position - readSize;
 					end;
 				end else begin
-					readSize:=BlockSize;
+					readSize := BlockSize;
 				end;
 				Self.ReadStreamSegment(downID, I, ms, remoteSegHash); //realiza a leitura do segmento remoto
 				ret := Self.FSocket.IOHandler.ReadLn();               //leitura do retorno inutil
@@ -414,7 +414,7 @@ procedure TClientSyncSession.ReadStreamSegment(downID, SegIdx: int64; Strm: TStr
 var
 	sRestSize, opRet, calcHash, informHash, sBlockSize, ret: string;
 	ms                                                     : TMemoryStream;
-	segSize                                            : Integer;
+	segSize                                                : Integer;
 	{$HINTS OFF}
 	//restSize : int64;
 	{$HINTS ON}

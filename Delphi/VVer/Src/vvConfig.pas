@@ -383,8 +383,8 @@ var
 	p   : TProgItem;
 	I   : Integer;
 begin
-	prof   := Self.ProfileInfo;
-	if (Assigned( prof   )) then begin
+	prof := Self.ProfileInfo;
+	if (Assigned(prof)) then begin
 		Result := usOK;
 		try
 			for I := 0 to prof.Count - 1 do begin
@@ -446,7 +446,7 @@ end;
 
 function TVVStartupConfig.GetPathServiceLog: string;
 begin
-	Result := TFileHnd.ConcatPath([ParamStr(0), 'Logs']);
+	Result := TFileHnd.ConcatPath([TFileHnd.ParentDir(ParamStr(0)), 'Logs']);
 end;
 
 function TVVStartupConfig.GetPrimaryPC: string;
@@ -492,9 +492,8 @@ begin
 		if (Self.IsPrimaryPC) then begin
 			Result := Self.RegisterServer;
 		end else begin
-
+			Result:= TTREUtils.GetZonePrimaryComputer( Self.ClientName ); {TODO -oroger -cdsg : Validar retorno }
 		end;
-
 	end;
 end;
 

@@ -108,7 +108,7 @@ var
 implementation
 
 uses
-	svclConfig, FileHnd, svclUtils, StrHnd, svclEditConfigForm, svclBiometricFiles;
+	svclConfig, FileHnd, svclUtils, StrHnd, svclEditConfigForm, svclBiometricFiles, XP.StrConverters;
 
 {$R *.dfm}
 
@@ -128,9 +128,6 @@ const
 	II_CLIENT_ERROR = 1;
 	II_CLIENT_BUZY  = 2;
 	II_CLIENT_OK    = 3;
-
-var
-	ForcedFormatSettings: TFormatSettings;
 
 procedure TDMTCPTransfer.Configurar1Click(Sender: TObject);
 begin
@@ -187,8 +184,9 @@ end;
 
 procedure TDMTCPTransfer.InitSettings;
 begin
-	SysUtils.GetLocaleFormatSettings(Windows.LOCALE_SYSTEM_DEFAULT, ForcedFormatSettings);
-	ForcedFormatSettings.DecimalSeparator := '.';
+	{$WARN UNSAFE_CODE OFF}
+	TStrConv.FormatSettings^.DecimalSeparator := '.'; //Usará globalmente este simbolo
+	{$WARN UNSAFE_CODE ON}
 end;
 
 procedure TDMTCPTransfer.SaveBioFile(const ClientName, Filename, screateDate, saccessDate, smodifiedDate: string;
@@ -218,10 +216,14 @@ procedure TDMTCPTransfer.SaveBioFile(const ClientName, Filename, screateDate, sa
 var
 	createDate, modDate, accDate              : TDateTime;
 	lastName, TransbioFileName, BackupFileName: string;
+	fs                                        : TFormatSettings;
 begin
-	createDate       := StrToFloat(screateDate, ForcedFormatSettings);
-	modDate          := StrToFloat(smodifiedDate, ForcedFormatSettings);
-	accDate          := StrToFloat(saccessDate, ForcedFormatSettings);
+	{$WARN UNSAFE_CODE OFF}
+	fs               := TStrConv.FormatSettings^;
+	{$WARN UNSAFE_CODE ON}
+	createDate       := StrToFloat(screateDate, fs);
+	modDate          := StrToFloat(smodifiedDate, fs);
+	accDate          := StrToFloat(saccessDate, fs);
 	lastName         := ExtractFileName(Filename);
 	TransbioFileName := TFileHnd.ConcatPath([GlobalConfig.PathServerTransBio, lastName]);
 	BackupFileName := TFileHnd.ConcatPath([GlobalConfig.PathServerOrderedBackup, ClientName, FormatDateTime('YYYY\MM\DD', modDate),
@@ -244,14 +246,18 @@ procedure TDMTCPTransfer.SendFile(AFile: TTransferFile);
 ///</remarks>
 var
 	s: string;
+	FS : TFormatSettings;
 begin
+	{$WARN UNSAFE_CODE OFF}
+	FS := TStrConv.FormatSettings^;
+	{$WARN UNSAFE_CODE ON}
 	if (not Self.tcpclnt.Connected) then begin
 		raise ESVCLException.Create('Canal com o servidor não estabelecido antecipadamente');
 	end;
 	//Passados obrigatoriamente nesta ordem!!!
-	s := AFile.FFilename + TOKEN_DELIMITER + FloatToStr(AFile.FCreatedTime, ForcedFormatSettings) + TOKEN_DELIMITER +
-		FloatToStr(AFile.FAccesTime, ForcedFormatSettings) + TOKEN_DELIMITER + FloatToStr(AFile.FModifiedTime, ForcedFormatSettings)
-		+ TOKEN_DELIMITER + FloatToStr(AFile.Size, ForcedFormatSettings) + TOKEN_DELIMITER + AFile.Hash;
+	s := AFile.FFilename + TOKEN_DELIMITER + FloatToStr(AFile.FCreatedTime, FS ) + TOKEN_DELIMITER +
+		FloatToStr(AFile.FAccesTime, FS ) + TOKEN_DELIMITER + FloatToStr(AFile.FModifiedTime, FS )
+		+ TOKEN_DELIMITER + FloatToStr(AFile.Size, FS ) + TOKEN_DELIMITER + AFile.Hash;
 	Self.tcpclnt.IOHandler.WriteLn(s);
 	Self.tcpclnt.IOHandler.WriteFile(AFile.Filename);
 	s := Self.tcpclnt.IOHandler.ReadLn();

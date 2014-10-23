@@ -57,9 +57,9 @@ end;
 
 procedure TIPCStatus.UpdateClients;
 var
-	obj : TObject;
+	obj: TObject;
 begin
-	for Obj in Self.FClientList do begin
+	for obj in Self.FClientList do begin
 		//Notifica clientes da alteração
 	end;
 end;
