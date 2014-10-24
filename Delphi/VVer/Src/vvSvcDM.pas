@@ -9,7 +9,7 @@ interface
 uses
 	Windows, Messages, SysUtils, Classes, Graphics, Controls, SvcMgr, Dialogs, IdBaseComponent, IdMessage, IdComponent, IdRawBase,
 	IdRawClient, IdIcmpClient, FileInfo, IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient, IdSMTPBase,
-	IdSMTP, XPThreads, ExtCtrls, vvsServiceThread, vvsFileMgmt;
+	IdSMTP, XPThreads, ExtCtrls, vvsServiceThread, vvsFileMgmt, MS_ICMP;
 
 type
 	TVVerService = class(TService)
@@ -231,29 +231,39 @@ end;
 function TVVerService.isIntranetConnected: boolean;
 ///Alerta: Método não thread safe
 var
-	x: Integer;
+	x      : Integer;
+	PingObj: TICMP;
 begin
-	Self.icmpclntMain.Protocol       := 1;
-	Self.icmpclntMain.ReceiveTimeout := 2000;
-	Self.icmpclntMain.ProtocolIPv6   := 58;
-	Self.icmpclntMain.IPVersion      := Id_IPv4;
-	Self.icmpclntMain.PacketSize     := 32;
-	Self.icmpclntMain.Host           := GlobalInfo.RegisterServer;
-	Result                           := False;
-	for x                            := 0 to 5 do begin
-		try
-			Self.icmpclntMain.Ping();
-			Result := (Self.icmpclntMain.ReplyStatus.ReplyStatusType = rsEcho);
-		except
-			on E: Exception do begin
-				//Sem tratamento -> espera nova tentativa
-				TLogFile.LogDebug(Format('Sem conectividade com a intranet(%s): %s.'#13#10'Tentativa(%d)',
-					[GlobalInfo.RegisterServer, E.Message, x + 1]), DBGLEVEL_ULTIMATE);
+	{
+	  ///    Self.icmpclntMain.Protocol       := 1;
+	  ///    Self.icmpclntMain.ReceiveTimeout := 2000;
+	  ///    Self.icmpclntMain.ProtocolIPv6   := 58;
+	  ///    Self.icmpclntMain.IPVersion      := Id_IPv4;
+	  ///    Self.icmpclntMain.PacketSize     := 32;
+	  ///    Self.icmpclntMain.Host           := GlobalInfo.RegisterServer;
+	  ///    Result                           := False;
+	}
+	PingObj := TICMP.Create;
+	try
+		for x := 0 to 5 do begin
+			try
+				PingObj.Address := GlobalInfo.RegisterServer;
+				Result          := (PingObj.Ping <> 0);
+				{TODO -oroger -cdsg : remover component de ping indy que requer elevação no win7}
+				//Result := (Self.icmpclntMain.ReplyStatus.ReplyStatusType = rsEcho);
+			except
+				on E: Exception do begin
+					//Sem tratamento -> espera nova tentativa
+					TLogFile.LogDebug(Format('Sem conectividade com a intranet(%s): %s.'#13#10'Tentativa(%d)',
+						[GlobalInfo.RegisterServer, E.Message, x + 1]), DBGLEVEL_ULTIMATE);
+				end;
+			end;
+			if (Result) then begin
+				Break;
 			end;
 		end;
-		if (Result) then begin
-			Break;
-		end;
+	finally
+		PingObj.Free;
 	end;
 end;
 

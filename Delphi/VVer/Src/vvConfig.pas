@@ -505,7 +505,7 @@ end;
 function TVVStartupConfig.GetRegisterServer: string;
 begin
 	Result := Self.ReadStringDefault(IE_VERSION_SERVER, DV_VERSION_SERVER);
-end;
+ end;
 
 function TVVStartupConfig.GetRemoteRepositoryPath: string;
 //local para baixar todos os arquivos

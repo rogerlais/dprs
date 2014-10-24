@@ -55,7 +55,11 @@ end;
 
 procedure TForm2.FormCreate(Sender: TObject);
 begin
-	Self.Caption := Self.Caption + Format(' - Instância( %s )', [GlobalInfo.InstanceName]);
+	if (GlobalInfo.PublicationParentServer <> EmptyStr) then begin //funciona como cliente apenas
+		Self.Caption := Self.Caption + Format(' (Client)- Instância( %s )', [GlobalInfo.InstanceName]);
+	end else begin //funciona como servidor apenas
+		Self.Caption := Self.Caption + Format(' (Server)- Instância( %s )', [GlobalInfo.InstanceName]);
+	end;
 end;
 
 end.

@@ -90,7 +90,6 @@ begin
 		try
 			if (GetWindowsVersion() = wvWin7) then begin //matar arquivo antigo
 				filename := 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\VVerMonitor.lnk';
-
 			end else begin
 				filename := 'C:\Documents and Settings\All Users\Menu Iniciar\Programas\Inicializar\VVerMonitor.lnk';
 			end;
@@ -124,6 +123,7 @@ procedure TVVSMMainDM.EndSession;
 begin
 	//Envia a finalização de sessão para o servidor
 	Self.tcpclntRegister.IOHandler.WriteLn(STR_END_SESSION_SIGNATURE + GlobalInfo.ClientName); //Envia msg de fim de sessão
+	{TODO -oroger -cURGENTE : na versão de produção atual não há leitura da recepção por parte do cliente do retorno do servidor, assim a disconexão fica pendente em algum lado }
 end;
 
 function TVVSMMainDM.GlobalStatusStr: string;
@@ -279,7 +279,7 @@ begin
 		end;
 	except
 		on E: Exception do begin
-			TLogFile.Log('Erro durante registro de status no servidor: ' + E.Message, lmtError);
+			TLogFile.Log('Erro durante registro de status no servidor(' + GlobalInfo.RegisterServer + '): ' + E.Message, lmtError);
 		end;
 	end;
 end;

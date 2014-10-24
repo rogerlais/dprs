@@ -3,7 +3,7 @@
         <ProjectGuid>{891C1172-5AC5-4B6A-82FE-57CC57F7D661}</ProjectGuid>
         <ProjectVersion>15.4</ProjectVersion>
         <MainSource>VVMonit.dpr</MainSource>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
         <Base>True</Base>
         <TargetedPlatforms>1</TargetedPlatforms>
