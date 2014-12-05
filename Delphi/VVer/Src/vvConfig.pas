@@ -67,6 +67,7 @@ type
 		function GetPathClientInfo: string;
 		function GetPathLocalTempDir: string;
 		function GetInstanceName: string;
+		function GetSenderSMTP: string;
 	protected
 		_ProfileInfo: TVVProfileInfo;
 		function GetProfileInfo: TVVProfileInfo; virtual;
@@ -85,6 +86,7 @@ type
 		property NotificationList: string read GetNotificationList;
 		property SenderAddress: string read GetSenderAddress;
 		property SenderDescription: string read GetSenderDescription;
+		property SenderSMTP: string read GetSenderSMTP;
 		property EnsureNotification: boolean read GetEnsureNotification;
 		property ClientName: string read GetClientName;
 		property CycleInterval: Integer read GetCycleInterval;
@@ -120,6 +122,9 @@ const
 
 	IE_NOTIFICATION_LIST = 'NotificationList';
 	DV_NOTIFICATION_LIST = 'sesop.l@tre-pb.jus.br';
+
+	IE_SENDER_SMTP = 'SMTPSender';
+	DV_SENDER_SMTP = 'smtp.tre-pb.jus.br';
 
 	IE_CYCLE_INTERVAL = 'CycleInterval';
 	DV_CYCLE_INTERVAL = 60000;
@@ -492,7 +497,7 @@ begin
 		if (Self.IsPrimaryPC) then begin
 			Result := Self.RegisterServer;
 		end else begin
-			Result:= TTREUtils.GetZonePrimaryComputer( Self.ClientName ); {TODO -oroger -cdsg : Validar retorno }
+			Result := TTREUtils.GetZonePrimaryComputer(Self.ClientName); { TODO -oroger -cdsg : Validar retorno }
 		end;
 	end;
 end;
@@ -505,7 +510,7 @@ end;
 function TVVStartupConfig.GetRegisterServer: string;
 begin
 	Result := Self.ReadStringDefault(IE_VERSION_SERVER, DV_VERSION_SERVER);
- end;
+end;
 
 function TVVStartupConfig.GetRemoteRepositoryPath: string;
 //local para baixar todos os arquivos
@@ -524,13 +529,18 @@ end;
 function TVVStartupConfig.GetSenderAddress: string;
 begin
 	{ TODO -oroger -cfuture : manifestas a criar }
-	Result := Self.ReadStringDefault('SenderAddress', 'sesop@tre-pb.gov.br');
+	Result := Self.ReadStringDefault(IE_NOTIFICATION_LIST , DV_NOTIFICATION_LIST);
 end;
 
 function TVVStartupConfig.GetSenderDescription: string;
 begin
 	{ TODO -oroger -cfuture : manifestas a criar }
 	Result := Self.ReadStringDefault('SenderDescription', 'SESOP - Seção de Suporte Operacional');
+end;
+
+function TVVStartupConfig.GetSenderSMTP: string;
+begin
+	Result := Self.ReadStringDefault(IE_SENDER_SMTP, DV_SENDER_SMTP);
 end;
 
 procedure TVVStartupConfig.InitDownloader;

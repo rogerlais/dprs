@@ -100,29 +100,6 @@ begin
 	mailMsgNotify.Sender.Text := Format( '"%s" <%s>', [ GlobalInfo.SenderDescription, GlobalInfo.SenderAddress ] );
 	mailMsgNotify.Sender.Domain := mailMsgNotify.From.Domain;
 	mailMsgNotify.Sender.User := mailMsgNotify.From.User;
-
- {
-  object mailMsgNotify: TIdMessage
-	 FromList = <
-	   item
-		 Address = 'sesop@tre-pb.gov.br'
-		 Name = 'VVer - Verificador de sistemas 2012 - T1'
-		 Text = 'VVer - Verificador de sistemas 2012 - T1 <sesop@tre-pb.gov.br>'
-		 Domain = 'tre-pb.gov.br'
-		 User = 'sesop'
-	   end>
-
-	 ReplyTo = <
-	   item
-		 Address = 'sesop@tre-pb.gov.br'
-		 Name = 'SESOP'
-		 Text = 'SESOP <sesop@tre-pb.gov.br>'
-		 Domain = 'tre-pb.gov.br'
-		 User = 'sesop'
-	   end>
-}
-
-
 	 //Coletar informações de destino de mensagem com possibilidade de macros no mesmo arquivo de configuração
     Self.AddDestinations();
     Self.mailMsgNotify.Subject   := Format(SUBJECT_TEMPLATE, [Self.fvVersion.FileVersion, WinNetHnd.GetComputerName(),

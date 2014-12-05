@@ -402,7 +402,7 @@ begin
 	Self.DisplayName            := APP_SERVICE_DISPLAYNAME;
 	Self.Interactive            := True;
 	Self.WaitHint               := 1000;
-	Self.smtpSender.Host        := 'smtp.tre-pb.gov.br';
+	Self.smtpSender.Host        := GlobalInfo.SenderSMTP; //'smtp.tre-pb.gov.br';
 	Self.tmrCycleEvent.Interval := 60000;
 	Self.tmrCycleEvent.Enabled  := False;
 end;
