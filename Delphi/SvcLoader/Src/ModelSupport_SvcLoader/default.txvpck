@@ -4,22 +4,53 @@
     <property name="$defaultDiagram" value="true" />
     <property name="$metaclass" value="Package Diagram" />
     <property name="$name" value="default" />
-    <reference referencedUin="uml:package:SvcLoader:src:svclTransBio">
+    <reference referencedUin="design:view:::t492r6gqbot_v">
       <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="10,10,156,166" />
       <reference referencedUin="delphi:e_class:src:SvcLoader:svclTransBio.TTransBioThread" />
       <reference referencedUin="delphi:e_class:src:SvcLoader:svclTransBio.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclTransBio.TTransBioServerThread" />
     </reference>
-    <reference referencedUin="uml:package:SvcLoader:src:svclBiometricFiles">
+    <reference referencedUin="design:view:::hr5kaauu7sf_v">
       <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="185,1,154,151" />
       <reference referencedUin="delphi:e_class:src:SvcLoader:svclBiometricFiles.TBioFilesService" />
       <reference referencedUin="delphi:e_class:src:SvcLoader:svclBiometricFiles.@unitclass" />
     </reference>
-    <reference referencedUin="uml:package:SvcLoader:src:SvcLoader">
+    <reference referencedUin="design:view:::a1y1oj82w1f_v">
       <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="185,171,114,134" />
       <reference referencedUin="delphi:e_class:src:SvcLoader:SvcLoader.@unitclass" />
     </reference>
     <reference referencedUin="design:view:::izsw6btc2lq_v">
       <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="358,1,187,42" />
+    </reference>
+    <reference referencedUin="design:view:::f1pv89w3cdk_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="76,195,101,134" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclUtils.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::qtrk1culmzh_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="377,62,147,181" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclTCPTransfer.TThreadStringList" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclTCPTransfer.@unitclass" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclTCPTransfer.TTransferFile" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer" />
+    </reference>
+    <reference referencedUin="design:view:::0lr9ytohrcso01p3m_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="377,262,140,166" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclConfig.TBioReplicatorConfig" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclConfig.TELOTransbioConfig" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclConfig.@unitclass" />
+    </reference>
+    <reference referencedUin="design:view:::0qvyv888vmo_v">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="208,367,162,151" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclEditConfigForm.TEditConfigForm" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclEditConfigForm.@unitclass" />
     </reference>
   </view>
 </nodeSet>

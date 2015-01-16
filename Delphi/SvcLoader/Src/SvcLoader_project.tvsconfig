@@ -1,2 +1,9 @@
 <?xml version="1.0"?>
-<TgConfig Version="3" SubLevelDisabled="False" />
+<TgConfig Version="3" SubLevelDisabled="False">
+  <Option Name="namespaceFolder.svclTransBio" Type="System.String" Value="svclTransBio" Category="General" IsBrowsable="False" />
+  <Option Name="Diagram.DetailLevel" Type="Borland.Together.OpenAPI3.Config.DiagramDetail" Value="Implementation" Category="Diagram" />
+  <Option Name="namespaceFolder.SvcLoader" Type="System.String" Value="SvcLoader" Category="General" IsBrowsable="False" />
+  <Option Name="SourceCode.AutoDependency" Type="System.Boolean" Value="True" Category="Source Code" />
+  <Option Name="Diagram.DiagramBackgroundColor_2" Type="System.Drawing.Color" Value="PowderBlue" Category="Diagram" />
+  <Option Name="namespaceFolder.svclTCPTransfer" Type="System.String" Value="svclTCPTransfer" Category="General" IsBrowsable="False" />
+</TgConfig>

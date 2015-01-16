@@ -4,5 +4,62 @@
     <property name="$defaultDiagram" value="true" />
     <property name="$metaclass" value="Package Diagram" />
     <property name="$name" value="default" />
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclTransBio.TTransBioServerThread">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="10,10,259,188" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTransBioServerThread.StoreTransmitted(XPFileEnumerator.TFileSystemEntry)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTransBioServerThread.DoServerCycle()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTransBioServerThread.CreatePrimaryBackup(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTransBioServerThread.StartTCPServer()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTransBioServerThread.StopTCPServer()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTransBioServerThread.DoTerminate()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTransBioServerThread.Execute()" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclTransBio.TTransBioServerThread.Class1">
+        <property name="bounds" value="45,9,0,0" />
+      </reference>
+    </reference>
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclTransBio.TTransBioThread">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="340,40,464,175" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTransBio.TTransBioThread.FCycleErrorCount" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTransBioThread.DoClientCycle()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTransBioThread.ReplicDataFiles2PrimaryMachine(svclTCPTransfer.TTransferFile)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTransBioThread.CopyBioFile(System.string,System.string,System.string,System.string,System.Boolean)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTransBioThread.ForceEloConfiguration()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTransBioThread.Execute()" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclTransBio.@unitclass">
+      <property name="$shortcutReference" value="true" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclTransBio.TTesteSingle">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="180,260,128,101" />
+      <property name="hideOperation" value="False" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTesteSingle." />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTransBio.TTesteSingle.createChildEntity()">
+        <property name="bounds" value="208,343,0,0" />
+      </reference>
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTransBio.TTesteSingle.createChildEntity">
+        <property name="bounds" value="208,343,0,0" />
+      </reference>
+      <reference referencedUin="delphi:l_gnt:src:SvcLoader:svclTransBio.TTesteSingle:System.Generics.Defaults.TSingletonImplementation">
+        <property name="sourceAnchor" value="308,310" />
+        <property name="targetAnchor" value="640,310" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTransBio.TTesteSingle.field1" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTransBio.TTesteSingle.field2" />
+    </reference>
+    <reference referencedUin="delphi:e_class:lib:DelphiWin32:System.Generics.Defaults.TSingletonImplementation">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="640,260,405,143" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="delphi:e_method:lib:DelphiWin32:System.Generics.Defaults.TSingletonImplementation.QueryInterface(System.TGUID,out@)" />
+      <reference referencedUin="delphi:e_method:lib:DelphiWin32:System.Generics.Defaults.TSingletonImplementation._AddRef()" />
+      <reference referencedUin="delphi:e_method:lib:DelphiWin32:System.Generics.Defaults.TSingletonImplementation._Release()" />
+      <reference referencedUin="delphi:e_method:lib:DelphiWin32:System.Generics.Defaults.TSingletonImplementation.Create()" />
+    </reference>
   </view>
 </nodeSet>

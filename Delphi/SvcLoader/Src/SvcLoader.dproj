@@ -130,13 +130,18 @@
         </DCCReference>
         <None Include="ModelSupport_SvcLoader\default.txaPackage"/>
         <None Include="ModelSupport_SvcLoader\default.txvpck"/>
-        <None Include="ModelSupport_SvcLoader\Use Case Diagram1.txvuse"/>
         <None Include="ModelSupport_SvcLoader\svclTransBio\default.txvpck"/>
         <None Include="ModelSupport_SvcLoader\svclBiometricFiles\default.txvpck"/>
         <None Include="ModelSupport_SvcLoader\SvcLoader\default.txvpck"/>
         <None Include="SvcLoader.todo"/>
         <None Include="ModelSupport_SvcLoader\svclConfig\default.txaPackage"/>
         <None Include="ModelSupport_SvcLoader\svclUtils\default.txaPackage"/>
+        <None Include="ModelSupport_SvcLoader\Use_Cases(BioReplicService).txvuse"/>
+        <None Include="ModelSupport_SvcLoader\svclConfig\default.txvpck"/>
+        <None Include="ModelSupport_SvcLoader\svclUtils\default.txvpck"/>
+        <None Include="ModelSupport_SvcLoader\svclTCPTransfer\default.txvpck"/>
+        <None Include="ModelSupport_SvcLoader\svclEditConfigForm\default.txvpck"/>
+        <None Include="ModelSupport_SvcLoader\svclTransBio\default.txaPackage"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

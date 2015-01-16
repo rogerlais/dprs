@@ -1,2 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<nodeSet version="1.0" />
+<nodeSet version="1.0">
+  <node uin="9ebs0xf4thj_n">
+    <property name="$metaclass" value="System Boundary" />
+    <property name="$name" value="Client Computer" />
+    <node uin="swaqxssv0s2tb0r6s_n">
+      <property name="$metaclass" value="Use Case" />
+      <property name="$name" value="DoClientCycle" />
+      <property name="@url" value="element://model:project::SvcLoader/delphi:e_method:src:SvcLoader:svclTransBio.TTransBioThread.DoClientCycle()" />
+      <node uin="dsl2pmt3t41jymseh_n">
+        <property name="$metaclass" value="Extension Point" />
+        <property name="$name" value="LSRSearchFiles" />
+      </node>
+      <link uin="7t6vtuwx799ubm6zj_l">
+        <property name="$metaclass" value="Extends Link" />
+        <property name="$name" value="Extends Link1" />
+        <participant referencedUin="design:node:::swaqxssv0s2tb0r6s_n:9ebs0xf4thj_n" role="Client" />
+      </link>
+      <link uin="ug908mavqrl6jyzne_l">
+        <property name="$metaclass" value="Extends Link" />
+        <property name="$name" value="Extends Link2" />
+        <participant referencedUin="design:node:::swaqxssv0s2tb0r6s_n:9ebs0xf4thj_n" role="Client" />
+      </link>
+      <link uin="a41sxo1hecqo3a68f_l">
+        <property name="$metaclass" value="Extends Link" />
+        <property name="$name" value="Extends Link3" />
+        <participant referencedUin="design:node:::swaqxssv0s2tb0r6s_n:9ebs0xf4thj_n" role="Client" />
+      </link>
+      <link uin="e98lrai5v0i4wp69f_l">
+        <property name="$metaclass" value="Includes Link" />
+        <property name="$name" value="Includes Link1" />
+        <participant referencedUin="design:node:::swaqxssv0s2tb0r6s_n:9ebs0xf4thj_n" role="Client" />
+        <participant referencedUin="design:node:::n97vi61uzjo79zn3p_n:9ebs0xf4thj_n" role="Supplier" />
+      </link>
+    </node>
+    <node uin="bg0035nhvyi_n">
+      <property name="$metaclass" value="Use Case" />
+      <property name="$name" value="ForceEloConfiguration" />
+      <property name="@url" value="element://model:project::SvcLoader/delphi:e_method:src:SvcLoader:svclTransBio.TTransBioThread.ForceEloConfiguration()" />
+    </node>
+    <node uin="n97vi61uzjo79zn3p_n">
+      <property name="$metaclass" value="Use Case" />
+      <property name="$name" value="LSRSearchFiles" />
+    </node>
+  </node>
+  <node uin="l2laoi30qt6w580ch_n">
+    <property name="$metaclass" value="Actor" />
+    <property name="$name" value="BioReplicService" />
+    <link uin="xmoc9ga3ozp_l">
+      <property name="$metaclass" value="Association Link" />
+      <property name="$name" value="Association Link1" />
+      <property name="@stereotype" value="communicate" />
+      <participant referencedUin="design:node:::l2laoi30qt6w580ch_n" role="Client" />
+      <participant referencedUin="design:node:::bg0035nhvyi_n:9ebs0xf4thj_n" role="Supplier" />
+    </link>
+    <link uin="0h90lzxixjod0cun_l">
+      <property name="$metaclass" value="Association Link" />
+      <property name="$name" value="Association Link2" />
+      <property name="@stereotype" value="communicate" />
+      <participant referencedUin="design:node:::l2laoi30qt6w580ch_n" role="Client" />
+      <participant referencedUin="design:node:::swaqxssv0s2tb0r6s_n:9ebs0xf4thj_n" role="Supplier" />
+    </link>
+    <link uin="phjoaoiilxg_l">
+      <property name="$metaclass" value="Association Link" />
+      <property name="$name" value="Association Link3" />
+      <property name="@stereotype" value="communicate" />
+      <participant referencedUin="design:node:::l2laoi30qt6w580ch_n" role="Client" />
+      <participant referencedUin="design:node:::jm5kja69150j2hxmg_n:ub5q9u0uu4903rern_n" role="Supplier" />
+    </link>
+    <link uin="cp4o4ao5bjt_l">
+      <property name="$metaclass" value="Association Link" />
+      <property name="$name" value="Association Link4" />
+      <property name="@stereotype" value="communicate" />
+      <participant referencedUin="design:node:::l2laoi30qt6w580ch_n" role="Client" />
+      <participant referencedUin="design:node:::b3iase7xc4ox3yxyn_n:ub5q9u0uu4903rern_n" role="Supplier" />
+    </link>
+  </node>
+  <node uin="ub5q9u0uu4903rern_n">
+    <property name="$metaclass" value="System Boundary" />
+    <property name="$name" value="ServerComputer" />
+    <node uin="b3iase7xc4ox3yxyn_n">
+      <property name="$metaclass" value="Use Case" />
+      <property name="$name" value="DoServerCycle" />
+      <property name="@url" value="element://model:project::SvcLoader/delphi:e_method:src:SvcLoader:svclTransBio.TTransBioServerThread.DoServerCycle()" />
+    </node>
+    <node uin="jm5kja69150j2hxmg_n">
+      <property name="$metaclass" value="Use Case" />
+      <property name="$name" value="StartTCPServer" />
+      <link uin="x4xst3jty1snvnjdk_l">
+        <property name="$metaclass" value="Includes Link" />
+        <property name="$name" value="Includes Link1" />
+        <participant referencedUin="design:node:::jm5kja69150j2hxmg_n:ub5q9u0uu4903rern_n" role="Client" />
+        <participant referencedUin="design:node:::hpzwn0b1y1soigo6q_n:ub5q9u0uu4903rern_n" role="Supplier" />
+      </link>
+    </node>
+    <node uin="hpzwn0b1y1soigo6q_n">
+      <property name="$metaclass" value="Use Case" />
+      <property name="$name" value="tcpsrvrExecute" />
+      <link uin="x8to5802ycm_l">
+        <property name="$metaclass" value="Includes Link" />
+        <property name="$name" value="Includes Link1" />
+        <participant referencedUin="design:node:::hpzwn0b1y1soigo6q_n:ub5q9u0uu4903rern_n" role="Client" />
+        <participant referencedUin="design:node:::qu313nu0aui_n:ub5q9u0uu4903rern_n" role="Supplier" />
+      </link>
+    </node>
+    <node uin="qu313nu0aui_n">
+      <property name="$metaclass" value="Use Case" />
+      <property name="$name" value="SaveBioFile" />
+    </node>
+  </node>
+</nodeSet>
