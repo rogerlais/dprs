@@ -4,5 +4,97 @@
     <property name="$defaultDiagram" value="true" />
     <property name="$metaclass" value="Package Diagram" />
     <property name="$name" value="default" />
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclTCPTransfer.TThreadStringList">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TThreadStringList.FLocker" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TThreadStringList.Enter()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TThreadStringList.Leave()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TThreadStringList.Create()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TThreadStringList.Destroy()" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclTCPTransfer.@unitclass">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:l_ast:src:SvcLoader:svclTCPTransfer.@unitclass.DMTCPTransfer" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.DMTCPTransfer" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.TOKEN_DELIMITER" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.STR_END_SESSION_SIGNATURE" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.STR_BEGIN_SESSION_SIGNATURE" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.STR_OK_PACK" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.STR_FAIL_HASH" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.STR_FAIL_SIZE" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.II_SERVER_IDLE" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.II_SERVER_ERROR" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.II_SERVER_BUZY" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.II_SERVER_OK" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.II_CLIENT_IDLE" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.II_CLIENT_ERROR" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.II_CLIENT_BUZY" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.@unitclass.II_CLIENT_OK" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclTCPTransfer.TTransferFile">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TTransferFile.FAccesTime" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TTransferFile.FModifiedTime" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TTransferFile.FCreatedTime" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TTransferFile.FFilename" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TTransferFile.FHash" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TTransferFile.FIsInputFile" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TTransferFile.FStream" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TTransferFile.SetFilename(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TTransferFile.InvalidWriteOperation(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TTransferFile.GetSize()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TTransferFile.GetHash()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TTransferFile.GetDateStamp()" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclTCPTransfer.TTransferFile.Filename" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclTCPTransfer.TTransferFile.IsInputFile" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclTCPTransfer.TTransferFile.AccesTime" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclTCPTransfer.TTransferFile.ModifiedTime" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclTCPTransfer.TTransferFile.CreatedTime" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclTCPTransfer.TTransferFile.Size" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclTCPTransfer.TTransferFile.Hash" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclTCPTransfer.TTransferFile.DateStamp" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TTransferFile.ReadFromStream(System.Classes.TStream)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TTransferFile.SetAsDivergent()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TTransferFile.CreateOutput(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TTransferFile.Create(System.Classes.TStream)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TTransferFile.Destroy()" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:l_ast:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.FClientSessionList" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.tcpsrvr" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.tcpclnt" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.TrayIcon" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.pmTrayMenu" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.Configurar1" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.Sair1" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.ilIcons" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.tcpclntConnected(System.TObject)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.tcpclntDisconnected(System.TObject)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.DataModuleDestroy(System.TObject)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.tcpsrvrExecute(IdContext.TIdContext)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.tcpsrvrStatus(System.TObject,IdComponent.TIdStatus,System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.Configurar1Click(System.TObject)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.DataModuleCreate(System.TObject)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.TrayIconMouseMove(System.TObject,TShiftState,System.Integer,System.Integer)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.tcpsrvrConnect(IdContext.TIdContext)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.tcpsrvrDisconnect(IdContext.TIdContext)" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.FClientSessionList" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.FSessionFileCount" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.FCycleFilesCount" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.FMaxTrackedClients" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.SaveBioFile(System.string,System.string,System.string,System.string,System.string,System.Classes.TStream)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.InitSettings()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.UpdateServerTrayStatus()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.StartServer()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.StartClient()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.StartSession(System.string,System.Integer)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.EndSession(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.StopServer()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.StopClient()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.SendFile(svclTCPTransfer.TTransferFile)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.Create(System.Classes.TComponent)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclTCPTransfer.TDMTCPTransfer.Destroy()" />
+    </reference>
   </view>
 </nodeSet>

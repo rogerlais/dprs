@@ -6,10 +6,11 @@
     <property name="$name" value="default" />
     <reference referencedUin="design:view:::t492r6gqbot_v">
       <property name="$shortcutReference" value="true" />
-      <property name="bounds" value="10,10,156,166" />
+      <property name="bounds" value="10,10,156,181" />
       <reference referencedUin="delphi:e_class:src:SvcLoader:svclTransBio.TTransBioThread" />
       <reference referencedUin="delphi:e_class:src:SvcLoader:svclTransBio.@unitclass" />
       <reference referencedUin="delphi:e_class:src:SvcLoader:svclTransBio.TTransBioServerThread" />
+      <reference referencedUin="delphi:e_class:src:SvcLoader:svclTransBio.TTesteSingle" />
     </reference>
     <reference referencedUin="design:view:::hr5kaauu7sf_v">
       <property name="$shortcutReference" value="true" />
@@ -41,7 +42,7 @@
     </reference>
     <reference referencedUin="design:view:::0lr9ytohrcso01p3m_v">
       <property name="$shortcutReference" value="true" />
-      <property name="bounds" value="377,262,140,166" />
+      <property name="bounds" value="377,262,260,166" />
       <reference referencedUin="delphi:e_class:src:SvcLoader:svclConfig.TBioReplicatorConfig" />
       <reference referencedUin="delphi:e_class:src:SvcLoader:svclConfig.TELOTransbioConfig" />
       <reference referencedUin="delphi:e_class:src:SvcLoader:svclConfig.@unitclass" />

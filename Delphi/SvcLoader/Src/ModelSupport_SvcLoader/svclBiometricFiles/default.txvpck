@@ -4,5 +4,41 @@
     <property name="$defaultDiagram" value="true" />
     <property name="$metaclass" value="Package Diagram" />
     <property name="$name" value="default" />
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclBiometricFiles.@unitclass">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:l_ast:src:SvcLoader:svclBiometricFiles.@unitclass.BioFilesService" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.@unitclass.BioFilesService" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.@unitclass.SUBJECT_TEMPLATE" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.@unitclass.SWITCH_AUTOCONFIG" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.@unitclass.ServiceController(System.Cardinal)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.@unitclass.InitServiceLog()" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclBiometricFiles.TBioFilesService">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.TBioFilesService.tmrCycleEvent" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.TBioFilesService.smtpSender" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.TBioFilesService.mailMsgNotify" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.TBioFilesService.fvInfo" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.TBioFilesService.icmpclntMain" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.ServiceAfterInstall(Vcl.SvcMgr.TService)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.ServiceBeforeInstall(Vcl.SvcMgr.TService)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.ServiceCreate(System.TObject)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.ServicePause(Vcl.SvcMgr.TService,ref@System.Boolean)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.ServiceStart(Vcl.SvcMgr.TService,ref@System.Boolean)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.ServiceStop(Vcl.SvcMgr.TService,ref@System.Boolean)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.ServiceContinue(Vcl.SvcMgr.TService,ref@System.Boolean)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.tmrCycleEventTimer(System.TObject)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.icmpclntMainReply(System.Classes.TComponent,IdIcmpClient.TReplyStatus)" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.TBioFilesService.FSvcThread" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.TBioFilesService.FLastLogCheck" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.AddDestinations()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.CheckLogs()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.isIntranetConnected()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.LogFilePrefix()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.CreateNew(System.Classes.TComponent,System.Integer)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.GetServiceController()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.ServiceThreadPulse()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclBiometricFiles.TBioFilesService.SendMailNotification(System.string)" />
+    </reference>
   </view>
 </nodeSet>

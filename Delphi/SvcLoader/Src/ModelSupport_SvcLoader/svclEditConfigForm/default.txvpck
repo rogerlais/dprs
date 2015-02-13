@@ -4,5 +4,59 @@
     <property name="$defaultDiagram" value="true" />
     <property name="$metaclass" value="Package Diagram" />
     <property name="$name" value="default" />
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclEditConfigForm.TEditConfigForm">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.pnlBottom" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.btnOk" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.btnCancel" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.pnlTop" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.chkServerMode" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.tbcConfig" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.tsClientConfig" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.tsServerConfig" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblClientSourceBioService" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtDirClientBioServicePath" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtDirClientTransBioTrans" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblClientTransBioTrans" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtDirClientTransBioRetrans" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblClientTransBioRetrans" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtDirClientTransBioError" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblClientTransBioError" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtDirClientELO2TransBioBio" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblClientELO2TransBio" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblClientServername" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtClientServername" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.tsCommon" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtTCPPort" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblTCPPort" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtNotificationList" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblNotificationList" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.seClientTimeInterval" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblClientTimeInterval" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtEmailEmitter" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblEmailEmitter" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblServerPathPrimaryBackup" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblServerPathOrderlyBackup" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtDirServerPathTransBio" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtDirServerPathOrderlyBackup" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtfTransBioConfigFile" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblTransBioConfigFile" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblClientPathFullyBackup" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblClientPathOrderedBackup" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtDirClientPathFullyBackup" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtDirClientPathOrderedBackup" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.edtDirServerPathFullyBackup" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lbledtDirServerPathFullyBackup" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.seDebugLevel" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.TEditConfigForm.lblDebugLevel" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclEditConfigForm.TEditConfigForm.LoadConfig()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclEditConfigForm.TEditConfigForm.SaveConfig()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclEditConfigForm.TEditConfigForm.EditConfig()" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclEditConfigForm.@unitclass">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:l_ast:src:SvcLoader:svclEditConfigForm.@unitclass.EditConfigForm" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclEditConfigForm.@unitclass.EditConfigForm" />
+    </reference>
   </view>
 </nodeSet>

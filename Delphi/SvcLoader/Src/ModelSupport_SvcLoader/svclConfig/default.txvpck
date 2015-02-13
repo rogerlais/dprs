@@ -4,5 +4,143 @@
     <property name="$defaultDiagram" value="true" />
     <property name="$metaclass" value="Package Diagram" />
     <property name="$name" value="default" />
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclConfig.TELOTransbioConfig">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="0,-20,199,341" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.TELOTransbioConfig._Elo2TransBio" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TELOTransbioConfig.GetPathBio()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TELOTransbioConfig.GetPathError()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TELOTransbioConfig.GetPathRetrans()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TELOTransbioConfig.GetPathTransmitted()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TELOTransbioConfig.SetPathBio(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TELOTransbioConfig.SetPathError(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TELOTransbioConfig.SetPathRetrans(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TELOTransbioConfig.SetPathTransmitted(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TELOTransbioConfig.GetElo2TransBio()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TELOTransbioConfig.SetElo2TransBio(System.string)" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TELOTransbioConfig.PathBio" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TELOTransbioConfig.PathTransmitted" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TELOTransbioConfig.PathError" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TELOTransbioConfig.PathRetrans" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TELOTransbioConfig.Elo2TransBio" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclConfig.@unitclass">
+      <property name="$shortcutReference" value="true" />
+      <reference referencedUin="delphi:l_ast:src:SvcLoader:svclConfig.@unitclass.GlobalConfig" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.BIOMETRIC_FILE_EXTENSION" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.BIOMETRIC_FILE_MASK" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.ELO_TRANSFER_TRANSBIO_PATH" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.APP_SERVICE_NAME" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.APP_SERVICE_KEY" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.APP_SERVICE_DISPLAYNAME" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.APP_SERVICE_GROUP" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.APP_NOTIFICATION_DESCRIPTION" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.APP_SERVICE_FIRST_DEPENDENCY" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.GlobalConfig" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_CYCLE_INTERVAL" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_CYCLE_INTERVAL" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_NOTIFICATION_SENDER" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_NOTIFICATION_SENDER" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_NOTIFICATION_LIST" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_NOTIFICATION_LIST" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_STATION_SERVERNAME" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_STATION_SERVERNAME" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_CLIENT_PATH_BIOSERVICE_BIO" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_STATION_PATH_ORDERLY_BACKUP" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_STATION_PATH_FULLY_BACKUP" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_SERVER_PATH_ORDERED_BACKUP" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_SERVER_PATH_ORDERED_BACKUP" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_SERVER_PATH_FULLY_BACKUP" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_SERVER_PATH_FULLY_BACKUP" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_SERVER_PATH_TRANSBIO_BIO" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_SERVER_PATH_TRANSBIO_BIO" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_DEBUG_LEVEL" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_RUN_AS_SERVER_FLAG" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_NET_TCP_PORT" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_NET_TCP_PORT" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.TRANSBIO_ROOT_NODE_CONFIG" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_TRANSBIO_PATH_BIOSERVICE" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IMG_VOLUME_LABEL" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_TRANSBIO_PATH_CONFIG" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_TRANSBIO_PATH_CONFIG" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_TRANSBIO_PATH_CAPTURE" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_TRANSBIO_PATH_CAPTURE" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_TRANSBIO_PATH_TRANSMITTED" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_TRANSBIO_PATH_TRANSMITTED" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_TRANSBIO_PATH_ERROR" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_TRANSBIO_PATH_ERROR" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.IE_TRANSBIO_PATH_RETRANS" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_TRANSBIO_PATH_RETRANS" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_DBG_STATION_PATH_ORDERLY_BACKUP" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.@unitclass.DV_DBG_STATION_PATH_FULLY_BACKUP" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.@unitclass.InitConfiguration()" />
+    </reference>
+    <reference referencedUin="delphi:e_class:src:SvcLoader:svclConfig.TBioReplicatorConfig">
+      <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="300,-180,257,866" />
+      <property name="location_set_by_user" value="True" />
+      <reference referencedUin="delphi:l_ast:src:SvcLoader:svclConfig.TBioReplicatorConfig.TransbioConfig">
+        <property name="sourceAnchor" value="300,142" />
+        <property name="targetAnchor" value="199,142" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="delphi:l_ast:src:SvcLoader:svclConfig.TBioReplicatorConfig.FTransbioConfig">
+        <property name="sourceAnchor" value="300,150" />
+        <property name="targetAnchor" value="199,150" />
+        <property name="bendpoints" value="" />
+      </reference>
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.TBioReplicatorConfig._FLocalBackup" />
+      <reference referencedUin="delphi:e_field:src:SvcLoader:svclConfig.TBioReplicatorConfig.FTransbioConfig" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetPathBioService()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetCycleInterval()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetDebugLevel()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetRunAsServer()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetNetServicePort()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetPathClientFullyBackup()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetPathClientOrderlyBackup()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetPathServerOrderedBackup()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetPathServerTransBio()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetServerName()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetPathTransbioConfigFile()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetNotificationSender()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetNotificationSender(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetNotificationList()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetNotificationList(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetPathServiceLog()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetRunAsServer(System.Boolean)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetPathClientBioService(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetCycleInterval(System.Integer)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetServerName(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetPathServerTransBio(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetPathServerOrderedBackup(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetNetServicePort(System.Integer)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetPathTransbioConfigFile(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetPathClientFullyBackup(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetPathClientOrderlyBackup(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.GetPathServerFullyBackup()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetPathServerFullyBackup(System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.SetDebugLevel(System.Integer)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.Create(System.string,System.string)" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.Destroy()" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.CycleInterval" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.DebugLevel" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.RunAsServer" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.NetServicePort" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.PathTransbioConfigFile" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.PathClientBioService" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.PathClientFullyBackup" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.PathClientOrderlyBackup" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.PathServerOrderedBackup" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.PathServerFullyBackup" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.PathServerTransBio" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.PathServiceLog" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.ServerName" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.TransbioConfig" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.NotificationSender" />
+      <reference referencedUin="delphi:e_property:src:SvcLoader:svclConfig.TBioReplicatorConfig.NotificationList" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.isHotKeyPressed()" />
+      <reference referencedUin="delphi:e_method:src:SvcLoader:svclConfig.TBioReplicatorConfig.ToString()" />
+    </reference>
   </view>
 </nodeSet>
