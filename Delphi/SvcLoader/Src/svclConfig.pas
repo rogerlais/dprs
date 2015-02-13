@@ -48,6 +48,7 @@ type
 	private
 		_FLocalBackup  : string;
 		FTransbioConfig: TELOTransbioConfig;
+		///<summary> Leitura do valor do repositorio do BioService </summary>
 		function GetPathBioService: string;
 		function GetCycleInterval: Integer;
 		function GetDebugLevel: Integer;
@@ -85,6 +86,7 @@ type
 		property RunAsServer: boolean read GetRunAsServer write SetRunAsServer;
 		property NetServicePort: Integer read GetNetServicePort write SetNetServicePort;
 		property PathTransbioConfigFile: string read GetPathTransbioConfigFile write SetPathTransbioConfigFile;
+		///<summary>Repositorio do BioService. Local onde são gerados os originais</summary>
 		property PathClientBioService: string read GetPathBioService write SetPathClientBioService;
 		property PathClientFullyBackup: string read GetPathClientFullyBackup write SetPathClientFullyBackup;
 		property PathClientOrderlyBackup: string read GetPathClientOrderlyBackup write SetPathClientOrderlyBackup;
@@ -183,9 +185,6 @@ begin
 end;
 
 function TBioReplicatorConfig.GetPathBioService: string;
-///<summary>
-///Leitura do valor do repositorio do BioService
-///</summary>
 begin
 	{$IFDEF DEBUG}
 	Result := '..\Data\Client\BioService.Bio';

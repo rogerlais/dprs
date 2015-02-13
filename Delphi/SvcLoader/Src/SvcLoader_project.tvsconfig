@@ -6,4 +6,6 @@
   <Option Name="SourceCode.AutoDependency" Type="System.Boolean" Value="True" Category="Source Code" />
   <Option Name="Diagram.DiagramBackgroundColor_2" Type="System.Drawing.Color" Value="PowderBlue" Category="Diagram" />
   <Option Name="namespaceFolder.svclTCPTransfer" Type="System.String" Value="svclTCPTransfer" Category="General" IsBrowsable="False" />
+  <Option Name="namespaceFolder.svclConfig" Type="System.String" Value="svclConfig" Category="General" IsBrowsable="False" />
+  <Option Name="namespaceFolder.svclBiometricFiles" Type="System.String" Value="svclBiometricFiles" Category="General" IsBrowsable="False" />
 </TgConfig>
