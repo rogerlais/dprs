@@ -15,6 +15,7 @@
     </reference>
     <reference referencedUin="delphi:e_class:src:SvcLoader:svclBiometricFiles.TBioFilesService">
       <property name="$shortcutReference" value="true" />
+      <property name="bounds" value="10,10,418,445" />
       <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.TBioFilesService.tmrCycleEvent" />
       <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.TBioFilesService.smtpSender" />
       <reference referencedUin="delphi:e_field:src:SvcLoader:svclBiometricFiles.TBioFilesService.mailMsgNotify" />
