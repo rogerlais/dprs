@@ -1,0 +1,1 @@
+Used like repository for short projects with short life-cycle
