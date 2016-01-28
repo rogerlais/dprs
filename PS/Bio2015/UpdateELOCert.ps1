@@ -505,7 +505,6 @@ function Do-ProcessPC{
 
 
 <#
-
 .Synopsis
    Apresenta dálogo de pergunta binária
 .DESCRIPTION
@@ -519,7 +518,6 @@ function Do-ProcessPC{
 .EXAMPLE
    Get-BooleanAnswer( "Deseja realmente continuar?", "Responda:" )
 #> 
-
 function Get-BooleanAnswer{
 
     [CmdletBinding()]
