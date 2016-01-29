@@ -81,6 +81,12 @@ try{
 try{
     Write-LogEntry -message "Script iniciado - Start" -EntryType Start
     Write-LogEntry -Message "Script iniciado - information" -EntryType Information
+    #************** Inicio do fluxo primário
+    InitCredentials(); #Carrega e valida as credenciais a serem usados nos hosts remotos
+    SelectSession(); #Seleciona a pasta com a estrutura da sessão a ser iniciada
+    LoadSession(); #Carrega os dados da sessão a ser processada
+    FilterHosts(); #Coleta os dados de filtragem dos hosts
+    ProcessSession(); #Enumera e processa as linhas de entrada
     #Carga do arquivo com as pendências
     loadPendFile
 }finally{
