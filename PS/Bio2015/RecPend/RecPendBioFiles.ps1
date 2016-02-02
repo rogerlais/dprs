@@ -55,11 +55,52 @@ function loadPendFile{
 }
 
 <#
+.Synopsis
+   Carrega e valida as credenciais para acesso remoto
+.DESCRIPTION
+   Valor padrão é o domínio/suporte
+.EXAMPLE
+   NA
+#>
+function InitCredentials
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCredential])]
+    Param
+    (
+        # Descrição da ajuda de parâm1
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string]$Domain,
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=1)]
+        [string]$Username,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true, Position=2)]
+        [string]$Password
+    )
+    Begin{
+        if( $Password ){
+            $SecPwd = ConvertTo-SecureString "$Password" -AsPlainText -Force
+        }else{
+            $SecPwd = $null
+        }
+    }
+    Process{
+        if( $SecPwd ){
+            $ret = New-Object System.Management.Automation.PSCredential( $Domain + "\" + $Username, $SecPwd )
+        }else{
+            $ret = Get-Credential -UserName ($Domain + "\" + $Username)
+        }      
+        return $ret
+    }
+    End{}
+}
+
+<#
  ############ Globais ##################
 #>
 $Global:WKSList = new-object collections.hashtable #Hashtable com lista de estações
 $Global:PendReport
 $Global:PendReportFilename
+[System.Management.Automation.PSCredential] $Global:DCredentials = $null
 
 
 <# ----------------- PONTO de entrada --------------------------#>
@@ -82,11 +123,11 @@ try{
     Write-LogEntry -message "Script iniciado - Start" -EntryType Start
     Write-LogEntry -Message "Script iniciado - information" -EntryType Information
     #************** Inicio do fluxo primário
-    InitCredentials(); #Carrega e valida as credenciais a serem usados nos hosts remotos
-    SelectSession(); #Seleciona a pasta com a estrutura da sessão a ser iniciada
-    LoadSession(); #Carrega os dados da sessão a ser processada
-    FilterHosts(); #Coleta os dados de filtragem dos hosts
-    ProcessSession(); #Enumera e processa as linhas de entrada
+    InitCredentials -Domain "ZNE-PB001.GOV.BR" -Username "suporte"; #Carrega e valida as credenciais a serem usados nos hosts remotos
+    SelectSession; #Seleciona a pasta com a estrutura da sessão a ser iniciada
+    LoadSession; #Carrega os dados da sessão a ser processada
+    FilterHosts; #Coleta os dados de filtragem dos hosts
+    ProcessSession; #Enumera e processa as linhas de entrada
     #Carga do arquivo com as pendências
     loadPendFile
 }finally{
