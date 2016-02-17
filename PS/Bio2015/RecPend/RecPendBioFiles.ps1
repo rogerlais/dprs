@@ -87,7 +87,7 @@ function InitCredentials
         if( $SecPwd ){
             $ret = New-Object System.Management.Automation.PSCredential( $Domain + "\" + $Username, $SecPwd )
         }else{
-            $ret = Get-Credential -UserName ($Domain + "\" + $Username)
+            $ret = Get-Credential -UserName ($Domain + "\" + $Username) -Message "Insira informações de acesso"
         }      
         return $ret
     }
@@ -100,7 +100,7 @@ function InitCredentials
 $Global:WKSList = new-object collections.hashtable #Hashtable com lista de estações
 $Global:PendReport
 $Global:PendReportFilename
-[System.Management.Automation.PSCredential] $Global:DCredentials = $null
+[System.Management.Automation.PSCredential] $Global:DomainCredentials = $null
 
 
 <# ----------------- PONTO de entrada --------------------------#>
@@ -123,7 +123,9 @@ try{
     Write-LogEntry -message "Script iniciado - Start" -EntryType Start
     Write-LogEntry -Message "Script iniciado - information" -EntryType Information
     #************** Inicio do fluxo primário
-    InitCredentials -Domain "ZNE-PB001.GOV.BR" -Username "suporte"; #Carrega e valida as credenciais a serem usados nos hosts remotos
+    if( !$Global:DomainCredentials ){
+        $Global:DomainCredentials = InitCredentials -Domain "ZNE-PB001.GOV.BR" -Username "suporte"; #Carrega e valida as credenciais a serem usados nos hosts remotos
+    }
     SelectSession; #Seleciona a pasta com a estrutura da sessão a ser iniciada
     LoadSession; #Carrega os dados da sessão a ser processada
     FilterHosts; #Coleta os dados de filtragem dos hosts

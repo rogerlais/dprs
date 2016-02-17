@@ -1,5 +1,6 @@
 ﻿clear
-#$pc = "ZPB062WKS05.zne-pb001.gov.br"
+$credential=$null
+$pc = "ZPB015WKS01.zne-pb001.gov.br"
 #$pc = "pb025889"
 
 if ($credential -eq $null) {
