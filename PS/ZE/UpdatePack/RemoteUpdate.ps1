@@ -1,35 +1,32 @@
-<# UpdateELOCert
-Version: 20160110
+<# RemoteUpdate
+Version: 20160621
 Author: Rogerlais Andrade
-Usage: <scriptname> 
-Execução em modo interativo. Pode coletar todas os computadores que pertençam a classe WKS do domínio para alimentar o arquivo "InputPCList.txt", localizado na mesma pasta do script.
-Notas:
-* As credenciais devem ser do suporte do domínio para o uso interativo
-* Os diálogos chamados de modos simples, impedem que sejam exibidos como janela topo, assim atenção para tais janelas.
-Funcionamento:
-1 - Pergunta se deseja regerar a lista de estações ou usar a preexistente
-2 - Pergunta se deve-se saltar um determinado número de linhas(útil para execução interrompida)
-3 - Varre as linhas do arquivo de entrada e para cada nome de host, inicialmente tenta-se localizar-lo no arquivo de hosts a igonorar("IgnorePCList.txt"), o qual é alimentando quando houver uma execução com sucesso ou inserção manual.
-4 - Caso o host não deva ser ignorado, segue:
-4.1 Inicia uma sessão remota na qual
-4.2 - Baixa arquivo compactado contendo demais arquivos necessários para o processo, localizado em "http://arquivos.tre-pb.gov.br/setores/sesop/AppData/Cert_Applet_ELO/cert-applet.zip"
-4.3 - Descompacta no local de destino
-4.4 - Executa o utilitário da JRE KeyTool de dois modos
-    a) Removendo o certificaso alvo(ignora erros)
-    b) Inserindo o certificado alvo
-4.5 - Havendo sucesso na operação anterior returna cadeia "OK", indicando que o host será inserido no arquivo de host a ignorar no futuro
+Usage: <scriptname> <-ScriptName <filename.ps1>> [-auto] [-skip lines]
+Parameters:
+    auto: Inibe o modo interativo usando os valores padrão(não renova a lista de entrada)
+    Scriptname: Nome do arquivo contendo a rotina a ser invocada remotamente
+    skip: número de linhas a serem saltadas
+
+NOTAS:
+    * Execução em modo interativo. Pode coletar todas os computadores que pertençam a classe WKS do domínio para alimentar o arquivo "InputPCList.txt", localizado na mesma pasta do script.
+    * As credenciais devem ser do suporte do domínio para o uso interativo
+    * Os diálogos chamados de modos simples, impedem que sejam exibidos como janela topo, assim atenção para tais janelas.
+Funcionamento(modo interativo):
+    1 - Pergunta se deseja regerar a lista de estações ou usar a preexistente
+    2 - Pergunta se deve-se saltar um determinado número de linhas(útil para execução interrompida)
+    3 - Varre as linhas do arquivo de entrada e para cada nome de host, inicialmente tenta-se localizar-lo no arquivo de hosts a igonorar("IgnorePCList.txt"), o qual é alimentando quando houver uma execução com sucesso ou inserção manual.
+    4 - Caso o host não deva ser ignorado, segue:
+    4.1 Inicia uma sessão remota na qual o arquivo passado será invocado
+    4.2 - Havendo sucesso na operação anterior returna cadeia "OK", indicando que o host será inserido no arquivo de host a ignorar no futuro
 
 Problemas enfrentados:
-1 - Falha de comunicação atrasou a entrega: Equipe não informaou que o WinRM não estava ativo nas estações XP.
-Solução: Tal funcionalidade é vital para esta aplicação e para várias outras, assim sugiro o uso dos passos em: 
-http://www.windowsnetworking.com/articles-tutorials/windows-server-2012/remote-management-powershell-part1.html e 
-http://blog.powershell.no/2010/03/04/enable-and-configure-windows-powershell-remoting-using-group-policy/
-para ativar tal serviço
-2 - Atividades de suporte mais prioritárias
-Solução: A óbvia, arrumar um tempo "por fora"
+    1 - A registrar
 
-Features não implementadas:
-1 - Simular o registro da instalação do pacote seguro equivalente(requer aprovação da equipe), ou ainda usar isso como filtro para a execução(idem).
+Funcionalidades não implementadas:
+    1 - Simular o registro da instalação do pacote seguro equivalente(requer aprovação da equipe), ou ainda usar isso como filtro para a execução(idem).
+
+Histórico:
+    20160621 -  Versão inicial
 #>
 
 $debugClientScript = {  #Ignorar serve apenas para depuração
@@ -312,9 +309,6 @@ $clientScript = {
     return $sbReturn  #objeto de retorno 
 } #Fim do scriptBlock
 
-
-
-
 <#---- Parte de execução local ----#>
 function localExecution{
     if( $global:isDebugging ){  #execução direta pelo ISE
@@ -340,7 +334,7 @@ function readList([string] $filename){
     }
 }
 
-function scriptRoot{
+function Get-ScriptRoot{
     $ret = $MyInvocation.ScriptName
     $ret = Split-Path $ret -Parent
     Write-Host "Executando em $ret"
@@ -396,9 +390,9 @@ function registerResult(){
 .DESCRIPTION
    Todo o dompinio será pesquisado
 .EXAMPLE
-   Get-TRE-DomainComputerList 
+   Get-DomainComputerList 
 #>
-function Get-TRE-DomainComputerList
+function Get-DomainComputerList
 {
     [CmdletBinding()]
     #[OutputType([void)]
@@ -548,7 +542,7 @@ function Get-BooleanAnswer{
 ######  Globals Vars   ######
 
 ### ALERTA: Flag de depuração ###
-$Global:isDebugging = $false
+$Global:isDebugging = $true
 
 $Global:credentials   #Credenciais para invocação remota
 $Global:inputList = @() #array com nomes dos computadores
@@ -563,10 +557,16 @@ $Global:ignoreFilename #FullPath para aquivo de nomes para ignorar
 $Global:logFilename #FullPath para arquivo com resumo das operações
 [int] $Global:HostCountOffset = 0
 
+###Parametros de linha de comando
+$Global:ParamSkipLines = $null
+$Global:ParamScriptNames = $null
+$Global:ParamAutoFlag = $null
+
+
 #Main
 Clear
 $Error.Clear()
-$basePath = scriptRoot
+$basePath = Get-ScriptRoot
 if( ! $Global:credentials ){
     $Global:credentials = Get-Credential -UserName $Global:DEFAULT_ZNE_ADMIN_USER -Message "Credenciais de conta administrativa do domínio dos computadores" 
 }
@@ -574,7 +574,7 @@ try{
     $Global:inputFilename = "$basePath\$Global:INPUT_PC_LIST"
     $Global:ignoreFilename = "$basePath\$Global:IGNORE_PC_LIST"    
     if( !( Get-BooleanAnswer -prompt "Deseja manter a lista de computadores alvo?`n`rRespondendo ""NÃO"", uma lista com todas as estações do domínio será gerada." -caption "Responda!" )){
-        Get-TRE-DomainComputerList -DomainName "zne-pb001.gov.br" -OutFilename $Global:inputFilename 
+        Get-DomainComputerList -DomainName "zne-pb001.gov.br" -OutFilename $Global:inputFilename 
     }
 
     $Global:logFilename = "$basePath\ExecScript.log"
