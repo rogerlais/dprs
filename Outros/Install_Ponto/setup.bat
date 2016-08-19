@@ -5,8 +5,8 @@ cls
 @echo off
 
 
-set conta=ponto
-set conta_pwd=12345678
+set conta=000000051210
+set conta_pwd=.bio2016
 
 :step1
 

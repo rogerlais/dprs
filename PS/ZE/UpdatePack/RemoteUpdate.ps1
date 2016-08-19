@@ -37,276 +37,6 @@ $debugClientScript = {  #Ignorar serve apenas para depuração
 }
 
 $clientScript = {
-    function installCert( [string] $repoDir ){
-        try{
-            $javaHome = Get-JavaPath
-            $ktPath = $javaHome + "bin\keytool.exe"
-            $JRECerts = $javaHome + "lib\security\cacerts"
-            $argsKTDel = " -delete -keystore " + """$JRECerts""" + " -alias biometria-applet-b -file " + """$repoDir\biometria-applet-secad-sti-tse-b.cer""" + " -storepass changeit -noprompt"
-            $argsKTIns = " -import -keystore " + """$JRECerts""" + " -alias biometria-applet-b -file " + """$repoDir\biometria-applet-secad-sti-tse-b.cer""" + " -storepass changeit -noprompt"
-
-            #criação de processo
-            $ps = new-object System.Diagnostics.Process
-            $ps.StartInfo.Filename = """$ktPath"""    
-            $ps.StartInfo.RedirectStandardOutput = $True
-            $ps.StartInfo.UseShellExecute = $false
-
-            #Invocação para apagar certificado anterior caso exista
-            $ps.StartInfo.Arguments = $argsKTDel
-            $ps.start()
-            $ps.WaitForExit()    
-            [string] $Out = $ps.StandardOutput.ReadToEnd();
-            Write-Debug $ps.ExitCode  #Acesso negado ou outros erros não tratados, desde que haja sucesso na importação logo abaixo
-            Write-Debug $Out
-
-            #Invocação para inserir certificado novo 
-            $ps.StartInfo.Arguments = $argsKTIns
-            $ps.start()
-            $ps.WaitForExit()    
-            [string] $Out = $ps.StandardOutput.ReadToEnd();
-            Write-Debug $ps.ExitCode
-            Write-Debug $Out
-            if( $ps.ExitCode -eq 0 ){
-                return "OK"
-            }else{
-                if( $out.Contains( " o alias <biometria-applet-b> já existe" ) ){  #Certificado preexistente -> sem erro ?
-                    return "OK"
-                }else{
-                    return $Out
-                }
-            }
-        }catch{
-            Write-Host "Erro durante execução de script java $Error"
-        }
-    }
-
-    function Get-JavaPath{
-		#Captura caminho para as JRE primária da máquina
-        $RegistrySearchPaths = @('HKLM:\SOFTWARE\JavaSoft\Java Runtime Environment\', 
-                                 'HKLM:\SOFTWARE\Wow6432Node\JavaSoft\Java Runtime Environment\')
-        $JavaExePath = $RegistrySearchPaths | where { Test-Path $_ } |
-            % {
-                $CurrentVersion = (Get-ItemProperty $_).CurrentVersion
-                Write-Debug "Current Java version is $CurrentVersion, based on $($_)"
-                $VersionKey = Join-Path $_ $CurrentVersion
-                $JavaHomeBasedPath = Join-Path (Get-ItemProperty $VersionKey).JavaHome $JavaExeSuffix
-                Write-Debug "Testing for $JavaHomeBasedPath, based on $VersionKey\JavaHome"
-                if (Test-Path $JavaHomeBasedPath) { $JavaHomeBasedPath }
-            } |
-            select -First 1
-        if ($JavaExePath -ne $null) {
-            Write-Debug "Found $JavaExePath"
-            return $JavaExePath
-        }
-    }
-
-    function downloadConfigFile(){
-
-        [CmdletBinding()]
-        param(
- 
-            [Parameter(Position=0, Mandatory=$true)]
-            [ValidateNotNullOrEmpty()]
-            [System.String]
-            $repoDir,
- 
-            [Parameter(Position=1)]
-            [ValidateNotNullOrEmpty()]
-            [System.String]
-            $urlCert
- 
-        )# param end        
-        try{
-            $tempFile = "$env:TEMP\cert-applet.zip"  
-            $client = new-object System.Net.WebClient
-            $client.DownloadFile( $urlCert, $tempFile )
-            $certFile = "$repoDir\sesop.zip"
-            Copy-Item $tempFile $certFile -Force
-            return ( Test-Path $certFile -PathType Leaf ) #retorna se arquivo baixado existe
-        } catch {            
-            return $false
-        }        
-    }
-
-    function Unzip-File { 
- 
-    <# 
-    .SYNOPSIS 
-       Unzip-File is a function which extracts the contents of a zip file. 
- 
-    .DESCRIPTION 
-       Unzip-File is a function which extracts the contents of a zip file specified via the -File parameter to the 
-    location specified via the -Destination parameter. This function first checks to see if the .NET Framework 4.5 
-    is installed and uses it for the unzipping process, otherwise COM is used. 
- 
-    .PARAMETER File 
-        The complete path and name of the zip file in this format: C:\zipfiles\myzipfile.zip  
-  
-    .PARAMETER Destination 
-        The destination folder to extract the contents of the zip file to. If a path is no specified, the current path 
-    is used. 
- 
-    .PARAMETER ForceCOM 
-        Switch parameter to force the use of COM for the extraction even if the .NET Framework 4.5 is present. 
- 
-    .EXAMPLE 
-       Unzip-File -File C:\zipfiles\AdventureWorks2012_Database.zip -Destination C:\databases\ 
- 
-    .EXAMPLE 
-       Unzip-File -File C:\zipfiles\AdventureWorks2012_Database.zip -Destination C:\databases\ -ForceCOM 
- 
-    .EXAMPLE 
-       'C:\zipfiles\AdventureWorks2012_Database.zip' | Unzip-File 
- 
-    .EXAMPLE 
-        Get-ChildItem -Path C:\zipfiles | ForEach-Object {$_.fullname | Unzip-File -Destination C:\databases} 
- 
-    .INPUTS 
-       String 
- 
-    .OUTPUTS 
-       None 
- 
-    .NOTES 
-       Author:  Mike F Robbins 
-       Website: http://mikefrobbins.com 
-       Twitter: @mikefrobbins 
- 
-    #> 
- 
-        [CmdletBinding()] 
-        param ( 
-            [Parameter(Mandatory=$true, ValueFromPipeline=$true)] 
-            [ValidateScript({ 
-                If ((Test-Path -Path $_ -PathType Leaf) -and ($_ -like "*.zip")) { 
-                    $true 
-                } 
-                else { 
-                    Throw "$_ is not a valid zip file. Enter in 'c:\folder\file.zip' format" 
-                } 
-            })] 
-            [string]$File, 
- 
-            [ValidateNotNullOrEmpty()] 
-            [ValidateScript(
-                { If (Test-Path -Path $_ -PathType Container) { 
-                    $true 
-                } 
-                else { 
-                    Throw "$_ is not a valid destination folder. Enter in 'c:\destination' format" 
-                } 
-            })] 
-            [string]$Destination = (Get-Location).Path, 
- 
-            [switch]$ForceCOM 
-        ) 
- 
- 
-        If (-not $ForceCOM -and ($PSVersionTable.PSVersion.Major -ge 3) -and 
-           ((Get-ItemProperty -Path "HKLM:\Software\Microsoft\NET Framework Setup\NDP\v4\Full" -ErrorAction SilentlyContinue).Version -like "4.5*" -or 
-           (Get-ItemProperty -Path "HKLM:\Software\Microsoft\NET Framework Setup\NDP\v4\Client" -ErrorAction SilentlyContinue).Version -like "4.5*")) { 
- 
-            Write-Verbose -Message "Attempting to Unzip $File to location $Destination using .NET 4.5" 
- 
-            try { 
-                [System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null 
-                [System.IO.Compression.ZipFile]::ExtractToDirectory("$File", "$Destination") 
-            } 
-            catch { 
-                Write-Warning -Message "Unexpected Error. Error details: $_.Exception.Message" 
-            } 
- 
- 
-        } 
-        else { 
- 
-            Write-Verbose -Message "Attempting to Unzip $File to location $Destination using COM" 
- 
-            try { 
-                $shell = New-Object -ComObject Shell.Application 
-                $shell.Namespace($destination).copyhere(($shell.NameSpace($file)).items()) 
-            } 
-            catch { 
-                Write-Warning -Message "Unexpected Error. Error details: $_.Exception.Message" 
-            } 
- 
-        } 
- 
-    }
-
-
-    function openFiles([string] $repoDir ){
-        $certFile = "$repoDir\sesop.zip"
-        $destFiles = "$repoDir\sesop.tmp"
-        if( ! (Test-Path $destFiles -PathType Container )){
-            New-Item -Path $destFiles -ItemType directory -Force 
-            if( ! (Test-Path $destFiles -PathType Container )){
-                throw "Falha criando pasta temporária de certificados: $destFiles"
-            }
-        }
-        try{            
-            try{
-                Unzip-File -File $certFile -Destination $destFiles -ForceCOM 
-            }catch{
-                Write-Host "Erro descompactando arquivos... $Error"
-                return $false
-            }            
-            $subFiles = Get-ChildItem -Path "$repoDir\sesop.tmp"                        
-            foreach( $item in $subFiles ){
-                if( Test-Path -Path "$repoDir\$item" ){
-                    Remove-Item "$repoDir\$item" -Force
-                }                
-                Move-Item $item.FullName -Destination $repoDir -Force
-            }
-        }catch{
-            return $false        
-        }finally{            
-            Remove-Item -Path $destFiles -Force -Recurse
-            Remove-Item -Path $certFile -Force
-        }
-    }
-
-    function mainProc( [string] $zipURL ){                 
-        $certRepo="D:\aplic\Biometria\certificado-applet"
-        if( !( Test-Path $certRepo ) ){
-            return "OK - Cliente não necessita de atualização"
-        }         
-        if( downloadConfigFile -repoDir $certRepo -urlCert $zipURL ){             
-            try{
-                if( openFiles($certRepo) ){
-                    try{
-                        return installCert($certRepo) 
-                    } catch {
-                        $ErrorMessage = $_.Exception.Message
-                        $FailedItem = $_.Exception.ItemName
-                        return "$ErrorMessage `n`r $FailedItem"
-                    }
-                }else{
-                    return "Erro abrindo arquivos de configuração baixados"
-                }
-            } catch {
-                return "Erro durante descompressão/abertura dos arquivos $_.Exception.Message $_.Exception.ItemName"
-            }
-        }else{
-            return "Falha na operação de download"
-        }
-    }
-    
-    ####Ponto de entrada da execução remota
-    $sbReturn = new-object PSCustomObject –property @{ operationResult = "Erro desconhecido"  }  #Retorna ultima entrada do array    
-    $innerResult=@([string] "Erro desconhecido")
-    $sbReturn.operationResult = $innerResult.GetValue( 0 )
-    Try {        
-        $innerResult = mainProc( "http://arquivos.tre-pb.gov.br/setores/sesop/AppData/Cert_Applet_ELO/cert-applet.zip" )        
-    } catch {
-        $ErrorMessage = $_.Exception.Message
-        $FailedItem = $_.Exception.ItemName
-        $innerResult[0] = "$ErrorMessage `n`r $FailedItem"
-    } finally{
-        Write-Verbose "Escrevendo o retorno da chamada remota"        
-        $sbReturn.operationResult = $innerResult.GetValue( $innerResult.Length-1)
-    }
-    return $sbReturn  #objeto de retorno 
 } #Fim do scriptBlock
 
 <#---- Parte de execução local ----#>
@@ -411,9 +141,15 @@ function Get-DomainComputerList
         $OutFilename
     )
     Process {
+
+        ####### tentativa $domaininfo = new-object DirectoryServices.DirectoryEntry("LDAP://192.168.200.2/cn=sites,cn=configuration,dc=example,dc=com","example\high","PaSS")
+
         $strCategory = "computer"
-        [System.DirectoryServices.DirectoryEntry] $objDomain = New-Object System.DirectoryServices.DirectoryEntry
-        $objSearcher = New-Object System.DirectoryServices.DirectorySearcher        
+        [System.DirectoryServices.DirectoryEntry] $objDomain = New-Object System.DirectoryServices.DirectoryEntry                 
+        $objDomain.distinguishedName="DC=zne-pb001,DC=gov,DC=br"
+        $objDomain.Username="suporte@zne-pb0001.gov.br"
+        $objDomain.Password="$!$adm!n"
+        $objSearcher = New-Object System.DirectoryServices.DirectorySearcher( $objDomain )        
         $objSearcher.SearchRoot = $objDomain
         $objSearcher.SearchRoot.name=$DomainName
         $objSearcher.Filter = ("(objectCategory=$strCategory)") #!Colocar o filtro do nome das estações na consulta
@@ -453,7 +189,12 @@ function Do-ProcessPC{
     (
         # Descrição da ajuda de parâm1
         [Parameter(Mandatory=$true, Position=0)]
-        $fqnHost
+        $fqnHost,
+
+        #Bloco a ser executado remotamente
+        [Parameter(Mandatory=$true, Position=0)]
+        $clientScript
+
     )
 
     Begin {
@@ -474,7 +215,7 @@ function Do-ProcessPC{
                         Remove-PSSession -Session $psRemSession
                     }
                 }else{
-                    Write-Host "Sessão remota para $fqnHost falhou!"
+                    Write-Host "roger remota para $fqnHost falhou!" -ForegroundColor DarkRed
                     return new-object PSCustomObject –property @{ operationResult = ("Estação não responde a pedido de sessão remota." + $Error[0].Exception) }
                 }
             }catch{
@@ -598,32 +339,44 @@ try{
     $Global:HostCountOffset=0
 }
 
+do{
+    $cycleErrorCount=0  #Zera contador do ciclo
+    $cycleSuccessCount=0
+    Foreach( $Global:curPCName in $Global:inputList ){    
+        $pcCount++
+        if( $pcCount -lt $Global:HostCountOffset ){  #Pula quantidade informada(uso para interrupção forçada e reinicio de ponto de parada)
+            Write-Host $pcCount.toString("000") " : $Global:curPCName - Pulado pelo salto informado($Global:HostCountOffset)"
+            Continue
+        }
+        if( $Global:ignoreList.Contains($Global:curPCName) ){
+            Write-Host $pcCount.toString("000") " : $Global:curPCName - Encontrado no arquivo de PCs a ignorar"
+            continue
+        }else{ #Execução para o pc não ignorado      
+            Write-Host $pcCount.toString("000") " : $Global:curPCName - Em execução"  
+            if( $Global:curPCName.StartsWith( "localhost" )){
+                $remoteResult = localExecution
+                Write-Host $remoteResult.operationResult            
+            }else{
+                if( ! $Global:curPCName.EndsWith($Global:DEFAULT_ZNE_DOMAIN) ){
+                    $Global:curPCName+=".$Global:DEFAULT_ZNE_DOMAIN"
+                }            
+                $scriptFilename=Join-Path $basePath "SADPHomologa.ps1"
+                $scriptFilename="D:\Temp\SADPHomologa.ps1"
+                Unblock-File -Path $scriptFilename
+                $sb=get-command $scriptFilename 
+                $sb= $sb | select -ExpandProperty ScriptBlock 
+                $remoteResult = Do-ProcessPC -fqnHost $Global:curPCName -clientScript $sb
+            }
+            $retStr = $remoteResult.operationResult.toString()
+            if( $retStr.EndsWith( "OK" ) ){
+                Write-Host $pcCount.toString("000") " : $Global:curPCName - Atualizada com sucesso!"
+                Write-Host "Sucessos do ciclo = $cycleSuccessCount"
+            }else{
+                $cycleErrorCount++
+            }
+            registerResult -pcname $Global:curPCName -operResult $retStr -success $retStr.EndsWith( "OK" )         
+        }
+    }    
+}until ($cycleErrorCount -lt 1)  #repete ciclo até não encontrar mais erros
 
-Foreach( $Global:curPCName in $Global:inputList ){    
-    $pcCount++
-    if( $pcCount -lt $Global:HostCountOffset ){  #Pula quantidade informada(uso para interrupção forçada e reinicio de ponto de parada)
-        Write-Host $pcCount.toString("000") " : $Global:curPCName - Pulado pelo salto informado($Global:HostCountOffset)"
-        Continue
-    }
-    if( $Global:ignoreList.Contains($Global:curPCName) ){
-        Write-Host $pcCount.toString("000") " : $Global:curPCName - Encontrado no arquivo de PCs a ignorar"
-        continue
-    }else{ #Execução para o pc não ignorado      
-        Write-Host $pcCount.toString("000") " : $Global:curPCName - Em execução"  
-        if( $Global:curPCName.StartsWith( "localhost" )){
-            $remoteResult = localExecution
-            Write-Host $remoteResult.operationResult            
-        }else{
-            if( ! $Global:curPCName.EndsWith($Global:DEFAULT_ZNE_DOMAIN) ){
-                $Global:curPCName+=".$Global:DEFAULT_ZNE_DOMAIN"
-            }            
-            $remoteResult = Do-ProcessPC -fqnHost $Global:curPCName
-        }
-        $retStr = $remoteResult.operationResult.toString()
-        if( $retStr.EndsWith( "OK" ) ){
-            Write-Host $pcCount.toString("000") " : $Global:curPCName - Atualizada com sucesso!"
-        }
-        registerResult -pcname $Global:curPCName -operResult $retStr -success $retStr.EndsWith( "OK" )         
-    }
-}
 Write-Host "Final da execução" -ForegroundColor Yellow

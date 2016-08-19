@@ -5,6 +5,7 @@
 # Justificativa: Facilitar acesso direto aos pacotes disponibilizados de forma automática nos compartilhamentos existentes localmente nos cartórios.
 # History:
 # 20160621 - Versão inicial
+# 20160728 - Direcionado aos computadores perfil zona com LAN id >= 200 para o NAS da SESOP/Zonas/Espelho
 # Melhorias:
 # 1 - Passar rotinas Use-NetworkDrive e Get-LANId para a biblioteca comum após aplicar padrão de projeto
 #>
@@ -93,26 +94,46 @@ function Get-LANId
 ************************************************************************************#>
 
 # -------------------------- Constantes e globais  ----------------------------
-$DEBUGING = $False  ####!!!!!!!!!!!!!!! ALERTA - alterar para false na produção
+$DEBUGING = $True  ####!!!!!!!!!!!!!!! ALERTA - alterar para false na produção
 $SERVER_PREFIX = "ZPB"
+$FORUM_JPA_FILESERVER = "pbfs01.zne-pb001.gov.br"
 # -----------------------------------------------------------------------------
 
 if ($DEBUGING){
-    $compName = "CPB003WKS00"
+    #$compName = "CPB003WKS00"
+    $compName = "ZPB077WKS00"
+    $MapUser = $null
+    $MapPassword = $null
 }else{
     $compName = $env:COMPUTERNAME    
 }
 
-Write-Host "Host em execução: #compName"
+Write-Host "Host em execução: $compName"
 $LANId = Get-LANId( $compName )
 Write-Host "Rede local identificada como: $LANId"
 if( $LANId -gt 77 ){
-    #Todo: Adequar para NATUs posteriormente
-    Write-Host "Mapeando unidade de teste"
-    $DeviceName = "\\PB037677\"  #maquina de roger
-    Use-NetworkDrive -UNCPrefix $DeviceName -ShareName "Testes" -MapLetter 'R' -Username "Tre-PB\user" -Pwd "senha" #Alterado de "M:" para "R:"  devido aos dispositivos móveis
+    if( $LANId -le 200 ){
+        Write-Host "Mapeando NAS da SESOP"
+        $DeviceName = "\\NAS035292\Zonas\"  #Compartilhamento do NAS da SESOP
+        $MapUser = "instalador"
+        $MapPassword = "12345678"
+    }else{
+        #Todo: Adequar para NATUs posteriormente
+        Write-Host "Mapeando unidade de teste"
+        $DeviceName = "\\PB037677\"  #maquina de roger
+    }
+    Use-NetworkDrive -UNCPrefix $DeviceName -ShareName "Espelho" -MapLetter 'R' -Username $Mapuser -Pwd $MapPassword #Alterado de "M:" para "R:"  devido aos dispositivos móveis
 }else{
-    Write-Host "Mapeando unidade da rede local"
-    $DeviceName = "\\" + $SERVER_PREFIX + $LANId.ToString("000") + "NAS01\"  #!Amarrado para dispositivo 01 apenas
+    switch ($LANId)
+    {
+        #'value1' {}
+        {$_ -in 1, 64, 70, 76, 77 } {
+            $DeviceName = "\\" + $FORUM_JPA_FILESERVER + "\"  #Servidor das zonas da capital
+        }
+       Default {
+            $DeviceName = "\\" + $SERVER_PREFIX + $LANId.ToString("000") + "NAS01\"  #!Amarrado para dispositivo 01 apenas
+        }
+    }
+    Write-Host "Mapeando unidade da rede local"    
     Use-NetworkDrive -UNCPrefix $DeviceName -ShareName "ESPELHO" -MapLetter 'R' #Alterado de "M:" para "R:"  devido aos dispositivos móveis
 }
