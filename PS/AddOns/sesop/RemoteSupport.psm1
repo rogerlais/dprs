@@ -38,4 +38,5 @@ function Set-VNCState{
         return $result
     }
 }
-#export-modulemember -function * -Alias *
+
+export-modulemember -function Set-VNCState

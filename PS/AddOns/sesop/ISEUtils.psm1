@@ -35,6 +35,6 @@ Function Restore-IseSession{
 
 <#Declaração de exportação do módulo#>
 
-#export-modulemember -function Restore-IseSession
-#export-modulemember -function Save-IseSession
+export-modulemember -function Restore-IseSession
+export-modulemember -function Save-IseSession
 #export-modulemember -function * -Alias *
